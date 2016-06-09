@@ -1,4 +1,4 @@
-# bugi.vim
+# ide.vim
 
 VIM configuration to bring IDE experiance for VIM 7.4 and above.
 Works with Vundle Plugin Manager only. For other plugin managers 

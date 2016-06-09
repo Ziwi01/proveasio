@@ -63,7 +63,7 @@ set rtp+=~/.vim/bundle/vundle
 
 " Automatic plugin installation
 call vundle#begin()
-Plugin 'run2cmd/bugi.vim'                 "Main vimrc configuration
+Plugin 'run2cmd/ide.vim'                 "Main vimrc configuration
 Plugin 'VundleVim/Vundle.vim'             "Plugin manager
 Plugin 'scrooloose/nerdtree'              "File manager
 Plugin 'rodjek/vim-puppet'                "Puppet support
