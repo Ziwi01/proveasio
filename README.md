@@ -13,7 +13,7 @@ mkdir -p ~/.vim/bundle ~/.vim/backup ~/.vim/tmp
 
 Also source vimrc. To do for Vundle put below into your ~/.vimrc
 ```
-let custom_config_file = expand('%:p:h') . '/.vim/bundle/ide.vim/vimrc'
+let custom_config_file = '~/.vim/bundle/ide.vim/vimrc'
 exe 'source' custom_config_file
 ```
 
