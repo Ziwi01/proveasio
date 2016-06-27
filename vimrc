@@ -117,7 +117,7 @@ let g:syntastic_check_on_wq = 0
 let g:vim_markdown_folding_disabled = 1
 
 " Orgmode
-let g:org_heading_highlight_colors = ['Search', 'Conditional', 'Constant']
+let g:org_heading_highlight_colors = ['Conditional', 'Constant']
 let g:org_heading_highlight_levels = len(g:org_heading_highlight_colors)
 let g:org_todo_keywords = ['IMPORTAND', '|', 'WORKING', 'PENDING', 'DONE', 'CANCELLED']
 let g:org_todo_keyword_faces = [['WORKING', [':foreground black', ':background green']], 
