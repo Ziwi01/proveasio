@@ -15,6 +15,9 @@ set encoding=utf-8
 " Cygwin backspace trick
 set bs=2
 
+" Auto line wrapping
+set tw=140
+
 " Tab config
 set smartindent
 set tabstop=2
