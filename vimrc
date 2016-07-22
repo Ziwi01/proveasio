@@ -7,6 +7,7 @@ set noerrorbells visualbell t_vb=
 autocmd GUIEnter * set visualbell t_vb=
 set directory=~/.vim/tmp
 set backupdir=~/.vim/backup
+set autoread
 
 " Setup encoding for cygwin mostly
 setglobal fileencoding=utf-8
@@ -44,6 +45,7 @@ nnoremap tb :CtrlPBuffer<CR>
 nnoremap tn <C-W>w
 nnoremap tp <C-W>W
 nnoremap tf :NERDTreeToggle<CR>
+nnoremap tw :%s/\s\+$//<CR>
 
 " Session manager
 set sessionoptions-=blank
