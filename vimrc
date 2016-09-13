@@ -12,6 +12,9 @@ set autoread
 " Setup encoding for cygwin mostly
 setglobal fileencoding=utf-8
 set encoding=utf-8
+set fileencodings=utf-8
+set termencoding=utf-8
+set ff=unix
 
 " Cygwin backspace trick
 set bs=2
@@ -29,7 +32,7 @@ set expandtab
 " Set status line
 set laststatus=2
 set statusline=
-set statusline+=%F
+set statusline+=%F\ %y[%{&ff}]
 set statusline+=%10{strlen(&fenc)?&fenc:&enc}a
 set statusline+=%<\ %h%m%r%{fugitive#statusline()}%=%-14.(%l,%c%V%)\ %P
 set statusline+=%=
@@ -91,6 +94,7 @@ Plugin 'jceb/vim-orgmode'                 "Todo list
 Plugin 'mikelue/vim-maven-plugin'         "Maven plugin
 Plugin 'juneedahamed/svnj.vim'            "SVN plugin 
 Plugin 'ctrlpvim/ctrlp.vim'               "Buffer control
+Plugin 'chaquotay/ftl-vim-syntax'         "FTL syntax
 if i_have_vundle == 0
   echo "Installing Vundles, please ignore key map error messages"
   echo ""
@@ -108,6 +112,7 @@ autocmd vimenter * NERDTree
 autocmd StdinReadPre * let s:std_in=1
 autocmd VimEnter * if argc() == 0 && !exists("s:std_in") | NERDTree | endif
 autocmd bufenter * if (winnr("$") == 1 && exists("b:NERDTree") && b:NERDTree.isTabTree()) | q | endif
+let g:NERDTreeDirArrows=0
 
 " Synastic configuration
 set statusline+=%#warningmsg#
@@ -117,6 +122,7 @@ let g:syntastic_always_populate_loc_list = 1
 let g:syntastic_auto_loc_list = 1
 let g:syntastic_check_on_open = 1
 let g:syntastic_check_on_wq = 0
+let g:syntastic_eruby_ruby_exec = '/usr/local/rvm/rubies/ruby-1.9.3-p551/bin/erb'
 
 " Disable folding for .md files
 let g:vim_markdown_folding_disabled = 1
