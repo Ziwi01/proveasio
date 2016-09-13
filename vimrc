@@ -90,7 +90,6 @@ Plugin 'terryma/vim-multiple-cursors'     "Multiple cursors
 Plugin 'plasticboy/vim-markdown'          "Support for markdown docs
 Plugin 'Yggdroot/indentLine'              "Indent line
 Plugin 'tpope/vim-speeddating'            "Manage date and time
-Plugin 'jceb/vim-orgmode'                 "Todo list
 Plugin 'mikelue/vim-maven-plugin'         "Maven plugin
 Plugin 'juneedahamed/svnj.vim'            "SVN plugin 
 Plugin 'ctrlpvim/ctrlp.vim'               "Buffer control
