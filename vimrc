@@ -94,6 +94,7 @@ Plugin 'mikelue/vim-maven-plugin'         "Maven plugin
 Plugin 'juneedahamed/svnj.vim'            "SVN plugin 
 Plugin 'ctrlpvim/ctrlp.vim'               "Buffer control
 Plugin 'chaquotay/ftl-vim-syntax'         "FTL syntax
+Plugin 'vitalk/vim-simple-todo'           "Todo list
 if i_have_vundle == 0
   echo "Installing Vundles, please ignore key map error messages"
   echo ""
@@ -125,13 +126,4 @@ let g:syntastic_eruby_ruby_exec = '/usr/local/rvm/rubies/ruby-1.9.3-p551/bin/erb
 
 " Disable folding for .md files
 let g:vim_markdown_folding_disabled = 1
-
-" Orgmode
-let g:org_heading_highlight_colors = ['Conditional', 'Constant']
-let g:org_heading_highlight_levels = len(g:org_heading_highlight_colors)
-let g:org_todo_keywords = ['IMPORTAND', '|', 'WORKING', 'PENDING', 'DONE', 'CANCELLED']
-let g:org_todo_keyword_faces = [['WORKING', [':foreground black', ':background green']], 
-      \ ['PENDING', 'DarkYellow'], 
-      \ ['DONE', 'green', ':weight bold'], 
-      \ ['CANCELLED', 'DarkGray']]
 
