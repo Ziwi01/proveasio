@@ -49,6 +49,9 @@ nnoremap tn <C-W>w
 nnoremap tp <C-W>W
 nnoremap tf :NERDTreeToggle<CR>
 nnoremap tw :%s/\s\+$//<CR>
+nnoremap ,o :tabnew<CR>
+nnoremap ,n :tabnext<CR>
+nnoremap ,p :tabprev<CR>
 
 " Session manager
 set sessionoptions-=blank
