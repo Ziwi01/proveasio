@@ -94,7 +94,7 @@ Plugin 'mikelue/vim-maven-plugin'         "Maven plugin
 Plugin 'juneedahamed/svnj.vim'            "SVN plugin 
 Plugin 'ctrlpvim/ctrlp.vim'               "Buffer control
 Plugin 'chaquotay/ftl-vim-syntax'         "FTL syntax
-Plugin 'vitalk/vim-simple-todo'           "Todo list
+Plugin 'irrationalistic/vim-tasks'        "Todo list
 if i_have_vundle == 0
   echo "Installing Vundles, please ignore key map error messages"
   echo ""
@@ -127,3 +127,10 @@ let g:syntastic_eruby_ruby_exec = '/usr/local/rvm/rubies/ruby-1.9.3-p551/bin/erb
 " Disable folding for .md files
 let g:vim_markdown_folding_disabled = 1
 
+" vim tasks
+let g:TasksMarkerBase = '[ ]'
+let g:TasksMarkerDone = '+'
+let g:TasksMarkerCancelled = '-'
+let g:TasksDateFormat = '%Y-%m-%d %H:%M'
+let g:TasksAttributeMarker = '@'
+let g:TasksArchiveSeparator = '================================'
