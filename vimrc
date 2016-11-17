@@ -123,9 +123,8 @@ set statusline+=%{SyntasticStatuslineFlag()}
 set statusline+=%*
 let g:syntastic_always_populate_loc_list = 1
 let g:syntastic_auto_loc_list = 1
-let g:syntastic_check_on_open = 1
+let g:syntastic_check_on_open = 0
 let g:syntastic_check_on_wq = 0
-let g:syntastic_eruby_ruby_exec = '/usr/local/rvm/rubies/ruby-1.9.3-p551/bin/erb'
 
 " Disable folding for .md files
 let g:vim_markdown_folding_disabled = 1

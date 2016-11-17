@@ -16,13 +16,13 @@ set background=dark
 
 " Default Highliting
 " Mostly for Puppet, Ruby, Bash
-hi Normal		    ctermfg=LightGray
-hi Comment	    ctermfg=DarkGray     
-hi Constant	    ctermfg=DarkYellow
-hi String       ctermfg=Red
-hi Special	    ctermfg=DarkYellow
-hi Delimiter    ctermfg=LightGray
-hi Identifier	  ctermfg=Cyan          cterm=NONE
+hi Normal		    ctermfg=LightGray     guifg=LightGray    guibg=black
+hi Comment	    ctermfg=DarkGray      guifg=DarkGray
+hi Constant	    ctermfg=DarkYellow    guifg=DarkYellow
+hi String       ctermfg=Red           guifg=Red
+hi Special	    ctermfg=DarkYellow    guifg=DarkYellow
+hi Delimiter    ctermfg=LightGray     guifg=LightGray
+hi Identifier	  ctermfg=Cyan          guifg=Cyan         cterm=NONE
 hi Statement    ctermfg=Yellow 
 hi PreProc      ctermfg=LightBlue
 hi Define       ctermfg=Blue          cterm=bold
