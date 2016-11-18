@@ -77,7 +77,7 @@ call vundle#begin()
 Plugin 'run2cmd/ide.vim'                 "Main vimrc configuration
 Plugin 'VundleVim/Vundle.vim'             "Plugin manager
 Plugin 'scrooloose/nerdtree'              "File manager
-Plugin 'rodjek/vim-puppet'                "Puppet support
+Plugin 'voxpupuli/vim-puppet'             "Puppet support
 Plugin 'tpope/vim-fugitive'               "git support
 Plugin 'scrooloose/syntastic'             "Syntax check
 Plugin 'tpope/vim-surround'               "tab autocomplete
