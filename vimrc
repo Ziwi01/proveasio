@@ -74,7 +74,7 @@ set rtp+=~/.vim/bundle/vundle
 
 " Automatic plugin installation
 call vundle#begin()
-Plugin 'run2cmd/ide.vim'                 "Main vimrc configuration
+Plugin 'run2cmd/ide.vim'                  "Main vimrc configuration
 Plugin 'VundleVim/Vundle.vim'             "Plugin manager
 Plugin 'scrooloose/nerdtree'              "File manager
 Plugin 'voxpupuli/vim-puppet'             "Puppet support
@@ -125,6 +125,8 @@ let g:syntastic_always_populate_loc_list = 1
 let g:syntastic_auto_loc_list = 1
 let g:syntastic_check_on_open = 0
 let g:syntastic_check_on_wq = 0
+let g:syntastic_yaml_checkers = ['yamllint']
+let g:syntastic_yaml_yamllint_args = '-d "rules: {line-length: {allow-non-breakable-words: true, max: 120, allow-non-breakable-inline-mappings: true}}"'
 
 " Disable folding for .md files
 let g:vim_markdown_folding_disabled = 1
