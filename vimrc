@@ -2,12 +2,16 @@
 set nocompatible
 syntax on
 set background=dark
-set hlsearch
 set noerrorbells visualbell t_vb=
 autocmd GUIEnter * set visualbell t_vb=
 set directory=~/.vim/tmp
 set backupdir=~/.vim/backup
 set autoread
+set history=1000
+
+" Search options
+set hlsearch
+set incsearch
 
 " Setup encoding for cygwin mostly
 setglobal fileencoding=utf-8
@@ -19,18 +23,34 @@ set ff=unix
 " Cygwin backspace trick
 set bs=2
 
+" Better toggle through VIM options
+set wildmenu
+
 " Auto line wrapping
 set tw=140
 
 " Yank to Windows clipboard
 set clipboard=unnamed
 
+" Always show one line blow/above cursor
+if !&scrolloff
+  set scrolloff=1
+endif
+if !&sidescrolloff
+  set sidescrolloff=5
+endif
+set display+=lastline
+
 " Tab config
 set smartindent
 set tabstop=2
 set shiftwidth=2
 set expandtab
-"set paste
+
+" Use <C-L> to clear the highlighting of :set hlsearch.
+if maparg('<C-L>', 'n') ==# ''
+  nnoremap <silent> <C-L> :nohlsearch<C-R>=has('diff')?'<Bar>diffupdate':''<CR><CR><C-L>
+endif
 
 " Set status line
 set laststatus=2
