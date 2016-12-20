@@ -139,3 +139,12 @@ let g:TasksMarkerCancelled = '-'
 let g:TasksDateFormat = '%Y-%m-%d %H:%M'
 let g:TasksAttributeMarker = '@'
 let g:TasksArchiveSeparator = '================================'
+
+" Maven setup
+autocmd BufNewFile,BufReadPost *.* call s:SetupMavenMap()
+function! <SID>SetupMavenMap()
+  doautocmd MavenAutoDetect BufNewFile,BufReadPost
+  if !maven#isBufferUnderMavenProject(bufnr("%"))
+    return
+  endif
+endfunction
