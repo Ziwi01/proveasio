@@ -22,6 +22,9 @@ set bs=2
 " Auto line wrapping
 set tw=140
 
+" Yank to Windows clipboard
+set clipboard=unnamed
+
 " Tab config
 set smartindent
 set tabstop=2
