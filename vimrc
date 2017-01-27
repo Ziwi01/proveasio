@@ -23,6 +23,9 @@ set ff=unix
 " Cygwin backspace trick
 set bs=2
 
+" Set update to get faster results with plugins (default i 14400 = 4sec)
+set updatetime=250
+
 " Better toggle through VIM options
 set wildmenu
 
@@ -121,6 +124,9 @@ Plugin 'juneedahamed/svnj.vim'            "SVN plugin
 Plugin 'ctrlpvim/ctrlp.vim'               "Buffer control
 Plugin 'chaquotay/ftl-vim-syntax'         "FTL syntax
 Plugin 'irrationalistic/vim-tasks'        "Todo list
+Plugin 'othree/xml.vim'                   "Xml edit
+Plugin 'airblade/vim-gitgutter'           "Enable gitgutter
+Plugin 'tfnico/vim-gradle'                "Gradle support
 if i_have_vundle == 0
   echo "Installing Vundles, please ignore key map error messages"
   echo ""
@@ -171,3 +177,8 @@ function! <SID>SetupMavenMap()
     return
   endif
 endfunction
+
+" GitGutter
+nmap hv <Plug>GitGutterPreviewHunk
+nmap ha <Plug>GitGutterStageHunk
+nmap hu <Plug>GitGutterUndoHunk
