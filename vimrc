@@ -78,6 +78,7 @@ nnoremap tw :%s/\s\+$//<CR>:noh<CR>
 nnoremap ,o :tabnew<CR>
 nnoremap ,n :tabnext<CR>
 nnoremap ,p :tabprev<CR>
+nnoremap tt :TagbarToggle<CR>
 
 " Session manager
 set sessionoptions-=blank
@@ -103,10 +104,10 @@ call vundle#begin()
 Plugin 'run2cmd/ide.vim'                  "Main vimrc configuration
 Plugin 'VundleVim/Vundle.vim'             "Plugin manager
 Plugin 'scrooloose/nerdtree'              "File manager
-Plugin 'voxpupuli/vim-puppet'             "Puppet support
+Plugin 'rodjek/vim-puppet'                "Puppet syntax support
 Plugin 'tpope/vim-fugitive'               "git support
 Plugin 'scrooloose/syntastic'             "Syntax check
-Plugin 'tpope/vim-surround'               "tab autocomplete
+Plugin 'tpope/vim-surround'               "Easy surround changes
 Plugin 'MarcWeber/vim-addon-mw-utils'     "some usefould vim utils for other plugins
 Plugin 'tomtom/tlib_vim'                  "not sure - dependency for other plugins
 Plugin 'honza/vim-snippets'               "snippets profiles
@@ -127,6 +128,7 @@ Plugin 'irrationalistic/vim-tasks'        "Todo list
 Plugin 'othree/xml.vim'                   "Xml edit
 Plugin 'airblade/vim-gitgutter'           "Enable gitgutter
 Plugin 'tfnico/vim-gradle'                "Gradle support
+Plugin 'majutsushi/tagbar'                "Class, methods index
 if i_have_vundle == 0
   echo "Installing Vundles, please ignore key map error messages"
   echo ""
@@ -138,9 +140,16 @@ filetype plugin indent on
 " Set colorscheme
 colorscheme bugi
 
+" Disable wrapping for vim-tasks
+autocmd BufReadPost *.todo set tw=1000
+
+" Support for Jenkinsfile
+au BufReadPost Jenkinsfile set syntax=groovy
+au BufReadPost Jenkinsfile set filetype=groovy
+
 " NERDTree configuration
-" Always enabled
-autocmd vimenter * NERDTree
+" IF you want to run NERDTree on each vim start uncomment below line
+" autocmd vimenter * NERDTree
 autocmd StdinReadPre * let s:std_in=1
 autocmd VimEnter * if argc() == 0 && !exists("s:std_in") | NERDTree | endif
 autocmd bufenter * if (winnr("$") == 1 && exists("b:NERDTree") && b:NERDTree.isTabTree()) | q | endif
@@ -179,6 +188,8 @@ function! <SID>SetupMavenMap()
 endfunction
 
 " GitGutter
+let g:gitgutter_realtime = 0
+let g:gitgutter_eager = 0
 nmap hv <Plug>GitGutterPreviewHunk
 nmap ha <Plug>GitGutterStageHunk
 nmap hu <Plug>GitGutterUndoHunk

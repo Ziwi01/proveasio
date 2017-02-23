@@ -15,14 +15,14 @@ let g:colors_name = "bugi"
 set background=dark
 
 " Default Highliting
-" Mostly for Puppet, Ruby, Bash
+" Mostly for Ruby, Bash, Python
 hi Normal		    ctermfg=LightGray     guifg=LightGray    guibg=black
 hi Comment	    ctermfg=DarkGray      guifg=DarkGray
 hi Constant	    ctermfg=DarkYellow    guifg=DarkYellow
 hi String       ctermfg=Red           guifg=Red
 hi Special	    ctermfg=DarkYellow    guifg=DarkYellow
 hi Delimiter    ctermfg=LightGray     guifg=LightGray
-hi Identifier	  ctermfg=Cyan          guifg=Cyan         cterm=NONE
+hi Identifier	  ctermfg=Cyan     guifg=Cyan         cterm=NONE
 hi Statement    ctermfg=Yellow 
 hi PreProc      ctermfg=LightBlue
 hi Define       ctermfg=Blue          cterm=bold
@@ -39,6 +39,14 @@ hi Todo	        ctermfg=Black                         ctermbg=Yellow
 hi Visual       ctermfg=Black                         ctermbg=LightGray
 hi Search       ctermfg=Black                         ctermbg=Red
 hi Linenr       ctermfg=DarkGray
+
+" Puppet specific
+hi puppetDefType ctermfg=Blue cterm=bold
+hi puppetTypeName ctermfg=Yellow
+hi puppetTypeDefault ctermfg=DarkGreen
+hi puppetClass  ctermfg=LightYellow
+hi puppetParamName ctermfg=Cyan
+hi puppetVariable ctermfg=LightGray
 
 " Links for common types
 hi link Character	        Constant
