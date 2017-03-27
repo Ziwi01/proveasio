@@ -55,35 +55,31 @@ if maparg('<C-L>', 'n') ==# ''
   nnoremap <silent> <C-L> :nohlsearch<C-R>=has('diff')?'<Bar>diffupdate':''<CR><CR><C-L>
 endif
 
-" Set status line
-set laststatus=2
-set statusline=
-set statusline+=%F\ %y[%{&ff}]
-set statusline+=%10{strlen(&fenc)?&fenc:&enc}a
-set statusline+=%<\ %h%m%r%{fugitive#statusline()}%=%-14.(%l,%c%V%)\ %P
-set statusline+=%=
-set statusline+=%-10((%l,%c)%)
-set statusline+=%L(%P)
 
 " Syntax Highlight sync
 autocmd BufEnter * :syntax sync fromstart
 
 " Shortcuts
 nnoremap fd diwi
-nnoremap tb :CtrlPBuffer<CR>
 nnoremap tn <C-W>w
 nnoremap tp <C-W>W
-nnoremap tf :NERDTreeToggle<CR>
 nnoremap tw :%s/\s\+$//<CR>:noh<CR>
 nnoremap ,o :tabnew<CR>
 nnoremap ,n :tabnext<CR>
 nnoremap ,p :tabprev<CR>
-nnoremap tt :TagbarToggle<CR>
 
 " Session manager
 set sessionoptions-=blank
 map <F2> :mksession! ~/.vim/vim_session <cr>
 map <F3> :source ~/.vim/vim_session <cr>
+
+" Turn on omni-completion
+"set tags=~/.vim/tags
+set omnifunc=syntaxcomplete#Complete
+set completeopt=menuone,menu,longest
+let OmniCpp_GlobalScopeSearch = 1
+let OmniCpp_DisplayMode = 1
+let OmniCpp_ShowAccess = 1
 
 " Vundle for plugin management
 " Install if not present
@@ -106,28 +102,24 @@ Plugin 'VundleVim/Vundle.vim'             "Plugin manager
 Plugin 'scrooloose/nerdtree'              "File manager
 Plugin 'rodjek/vim-puppet'                "Puppet syntax support
 Plugin 'tpope/vim-fugitive'               "git support
-Plugin 'scrooloose/syntastic'             "Syntax check
+Plugin 'w0rp/ale'
+Plugin 'xolox/vim-misc'                   "Required for Easy Tags
+Plugin 'xolox/vim-easytags'               "Easy tags
 Plugin 'tpope/vim-surround'               "Easy surround changes
-Plugin 'MarcWeber/vim-addon-mw-utils'     "some usefould vim utils for other plugins
-Plugin 'tomtom/tlib_vim'                  "not sure - dependency for other plugins
 Plugin 'honza/vim-snippets'               "snippets profiles
-Plugin 'garbas/vim-snipmate'              "snippets engine
+Plugin 'SirVer/ultisnips'                 "snippets engine
 Plugin 'godlygeek/tabular'                "auto tab
 Plugin 'thoughtbot/vim-rspec'             "help with rspec files
 Plugin 'vim-ruby/vim-ruby'                "edition and compliation for ruby
-Plugin 'scrooloose/nerdcommenter'         "comment support in visual mode
 Plugin 'terryma/vim-multiple-cursors'     "Multiple cursors
 Plugin 'plasticboy/vim-markdown'          "Support for markdown docs
 Plugin 'Yggdroot/indentLine'              "Indent line
 Plugin 'tpope/vim-speeddating'            "Manage date and time
-Plugin 'mikelue/vim-maven-plugin'         "Maven plugin
-Plugin 'juneedahamed/svnj.vim'            "SVN plugin 
 Plugin 'ctrlpvim/ctrlp.vim'               "Buffer control
 Plugin 'chaquotay/ftl-vim-syntax'         "FTL syntax
 Plugin 'irrationalistic/vim-tasks'        "Todo list
 Plugin 'othree/xml.vim'                   "Xml edit
 Plugin 'airblade/vim-gitgutter'           "Enable gitgutter
-Plugin 'tfnico/vim-gradle'                "Gradle support
 Plugin 'majutsushi/tagbar'                "Class, methods index
 if i_have_vundle == 0
   echo "Installing Vundles, please ignore key map error messages"
@@ -147,6 +139,10 @@ autocmd BufReadPost *.todo set tw=1000
 au BufReadPost Jenkinsfile set syntax=groovy
 au BufReadPost Jenkinsfile set filetype=groovy
 
+" Support for Vagrantfile
+au BufReadPost Vagrantfile set syntax=ruby
+au BufReadPost Vagrantfile set filetype=ruby
+
 " NERDTree configuration
 " IF you want to run NERDTree on each vim start uncomment below line
 " autocmd vimenter * NERDTree
@@ -154,17 +150,24 @@ autocmd StdinReadPre * let s:std_in=1
 autocmd VimEnter * if argc() == 0 && !exists("s:std_in") | NERDTree | endif
 autocmd bufenter * if (winnr("$") == 1 && exists("b:NERDTree") && b:NERDTree.isTabTree()) | q | endif
 let g:NERDTreeDirArrows=0
+let g:NERDTreeWinSize=50
+nnoremap tf :NERDTreeToggle<CR>
 
-" Synastic configuration
-set statusline+=%#warningmsg#
-set statusline+=%{SyntasticStatuslineFlag()}
-set statusline+=%*
-let g:syntastic_always_populate_loc_list = 1
-let g:syntastic_auto_loc_list = 1
-let g:syntastic_check_on_open = 0
-let g:syntastic_check_on_wq = 0
-let g:syntastic_yaml_checkers = ['yamllint']
-let g:syntastic_yaml_yamllint_args = '-d "rules: {line-length: {allow-non-breakable-words: true, max: 120, allow-non-breakable-inline-mappings: true}}"'
+" CtrlP
+nnoremap tb :CtrlPBuffer<CR>
+
+" Tagbar
+nnoremap tt :TagbarToggle<CR>
+
+" Ale checker
+" Does not support puppet options yet, so need to setup '--no-140chars-check' in  ~/.puppet-lint.rc
+let g:ale_statusline_format = ['Err %d', 'Warn %d', 'OK']
+let g:ale_echo_msg_format = '[%linter%][%severity%] %s'
+let g:ale_yaml_yamllint_options = '-d "rules: {line-length: {allow-non-breakable-words: true, max: 300, allow-non-breakable-inline-mappings: true}}"'
+let g:ale_lint_on_save = 1
+let g:ale_lint_on_text_changed = 0
+nmap <silent> tj <Plug>(ale_previous_wrap)
+nmap <silent> tk <Plug>(ale_next_wrap)
 
 " Disable folding for .md files
 let g:vim_markdown_folding_disabled = 1
@@ -178,18 +181,29 @@ let g:TasksDateFormat = '%Y-%m-%d %H:%M'
 let g:TasksAttributeMarker = '@'
 let g:TasksArchiveSeparator = '================================'
 
-" Maven setup
-autocmd BufNewFile,BufReadPost *.* call s:SetupMavenMap()
-function! <SID>SetupMavenMap()
-  doautocmd MavenAutoDetect BufNewFile,BufReadPost
-  if !maven#isBufferUnderMavenProject(bufnr("%"))
-    return
-  endif
-endfunction
-
 " GitGutter
 let g:gitgutter_realtime = 0
 let g:gitgutter_eager = 0
 nmap hv <Plug>GitGutterPreviewHunk
 nmap ha <Plug>GitGutterStageHunk
 nmap hu <Plug>GitGutterUndoHunk
+
+" Tags
+let g:easytags_auto_highlight = 0
+let g:easytags_file = '~/.vim/tags/global'
+let g:easytags_by_filetype = '~/.vim/tags/'
+
+" Snippets
+let g:UltiSnipsExpandTrigger="<tab>"
+let g:UltiSnipsJumpForwardTrigger="<c-b>"
+let g:UltiSnipsJumpBackwardTrigger="<c-z>"
+
+" Set status line
+set laststatus=2
+set statusline=
+set statusline+=%F\ %y[%{&ff}]
+set statusline+=%10{strlen(&fenc)?&fenc:&enc}a
+set statusline+=%<\ %h%m%r%{fugitive#statusline()}\ %{ALEGetStatusLine()}%=%-14.(%l,%c%V%)\ %P
+set statusline+=%=
+set statusline+=%-10((%l,%c)%)
+set statusline+=%L(%P)
