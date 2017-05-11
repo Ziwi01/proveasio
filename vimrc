@@ -8,6 +8,7 @@ set directory=~/.vim/tmp
 set backupdir=~/.vim/backup
 set autoread
 set history=1000
+set confirm
 
 " Search options
 set hlsearch
@@ -30,7 +31,7 @@ set updatetime=250
 set wildmenu
 
 " Auto line wrapping
-set tw=140
+set tw=220
 
 " Yank to Windows clipboard
 set clipboard=unnamed
@@ -102,7 +103,7 @@ Plugin 'VundleVim/Vundle.vim'             "Plugin manager
 Plugin 'scrooloose/nerdtree'              "File manager
 Plugin 'rodjek/vim-puppet'                "Puppet syntax support
 Plugin 'tpope/vim-fugitive'               "git support
-Plugin 'w0rp/ale'
+Plugin 'w0rp/ale'                         "Syntax Checker
 Plugin 'xolox/vim-misc'                   "Required for Easy Tags
 Plugin 'xolox/vim-easytags'               "Easy tags
 Plugin 'tpope/vim-surround'               "Easy surround changes
@@ -136,12 +137,12 @@ colorscheme bugi
 autocmd BufReadPost *.todo set tw=1000
 
 " Support for Jenkinsfile
-au BufReadPost Jenkinsfile set syntax=groovy
-au BufReadPost Jenkinsfile set filetype=groovy
+au BufReadPost *Jenkinsfile* set syntax=groovy
+au BufReadPost *Jenkinsfile* set filetype=groovy
 
 " Support for Vagrantfile
-au BufReadPost Vagrantfile set syntax=ruby
-au BufReadPost Vagrantfile set filetype=ruby
+au BufReadPost *Vagrantfile* set syntax=ruby
+au BufReadPost *Vagrantfile* set filetype=ruby
 
 " NERDTree configuration
 " IF you want to run NERDTree on each vim start uncomment below line
@@ -159,9 +160,13 @@ nnoremap tb :CtrlPBuffer<CR>
 " Tagbar
 nnoremap tt :TagbarToggle<CR>
 
+" vim-puppet
+" Disable => autointent
+let g:puppet_align_hashes = 0
+
 " Ale checker
 " Does not support puppet options yet, so need to setup '--no-140chars-check' in  ~/.puppet-lint.rc
-let g:ale_statusline_format = ['Err %d', 'Warn %d', 'OK']
+let g:ale_statusline_format = [' Err %d ', ' Warn %d ', ' OK ']
 let g:ale_echo_msg_format = '[%linter%][%severity%] %s'
 let g:ale_yaml_yamllint_options = '-d "rules: {line-length: {allow-non-breakable-words: true, max: 300, allow-non-breakable-inline-mappings: true}}"'
 let g:ale_lint_on_save = 1
@@ -202,8 +207,10 @@ let g:UltiSnipsJumpBackwardTrigger="<c-z>"
 set laststatus=2
 set statusline=
 set statusline+=%F\ %y[%{&ff}]
-set statusline+=%10{strlen(&fenc)?&fenc:&enc}a
-set statusline+=%<\ %h%m%r%{fugitive#statusline()}\ %{ALEGetStatusLine()}%=%-14.(%l,%c%V%)\ %P
+set statusline+=[%{strlen(&fenc)?&fenc:&enc}a]
+set statusline+=\ %h%m%r%w\ [Ale(%{ALEGetStatusLine()})]
+set statusline+=%<\ %{fugitive#statusline()}
+set statusline+=%=%-14.(%V%)\ %P
 set statusline+=%=
 set statusline+=%-10((%l,%c)%)
 set statusline+=%L(%P)
