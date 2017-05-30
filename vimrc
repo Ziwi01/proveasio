@@ -9,6 +9,8 @@ set backupdir=~/.vim/backup
 set autoread
 set history=1000
 set confirm
+set listchars=tab:>\ ,trail:-,extends:>,precedes:<,nbsp:+
+set tabpagemax=50
 
 " Search options
 set hlsearch
@@ -21,8 +23,8 @@ set fileencodings=utf-8
 set termencoding=utf-8
 set ff=unix
 
-" Cygwin backspace trick
-set bs=2
+" Improve backspace
+set backspace=indent,eol,start
 
 " Set update to get faster results with plugins (default i 14400 = 4sec)
 set updatetime=250
@@ -36,6 +38,9 @@ set tw=220
 " Yank to Windows clipboard
 set clipboard=unnamed
 
+" Delete comment character when joining commented lines
+set formatoptions+=j
+
 " Always show one line blow/above cursor
 if !&scrolloff
   set scrolloff=1
@@ -47,15 +52,16 @@ set display+=lastline
 
 " Tab config
 set smartindent
+set autoindent
 set tabstop=2
 set shiftwidth=2
 set expandtab
+set smarttab
 
 " Use <C-L> to clear the highlighting of :set hlsearch.
 if maparg('<C-L>', 'n') ==# ''
   nnoremap <silent> <C-L> :nohlsearch<C-R>=has('diff')?'<Bar>diffupdate':''<CR><CR><C-L>
 endif
-
 
 " Syntax Highlight sync
 autocmd BufEnter * :syntax sync fromstart
@@ -104,8 +110,6 @@ Plugin 'scrooloose/nerdtree'              "File manager
 Plugin 'rodjek/vim-puppet'                "Puppet syntax support
 Plugin 'tpope/vim-fugitive'               "git support
 Plugin 'w0rp/ale'                         "Syntax Checker
-Plugin 'xolox/vim-misc'                   "Required for Easy Tags
-Plugin 'xolox/vim-easytags'               "Easy tags
 Plugin 'tpope/vim-surround'               "Easy surround changes
 Plugin 'honza/vim-snippets'               "snippets profiles
 Plugin 'SirVer/ultisnips'                 "snippets engine
@@ -122,6 +126,9 @@ Plugin 'irrationalistic/vim-tasks'        "Todo list
 Plugin 'othree/xml.vim'                   "Xml edit
 Plugin 'airblade/vim-gitgutter'           "Enable gitgutter
 Plugin 'majutsushi/tagbar'                "Class, methods index
+Plugin 'tmhedberg/matchit'                "Extended matchit
+Plugin 'ruby-matchit'                     "Matchit for ruby
+Plugin 'tpope/vim-unimpaired'             "Quick switch over mappings
 if i_have_vundle == 0
   echo "Installing Vundles, please ignore key map error messages"
   echo ""
@@ -192,11 +199,6 @@ let g:gitgutter_eager = 0
 nmap hv <Plug>GitGutterPreviewHunk
 nmap ha <Plug>GitGutterStageHunk
 nmap hu <Plug>GitGutterUndoHunk
-
-" Tags
-let g:easytags_auto_highlight = 0
-let g:easytags_file = '~/.vim/tags/global'
-let g:easytags_by_filetype = '~/.vim/tags/'
 
 " Snippets
 let g:UltiSnipsExpandTrigger="<tab>"

@@ -48,6 +48,9 @@ hi puppetClass  ctermfg=LightYellow
 hi puppetParamName ctermfg=Cyan
 hi puppetVariable ctermfg=LightGray
 
+" Tasks specific
+hi tAttribute ctermfg=Red
+
 " Links for common types
 hi link Character	        Constant
 hi link Number	          Constant
