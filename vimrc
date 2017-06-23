@@ -32,14 +32,18 @@ set updatetime=250
 " Better toggle through VIM options
 set wildmenu
 
+" Set path to look into all subdirectories
+set path+=**
+
 " Auto line wrapping
 set tw=220
 
-" Yank to Windows clipboard
-set clipboard=unnamed
-
 " Delete comment character when joining commented lines
 set formatoptions+=j
+
+" Line numbers
+set number
+set cursorline 
 
 " Always show one line blow/above cursor
 if !&scrolloff
@@ -67,13 +71,19 @@ endif
 autocmd BufEnter * :syntax sync fromstart
 
 " Shortcuts
-nnoremap fd diwi
-nnoremap tn <C-W>w
-nnoremap tp <C-W>W
 nnoremap tw :%s/\s\+$//<CR>:noh<CR>
-nnoremap ,o :tabnew<CR>
-nnoremap ,n :tabnext<CR>
-nnoremap ,p :tabprev<CR>
+nnoremap go :tabnew<CR>
+
+" Snippets
+nnoremap ,pdoc :-1read $HOME/.vim/snippets/puppetdoc<CR>
+
+" netrw configuratoin
+nnoremap tf :Explore<CR>
+let g:netrw_home = "~/.vim/"
+let g:netrw_banner = 0
+let g:netrw_preview = 1
+let g:netrw_winsize = 25
+let g:netrw_cursor = 3
 
 " Session manager
 set sessionoptions-=blank
@@ -106,26 +116,20 @@ set rtp+=~/.vim/bundle/vundle
 call vundle#begin()
 Plugin 'run2cmd/ide.vim'                  "Main vimrc configuration
 Plugin 'VundleVim/Vundle.vim'             "Plugin manager
-Plugin 'scrooloose/nerdtree'              "File manager
 Plugin 'rodjek/vim-puppet'                "Puppet syntax support
 Plugin 'tpope/vim-fugitive'               "git support
 Plugin 'w0rp/ale'                         "Syntax Checker
 Plugin 'tpope/vim-surround'               "Easy surround changes
-Plugin 'honza/vim-snippets'               "snippets profiles
-Plugin 'SirVer/ultisnips'                 "snippets engine
 Plugin 'godlygeek/tabular'                "auto tab
 Plugin 'thoughtbot/vim-rspec'             "help with rspec files
 Plugin 'vim-ruby/vim-ruby'                "edition and compliation for ruby
 Plugin 'terryma/vim-multiple-cursors'     "Multiple cursors
 Plugin 'plasticboy/vim-markdown'          "Support for markdown docs
 Plugin 'Yggdroot/indentLine'              "Indent line
-Plugin 'tpope/vim-speeddating'            "Manage date and time
 Plugin 'ctrlpvim/ctrlp.vim'               "Buffer control
-Plugin 'chaquotay/ftl-vim-syntax'         "FTL syntax
 Plugin 'irrationalistic/vim-tasks'        "Todo list
 Plugin 'othree/xml.vim'                   "Xml edit
 Plugin 'airblade/vim-gitgutter'           "Enable gitgutter
-Plugin 'majutsushi/tagbar'                "Class, methods index
 Plugin 'tmhedberg/matchit'                "Extended matchit
 Plugin 'ruby-matchit'                     "Matchit for ruby
 Plugin 'tpope/vim-unimpaired'             "Quick switch over mappings
@@ -151,21 +155,8 @@ au BufReadPost *Jenkinsfile* set filetype=groovy
 au BufReadPost *Vagrantfile* set syntax=ruby
 au BufReadPost *Vagrantfile* set filetype=ruby
 
-" NERDTree configuration
-" IF you want to run NERDTree on each vim start uncomment below line
-" autocmd vimenter * NERDTree
-autocmd StdinReadPre * let s:std_in=1
-autocmd VimEnter * if argc() == 0 && !exists("s:std_in") | NERDTree | endif
-autocmd bufenter * if (winnr("$") == 1 && exists("b:NERDTree") && b:NERDTree.isTabTree()) | q | endif
-let g:NERDTreeDirArrows=0
-let g:NERDTreeWinSize=50
-nnoremap tf :NERDTreeToggle<CR>
-
 " CtrlP
 nnoremap tb :CtrlPBuffer<CR>
-
-" Tagbar
-nnoremap tt :TagbarToggle<CR>
 
 " vim-puppet
 " Disable => autointent
@@ -196,14 +187,8 @@ let g:TasksArchiveSeparator = '================================'
 " GitGutter
 let g:gitgutter_realtime = 0
 let g:gitgutter_eager = 0
-nmap hv <Plug>GitGutterPreviewHunk
-nmap ha <Plug>GitGutterStageHunk
-nmap hu <Plug>GitGutterUndoHunk
-
-" Snippets
-let g:UltiSnipsExpandTrigger="<tab>"
-let g:UltiSnipsJumpForwardTrigger="<c-b>"
-let g:UltiSnipsJumpBackwardTrigger="<c-z>"
+nmap ]h <Plug>GitGutterNextHunk
+nmap [h <Plug>GitGutterPrevHunk
 
 " Set status line
 set laststatus=2
@@ -212,7 +197,17 @@ set statusline+=%F\ %y[%{&ff}]
 set statusline+=[%{strlen(&fenc)?&fenc:&enc}a]
 set statusline+=\ %h%m%r%w\ [Ale(%{ALEGetStatusLine()})]
 set statusline+=%<\ %{fugitive#statusline()}
-set statusline+=%=%-14.(%V%)\ %P
-set statusline+=%=
-set statusline+=%-10((%l,%c)%)
-set statusline+=%L(%P)
+
+" Ctags for puppet
+"let g:tagbar_type_puppet = {
+"  \ 'ctagstype': 'puppet',
+"  \ 'kinds': [
+"    \'c:class',
+"    \'s:site',
+"    \'n:node',  
+"    \'d:definition',
+"    \'r:resource',
+"    \'f:default'
+"  \]
+"\}
+

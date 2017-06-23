@@ -16,13 +16,13 @@ set background=dark
 
 " Default Highliting
 " Mostly for Ruby, Bash, Python
-hi Normal		    ctermfg=LightGray     guifg=LightGray    guibg=black
-hi Comment	    ctermfg=DarkGray      guifg=DarkGray
-hi Constant	    ctermfg=DarkYellow    guifg=DarkYellow
-hi String       ctermfg=Red           guifg=Red
-hi Special	    ctermfg=DarkYellow    guifg=DarkYellow
-hi Delimiter    ctermfg=LightGray     guifg=LightGray
-hi Identifier	  ctermfg=Cyan     guifg=Cyan         cterm=NONE
+hi Normal		    ctermfg=LightGray     
+hi Comment	    ctermfg=DarkGray      
+hi Constant	    ctermfg=DarkYellow    
+hi String       ctermfg=Red           
+hi Special	    ctermfg=DarkYellow    
+hi Delimiter    ctermfg=LightGray     
+hi Identifier	  ctermfg=Cyan          cterm=NONE
 hi Statement    ctermfg=Yellow 
 hi PreProc      ctermfg=LightBlue
 hi Define       ctermfg=Blue          cterm=bold
@@ -39,6 +39,8 @@ hi Todo	        ctermfg=Black                         ctermbg=Yellow
 hi Visual       ctermfg=Black                         ctermbg=LightGray
 hi Search       ctermfg=Black                         ctermbg=Red
 hi Linenr       ctermfg=DarkGray
+hi CursorLineNr ctermfg=Yellow
+hi CursorLine                         cterm=none
 
 " Puppet specific
 hi puppetDefType ctermfg=Blue cterm=bold
