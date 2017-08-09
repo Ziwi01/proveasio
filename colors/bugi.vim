@@ -3,7 +3,7 @@
 " Original Author:      Piotr Bugała <piotr.bugala@gmail.com> <https://github.com/run2cmd/bugi.vim.git>
 " For GVim:             Only support for Terminal
 " License:              The Vim License (this command will show it: ':help copyright')
-" Last Change:          v0.0.2: December 4, 2015
+" Last Change:          v0.0.3: July 21, 2017
 
 hi clear
 if exists("syntax_on")
@@ -16,42 +16,42 @@ set background=dark
 
 " Default Highliting
 " Mostly for Ruby, Bash, Python
-hi Normal		    ctermfg=LightGray     
-hi Comment	    ctermfg=DarkGray      
-hi Constant	    ctermfg=DarkYellow    
-hi String       ctermfg=Red           
-hi Special	    ctermfg=DarkYellow    
-hi Delimiter    ctermfg=LightGray     
-hi Identifier	  ctermfg=Cyan          cterm=NONE
-hi Statement    ctermfg=Yellow 
-hi PreProc      ctermfg=LightBlue
-hi Define       ctermfg=Blue          cterm=bold
-hi Include      ctermfg=Blue
-hi Keyword      ctermfg=Yellow
-hi Type         ctermfg=DarkGreen
-hi Function	    ctermfg=LightGreen
-hi Repeat	      ctermfg=DarkYellow
-hi Conditional  ctermfg=Yellow
-hi Operator     ctermfg=Red
-hi Ignore	      ctermfg=DarkRed
-hi Error        ctermfg=White         cterm=reverse   ctermbg=Red
-hi Todo	        ctermfg=Black                         ctermbg=Yellow
-hi Visual       ctermfg=Black                         ctermbg=LightGray
-hi Search       ctermfg=Black                         ctermbg=Red
-hi Linenr       ctermfg=DarkGray
-hi CursorLineNr ctermfg=Yellow
-hi CursorLine                         cterm=none
+hi Normal		    ctermfg=LightGray     guifg=Gray80 guibg=Black
+hi Comment	    ctermfg=DarkGray      guifg=Gray40 
+hi Constant	    ctermfg=DarkYellow    guifg=DarkYellow
+hi String       ctermfg=LightRed      guifg=LightRed
+hi Special	    ctermfg=DarkYellow    guifg=DarkYellow
+hi Delimiter    ctermfg=LightGray     guifg=Gray80
+hi Identifier	  ctermfg=Cyan          cterm=NONE   guifg=Cyan gui=NONE
+hi Statement    ctermfg=Yellow        guifg=Yellow
+hi PreProc      ctermfg=LightBlue     guifg=LightBlue
+hi Define       ctermfg=Blue          cterm=bold guifg=CornflowerBlue gui=bold
+hi Include      ctermfg=Blue          guifg=CornflowerBlue
+hi Keyword      ctermfg=Yellow        guifg=Yellow
+hi Type         ctermfg=DarkGreen     guifg=Green
+hi Function	    ctermfg=LightGreen    guifg=LightGreen
+hi Repeat	      ctermfg=DarkYellow    guifg=DarkYellow
+hi Conditional  ctermfg=Yellow        guifg=Yellow
+hi Operator     ctermfg=Red           guifg=Red
+hi Ignore	      ctermfg=DarkRed       guifg=DarkRed
+hi Error        ctermfg=White         cterm=reverse   ctermbg=Red  guifg=White gui=reverse guibg=Red
+hi Todo	        ctermfg=Black         ctermbg=Yellow  guifg=Black guibg=Yellow
+hi Visual       ctermfg=Black         ctermbg=LightGray guifg=Black guibg=LightGray
+hi Search       ctermfg=Black         ctermbg=Red guifg=Black guibg=Red
+hi Linenr       ctermfg=DarkGray      guifg=Gray40 
+hi CursorLineNr ctermfg=Yellow        guifg=Yellow
+hi CursorLine                         cterm=none gui=none
 
 " Puppet specific
-hi puppetDefType ctermfg=Blue cterm=bold
-hi puppetTypeName ctermfg=Yellow
-hi puppetTypeDefault ctermfg=DarkGreen
-hi puppetClass  ctermfg=LightYellow
-hi puppetParamName ctermfg=Cyan
-hi puppetVariable ctermfg=LightGray
+hi puppetDefType ctermfg=Blue cterm=bold gui=bold guifg=CornflowerBlue
+hi puppetTypeName ctermfg=Yellow      guifg=Yellow
+hi puppetTypeDefault ctermfg=DarkGreen guifg=ForestGreen
+hi puppetClass  ctermfg=LightYellow   guifg=LightYellow
+hi puppetParamName ctermfg=Cyan       guifg=Cyan
+hi puppetVariable ctermfg=LightGray   guifg=Gray80
 
 " Tasks specific
-hi tAttribute ctermfg=Red
+hi tAttribute ctermfg=Red guifg=Red
 
 " Links for common types
 hi link Character	        Constant
@@ -71,17 +71,17 @@ hi link SpecialComment    Special
 hi link Debug		          Special
 
 " Tabs and statusline Warnings
-hi StatusLine   ctermfg=DarkGreen     cterm=bold  ctermbg=DarkGray
-hi WarningMsg   ctermfg=DarkRed
-hi TabLineFill  ctermfg=DarkGray
-hi TabLine      ctermfg=DarkGreen     cterm=bold  ctermbg=DarkGray
-hi TabLineSel   ctermfg=Black                     ctermbg=DarkCyan
+hi StatusLine   ctermfg=DarkGreen     cterm=bold  ctermbg=DarkGray    guifg=Green guibg=Gray40 gui=bold
+hi WarningMsg   ctermfg=DarkRed       guifg=DarkRed
+hi TabLineFill  ctermfg=DarkGray      guifg=Gray80
+hi TabLine      ctermfg=DarkGreen     cterm=bold  ctermbg=DarkGray    guifg=DarkGreen guibg=Gray40 gui=bold
+hi TabLineSel   ctermfg=Black                     ctermbg=DarkCyan    guifg=Black  guibg=DarkCyan
 
 " Vimdiff
-hi DiffAdd    cterm=bold ctermfg=LightGray ctermbg=Blue
-hi DiffDelete cterm=bold ctermfg=DarkGray ctermbg=Blue
-hi DiffChange cterm=bold ctermfg=LightGray ctermbg=DarkYellow
-hi DiffText   cterm=bold ctermfg=Red ctermbg=Yellow
+hi DiffAdd    cterm=bold ctermfg=LightGray ctermbg=Blue               guifg=Gray80  guibg=Blue
+hi DiffDelete cterm=bold ctermfg=DarkGray ctermbg=Blue                guifg=Gray40  guibg=Blue
+hi DiffChange cterm=bold ctermfg=LightGray ctermbg=DarkYellow         guifg=Gray80  guibg=DarkYellow
+hi DiffText   cterm=bold ctermfg=Red ctermbg=Yellow                   guifg=Red     guibg=Yellow
 
 " Orgmode
 hi Folded ctermbg=NONE
