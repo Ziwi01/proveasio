@@ -1,16 +1,135 @@
-" Basic configuration
+" Disable compatible mode
 set nocompatible
-syntax on
-set background=dark
-set noerrorbells visualbell t_vb=
-autocmd GUIEnter * set visualbell t_vb=
+
+" Vundle for plugin management
+" Install if not present
+" IMPORTANT: works in CLI version only.
+let i_have_vundle=1
+let vundle_readme=expand('~/.vim/bundle/vundle/README.md')
+if !filereadable(vundle_readme)
+  echo "Installing Vundle.."
+  echo ""
+  silent !mkdir -p ~/.vim/bundle
+  silent !git clone https://github.com/VundleVim/Vundle.vim ~/.vim/bundle/vundle
+  let i_have_vundle=0
+endif
+filetype off
+set rtp+=~/.vim/bundle/vundle
+
+" Automatic plugin installation
+call vundle#begin()
+Plugin 'run2cmd/ide.vim'                  "Main vimrc configuration
+Plugin 'VundleVim/Vundle.vim'             "Plugin manager
+Plugin 'ctrlpvim/ctrlp.vim'               "Buffer control
+Plugin 'w0rp/ale'                         "Syntax Checker
+Plugin 'rodjek/vim-puppet'                "Puppet syntax support
+Plugin 'tpope/vim-fugitive'               "git support
+Plugin 'tpope/vim-unimpaired'             "Quick switch over mappings
+Plugin 'tpope/vim-surround'               "Easy surround changes
+Plugin 'majutsushi/tagbar'                "Tag Browser
+Plugin 'kelevro/vim-easytags'             "EasyTags with support for Universal Ctags
+Plugin 'xolox/vim-misc'                   "EasyTags helpers
+Plugin 'xolox/vim-shell'                  "Better integration for Windows
+Plugin 'irrationalistic/vim-tasks'        "Todo list
+Plugin 'airblade/vim-gitgutter'           "Enable gitgutter
+Plugin 'lifepillar/vim-mucomplete'        "Completeion Engine
+Plugin 'godlygeek/tabular'                "auto tab
+Plugin 'plasticboy/vim-markdown'          "Support for markdown docs
+Plugin 'Yggdroot/indentLine'              "Indent line
+Plugin 'SirVer/ultisnips'                 "Autocompletion snippets
+Plugin 'honza/vim-snippets'               "Snippet engine
+Plugin 'gilsondev/searchtasks.vim'        "Search tasks: TODO, FIXME, etc.
+if i_have_vundle == 0
+  echo "Installing Vundles, please ignore key map error messages"
+  echo ""
+  :PluginInstall
+endif
+call vundle#end()
+
+" Enable filetype for autocmd
+filetype plugin indent on
+
+" Source main config file for windows
+if has("win32")
+  " Fix for vimdiff on windows
+  set diffexpr=MyDiff()
+  function MyDiff()
+    let opt = '-a --binary '
+    if &diffopt =~ 'icase' | let opt = opt . '-i ' | endif
+    if &diffopt =~ 'iwhite' | let opt = opt . '-b ' | endif
+    let arg1 = v:fname_in
+    if arg1 =~ ' ' | let arg1 = '"' . arg1 . '"' | endif
+    let arg2 = v:fname_new
+    if arg2 =~ ' ' | let arg2 = '"' . arg2 . '"' | endif
+    let arg3 = v:fname_out
+    if arg3 =~ ' ' | let arg3 = '"' . arg3 . '"' | endif
+    if $VIMRUNTIME =~ ' '
+      if &sh =~ '\<cmd'
+        if empty(&shellxquote)
+          let l:shxq_sav = ''
+          set shellxquote&
+        endif
+        let cmd = '"' . $VIMRUNTIME . '\diff"'
+      else
+        let cmd = substitute($VIMRUNTIME, ' ', '" ', '') . '\diff"'
+      endif
+    else
+      let cmd = $VIMRUNTIME . '\diff'
+    endif
+    silent execute '!' . cmd . ' ' . opt . arg1 . ' ' . arg2 . ' > ' . arg3
+    if exists('l:shxq_sav')
+      let &shellxquote=l:shxq_sav
+    endif
+  endfunction
+endif
+
+" Set files and directories
 set directory=~/.vim/tmp
 set backupdir=~/.vim/backup
+set viminfo+='1000,n~/.vim/viminfo
+
+" Enable syntax higlight
+syntax on
+
+" Set background
+set background=dark
+
+" Disable visual bell
+set noerrorbells visualbell t_vb=
+autocmd GUIEnter * set visualbell t_vb=
+
+" Reread file if was changed
 set autoread
+
+" Enable better histroy
 set history=1000
+
+" Make sure that we confirm on unsaved files
 set confirm
+
+" Better lists
 set listchars=tab:>\ ,trail:-,extends:>,precedes:<,nbsp:+
+
+" Max tab pages
 set tabpagemax=50
+
+" Make sure that undofiles are not scatterd
+set undodir=~/.vim/undofiles
+
+" Make sure that GVim is in English
+set langmenu=en_US
+let $LANG = 'en_US'
+source $VIMRUNTIME/delmenu.vim
+source $VIMRUNTIME/menu.vim
+
+" Set font for Gvim
+set guifont=Consolas
+
+" Disable gvim menus ant toolbars
+set go-=m
+set go-=T
+set go-=r
+set go-=L
 
 " Search options
 set hlsearch
@@ -43,7 +162,6 @@ set formatoptions+=j
 
 " Line numbers
 set number
-set cursorline 
 
 " Always show one line blow/above cursor
 if !&scrolloff
@@ -61,6 +179,12 @@ set tabstop=2
 set shiftwidth=2
 set expandtab
 set smarttab
+
+" Lets go PRO. No Arrows movements.
+nnoremap <Up>    :resize +2<CR>
+nnoremap <Down>  :resize -2<CR>
+nnoremap <Left>  :vertical resize +2<CR>
+nnoremap <Right> :vertical resize -2<CR>
 
 " Use <C-L> to clear the highlighting of :set hlsearch.
 if maparg('<C-L>', 'n') ==# ''
@@ -91,72 +215,24 @@ map <F2> :mksession! ~/.vim/vim_session <cr>
 map <F3> :source ~/.vim/vim_session <cr>
 
 " Turn on omni-completion
-"set tags=~/.vim/tags
 set omnifunc=syntaxcomplete#Complete
-set completeopt=menuone,menu,longest
+set completeopt=menuone,menu,preview,noinsert,noselect
 let OmniCpp_GlobalScopeSearch = 1
 let OmniCpp_DisplayMode = 1
 let OmniCpp_ShowAccess = 1
-
-" Vundle for plugin management
-" Install if not present
-let i_have_vundle=1
-let vundle_readme=expand('~/.vim/bundle/vundle/README.md')
-if !filereadable(vundle_readme)
-  echo "Installing Vundle.."
-  echo ""
-  silent !mkdir -p ~/.vim/bundle
-  silent !git clone https://github.com/VundleVim/Vundle.vim ~/.vim/bundle/vundle
-  let i_have_vundle=0
-endif
-filetype off
-set rtp+=~/.vim/bundle/vundle
-
-" Automatic plugin installation
-call vundle#begin()
-Plugin 'run2cmd/ide.vim'                  "Main vimrc configuration
-Plugin 'VundleVim/Vundle.vim'             "Plugin manager
-Plugin 'rodjek/vim-puppet'                "Puppet syntax support
-Plugin 'tpope/vim-fugitive'               "git support
-Plugin 'w0rp/ale'                         "Syntax Checker
-Plugin 'tpope/vim-surround'               "Easy surround changes
-Plugin 'godlygeek/tabular'                "auto tab
-Plugin 'thoughtbot/vim-rspec'             "help with rspec files
-Plugin 'vim-ruby/vim-ruby'                "edition and compliation for ruby
-Plugin 'terryma/vim-multiple-cursors'     "Multiple cursors
-Plugin 'plasticboy/vim-markdown'          "Support for markdown docs
-Plugin 'Yggdroot/indentLine'              "Indent line
-Plugin 'ctrlpvim/ctrlp.vim'               "Buffer control
-Plugin 'irrationalistic/vim-tasks'        "Todo list
-Plugin 'othree/xml.vim'                   "Xml edit
-Plugin 'airblade/vim-gitgutter'           "Enable gitgutter
-Plugin 'tmhedberg/matchit'                "Extended matchit
-Plugin 'ruby-matchit'                     "Matchit for ruby
-Plugin 'tpope/vim-unimpaired'             "Quick switch over mappings
-if i_have_vundle == 0
-  echo "Installing Vundles, please ignore key map error messages"
-  echo ""
-  :PluginInstall
-endif
-call vundle#end() 
-filetype plugin indent on
+" Disable inlucdes since it tends to work very slow
+set complete-=i
 
 " Set colorscheme
 colorscheme bugi
-
-" Disable wrapping for vim-tasks
-autocmd BufReadPost *.todo set tw=1000
-
-" Support for Jenkinsfile
-au BufReadPost *Jenkinsfile* set syntax=groovy
-au BufReadPost *Jenkinsfile* set filetype=groovy
-
-" Support for Vagrantfile
-au BufReadPost *Vagrantfile* set syntax=ruby
-au BufReadPost *Vagrantfile* set filetype=ruby
+"colorscheme torte
 
 " CtrlP
-nnoremap tb :CtrlPBuffer<CR>
+let g:ctrlp_match_window = 'bottom,order:btt,min:1,max:30,results:30'
+let g:ctrlp_show_hidden = 1
+let g:ctrlp_custom_ignore = {
+\ 'dir':  '\.git$\|\.svn$\|\.hg$\|\.yardoc$\|node_modules\|spec\\fixtures\\modules$',
+\ }
 
 " vim-puppet
 " Disable => autointent
@@ -167,6 +243,7 @@ let g:puppet_align_hashes = 0
 let g:ale_statusline_format = [' Err %d ', ' Warn %d ', ' OK ']
 let g:ale_echo_msg_format = '[%linter%][%severity%] %s'
 let g:ale_yaml_yamllint_options = '-d "rules: {line-length: {allow-non-breakable-words: true, max: 300, allow-non-breakable-inline-mappings: true}}"'
+let g:ale_python_pylint_options = '-d C0301'
 let g:ale_lint_on_save = 1
 let g:ale_lint_on_text_changed = 0
 nmap <silent> tj <Plug>(ale_previous_wrap)
@@ -190,24 +267,51 @@ let g:gitgutter_eager = 0
 nmap ]h <Plug>GitGutterNextHunk
 nmap [h <Plug>GitGutterPrevHunk
 
+" Tags
+" Async does not work on windows. There is EasyTags bug
+let g:easytags_async = 0
+let g:easytags_auto_highlight = 0
+let g:easytags_file = '~/.vim/tags/global'
+let g:easytags_by_filetype = '~/.vim/tags/'
+
+" Tabular vim
+nnoremap tp :Tab/=><CR>
+
+" MUcomplete
+let g:mucomplete#enable_auto_at_startup = 1
+let g:mucomplete#chains = { 'default' : ['path', 'omni', 'keyn', 'dict', 'uspl', 'ulti', 'tags' ] }
+let g:mucomplete#chains.vim = [ 'path', 'cmd', 'keyn' ]
+
+" Ultisnips
+let g:UltiSnipsExpandTrigger="<c-c>"
+let g:UltiSnipsJumpForwardTrigger="<c-b>"
+let g:UltiSnipsJumpBackwardTrigger="<c-n>"
+
+" Tagbar
+nnoremap tt :TagbarToggle<CR>
+
+" Custom file setup
+augroup vimrc_autocmd
+  " Disable wrapping for vim-tasks
+  au BufReadPost *.todo set tw=1000
+  " Support for Jenkinsfile
+  au BufReadPost *Jenkinsfile* set syntax=groovy
+  au BufReadPost *Jenkinsfile* set filetype=groovy
+  " Support for Vagrantfile
+  au BufReadPost *Vagrantfile* set syntax=ruby
+  au BufReadPost *Vagrantfile* set filetype=ruby
+  " XML support
+  au BufReadPost *.xml set tabstop=4 shiftwidth=4
+augroup END
+
 " Set status line
 set laststatus=2
 set statusline=
 set statusline+=%F\ %y[%{&ff}]
 set statusline+=[%{strlen(&fenc)?&fenc:&enc}a]
-set statusline+=\ %h%m%r%w\ [Ale(%{ALEGetStatusLine()})]
+set statusline+=\ %h%m%r%w
+set statusline+=\ [Ale(%{ALEGetStatusLine()})]
 set statusline+=%<\ %{fugitive#statusline()}
 
-" Ctags for puppet
-"let g:tagbar_type_puppet = {
-"  \ 'ctagstype': 'puppet',
-"  \ 'kinds': [
-"    \'c:class',
-"    \'s:site',
-"    \'n:node',  
-"    \'d:definition',
-"    \'r:resource',
-"    \'f:default'
-"  \]
-"\}
-
+" Enter code directory
+cd c:\code

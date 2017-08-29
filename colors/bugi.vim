@@ -40,7 +40,7 @@ hi Visual       ctermfg=Black         ctermbg=LightGray guifg=Black guibg=LightG
 hi Search       ctermfg=Black         ctermbg=Red guifg=Black guibg=Red
 hi Linenr       ctermfg=DarkGray      guifg=Gray40 
 hi CursorLineNr ctermfg=Yellow        guifg=Yellow
-hi CursorLine                         cterm=none gui=none
+hi CursorLine                         cterm=none gui=none guibg=NONE
 
 " Puppet specific
 hi puppetDefType ctermfg=Blue cterm=bold gui=bold guifg=CornflowerBlue
