@@ -1,6 +1,9 @@
 " Disable compatible mode
 set nocompatible
 
+" Apply defaults everyone wants
+source $VIMRUNTIME/vimrc_example.vim
+
 " Vundle for plugin management
 " Install if not present
 " IMPORTANT: works in CLI version only.
@@ -148,7 +151,7 @@ set backspace=indent,eol,start
 " Set update to get faster results with plugins (default i 14400 = 4sec)
 set updatetime=250
 
-" Better toggle through VIM options
+" Display completion matches in statusline
 set wildmenu
 
 " Set path to look into all subdirectories
@@ -216,10 +219,11 @@ map <F3> :source ~/.vim/vim_session <cr>
 
 " Turn on omni-completion
 set omnifunc=syntaxcomplete#Complete
-set completeopt=menuone,menu,preview,noinsert,noselect
+set completeopt+=menuone,noinsert,noselect
 let OmniCpp_GlobalScopeSearch = 1
 let OmniCpp_DisplayMode = 1
 let OmniCpp_ShowAccess = 1
+set shortmess+=c
 " Disable inlucdes since it tends to work very slow
 set complete-=i
 
@@ -273,13 +277,14 @@ let g:easytags_async = 0
 let g:easytags_auto_highlight = 0
 let g:easytags_file = '~/.vim/tags/global'
 let g:easytags_by_filetype = '~/.vim/tags/'
+let g:easytags_opts = ['--output-format=e-ctags']
 
 " Tabular vim
 nnoremap tp :Tab/=><CR>
 
 " MUcomplete
 let g:mucomplete#enable_auto_at_startup = 1
-let g:mucomplete#chains = { 'default' : ['path', 'omni', 'keyn', 'dict', 'uspl', 'ulti', 'tags' ] }
+let g:mucomplete#chains = { 'default' : ['path', 'omni', 'keyn', 'keyp', 'c-n', 'c-p', 'dict', 'uspl', 'ulti', 'tags' ] }
 let g:mucomplete#chains.vim = [ 'path', 'cmd', 'keyn' ]
 
 " Ultisnips
@@ -295,13 +300,16 @@ augroup vimrc_autocmd
   " Disable wrapping for vim-tasks
   au BufReadPost *.todo set tw=1000
   " Support for Jenkinsfile
-  au BufReadPost *Jenkinsfile* set syntax=groovy
-  au BufReadPost *Jenkinsfile* set filetype=groovy
+  au BufReadPost *Jenkinsfile* set syntax=groovy tabstop=4 shiftwidth=4 filetype=groovy
   " Support for Vagrantfile
-  au BufReadPost *Vagrantfile* set syntax=ruby
-  au BufReadPost *Vagrantfile* set filetype=ruby
+  au BufReadPost *Vagrantfile* set syntax=ruby filetype=ruby
   " XML support
   au BufReadPost *.xml set tabstop=4 shiftwidth=4
+  " Grovvy support
+  au BufReadPost *.groovy* set syntax=groovy tabstop=4 shiftwidth=4 filetype=groovy
+  " YAML support
+  au BufReadPost *.yaml* set syntax=yaml tabstop=2 shiftwidth=2 filetype=yaml
+  au BufReadPost *.yml* set syntax=yaml tabstop=2 shiftwidth=2 filetype=yaml
 augroup END
 
 " Set status line
