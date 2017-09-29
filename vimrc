@@ -204,6 +204,12 @@ nnoremap go :tabnew<CR>
 " Snippets
 nnoremap ,pdoc :-1read $HOME/.vim/snippets/puppetdoc<CR>
 
+" QuickFixWindow
+autocmd QuickFixCmdPost [^l]* copen 25
+autocmd QuickFixCmdPost    l* lopen 25
+noremap to :copen 25<cr>
+noremap tc :cclose<cr>
+
 " netrw configuratoin
 nnoremap tf :Explore<CR>
 let g:netrw_home = "~/.vim/"
@@ -248,6 +254,7 @@ let g:ale_statusline_format = [' Err %d ', ' Warn %d ', ' OK ']
 let g:ale_echo_msg_format = '[%linter%][%severity%] %s'
 let g:ale_yaml_yamllint_options = '-d "rules: {line-length: {allow-non-breakable-words: true, max: 300, allow-non-breakable-inline-mappings: true}}"'
 let g:ale_python_pylint_options = '-d C0301'
+let g:ale_eruby_erubylint_options = "-T '-'"
 let g:ale_lint_on_save = 1
 let g:ale_lint_on_text_changed = 0
 nmap <silent> tj <Plug>(ale_previous_wrap)
@@ -295,21 +302,15 @@ let g:UltiSnipsJumpBackwardTrigger="<c-n>"
 " Tagbar
 nnoremap tt :TagbarToggle<CR>
 
-" Custom file setup
+" Filetype support
 augroup vimrc_autocmd
-  " Disable wrapping for vim-tasks
   au BufReadPost *.todo set tw=1000
-  " Support for Jenkinsfile
-  au BufReadPost *Jenkinsfile* set syntax=groovy tabstop=4 shiftwidth=4 filetype=groovy
-  " Support for Vagrantfile
-  au BufReadPost *Vagrantfile* set syntax=ruby filetype=ruby
-  " XML support
-  au BufReadPost *.xml set tabstop=4 shiftwidth=4
-  " Grovvy support
-  au BufReadPost *.groovy* set syntax=groovy tabstop=4 shiftwidth=4 filetype=groovy
-  " YAML support
-  au BufReadPost *.yaml* set syntax=yaml tabstop=2 shiftwidth=2 filetype=yaml
-  au BufReadPost *.yml* set syntax=yaml tabstop=2 shiftwidth=2 filetype=yaml
+  au BufReadPost *Jenkinsfile* set tabstop=4 shiftwidth=4 syntax=groovy filetype=groovy
+  au BufReadPost *Vagrantfile* set tabstop=2 shiftwidth=2 syntax=ruby filetype=ruby
+  au BufReadPost *.xml set tabstop=4 shiftwidth=4 syntax=xml filetype=xml
+  au BufReadPost *.groovy* set tabstop=4 shiftwidth=4 syntax=groovy filetype=groovy
+  au BufReadPost *.yaml* set tabstop=2 shiftwidth=2 syntax=yaml filetype=yaml
+  au BufReadPost *.yml* set tabstop=2 shiftwidth=2 syntax=yaml filetype=yaml
 augroup END
 
 " Set status line
@@ -320,6 +321,12 @@ set statusline+=[%{strlen(&fenc)?&fenc:&enc}a]
 set statusline+=\ %h%m%r%w
 set statusline+=\ [Ale(%{ALEGetStatusLine()})]
 set statusline+=%<\ %{fugitive#statusline()}
+
+" Run shell comand and output in QuickFixWindow
+function! RunCmdInQuickFixWindow(mycmd)
+  cexpr system(a:mycmd)
+endfunction
+command! -nargs=* -complete=file Runcmd call RunCmdInQuickFixWindow(<q-args>)
 
 " Enter code directory
 cd c:\code
