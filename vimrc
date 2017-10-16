@@ -30,9 +30,7 @@ Plugin 'tpope/vim-fugitive'               "git support
 Plugin 'tpope/vim-unimpaired'             "Quick switch over mappings
 Plugin 'tpope/vim-surround'               "Easy surround changes
 Plugin 'majutsushi/tagbar'                "Tag Browser
-Plugin 'kelevro/vim-easytags'             "EasyTags with support for Universal Ctags
-Plugin 'xolox/vim-misc'                   "EasyTags helpers
-Plugin 'xolox/vim-shell'                  "Better integration for Windows
+Plugin 'ludovicchabant/vim-gutentags'     "Generate c-tags
 Plugin 'irrationalistic/vim-tasks'        "Todo list
 Plugin 'airblade/vim-gitgutter'           "Enable gitgutter
 Plugin 'lifepillar/vim-mucomplete'        "Completeion Engine
@@ -201,9 +199,6 @@ autocmd BufEnter * :syntax sync fromstart
 nnoremap tw :%s/\s\+$//<CR>:noh<CR>
 nnoremap go :tabnew<CR>
 
-" Snippets
-nnoremap ,pdoc :-1read $HOME/.vim/snippets/puppetdoc<CR>
-
 " QuickFixWindow
 autocmd QuickFixCmdPost [^l]* copen 25
 autocmd QuickFixCmdPost    l* lopen 25
@@ -279,12 +274,8 @@ nmap ]h <Plug>GitGutterNextHunk
 nmap [h <Plug>GitGutterPrevHunk
 
 " Tags
-" Async does not work on windows. There is EasyTags bug
-let g:easytags_async = 0
-let g:easytags_auto_highlight = 0
-let g:easytags_file = '~/.vim/tags/global'
-let g:easytags_by_filetype = '~/.vim/tags/'
-let g:easytags_opts = ['--output-format=e-ctags']
+let g:gutentags_cache_dir = '~/.vim/tags'
+let g:gutentags_exclude_project_root = ['fixtures']
 
 " Tabular vim
 nnoremap tp :Tab/=><CR>
