@@ -1,6 +1,10 @@
 " Disable compatible mode
 set nocompatible
 
+" Set language
+set langmenu=en_US.UTF-8
+language en
+
 " Apply defaults everyone wants
 source $VIMRUNTIME/vimrc_example.vim
 
@@ -29,7 +33,6 @@ Plugin 'rodjek/vim-puppet'                "Puppet syntax support
 Plugin 'tpope/vim-fugitive'               "git support
 Plugin 'tpope/vim-unimpaired'             "Quick switch over mappings
 Plugin 'tpope/vim-surround'               "Easy surround changes
-Plugin 'majutsushi/tagbar'                "Tag Browser
 Plugin 'ludovicchabant/vim-gutentags'     "Generate c-tags
 Plugin 'irrationalistic/vim-tasks'        "Todo list
 Plugin 'airblade/vim-gitgutter'           "Enable gitgutter
@@ -37,8 +40,6 @@ Plugin 'lifepillar/vim-mucomplete'        "Completeion Engine
 Plugin 'godlygeek/tabular'                "auto tab
 Plugin 'plasticboy/vim-markdown'          "Support for markdown docs
 Plugin 'Yggdroot/indentLine'              "Indent line
-Plugin 'SirVer/ultisnips'                 "Autocompletion snippets
-Plugin 'honza/vim-snippets'               "Snippet engine
 Plugin 'gilsondev/searchtasks.vim'        "Search tasks: TODO, FIXME, etc.
 if i_have_vundle == 0
   echo "Installing Vundles, please ignore key map error messages"
@@ -123,8 +124,12 @@ let $LANG = 'en_US'
 source $VIMRUNTIME/delmenu.vim
 source $VIMRUNTIME/menu.vim
 
+" Work mostly on unix files
+set fileformat=unix
+set fileformats=unix,dos
+
 " Set font for Gvim
-set guifont=Consolas
+set guifont=Consolas:h9
 
 " Disable gvim menus ant toolbars
 set go-=m
@@ -141,7 +146,6 @@ setglobal fileencoding=utf-8
 set encoding=utf-8
 set fileencodings=utf-8
 set termencoding=utf-8
-set ff=unix
 
 " Improve backspace
 set backspace=indent,eol,start
@@ -233,7 +237,7 @@ colorscheme bugi
 "colorscheme torte
 
 " CtrlP
-let g:ctrlp_match_window = 'bottom,order:btt,min:1,max:30,results:30'
+let g:ctrlp_match_window = 'bottom,order:btt,min:1,max:15,results:30'
 let g:ctrlp_show_hidden = 1
 let g:ctrlp_custom_ignore = {
 \ 'dir':  '\.git$\|\.svn$\|\.hg$\|\.yardoc$\|node_modules\|spec\\fixtures\\modules$',
@@ -270,8 +274,8 @@ let g:TasksArchiveSeparator = '================================'
 " GitGutter
 let g:gitgutter_realtime = 0
 let g:gitgutter_eager = 0
-nmap ]h <Plug>GitGutterNextHunk
-nmap [h <Plug>GitGutterPrevHunk
+nmap t[ <Plug>GitGutterNextHunk
+nmap t] <Plug>GitGutterPrevHunk
 
 " Tags
 let g:gutentags_cache_dir = '~/.vim/tags'
@@ -285,23 +289,17 @@ let g:mucomplete#enable_auto_at_startup = 1
 let g:mucomplete#chains = { 'default' : ['path', 'omni', 'keyn', 'keyp', 'c-n', 'c-p', 'dict', 'uspl', 'ulti', 'tags' ] }
 let g:mucomplete#chains.vim = [ 'path', 'cmd', 'keyn' ]
 
-" Ultisnips
-let g:UltiSnipsExpandTrigger="<c-c>"
-let g:UltiSnipsJumpForwardTrigger="<c-b>"
-let g:UltiSnipsJumpBackwardTrigger="<c-n>"
-
-" Tagbar
-nnoremap tt :TagbarToggle<CR>
-
 " Filetype support
 augroup vimrc_autocmd
   au BufReadPost *.todo set tw=1000
   au BufReadPost *Jenkinsfile* set tabstop=4 shiftwidth=4 syntax=groovy filetype=groovy
   au BufReadPost *Vagrantfile* set tabstop=2 shiftwidth=2 syntax=ruby filetype=ruby
   au BufReadPost *.xml set tabstop=4 shiftwidth=4 syntax=xml filetype=xml
-  au BufReadPost *.groovy* set tabstop=4 shiftwidth=4 syntax=groovy filetype=groovy
-  au BufReadPost *.yaml* set tabstop=2 shiftwidth=2 syntax=yaml filetype=yaml
-  au BufReadPost *.yml* set tabstop=2 shiftwidth=2 syntax=yaml filetype=yaml
+  au BufReadPost *.groovy set tabstop=4 shiftwidth=4 syntax=groovy filetype=groovy
+  au BufReadPost *.yaml set tabstop=2 shiftwidth=2 syntax=yaml filetype=yaml
+  au BufReadPost *.yml set tabstop=2 shiftwidth=2 syntax=yaml filetype=yaml
+  au BufReadPost *.bat set tabstop=2 shiftwidth=2 ff=dos
+  au BufReadPost *.rb set tabstop=2 shiftwidth=2 syntax=ruby filetype=ruby
 augroup END
 
 " Set status line
@@ -318,6 +316,3 @@ function! RunCmdInQuickFixWindow(mycmd)
   cexpr system(a:mycmd)
 endfunction
 command! -nargs=* -complete=file Runcmd call RunCmdInQuickFixWindow(<q-args>)
-
-" Enter code directory
-cd c:\code
