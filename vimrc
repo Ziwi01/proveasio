@@ -41,6 +41,11 @@ Plugin 'godlygeek/tabular'                "auto tab
 Plugin 'plasticboy/vim-markdown'          "Support for markdown docs
 Plugin 'Yggdroot/indentLine'              "Indent line
 Plugin 'gilsondev/searchtasks.vim'        "Search tasks: TODO, FIXME, etc.
+Plugin 'tpope/vim-endwise'                "Auto end functions
+Plugin 'python-mode/python-mode'          "Support for Python
+Plugin 'vim-ruby/vim-ruby'                "Support for Ruby
+"Plugin 'tpope/vim-repeat'                 "Repeat entire map
+"dpelle/vim-LanguageTool                   "Language check
 if i_have_vundle == 0
   echo "Installing Vundles, please ignore key map error messages"
   echo ""
@@ -131,6 +136,9 @@ set fileformats=unix,dos
 " Set font for Gvim
 set guifont=Consolas:h9
 
+" Disable mouse tips
+set guioptions-=T
+
 " Disable gvim menus ant toolbars
 set go-=m
 set go-=T
@@ -186,10 +194,10 @@ set expandtab
 set smarttab
 
 " Lets go PRO. No Arrows movements.
-nnoremap <Up>    :resize +2<CR>
-nnoremap <Down>  :resize -2<CR>
-nnoremap <Left>  :vertical resize +2<CR>
-nnoremap <Right> :vertical resize -2<CR>
+nnoremap <Up>    <C-W><C-K>
+nnoremap <Down>  <C-W><C-J>
+nnoremap <Left>  <C-W><C-H>
+nnoremap <Right> <C-W><C-L>
 
 " Use <C-L> to clear the highlighting of :set hlsearch.
 if maparg('<C-L>', 'n') ==# ''
@@ -252,10 +260,18 @@ let g:puppet_align_hashes = 0
 let g:ale_statusline_format = [' Err %d ', ' Warn %d ', ' OK ']
 let g:ale_echo_msg_format = '[%linter%][%severity%] %s'
 let g:ale_yaml_yamllint_options = '-d "rules: {line-length: {allow-non-breakable-words: true, max: 300, allow-non-breakable-inline-mappings: true}}"'
-let g:ale_python_pylint_options = '-d C0301'
+let g:ale_python_pycodestyle_options = '--ignore=E501'
 let g:ale_eruby_erubylint_options = "-T '-'"
+if has("win32")
+  let g:ale_ruby_rubocop_options = '-c %USERPROFILE%\.rubocop.yaml'
+else
+  let g:ale_ruby_rubocop_options = '-c ~/.rubocop.yaml'
+endif
 let g:ale_lint_on_save = 1
 let g:ale_lint_on_text_changed = 0
+let g:ale_linters = {
+\ 'python': ['pycodestyle'],
+\}
 nmap <silent> tj <Plug>(ale_previous_wrap)
 nmap <silent> tk <Plug>(ale_next_wrap)
 
@@ -272,8 +288,7 @@ let g:TasksAttributeMarker = '@'
 let g:TasksArchiveSeparator = '================================'
 
 " GitGutter
-let g:gitgutter_realtime = 0
-let g:gitgutter_eager = 0
+let g:gitgutter_grep = ''
 nmap t[ <Plug>GitGutterNextHunk
 nmap t] <Plug>GitGutterPrevHunk
 
@@ -288,6 +303,21 @@ nnoremap tp :Tab/=><CR>
 let g:mucomplete#enable_auto_at_startup = 1
 let g:mucomplete#chains = { 'default' : ['path', 'omni', 'keyn', 'keyp', 'c-n', 'c-p', 'dict', 'uspl', 'ulti', 'tags' ] }
 let g:mucomplete#chains.vim = [ 'path', 'cmd', 'keyn' ]
+
+" Python Mode
+let g:pymode = 1
+let g:pymode_trim_whitespaces = 1
+let g:pymode_options_max_line_length = 300
+let g:pymode_options_colorcolumn = 0
+let g:pymode_indent = 1
+let g:pymode_lint_cwindow = 0
+let g:pymode_folding = 0
+let g:pymode_lint = 1
+let g:pymode_lint_on_write = 1
+" Use ALE linters
+let g:pymode_lint_checkers = [ '' ]
+
+" Ruby Mode
 
 " Filetype support
 augroup vimrc_autocmd
@@ -312,7 +342,7 @@ set statusline+=\ [Ale(%{ALEGetStatusLine()})]
 set statusline+=%<\ %{fugitive#statusline()}
 
 " Run shell comand and output in QuickFixWindow
-function! RunCmdInQuickFixWindow(mycmd)
-  cexpr system(a:mycmd)
+function! VagrantTerminalWindow()
+  :terminal ssh -p 2222 root@localhost
 endfunction
-command! -nargs=* -complete=file Runcmd call RunCmdInQuickFixWindow(<q-args>)
+command! -nargs=0 Termv call VagrantTerminalWindow()
