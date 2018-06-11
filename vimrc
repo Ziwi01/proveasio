@@ -3,7 +3,9 @@ set nocompatible
 
 " Set language
 set langmenu=en_US.UTF-8
-language en
+if has("win32")
+  language en
+endif
 
 " Apply defaults everyone wants
 source $VIMRUNTIME/vimrc_example.vim
@@ -44,6 +46,10 @@ Plugin 'gilsondev/searchtasks.vim'        "Search tasks: TODO, FIXME, etc.
 Plugin 'tpope/vim-endwise'                "Auto end functions
 Plugin 'python-mode/python-mode'          "Support for Python
 Plugin 'vim-ruby/vim-ruby'                "Support for Ruby
+Plugin 'tomtom/tcomment_vim'              "Easy comment
+Plugin 'Raimondi/delimitMate'             "Autoclose tags
+Plugin 'sukima/xmledit'                   "Xml support
+"Plugin 'reedes/vim-pencil'                "Easy edit
 "Plugin 'tpope/vim-repeat'                 "Repeat entire map
 "dpelle/vim-LanguageTool                   "Language check
 if i_have_vundle == 0
@@ -175,6 +181,10 @@ set formatoptions+=j
 
 " Line numbers
 set number
+
+" Set standard textwidth
+set textwidth=220
+set ruler
 
 " Always show one line blow/above cursor
 if !&scrolloff
@@ -318,19 +328,18 @@ let g:pymode_lint_on_write = 1
 let g:pymode_lint_checkers = [ '' ]
 
 " Ruby Mode
+au BufNewFile,BufReadPost *.rb set tabstop=2 shiftwidth=2
 
 " Filetype support
-augroup vimrc_autocmd
-  au BufReadPost *.todo set tw=1000
-  au BufReadPost *Jenkinsfile* set tabstop=4 shiftwidth=4 syntax=groovy filetype=groovy
-  au BufReadPost *Vagrantfile* set tabstop=2 shiftwidth=2 syntax=ruby filetype=ruby
-  au BufReadPost *.xml set tabstop=4 shiftwidth=4 syntax=xml filetype=xml
-  au BufReadPost *.groovy set tabstop=4 shiftwidth=4 syntax=groovy filetype=groovy
-  au BufReadPost *.yaml set tabstop=2 shiftwidth=2 syntax=yaml filetype=yaml
-  au BufReadPost *.yml set tabstop=2 shiftwidth=2 syntax=yaml filetype=yaml
-  au BufReadPost *.bat set tabstop=2 shiftwidth=2 ff=dos
-  au BufReadPost *.rb set tabstop=2 shiftwidth=2 syntax=ruby filetype=ruby
-augroup END
+au BufNewFile,BufReadPost *.todo setlocal textwidth=1000
+au BufNewFile,BufReadPost *Jenkinsfile* setlocal tabstop=4 shiftwidth=4 syntax=groovy filetype=groovy
+au BufNewFile,BufReadPost *Vagrantfile* setlocal tabstop=2 shiftwidth=2 syntax=ruby filetype=ruby
+au BufNewFile,BufReadPost *.xml setlocal tabstop=4 shiftwidth=4 syntax=xml filetype=xml
+au BufNewFile,BufReadPost *.groovy setlocal tabstop=4 shiftwidth=4 syntax=groovy filetype=groovy
+au BufNewFile,BufReadPost *.yaml setlocal tabstop=2 shiftwidth=2 syntax=yaml filetype=yaml
+au BufNewFile,BufReadPost *.yml setlocal tabstop=2 shiftwidth=2 syntax=yaml filetype=yaml
+au BufNewFile,BufReadPost *.bat setlocal tabstop=2 shiftwidth=2 ff=dos
+au BufNewFile,BufReadPost *.md setlocal textwidth=80
 
 " Set status line
 set laststatus=2
