@@ -13,22 +13,23 @@ source $VIMRUNTIME/vimrc_example.vim
 " Vundle for plugin management
 " Install if not present
 " IMPORTANT: works in CLI version only.
+cd $HOME
 let i_have_vundle=1
-let vundle_readme=expand('~/.vim/bundle/vundle/README.md')
+let vundle_readme=expand('.vim/bundle/Vundle.vim/README.md')
 if !filereadable(vundle_readme)
   echo "Installing Vundle.."
   echo ""
-  silent !mkdir -p ~/.vim/bundle
-  silent !git clone https://github.com/VundleVim/Vundle.vim ~/.vim/bundle/vundle
+  silent !mkdir -p .vim/bundle
+  silent !git clone https://github.com/VundleVim/Vundle.vim .vim/bundle/Vundle.vim
   let i_have_vundle=0
 endif
-filetype off
-set rtp+=~/.vim/bundle/vundle
 
 " Automatic plugin installation
-call vundle#begin()
-Plugin 'run2cmd/ide.vim'                  "Main vimrc configuration
+filetype off
+set rtp+=$HOME/.vim/bundle/Vundle.vim
+call vundle#begin('$HOME/.vim/bundle/')
 Plugin 'VundleVim/Vundle.vim'             "Plugin manager
+Plugin 'run2cmd/ide.vim'                  "Main vimrc configuration
 Plugin 'ctrlpvim/ctrlp.vim'               "Buffer control
 Plugin 'w0rp/ale'                         "Syntax Checker
 Plugin 'rodjek/vim-puppet'                "Puppet syntax support
@@ -47,8 +48,9 @@ Plugin 'tpope/vim-endwise'                "Auto end functions
 Plugin 'python-mode/python-mode'          "Support for Python
 Plugin 'vim-ruby/vim-ruby'                "Support for Ruby
 Plugin 'tomtom/tcomment_vim'              "Easy comment
-Plugin 'Raimondi/delimitMate'             "Autoclose tags
 Plugin 'sukima/xmledit'                   "Xml support
+Plugin 'skywind3000/asyncrun.vim'         "Run command asynchronuosly
+Plugin 'airblade/vim-rooter'              "Change root to .git directory
 "Plugin 'reedes/vim-pencil'                "Easy edit
 "Plugin 'tpope/vim-repeat'                 "Repeat entire map
 "dpelle/vim-LanguageTool                   "Language check
@@ -267,7 +269,6 @@ let g:puppet_align_hashes = 0
 
 " Ale checker
 " Does not support puppet options yet, so need to setup '--no-140chars-check' in  ~/.puppet-lint.rc
-let g:ale_statusline_format = [' Err %d ', ' Warn %d ', ' OK ']
 let g:ale_echo_msg_format = '[%linter%][%severity%] %s'
 let g:ale_yaml_yamllint_options = '-d "rules: {line-length: {allow-non-breakable-words: true, max: 300, allow-non-breakable-inline-mappings: true}}"'
 let g:ale_python_pycodestyle_options = '--ignore=E501'
@@ -284,6 +285,17 @@ let g:ale_linters = {
 \}
 nmap <silent> tj <Plug>(ale_previous_wrap)
 nmap <silent> tk <Plug>(ale_next_wrap)
+" Custom Ale Linter
+function! LinterStatus() abort
+  let l:counts = ale#statusline#Count(bufnr(''))
+  let l:all_errors = l:counts.error + l:counts.style_error
+  let l:all_non_errors = l:counts.total - l:all_errors
+  return l:counts.total == 0 ? 'OK' : printf(
+  \   '%dW %dE',
+  \   all_non_errors,
+  \   all_errors
+  \)
+endfunction
 
 " Disable folding for .md files
 let g:vim_markdown_folding_disabled = 1
@@ -327,6 +339,9 @@ let g:pymode_lint_on_write = 1
 " Use ALE linters
 let g:pymode_lint_checkers = [ '' ]
 
+" Vim-rooter
+let g:rooter_silent_chdir = 1
+
 " Ruby Mode
 au BufNewFile,BufReadPost *.rb set tabstop=2 shiftwidth=2
 
@@ -347,11 +362,6 @@ set statusline=
 set statusline+=%F\ %y[%{&ff}]
 set statusline+=[%{strlen(&fenc)?&fenc:&enc}a]
 set statusline+=\ %h%m%r%w
-set statusline+=\ [Ale(%{ALEGetStatusLine()})]
+set statusline+=\ [Ale(%{LinterStatus()})]
 set statusline+=%<\ %{fugitive#statusline()}
 
-" Run shell comand and output in QuickFixWindow
-function! VagrantTerminalWindow()
-  :terminal ssh -p 2222 root@localhost
-endfunction
-command! -nargs=0 Termv call VagrantTerminalWindow()
