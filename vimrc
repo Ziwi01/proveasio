@@ -30,12 +30,13 @@ set rtp+=$HOME/.vim/bundle/Vundle.vim
 call vundle#begin('$HOME/.vim/bundle/')
 Plugin 'VundleVim/Vundle.vim'             "Plugin manager
 Plugin 'run2cmd/ide.vim'                  "Main vimrc configuration
-Plugin 'ctrlpvim/ctrlp.vim'               "Buffer control
+Plugin 'ctrlpvim/ctrlp.vim'               "Buffer Control
 Plugin 'w0rp/ale'                         "Syntax Checker
 Plugin 'rodjek/vim-puppet'                "Puppet syntax support
 Plugin 'tpope/vim-fugitive'               "git support
 Plugin 'tpope/vim-unimpaired'             "Quick switch over mappings
 Plugin 'tpope/vim-surround'               "Easy surround changes
+Plugin 'tpope/vim-dispatch'               "Run async commands
 Plugin 'ludovicchabant/vim-gutentags'     "Generate c-tags
 Plugin 'irrationalistic/vim-tasks'        "Todo list
 Plugin 'airblade/vim-gitgutter'           "Enable gitgutter
@@ -45,15 +46,12 @@ Plugin 'plasticboy/vim-markdown'          "Support for markdown docs
 Plugin 'Yggdroot/indentLine'              "Indent line
 Plugin 'gilsondev/searchtasks.vim'        "Search tasks: TODO, FIXME, etc.
 Plugin 'tpope/vim-endwise'                "Auto end functions
-Plugin 'python-mode/python-mode'          "Support for Python
-Plugin 'vim-ruby/vim-ruby'                "Support for Ruby
+"Plugin 'python-mode/python-mode'          "Support for Python
+"Plugin 'vim-ruby/vim-ruby'                "Support for Ruby
 Plugin 'tomtom/tcomment_vim'              "Easy comment
 Plugin 'sukima/xmledit'                   "Xml support
-Plugin 'skywind3000/asyncrun.vim'         "Run command asynchronuosly
 Plugin 'airblade/vim-rooter'              "Change root to .git directory
-"Plugin 'reedes/vim-pencil'                "Easy edit
-"Plugin 'tpope/vim-repeat'                 "Repeat entire map
-"dpelle/vim-LanguageTool                   "Language check
+Plugin 'maxbrunsfeld/vim-yankstack'
 if i_have_vundle == 0
   echo "Installing Vundles, please ignore key map error messages"
   echo ""
@@ -186,7 +184,6 @@ set number
 
 " Set standard textwidth
 set textwidth=220
-set ruler
 
 " Always show one line blow/above cursor
 if !&scrolloff
@@ -231,11 +228,17 @@ noremap tc :cclose<cr>
 
 " netrw configuratoin
 nnoremap tf :Explore<CR>
-let g:netrw_home = "~/.vim/"
-let g:netrw_banner = 0
-let g:netrw_preview = 1
-let g:netrw_winsize = 25
-let g:netrw_cursor = 3
+let g:netrw_fastbrowse     = 0
+let g:netrw_banner         = 0
+let g:netrw_preview        = 1
+let g:netrw_winsize        = 25
+let g:netrw_altv           = 1
+let g:netrw_fastbrowse     = 2
+let g:netrw_keepdir        = 0
+let g:netrw_liststyle      = 1
+let g:netrw_retmap         = 1
+let g:netrw_silent         = 1
+let g:netrw_special_syntax = 1
 
 " Session manager
 set sessionoptions-=blank
@@ -244,17 +247,28 @@ map <F3> :source ~/.vim/vim_session <cr>
 
 " Turn on omni-completion
 set omnifunc=syntaxcomplete#Complete
-set completeopt+=menuone,noinsert,noselect
+set completeopt+=longest,menuone,noinsert,noselect
 let OmniCpp_GlobalScopeSearch = 1
 let OmniCpp_DisplayMode = 1
 let OmniCpp_ShowAccess = 1
 set shortmess+=c
-" Disable inlucdes since it tends to work very slow
+" Disable to scan inlucdes and tags since it tends to work very slow
 set complete-=i
+set complete-=t
 
 " Set colorscheme
 colorscheme bugi
 "colorscheme torte
+
+" MUcomplete
+let g:mucomplete#enable_auto_at_startup = 1
+let g:mucomplete#chains = { 
+      \ 'default' : ['path', 'omni', 'keyn', 'keyp', 'c-n', 'c-p', 'dict', 'uspl', 'tags' ],
+      \ 'vim' : [ 'path', 'cmd', 'keyn', 'keyp' ],
+      \ 'puppet' : [ 'path', 'omni', 'tags', 'keyn', 'keyp', 'c-n', 'c-p', 'incl', 'dict', 'uspl', 'defs', 'ulti' ],
+      \ 'python' : [ 'path', 'omni', 'keyn', 'keyp', 'c-n', 'c-p', 'dict', 'uspl', 'ulti', 'tags' ],
+      \ 'ruby' : [ 'path', 'omni', 'keyn', 'keyp', 'c-n', 'c-p', 'dict', 'uspl', 'ulti', 'tags' ],
+      \ }
 
 " CtrlP
 let g:ctrlp_match_window = 'bottom,order:btt,min:1,max:15,results:30'
@@ -269,9 +283,9 @@ let g:puppet_align_hashes = 0
 
 " Ale checker
 " Does not support puppet options yet, so need to setup '--no-140chars-check' in  ~/.puppet-lint.rc
-let g:ale_echo_msg_format = '[%linter%][%severity%] %s'
+let g:ale_echo_msg_format = '[%linter%][%severity%][%code%] %s'
 let g:ale_yaml_yamllint_options = '-d "rules: {line-length: {allow-non-breakable-words: true, max: 300, allow-non-breakable-inline-mappings: true}}"'
-let g:ale_python_pycodestyle_options = '--ignore=E501'
+let g:ale_python_flake8_options = '--ignore=E501'
 let g:ale_eruby_erubylint_options = "-T '-'"
 if has("win32")
   let g:ale_ruby_rubocop_options = '-c %USERPROFILE%\.rubocop.yaml'
@@ -280,9 +294,6 @@ else
 endif
 let g:ale_lint_on_save = 1
 let g:ale_lint_on_text_changed = 0
-let g:ale_linters = {
-\ 'python': ['pycodestyle'],
-\}
 nmap <silent> tj <Plug>(ale_previous_wrap)
 nmap <silent> tk <Plug>(ale_next_wrap)
 " Custom Ale Linter
@@ -300,6 +311,12 @@ endfunction
 " Disable folding for .md files
 let g:vim_markdown_folding_disabled = 1
 let g:vim_markdown_conceal = 0
+
+
+" Yank
+let g:yankstack_map_keys = 0
+nmap <C-w>p <Plug>yankstack_substitute_older_paste
+nmap <C-w>u <Plug>yankstack_substitute_newer_paste
 
 " vim tasks
 let g:TasksMarkerBase = '[ ]'
@@ -321,24 +338,6 @@ let g:gutentags_exclude_project_root = ['fixtures']
 " Tabular vim
 nnoremap tp :Tab/=><CR>
 
-" MUcomplete
-let g:mucomplete#enable_auto_at_startup = 1
-let g:mucomplete#chains = { 'default' : ['path', 'omni', 'keyn', 'keyp', 'c-n', 'c-p', 'dict', 'uspl', 'ulti', 'tags' ] }
-let g:mucomplete#chains.vim = [ 'path', 'cmd', 'keyn' ]
-
-" Python Mode
-let g:pymode = 1
-let g:pymode_trim_whitespaces = 1
-let g:pymode_options_max_line_length = 300
-let g:pymode_options_colorcolumn = 0
-let g:pymode_indent = 1
-let g:pymode_lint_cwindow = 0
-let g:pymode_folding = 0
-let g:pymode_lint = 1
-let g:pymode_lint_on_write = 1
-" Use ALE linters
-let g:pymode_lint_checkers = [ '' ]
-
 " Vim-rooter
 let g:rooter_silent_chdir = 1
 
@@ -356,6 +355,14 @@ au BufNewFile,BufReadPost *.yml setlocal tabstop=2 shiftwidth=2 syntax=yaml file
 au BufNewFile,BufReadPost *.bat setlocal tabstop=2 shiftwidth=2 ff=dos
 au BufNewFile,BufReadPost *.md setlocal textwidth=80
 
+" Run rspec on Windows 10 with WFL
+autocmd Filetype ruby let b:dispatch = "bash.exe --login -c \"echo '%' \| tr -s '\\' '/' \| xargs -i rspec {}\""
+autocmd Filetype groovy let b:dispatch = 'gradlew clean test'
+nnoremap <F7> :Dispatch<CR>
+
+" Ruby change syntaxt to 2.1
+nnoremap <F8> :%s/\(\w*\)[ ]*=>/\1:/gc<CR>
+
 " Set status line
 set laststatus=2
 set statusline=
@@ -364,4 +371,4 @@ set statusline+=[%{strlen(&fenc)?&fenc:&enc}a]
 set statusline+=\ %h%m%r%w
 set statusline+=\ [Ale(%{LinterStatus()})]
 set statusline+=%<\ %{fugitive#statusline()}
-
+set statusline+=\ [%l,%c/%L]
