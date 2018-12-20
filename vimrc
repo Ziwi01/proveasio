@@ -20,6 +20,8 @@ if !filereadable(vundle_readme)
   echo "Installing Vundle.."
   echo ""
   silent !mkdir -p .vim/bundle
+  silent !mkdir -p .vim/tmp
+  silent !mkdir -p .vim/backup
   silent !git clone https://github.com/VundleVim/Vundle.vim .vim/bundle/Vundle.vim
   let i_have_vundle=0
 endif
@@ -31,6 +33,8 @@ call vundle#begin('$HOME/.vim/bundle/')
 Plugin 'VundleVim/Vundle.vim'             "Plugin manager
 Plugin 'run2cmd/ide.vim'                  "Main vimrc configuration
 Plugin 'ctrlpvim/ctrlp.vim'               "Buffer Control
+Plugin 'scrooloose/nerdtree'              "File manager
+Plugin 'Xuyuanp/nerdtree-git-plugin'      "Git highlight for NerdTree
 Plugin 'w0rp/ale'                         "Syntax Checker
 Plugin 'rodjek/vim-puppet'                "Puppet syntax support
 Plugin 'tpope/vim-fugitive'               "git support
@@ -115,7 +119,7 @@ autocmd GUIEnter * set visualbell t_vb=
 set autoread
 
 " Enable better histroy
-set history=1000
+set history=10000
 
 " Make sure that we confirm on unsaved files
 set confirm
@@ -202,12 +206,6 @@ set shiftwidth=2
 set expandtab
 set smarttab
 
-" Lets go PRO. No Arrows movements.
-nnoremap <Up>    <C-W><C-K>
-nnoremap <Down>  <C-W><C-J>
-nnoremap <Left>  <C-W><C-H>
-nnoremap <Right> <C-W><C-L>
-
 " Use <C-L> to clear the highlighting of :set hlsearch.
 if maparg('<C-L>', 'n') ==# ''
   nnoremap <silent> <C-L> :nohlsearch<C-R>=has('diff')?'<Bar>diffupdate':''<CR><CR><C-L>
@@ -258,7 +256,6 @@ set complete-=t
 
 " Set colorscheme
 colorscheme bugi
-"colorscheme torte
 
 " MUcomplete
 let g:mucomplete#enable_auto_at_startup = 1
@@ -278,8 +275,8 @@ let g:ctrlp_custom_ignore = {
 \ }
 
 " vim-puppet
-" Disable => autointent
-let g:puppet_align_hashes = 0
+" Enable => autointent
+let g:puppet_align_hashes = 1
 
 " Ale checker
 " Does not support puppet options yet, so need to setup '--no-140chars-check' in  ~/.puppet-lint.rc
@@ -371,4 +368,45 @@ set statusline+=[%{strlen(&fenc)?&fenc:&enc}a]
 set statusline+=\ %h%m%r%w
 set statusline+=\ [Ale(%{LinterStatus()})]
 set statusline+=%<\ %{fugitive#statusline()}
-set statusline+=\ [%l,%c/%L]
+"set statusline+=\ [%l,%c/%L]
+
+set splitbelow
+set splitright
+set mouse=a
+set ttymouse=xterm2
+"set textwidth=0 
+set wrapmargin=0
+
+nmap du :wincmd w<cr>:normal u<cr>:wincmd w<cr>
+
+"NerdTree auto open
+"autocmd VimEnter * wincmd p
+autocmd StdinReadPre * let s:std_in=1
+autocmd VimEnter * if argc() == 0 && !exists("s:std_in") | NERDTree | endif
+"Nerd Tree close vim when NT is the only window
+autocmd bufenter * if (winnr("$") == 1 && exists("b:NERDTree") && b:NERDTree.isTabTree()) | q | endif
+"Toggle NerdTree using tf
+nnoremap tf :NERDTreeToggle<CR>
+"Change CWD to where we are before running vim/NT
+let g:NERDTreeChDirMode = 1
+
+let g:NERDTreeIndicatorMapCustom = {
+    \ "Modified"  : "✹",
+    \ "Staged"    : "✚",
+    \ "Untracked" : "✭",
+    \ "Renamed"   : "➜",
+    \ "Unmerged"  : "═",
+    \ "Deleted"   : "✖",
+    \ "Dirty"     : "✗",
+    \ "Clean"     : "✔︎",
+    \ "Unknown"   : "?"
+    \ }
+
+function! s:DiffWithSaved()
+  let filetype=&ft
+  diffthis
+  vnew | r # | normal! 1Gdd
+  diffthis
+  exe "setlocal bt=nofile bh=wipe nobl noswf ro ft=" . filetype
+endfunction
+com! DiffSaved call s:DiffWithSaved()
