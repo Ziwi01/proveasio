@@ -1,35 +1,22 @@
 # ide.vim
 
-Bring IDE experiance to VIM
+This is a fork of run2cdm/ide.vim tailored for personal use.
 
-VIM configuration to bring IDE experiance out of the box for VIM 7.4 and above.
+Bring IDE experience to VIM
 Works with Vundle Plugin Manager only. For other plugin managers you need to tweak vimrc file
 
 ## Requirements
 - Git
 
 ## Installation
-For basic sourcing
+For basic sourcing (put in your ~/.vimrc file)
 ```
-let custom_config_file = '~/.vim/bundle/ide.vim/vimrc'
-exe 'source' custom_config_file
-```
-
-Put below into your source vimrc for automatinc download
-```
-cd $HOME
-let i_have_ide_vim=1
-let ide_vim_readme=expand('.vim/bundle/ide.vim/README.md')
-if !filereadable(ide_vim_readme)
-  echo "Installing IDE VIM.."
-  echo ""
-  silent !mkdir -p .vim/bundle
-  silent !git clone https://github.com/run2cmd/ide.vim .vim/bundle/ide.vim
-  let i_have_ide_vim=0
-endif
 let custom_config_file = '~/.vim/bundle/ide.vim/vimrc'
 exe 'source' custom_config_file
 ```
 
 ## Author
 Piotr Bugała <piotr.bugala@gmail.com>
+
+## Modifications
+Ziwi <ziwi01@gmail.com>
