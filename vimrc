@@ -1,3 +1,21 @@
+" Open NerdTree always
+autocmd vimenter * NERDTree
+" Select opened file instead of NT
+autocmd VimEnter * wincmd p
+
+"Change CWD to where we are before running vim/NT (not working)
+" TODO: check why
+set autochdir
+autocmd VimEnter * set autochdir
+let g:NERDTreeChDirMode=2
+let NERDTreeChDirMode=2
+
+" copy (write) highlighted text to .vimbuffer (For WSL<-> Windows clipboard integration)
+vmap <C-c> :w! ~/.vimbuffer \| !cat ~/.vimbuffer \| clip.exe <CR><CR>
+
+" Turn on system clipboard support
+set clipboard=unnamed
+
 " Disable compatible mode
 set nocompatible
 
@@ -31,7 +49,7 @@ filetype off
 set rtp+=$HOME/.vim/bundle/Vundle.vim
 call vundle#begin('$HOME/.vim/bundle/')
 Plugin 'VundleVim/Vundle.vim'             "Plugin manager
-Plugin 'run2cmd/ide.vim'                  "Main vimrc configuration
+Plugin 'Ziwi01/ide.vim'                  "Main vimrc configuration
 Plugin 'ctrlpvim/ctrlp.vim'               "Buffer Control
 Plugin 'scrooloose/nerdtree'              "File manager
 Plugin 'Xuyuanp/nerdtree-git-plugin'      "Git highlight for NerdTree
@@ -50,8 +68,8 @@ Plugin 'plasticboy/vim-markdown'          "Support for markdown docs
 Plugin 'Yggdroot/indentLine'              "Indent line
 Plugin 'gilsondev/searchtasks.vim'        "Search tasks: TODO, FIXME, etc.
 Plugin 'tpope/vim-endwise'                "Auto end functions
-"Plugin 'python-mode/python-mode'          "Support for Python
-"Plugin 'vim-ruby/vim-ruby'                "Support for Ruby
+Plugin 'python-mode/python-mode'          "Support for Python
+Plugin 'vim-ruby/vim-ruby'                "Support for Ruby
 Plugin 'tomtom/tcomment_vim'              "Easy comment
 Plugin 'sukima/xmledit'                   "Xml support
 Plugin 'airblade/vim-rooter'              "Change root to .git directory
@@ -147,7 +165,7 @@ set fileformats=unix,dos
 set guifont=Consolas:h9
 
 " Disable mouse tips
-set guioptions-=T
+"set guioptions-=T
 
 " Disable gvim menus ant toolbars
 set go-=m
@@ -201,10 +219,13 @@ set display+=lastline
 " Tab config
 set smartindent
 set autoindent
-set tabstop=2
-set shiftwidth=2
+set tabstop=4
+set shiftwidth=4
 set expandtab
 set smarttab
+
+" Make diff split vertically
+set diffopt+=vertical
 
 " Use <C-L> to clear the highlighting of :set hlsearch.
 if maparg('<C-L>', 'n') ==# ''
@@ -219,8 +240,8 @@ nnoremap tw :%s/\s\+$//<CR>:noh<CR>
 nnoremap go :tabnew<CR>
 
 " QuickFixWindow
-autocmd QuickFixCmdPost [^l]* copen 25
-autocmd QuickFixCmdPost    l* lopen 25
+autocmd QuickFixCmdPost [^l]* copen 15
+autocmd QuickFixCmdPost    l* lopen 15
 noremap to :copen 25<cr>
 noremap tc :cclose<cr>
 
@@ -255,16 +276,16 @@ set complete-=i
 set complete-=t
 
 " Set colorscheme
-colorscheme bugi
+colorscheme desert
 
 " MUcomplete
 let g:mucomplete#enable_auto_at_startup = 1
 let g:mucomplete#chains = { 
-      \ 'default' : ['path', 'omni', 'keyn', 'keyp', 'c-n', 'c-p', 'dict', 'uspl', 'tags' ],
+      \ 'default' : ['path', 'omni', 'keyn', 'keyp', 'c-n', 'c-p', 'uspl', 'tags' ],
       \ 'vim' : [ 'path', 'cmd', 'keyn', 'keyp' ],
-      \ 'puppet' : [ 'path', 'omni', 'tags', 'keyn', 'keyp', 'c-n', 'c-p', 'incl', 'dict', 'uspl', 'defs', 'ulti' ],
-      \ 'python' : [ 'path', 'omni', 'keyn', 'keyp', 'c-n', 'c-p', 'dict', 'uspl', 'ulti', 'tags' ],
-      \ 'ruby' : [ 'path', 'omni', 'keyn', 'keyp', 'c-n', 'c-p', 'dict', 'uspl', 'ulti', 'tags' ],
+      \ 'puppet' : [ 'path', 'omni', 'keyn', 'keyp', 'tags', 'c-n', 'c-p', 'uspl', 'ulti' ],
+      \ 'python' : [ 'path', 'omni', 'keyn', 'keyp', 'c-n', 'c-p', 'uspl', 'ulti', 'tags' ],
+      \ 'ruby' : [ 'path', 'omni', 'keyn', 'keyp', 'c-n', 'c-p', 'uspl', 'ulti', 'tags' ],
       \ }
 
 " CtrlP
@@ -383,12 +404,12 @@ nmap du :wincmd w<cr>:normal u<cr>:wincmd w<cr>
 "autocmd VimEnter * wincmd p
 autocmd StdinReadPre * let s:std_in=1
 autocmd VimEnter * if argc() == 0 && !exists("s:std_in") | NERDTree | endif
+
 "Nerd Tree close vim when NT is the only window
 autocmd bufenter * if (winnr("$") == 1 && exists("b:NERDTree") && b:NERDTree.isTabTree()) | q | endif
+
 "Toggle NerdTree using tf
 nnoremap tf :NERDTreeToggle<CR>
-"Change CWD to where we are before running vim/NT
-let g:NERDTreeChDirMode = 1
 
 let g:NERDTreeIndicatorMapCustom = {
     \ "Modified"  : "✹",
