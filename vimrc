@@ -1,14 +1,16 @@
-" Open NerdTree always
-autocmd vimenter * NERDTree
-" Select opened file instead of NT
-autocmd VimEnter * wincmd p
-
 "Change CWD to where we are before running vim/NT (not working)
 " TODO: check why
+"autocmd BufEnter * silent! lcd !echo $PWD
+autocmd BufEnter * lcd $PWD
 set autochdir
 autocmd VimEnter * set autochdir
 let g:NERDTreeChDirMode=2
 let NERDTreeChDirMode=2
+
+" Open NerdTree always
+autocmd vimenter * NERDTree
+" Select opened file instead of NT
+autocmd VimEnter * wincmd p
 
 " copy (write) highlighted text to .vimbuffer (For WSL<-> Windows clipboard integration)
 vmap <C-c> :w! ~/.vimbuffer \| !cat ~/.vimbuffer \| clip.exe <CR><CR>
@@ -73,6 +75,8 @@ Plugin 'vim-ruby/vim-ruby'                "Support for Ruby
 Plugin 'tomtom/tcomment_vim'              "Easy comment
 Plugin 'sukima/xmledit'                   "Xml support
 Plugin 'airblade/vim-rooter'              "Change root to .git directory
+Plugin 'tpope/vim-obsession'              "Session management, intagration with tmux
+Plugin 'editorconfig/editorconfig-vim'    "Editorconfig for keeping files neat
 Plugin 'maxbrunsfeld/vim-yankstack'
 if i_have_vundle == 0
   echo "Installing Vundles, please ignore key map error messages"
@@ -280,7 +284,7 @@ colorscheme desert
 
 " MUcomplete
 let g:mucomplete#enable_auto_at_startup = 1
-let g:mucomplete#chains = { 
+let g:mucomplete#chains = {
       \ 'default' : ['path', 'omni', 'keyn', 'keyp', 'c-n', 'c-p', 'uspl', 'tags' ],
       \ 'vim' : [ 'path', 'cmd', 'keyn', 'keyp' ],
       \ 'puppet' : [ 'path', 'omni', 'keyn', 'keyp', 'tags', 'c-n', 'c-p', 'uspl', 'ulti' ],
@@ -305,6 +309,13 @@ let g:ale_echo_msg_format = '[%linter%][%severity%][%code%] %s'
 let g:ale_yaml_yamllint_options = '-d "rules: {line-length: {allow-non-breakable-words: true, max: 300, allow-non-breakable-inline-mappings: true}}"'
 let g:ale_python_flake8_options = '--ignore=E501'
 let g:ale_eruby_erubylint_options = "-T '-'"
+let g:ale_puppet_puppetlint_options='--no-autoloader_layout-check --no-140chars-check'
+let g:ale_puppet_puppet_options='--parser=future'
+let g:ale_yaml_yamllint_options='-d "{extends: relaxed, rules: {line-length: disable}}"'
+let g:ale_warn_about_trailing_whitespace=1
+let g:ale_fixers = {
+\   '*': ['remove_trailing_lines', 'trim_whitespace'],
+\ }
 if has("win32")
   let g:ale_ruby_rubocop_options = '-c %USERPROFILE%\.rubocop.yaml'
 else
@@ -312,6 +323,7 @@ else
 endif
 let g:ale_lint_on_save = 1
 let g:ale_lint_on_text_changed = 0
+let g:ale_fix_on_save = 1
 nmap <silent> tj <Plug>(ale_previous_wrap)
 nmap <silent> tk <Plug>(ale_next_wrap)
 " Custom Ale Linter
@@ -395,9 +407,13 @@ set splitbelow
 set splitright
 set mouse=a
 set ttymouse=xterm2
-"set textwidth=0 
+"set textwidth=0
 set wrapmargin=0
 
+"Editorconfig fixes
+let g:EditorConfig_exclude_patterns = ['fugitive://.*']
+
+" Vimdiff
 nmap du :wincmd w<cr>:normal u<cr>:wincmd w<cr>
 
 "NerdTree auto open
