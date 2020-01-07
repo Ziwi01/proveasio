@@ -77,7 +77,8 @@ Plugin 'sukima/xmledit'                   "Xml support
 Plugin 'airblade/vim-rooter'              "Change root to .git directory
 Plugin 'tpope/vim-obsession'              "Session management, intagration with tmux
 Plugin 'editorconfig/editorconfig-vim'    "Editorconfig for keeping files neat
-Plugin 'maxbrunsfeld/vim-yankstack'
+Plugin 'maxbrunsfeld/vim-yankstack'       "Enable windows buffer copy with CTRL+C - used with Windows WSL
+Plugin 'noprompt/vim-yardoc'              "YARD docs higlight
 if i_have_vundle == 0
   echo "Installing Vundles, please ignore key map error messages"
   echo ""
@@ -280,7 +281,7 @@ set complete-=i
 set complete-=t
 
 " Set colorscheme
-colorscheme desert
+colorscheme bugi
 
 " MUcomplete
 let g:mucomplete#enable_auto_at_startup = 1
