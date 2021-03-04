@@ -51,7 +51,7 @@ filetype off
 set rtp+=$HOME/.vim/bundle/Vundle.vim
 call vundle#begin('$HOME/.vim/bundle/')
 Plugin 'VundleVim/Vundle.vim'             "Plugin manager
-Plugin 'Ziwi01/ide.vim'                  "Main vimrc configuration
+Plugin 'Ziwi01/vim.ide'                   "Main vimrc configuration
 Plugin 'ctrlpvim/ctrlp.vim'               "Buffer Control
 Plugin 'scrooloose/nerdtree'              "File manager
 Plugin 'Xuyuanp/nerdtree-git-plugin'      "Git highlight for NerdTree

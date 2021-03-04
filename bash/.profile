@@ -29,4 +29,3 @@ fi
 #alias kctl="/mnt/c/Program\ Files/Docker/Docker/resources/bin/kubectl.exe"
 #alias lhelm="helm --kubeconfig /mnt/c/Users/erkozaki/.kube/config"
 #alias pyinit="source ~/var/vscode-python-venv/bin/activate"
-
