@@ -93,6 +93,6 @@
 "keybindings":
   [
      { "command": null, "keys": "ctrl+shift+c" },
-   { "command": null, "keys": "ctrl+shift+v" }
+     { "command": null, "keys": "ctrl+shift+v" }
   ]
 }
