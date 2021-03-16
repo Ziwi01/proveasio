@@ -51,7 +51,7 @@ filetype off
 set rtp+=$HOME/.vim/bundle/Vundle.vim
 call vundle#begin('$HOME/.vim/bundle/')
 Plugin 'VundleVim/Vundle.vim'             "Plugin manager
-Plugin 'Ziwi01/vim.ide'                   "Main vimrc configuration
+Plugin 'vim.ide', {'pinned': 1}           "Main vimrc configuration
 Plugin 'ctrlpvim/ctrlp.vim'               "Buffer Control
 Plugin 'scrooloose/nerdtree'              "File manager
 Plugin 'Xuyuanp/nerdtree-git-plugin'      "Git highlight for NerdTree
@@ -314,13 +314,20 @@ let g:ale_puppet_puppetlint_options='--no-autoloader_layout-check --no-140chars-
 let g:ale_puppet_puppet_options='--parser=future'
 let g:ale_yaml_yamllint_options='-d "{extends: relaxed, rules: {line-length: disable}}"'
 let g:ale_warn_about_trailing_whitespace=1
+let g:ale_linters = { 'python': ['pylint', 'pyls'] }
 let g:ale_fixers = {
-\   '*': ['remove_trailing_lines', 'trim_whitespace'],
-\ }
-if has("win32")
-  let g:ale_ruby_rubocop_options = '-c %USERPROFILE%\.rubocop.yaml'
-else
-  let g:ale_ruby_rubocop_options = '-c ~/.rubocop.yaml'
+      \  'puppet': ['puppetlint', 'trim_whitespace', 'remove_trailing_lines'],
+      \  'ruby': ['rubocop', 'trim_whitespace', 'remove_trailing_lines'],
+      \  'python': [
+      \    'autopep8', 'isort', 'add_blank_lines_for_python_control_statements',
+      \    'trim_whitespace', 'remove_trailing_lines'
+      \  ],
+      \  'yaml': ['prettier', 'trim_whitespace', 'remove_trailing_lines'],
+      \  'markdown': ['prettier', 'trim_whitespace', 'remove_trailing_lines'],
+      \  '*': ['trim_whitespace', 'remove_trailing_lines'],
+      \}
+let g:ale_ruby_rubocop_options = '-c ~/.rubocop.yaml' "TODO: create the file
+let g:ale_yaml_yamllint_options = '-c ~/.yamllint' "TODO: create the file
 endif
 let g:ale_lint_on_save = 1
 let g:ale_lint_on_text_changed = 0
@@ -428,7 +435,7 @@ autocmd bufenter * if (winnr("$") == 1 && exists("b:NERDTree") && b:NERDTree.isT
 "Toggle NerdTree using tf
 nnoremap tf :NERDTreeToggle<CR>
 
-let g:NERDTreeIndicatorMapCustom = {
+let g:NERDTreeGitStatusIndicatorMapCustom = {
     \ "Modified"  : "✹",
     \ "Staged"    : "✚",
     \ "Untracked" : "✭",

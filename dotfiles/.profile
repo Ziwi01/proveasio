@@ -26,6 +26,4 @@ if [ -d "$HOME/.local/bin" ] ; then
     PATH="$HOME/.local/bin:$PATH"
 fi
 
-#alias kctl="/mnt/c/Program\ Files/Docker/Docker/resources/bin/kubectl.exe"
-#alias lhelm="helm --kubeconfig /mnt/c/Users/erkozaki/.kube/config"
-#alias pyinit="source ~/var/vscode-python-venv/bin/activate"
+alias pyinit="source ~/var/python-environments/default/bin/activate"
