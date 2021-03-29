@@ -32,6 +32,7 @@ printf 'Copying dotfiles... '
 configure_dotfiles
 check_status $?
 
+
 ### VIM
 printf 'Configuring VIM... '
 configure_vim
