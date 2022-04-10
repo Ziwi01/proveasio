@@ -1,0 +1,13 @@
+- hosts: wsl
+  vars_files:
+    - vars/versions.yml
+    - vars/prerequisite_packages.yml
+    - vars/environment.yml
+  ### Comment out roles you don't need ###
+  roles:
+    - packages
+    - shell
+    - ops
+#    - dev
+  ### Set this in vars/environment! ###
+  user: "{{ user }}"

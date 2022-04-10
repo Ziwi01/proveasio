@@ -1,5 +1,9 @@
 #!/bin/bash
 
+apt update
+apt upgrade -y
+apt install ansible aptitude -y
+
 # Script for initializing working environment. Designed for Ubuntu 20.04 on WSL2.
 # TODO: make proper documentation and requirements/usage
 
@@ -27,15 +31,18 @@ configure_vim() {
 
 printf '\nEnvironment initializer for Ubuntu 20.04 on WSL2. PLEASE SEE README.\n\n' # TODO: make help function with usage and prompt with accept
 
-### Shell environment
-printf 'Copying dotfiles... '
-configure_dotfiles
-check_status $?
+cd ansible || exit
+ansible-playbook -K initialize.yaml
 
-### VIM
-printf 'Configuring VIM... '
-configure_vim
-check_status $?
+#### Shell environment
+#printf 'Copying dotfiles... '
+#configure_dotfiles
+#check_status $?
+#
+#### VIM
+#printf 'Configuring VIM... '
+#configure_vim
+#check_status $?
 
 ### GIT config
 

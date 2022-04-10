@@ -1,42 +1,55 @@
-# Environment init
+# WSL2 DEV environment init
 
 THIS IS A WORK IN PROGRESS
 
-This repository contains personal stuff for initializing WSL2 Ubuntu (20.04) environment with basic stuff to get working.
+## Contents
 
-## Script
+Script will set up WSL2 with:
 
-`initialize.sh` script will include:
-
-- Bash environment setup
-- Development directory tree (see: [Directory tree](#directory-tree))
-- Tmux installation/config
-- VIM configuration as IDE (plugins, config etc.)
+- ZSH environment
+  - oh-my-zsh
+  - powerlevel10k
+  - custom aliases
+- Tmux
+- VIM
 - GIT config
-- Python 3 setup with virtual env
-- RVM/Ruby setup
-- Gradle/Groovy setup
-- NPM setup
-- Ansible setup
-- Basic tools installation (tree, mlocate, etc.)
+- Fuzzy-finder (https://github.com/junegunn/fzf) (TODO latest)
+- Diff-so-Fancy (https://github.com/so-fancy/diff-so-fancy) (TODO)
+- thefuck (https://github.com/nvbn/thefuck) (TODO)
+- bat (https://github.com/sharkdp/bat) (TODO)
+- Python 3
+- Version manager(s):
+  - ruby
+  - groovy
+  - gradle
+  - nodejs
+  - go
 
-The script needs to be run from user where we want to set those things up with `SUDO NOPASSWD` permissions (for tools installation)
+Please detailed description for all customizations and added functionality please see below sections
+
+TODO: Add sections for all installed things.
 
 ## Additional files
 
 Optional files to be put manually where they belong
 
-- Windows Terminal settings file
-- PowerShell PS1 file
+In Windows:
 
-## Directory tree
-
-Created directory tree
+  - Windows Terminal settings file
+  - PowerShell PS1 file
 
 ## Manual actions
 
 - Generate SSH keys and put them into `~/.ssh`
 - Generate GPG keys and use them in `~/.git/config`
+
+## Prerequisites
+
+# TODO: describe
+
+## Usage
+
+# TODO: describe
 
 ## Author
 
@@ -45,3 +58,4 @@ Ziwi <ziwi01@gmail.com>
 ## Contributors
 
 `ide.vim` configuration/setup is based on old version of [run2cmd/ide.vim](https://github.com/run2cmd/ide.vim) by Piotr Bugała <piotr.bugala@gmail.com>
+

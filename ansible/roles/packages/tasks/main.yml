@@ -1,0 +1,16 @@
+---
+- name: [Packages] Update OS packages list
+  become: true
+  package:
+    update_cache: yes
+
+- name: [Packages] Upgrade OS packages
+  become: true
+  package:
+    name: "*"
+    state: latest
+
+- name: [Packages] Install prerequisite packages
+  become: true
+  apt:
+    name: "{{ prerequisite_packages }}"
