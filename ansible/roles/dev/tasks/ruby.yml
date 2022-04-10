@@ -1,5 +1,5 @@
 ---
-- name: [Ruby] Install Ruby dependencies
+- name: '[Ruby] Install Ruby dependencies'
   become: true
   apt:
     name: "{{ ruby_dependencies }}"
@@ -11,8 +11,8 @@
       - zlib1g-dev
       - automake
 
-- name: [asdf/Ruby] Install Ruby
+- name: '[asdf/Ruby] Install Ruby'
   shell: "asdf install ruby {{ ruby_version }}"
 
-- name: [asdf/Ruby] Set global Ruby
+- name: '[asdf/Ruby] Set global Ruby'
   shell: "asdf global ruby {{ ruby_version }}"

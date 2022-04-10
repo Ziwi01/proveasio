@@ -3,11 +3,11 @@
   get_url:
     url: https://get.pulumi.com/releases/sdk/pulumi-v{{ pulumi_version }}-linux-x64.tar.gz
     dest: /var/tmp/pulumi-{{ pulumi_version }}.tar.gz
-- name: [pulumi] Untar release
+- name: '[pulumi] Untar release'
   unarchive:
     src: /var/tmp/pulumi-{{ pulumi_version }}.tar.gz
     dest: /var/tmp
-- name: [pulumi] Add binary to path
+- name: '[pulumi] Add binary to path'
   become: true
   copy:
     src: /var/tmp/pulumi/

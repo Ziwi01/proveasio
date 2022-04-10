@@ -7,11 +7,11 @@ apt install ansible aptitude -y
 # Script for initializing working environment. Designed for Ubuntu 20.04 on WSL2.
 # TODO: make proper documentation and requirements/usage
 
-USER_HOME=$(eval echo ~${SUDO_USER})
-BASE_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
-RED=$(tput setaf 1)
-GREEN=$(tput setaf 2)
-NORMAL=$(tput sgr0)
+#USER_HOME=$(eval echo ~${SUDO_USER})
+#BASE_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+#RED=$(tput setaf 1)
+#GREEN=$(tput setaf 2)
+#NORMAL=$(tput sgr0)
 
 check_status() {
   [[ $1 == 0 ]] && printf "${GREEN}OK${NORMAL}\n\n" || printf "${RED}FAILED${NORMAL}\n\n"
