@@ -32,4 +32,5 @@ jobs:
         run: sudo sh initialize.sh
 
       - name: Provision remaining tools
-        run: ansible-playbook -i wsl, ansible/initialize.yaml
+        working-directory: ./ansible
+        run: ansible-playbook -i wsl, initialize.yaml
