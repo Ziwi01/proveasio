@@ -31,8 +31,8 @@ configure_vim() {
 
 printf '\nEnvironment initializer for Ubuntu 20.04 on WSL2. PLEASE SEE README.\n\n' # TODO: make help function with usage and prompt with accept
 
-cd ansible || exit
-ansible-playbook -K initialize.yaml
+# cd ansible || exit
+# ansible-playbook -K initialize.yaml
 
 #### Shell environment
 #printf 'Copying dotfiles... '

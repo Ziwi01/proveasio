@@ -5,4 +5,7 @@ prerequisite_packages:
   - curl
   - tmux
   - unzip
+  - mlocate
+  - tree
+  - htop
   - fzf # TODO: install from source for latest version.

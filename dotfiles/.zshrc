@@ -1,5 +1,3 @@
-# TODO: Template this (/home/<user>/)
-
 # Enable Powerlevel10k instant prompt. Should stay close to the top of ~/.zshrc.
 # Initialization code that may require console input (password prompts, [y/n]
 # confirmations, etc.) must go above this block; everything else may go below.
@@ -12,7 +10,7 @@ fi
 export PATH=$PATH:$HOME/.local/bin:$HOME/bin:/usr/local/bin
 
 # Path to your oh-my-zsh installation.
-export ZSH="/home/eryk/.oh-my-zsh"
+export ZSH="${HOME}/.oh-my-zsh"
 
 # Set name of the theme to load --- if set to "random", it will
 # load a random theme each time oh-my-zsh is loaded, in which case,
@@ -147,28 +145,30 @@ eval $(thefuck --alias)
 bindkey -s '\e\e' 'fuck\n'
 
 ### Fuzzy Finder
+
 # Setup fzf
-# ---------
-if [[ ! "$PATH" == */home/eryk/.fzf/bin* ]]; then
-  export PATH="${PATH:+${PATH}:}/home/eryk/.fzf/bin"
+if [[ ! "$PATH" == *$HOME/.fzf/bin* ]]; then
+  export PATH="${PATH:+${PATH}:}${HOME}/.fzf/bin"
 fi
 
 # Auto-completion
-# ---------------
-[[ $- == *i* ]] && source "/home/eryk/.fzf/shell/completion.zsh" 2> /dev/null
+[[ $- == *i* ]] && source "${HOME}/.fzf/shell/completion.zsh" 2> /dev/null
 
 # Key bindings
-# ------------
-source "/home/eryk/.fzf/shell/key-bindings.zsh"
+source "${HOME}/.fzf/shell/key-bindings.zsh"
+
+# use bat as preview tool
 export FZF_PREVIEW_COMMAND='bat --style numbers,changes --color always --line-range :500 {}'
+# change default options
 export FZF_DEFAULT_OPTS='--height 100% --layout=reverse --border --ansi'
+
+# add alias for finding files with auto-preview ((b)etter find)
 alias bfind="fzf --preview '$FZF_PREVIEW_COMMAND' --bind shift-up:preview-page-up,shift-down:preview-page-down"
+# add alias for (b)etter tail
 btail() {
     tail -f $1 | batcat --paging=never -l log
 }
-export MANPAGER="sh -c 'col -bx | bat -l man -p'"
 
-### Fuzzy Finder tab completion
 # disable sort when completing `git checkout`
 zstyle ':completion:*:git-checkout:*' sort false
 # set descriptions format to enable group support
@@ -176,6 +176,7 @@ zstyle ':completion:*:descriptions' format '[%d]'
 # set list-colors to enable filename colorizing
 zstyle ':completion:*' list-colors ${(s.:.)LS_COLORS}
 
+# browse git branches using fzf
 fzf-git-branch() {
     git rev-parse HEAD > /dev/null 2>&1 || return
 
@@ -186,6 +187,7 @@ fzf-git-branch() {
         sed "s/.* //"
 }
 
+# git checkout using fzf
 fzf-git-checkout() {
     local branch
 
@@ -218,15 +220,16 @@ fzf-git-checkout() {
 }
 
 alias gb='fzf-git-branch'
-alias gco='fzf-git-checkout'
+alias gco='fzf-git-checkout' # usage: `gco` for search window or `gco <branch_name>` for particular branch
 
 # Git-fuzzy
 export PATH="$HOME/.git-fuzzy/bin:$PATH"
 alias glo='git-fuzzy log'
 alias gd='git-fuzzy diff'
 
-### Exports
+### Other exports
 export EDITOR='vim'
+export MANPAGER="sh -c 'col -bx | bat -l man -p'"
 
 # To customize prompt, run `p10k configure` or edit ~/.p10k.zsh.
 [[ ! -f ~/.p10k.zsh ]] || source ~/.p10k.zsh

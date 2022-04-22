@@ -1,5 +1,3 @@
-"Change CWD to where we are before running vim/NT (not working)
-" TODO: check why
 "autocmd BufEnter * silent! lcd !echo $PWD
 autocmd BufEnter * lcd $PWD
 set autochdir
@@ -51,10 +49,9 @@ filetype off
 set rtp+=$HOME/.vim/bundle/Vundle.vim
 call vundle#begin('$HOME/.vim/bundle/')
 Plugin 'VundleVim/Vundle.vim'             "Plugin manager
-Plugin 'Ziwi01/ide.vim'                  "Main vimrc configuration
-"Plugin 'ctrlpvim/ctrlp.vim'               "Buffer Control
-Plugin 'junegunn/fzf'                   "Fuzzy finder
-Plugin 'junegunn/fzf.vim'               "Fuzzy finder
+Plugin 'Ziwi01/ide.vim'                   "Main vimrc configuration
+Plugin 'junegunn/fzf'                     "Fuzzy finder
+Plugin 'junegunn/fzf.vim'                 "Fuzzy finder
 Plugin 'scrooloose/nerdtree'              "File manager
 Plugin 'Xuyuanp/nerdtree-git-plugin'      "Git highlight for NerdTree
 Plugin 'w0rp/ale'                         "Syntax Checker

@@ -32,4 +32,4 @@ jobs:
         run: sudo sh initialize.sh
 
       - name: Provision remaining tools
-        run: ansible-playbook -i wsl, provision.yaml
+        run: ansible-playbook -i wsl, ansible/initialize.yaml

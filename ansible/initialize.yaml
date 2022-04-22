@@ -1,8 +1,8 @@
 - hosts: wsl
   vars_files:
+    - vars/environment.yml
     - vars/versions.yml
     - vars/prerequisite_packages.yml
-    - vars/environment.yml
   ### Comment out roles you don't need ###
   roles:
     - packages
