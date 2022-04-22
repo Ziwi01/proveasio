@@ -33,4 +33,4 @@ jobs:
 
       - name: Provision remaining tools
         working-directory: ./ansible
-        run: ansible-playbook -i wsl, initialize.yaml
+        run: ansible-playbook -i hosts initialize.yaml
