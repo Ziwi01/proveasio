@@ -1,5 +1,5 @@
 ---
-prerequisite_packages:
+packages:
   - vim
   - git
   - curl

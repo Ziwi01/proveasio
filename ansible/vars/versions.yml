@@ -9,4 +9,3 @@ languages:
 tools:
   helm: 3.5.4
   asdf: 0.8.0
-  pulumi: 3.3.1

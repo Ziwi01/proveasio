@@ -14,12 +14,21 @@
   command: chsh -s /bin/zsh {{ user }} 
 
 - name: '[Shell] Check for Oh-My-Zsh'
-  stat: path=/$HOME/.oh-my-zsh
+  stat: path=$HOME/.oh-my-zsh
   register: ohmyzsh
 
 - name: '[Shell] Install Oh-My-Zsh'
   shell: bash -c "$(curl -fsSL https://raw.github.com/robbyrussell/oh-my-zsh/master/tools/install.sh)"
   when: not ohmyzsh.stat.exists
+
+# TODO: Check and clone other custom plugins:
+#  origin  https://github.com/Aloxaf/fzf-tab (fetch)
+#  origin  https://github.com/supercrabtree/k (fetch)
+#  origin  https://github.com/MichaelAquilina/zsh-you-should-use.git (fetch)
+#  origin  https://github.com/zsh-users/zsh-autosuggestions (fetch)
+#  origin  https://github.com/zsh-users/zsh-syntax-highlighting.git (fetch)
+
+# TODO: copy .zshrc config here
 
 - name: '[Shell] Check for powerlevel10k'
   stat: path=/$HOME/.oh-my-zsh/custom/themes/powerlevel10k
@@ -29,11 +38,4 @@
   command: git clone --depth=1 https://github.com/romkatv/powerlevel10k.git {{ lookup("env", "HOME") }}/.oh-my-zsh/custom/themes/powerlevel10k
   when: not powerlevel10k.stat.exists
 
-# TODO: Check and clone other custom plugins:
-#  origin  https://github.com/Aloxaf/fzf-tab (fetch)
-#  origin  https://github.com/supercrabtree/k (fetch)
-#  origin  https://github.com/MichaelAquilina/zsh-you-should-use.git (fetch)
-#  origin  https://github.com/zsh-users/zsh-autosuggestions (fetch)
-#  ?? origin  https://github.com/matthieusb/zsh-sdkman.git (fetch)
-#  origin  https://github.com/zsh-users/zsh-syntax-highlighting.git (fetch)
-
+# TODO: copy .p10k.zsh config here

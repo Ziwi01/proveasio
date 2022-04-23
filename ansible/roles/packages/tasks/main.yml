@@ -10,7 +10,7 @@
     name: "*"
     state: latest
 
-- name: '[Packages] Install prerequisite packages'
+- name: '[Packages] Ensure useful packages are installed'
   become: true
   apt:
-    name: "{{ prerequisite_packages }}"
+    name: "{{ packages }}"

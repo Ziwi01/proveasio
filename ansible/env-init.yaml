@@ -2,7 +2,7 @@
   vars_files:
     - vars/environment.yml
     - vars/versions.yml
-    - vars/prerequisite_packages.yml
+    - vars/packages.yml
   ### Comment out roles you don't need ###
   roles:
     - packages

@@ -1,4 +1,3 @@
 - include_tasks: docker.yml
 #- include_tasks: kubernetes.yml # TODO: manage kubernetes
 #- include_tasks: helm.yml # TODO: manage helm
-- include_tasks: pulumi.yml
