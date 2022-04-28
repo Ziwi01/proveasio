@@ -17,7 +17,7 @@ Script will set up WSL2 with:
 - Diff-so-Fancy (https://github.com/so-fancy/diff-so-fancy) (TODO)
 - thefuck (https://github.com/nvbn/thefuck) (TODO)
 - bat (https://github.com/sharkdp/bat) (TODO)
-- Python 3
+- Zoxide (https://github.com/ajeetdsouza/zoxide) (TODO)
 - Version manager(s):
   - ruby
   - groovy

@@ -1,0 +1,50 @@
+---
+# Diff so fancy installation
+# For configuration/implementation, refer to `shell` role GIT configuration
+#
+# Source: https://github.com/so-fancy/diff-so-fancy
+
+- name: "[Diff-so-fancy] Get latest version if requested"
+  shell: curl -s https://api.github.com/repos/so-fancy/diff-so-fancy/releases/latest | jq .name -r | cut -f2 -d'v'
+  register: version
+  changed_when: false
+  ignore_errors: true
+  args:
+    warn: off
+  when: versions['diff-so-fancy'] == 'latest'
+
+- name: "[Diff-so-fancy] Set version to {{ version.stdout | default(versions['diff-so-fancy']) }}"
+  set_fact:
+    dsf_version: "v{{ version.stdout | default(versions['diff-so-fancy']) }}"
+
+- name: "[Diff-so-fancy] Set proper download URL"
+  set_fact:
+    dsf_url: "https://github.com/so-fancy/diff-so-fancy/releases/download/{{ dsf_version }}/diff-so-fancy"
+
+- name: "[Diff-so-fancy] Check if Diff-so-fancy {{ dsf_version }} is installed"
+  stat:
+    path: "{{ local_opt_dir }}/diff-so-fancy-{{ dsf_version }}"
+  register: dsf_dir
+
+- name: "Installation"
+  block:
+
+    - name: "[Diff-so-fancy] Create directory in {{ local_opt_dir }}"
+      file:
+        path: "{{ local_opt_dir }}/diff-so-fancy-{{ dsf_version }}"
+        state: directory
+
+    - name: "[Diff-so-fancy] Download Diff-so-fancy {{ dsf_version }}"
+      get_url:
+        url: "{{ dsf_url }}"
+        dest: "{{ local_opt_dir }}/diff-so-fancy-{{ dsf_version }}/diff-so-fancy"
+        mode: '0755'
+
+    - name: "[Diff-so-fancy] Link {{ dsf_version }} binary"
+      ansible.builtin.file:
+        src: "{{ local_opt_dir }}/diff-so-fancy-{{ dsf_version }}/diff-so-fancy"
+        dest: "{{ local_bin_dir }}/diff-so-fancy"
+        state: link
+        force: true
+
+  when: not dsf_dir.stat.exists

@@ -1,0 +1,58 @@
+# Zoxide installation
+# For usage see README.md
+#
+# Source: https://github.com/ajeetdsouza/zoxide
+---
+
+- name: "[Zoxide] Get latest version if requested"
+  shell: curl -s https://api.github.com/repos/ajeetdsouza/zoxide/releases/latest | jq .name -r | cut -f2 -d'v'
+  register: version
+  changed_when: false
+  ignore_errors: true
+  args:
+    warn: off
+  when: versions['zoxide'] == 'latest'
+
+- name: "[Zoxide] Set version to {{ version.stdout | default(versions['zoxide']) }}"
+  set_fact:
+    zoxide_version: "v{{ version.stdout | default(versions['zoxide']) }}"
+
+- name: "[Zoxide] Set proper download URL"
+  set_fact:
+    zoxide_url: "https://github.com/ajeetdsouza/zoxide/releases/download/{{ zoxide_version }}/zoxide-{{ zoxide_version }}-x86_64-unknown-linux-musl.tar.gz"
+
+- name: "[Zoxide] Check if Zoxide {{ zoxide_version }} is installed"
+  stat:
+    path: "{{ local_opt_dir }}/zoxide-{{ zoxide_version }}"
+  register: zoxide_dir
+
+- name: "Installation"
+  block:
+    - name: "[Zoxide] Download Zoxide {{ zoxide_version }}"
+      get_url:
+        url: "{{ zoxide_url }}"
+        dest: "/tmp/zoxide-{{ zoxide_version }}.tar.gz"
+        mode: '0755'
+
+    - name: "[Zoxide] Create directory in {{ local_opt_dir }}"
+      file:
+        path: "{{ local_opt_dir }}/zoxide-{{ zoxide_version }}"
+        state: directory
+
+    - name: "[Zoxide] Untar archive"
+      unarchive:
+        src: "/tmp/zoxide-{{ zoxide_version }}.tar.gz"
+        dest: "{{ local_opt_dir }}/zoxide-{{ zoxide_version }}"
+
+    - name: "[Zoxide] Link {{ zoxide_version }} binary"
+      ansible.builtin.file:
+        src: "{{ local_opt_dir }}/zoxide-{{ zoxide_version }}/zoxide"
+        dest: "{{ local_bin_dir }}/zoxide"
+        state: link
+        force: true
+
+    - name: "[Zoxide] Cleanup tar.gz file"
+      file:
+        path: "/tmp/zoxide-{{ zoxide_version }}.tar.gz"
+        state: absent
+  when: not zoxide_dir.stat.exists

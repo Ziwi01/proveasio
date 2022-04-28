@@ -1,0 +1,49 @@
+---
+# BAT (cat replacement)
+# For usage see README.md
+#
+# Source: https://github.com/sharkdp/bat
+
+- name: "[BAT] Check installed BAT version"
+  command: dpkg-query -W bat
+  register: bat_check_deb
+  ignore_errors: true
+  changed_when: bat_check_deb.rc > 1
+  failed_when: bat_check_deb.rc > 1
+  args:
+    warn: off
+
+- name: "[BAT] Get latest version if requested"
+  shell: curl -s https://api.github.com/repos/sharkdp/bat/releases/latest | jq .name -r | cut -f2 -d'v'
+  register: version
+  changed_when: false
+  ignore_errors: true
+  args:
+    warn: off
+  when: versions['bat'] == 'latest'
+
+- name: "[BAT] Set version to {{ version.stdout | default(versions['bat']) }}"
+  set_fact:
+    bat_version: "{{ version.stdout | default(versions['bat']) }}"
+
+- name: "[BAT] Set proper download URL"
+  set_fact:
+    bat_url: "https://github.com/sharkdp/bat/releases/download/v{{ bat_version }}/bat_{{ bat_version }}_amd64.deb"
+
+- name: "Installation"
+  block:
+    - name: "[BAT] Create directory in {{ local_opt_dir }}"
+      file:
+        path: "{{ local_opt_dir }}/bat-{{ bat_version }}"
+        state: directory
+
+    - name: "[BAT] Download BAT {{ bat_version }}"
+      get_url:
+        url: "{{ bat_url }}"
+        dest: "{{ local_opt_dir }}/bat-{{ bat_version }}"
+        mode: '0755'
+
+    - name: "[BAT] Install {{ bat_version }} .deb package"
+      apt: deb="{{ local_opt_dir }}/bat-{{ bat_version }}/bat_{{ bat_version }}_amd64.deb"
+      become: True
+  when: bat_check_deb.stdout | regex_search('[0-9]+\.[0-9]+\.[0-9]+') | default(0) != bat_version

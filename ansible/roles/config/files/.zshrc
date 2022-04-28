@@ -80,6 +80,7 @@ ZSH_THEME="powerlevel10k/powerlevel10k"
 # Add wisely, as too many plugins slow down shell startup.
 plugins=(
     git
+    docker
     colorize
     helm
     rvm
@@ -97,10 +98,6 @@ plugins=(
 )
 
 source $ZSH/oh-my-zsh.sh
-
-# User configuration
-export GEM_SOURCE=http://xxnexus3.gtk.gtech.com/repository/rubygems-all/
-export ANSIBLE_TRANSFORM_INVALID_GROUP_CHARS=ignore
 
 # export MANPATH="/usr/local/man:$MANPATH"
 
@@ -230,6 +227,8 @@ alias gd='git-fuzzy diff'
 ### Other exports
 export EDITOR='vim'
 export MANPAGER="sh -c 'col -bx | bat -l man -p'"
+export GEM_SOURCE=http://xxnexus3.gtk.gtech.com/repository/rubygems-all/
+export ANSIBLE_TRANSFORM_INVALID_GROUP_CHARS=ignore
 
 # To customize prompt, run `p10k configure` or edit ~/.p10k.zsh.
 [[ ! -f ~/.p10k.zsh ]] || source ~/.p10k.zsh

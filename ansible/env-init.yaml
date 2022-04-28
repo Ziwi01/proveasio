@@ -1,13 +1,10 @@
 - hosts: wsl
   vars_files:
     - vars/environment.yml
-    - vars/versions.yml
-    - vars/packages.yml
   ### Comment out roles you don't need ###
   roles:
-    - packages
-    - shell
-    - ops
+    - software
+    - config
 #    - dev
   ### Set this in vars/environment! ###
   user: "{{ user }}"

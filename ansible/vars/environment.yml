@@ -1,7 +1,7 @@
 ---
 # WSL2 username
 user: ziwi
-# .gitconfig
+
 git:
-  name: John Smith
-  mail: john.smith@example.com
+  name: Ziwi
+  mail: ziwi01@gmail.com

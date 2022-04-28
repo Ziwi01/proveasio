@@ -1,0 +1,42 @@
+---
+# Specific versions for software
+# Fixed versions should be set without `v` prefix (e.g: 1.4.3)
+versions:
+  diff-so-fancy: latest 
+  bat: latest
+  zoxide: latest
+  helm: latest
+  thefuck: latest
+
+# Useful packages
+packages:
+  - vim
+  - git
+  - curl
+  - tmux
+  - unzip
+  - mlocate
+  - tree
+  - htop
+  - jq
+  - gcc
+  - zip
+  - ctags
+
+# FZF
+fzf_git_url: "https://github.com/junegunn/fzf.git"
+fzf_home: "{{ ansible_env.HOME }}/.fzf"
+
+# Oh-My-Zsh
+omz_home: "{{ ansible_env.HOME }}/.oh-my-zsh"
+omz_plugins:
+  fzf-tab: https://github.com/Aloxaf/fzf-tab
+  k: https://github.com/supercrabtree/k
+  you-should-use: https://github.com/MichaelAquilina/zsh-you-should-use.git
+  zsh-autosuggestions: https://github.com/zsh-users/zsh-autosuggestions
+  zsh-syntax-highlighting: https://github.com/zsh-users/zsh-syntax-highlighting.git
+  zsh-sdkman: https://github.com/matthieusb/zsh-sdkman.git
+
+# OS
+local_bin_dir: "{{ ansible_env.HOME }}/.local/bin"
+local_opt_dir: "{{ local_opt_dir }}"

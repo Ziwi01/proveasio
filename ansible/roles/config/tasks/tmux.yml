@@ -1,0 +1,19 @@
+---
+- name: "[Config] Check for .tmux.conf"
+  stat:
+    path: "{{ ansible_env.HOME }}/.tmux.conf"
+  register: tmux_config
+
+- name: "[Config] Backup .tmux.conf. Backup flag is: {{ tmuxconf_backup | default(dotfiles_backup) }}"
+  ansible.builtin.copy:
+    src: "{{ ansible_env.HOME }}/.tmux.conf"
+    dest: "{{ dotfiles_backup_dir }}/.tmux.conf-{{ lookup('pipe','date +%Y-%m-%d-%H-%M-%S') }}"
+    remote_src: yes
+  when: tmux_config.stat.exists and tmuxconf_backup | default(dotfiles_backup) | bool
+
+- name: "[Config] Overwrite .tmux.conf. Overwrite flag is: {{ tmuxconf_overwrite | default(dotfiles_overwrite) }}"
+  ansible.builtin.copy:
+    src: .tmux.conf
+    dest: "{{ ansible_env.HOME }}/.tmux.conf"
+    mode: '0644'
+  when: tmuxconf_overwrite | default(dotfiles_overwrite) | bool

@@ -1,0 +1,5 @@
+languages:
+  ruby:
+    version: 2.6.3
+  nodejs:
+    version: 14.17.0

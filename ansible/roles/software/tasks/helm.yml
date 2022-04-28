@@ -1,0 +1,59 @@
+# Helm 3 Kubernetes package manager
+#
+# Sources:
+#  - https://helm.sh/
+#  - https://github.com/helm/helm
+---
+
+- name: "[Helm] Get latest version if requested"
+  shell: curl -s https://api.github.com/repos/helm/helm/releases/latest | jq .name -r | cut -f2 -d'v'
+  register: version
+  changed_when: false
+  ignore_errors: true
+  args:
+    warn: off
+  when: versions['helm'] == 'latest'
+
+- name: "[Helm] Set version to {{ version.stdout | default(versions['helm']) }}"
+  set_fact:
+    helm_version: "v{{ version.stdout | default(versions['helm']) }}"
+
+- name: "[Helm] Set proper download URL"
+  set_fact:
+    helm_url: "https://get.helm.sh/helm-{{ helm_version }}-linux-amd64.tar.gz"
+
+- name: "[Helm] Check if Helm {{ helm_version }} is installed"
+  stat:
+    path: "{{ local_opt_dir }}/helm-{{ helm_version }}"
+  register: helm_dir
+
+- name: "Installation"
+  block:
+    - name: "[Helm] Download Helm {{ helm_version }}"
+      get_url:
+        url: "{{ helm_url }}"
+        dest: "/tmp/helm-{{ helm_version }}.tar.gz"
+        mode: '0755'
+
+    - name: "[Helm] Create directory in {{ local_opt_dir }}"
+      file:
+        path: "{{ local_opt_dir }}/helm-{{ helm_version }}"
+        state: directory
+
+    - name: "[Helm] Untar archive"
+      unarchive:
+        src: "/tmp/helm-{{ helm_version }}.tar.gz"
+        dest: "{{ local_opt_dir }}/helm-{{ helm_version }}"
+
+    - name: "[Helm] Link {{ helm_version }} binary"
+      ansible.builtin.file:
+        src: "{{ local_opt_dir }}/helm-{{ helm_version }}/linux-amd64/helm"
+        dest: "{{ local_bin_dir }}/helm"
+        state: link
+        force: true
+
+    - name: "[Helm] Cleanup tar.gz file"
+      file:
+        path: "/tmp/helm-{{ helm_version }}.tar.gz"
+        state: absent
+  when: not helm_dir.stat.exists

@@ -1,0 +1,4 @@
+---
+# FZF
+- name: "[FZF] Run install script"
+  shell: "{{ fzf_home }}/install"

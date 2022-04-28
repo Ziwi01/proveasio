@@ -1,4 +1,3 @@
----
 - name: '[Packages] Update OS packages list'
   become: true
   package:

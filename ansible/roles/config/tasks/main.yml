@@ -1,0 +1,19 @@
+# Configure necessary software (mostly dotfiles)
+# For setting backup/overwrite options see `vars/main.yml`
+---
+- name: "[Config] Create backup dir {{ dotfiles_backup_dir }}"
+  file:
+    path: "{{ dotfiles_backup_dir }}"
+    state: directory
+
+- include_tasks: zsh.yml
+
+- include_tasks: p10k.yml
+
+- include_tasks: vim.yml
+
+- include_tasks: tmux.yml
+
+- include_tasks: git.yml
+
+- include_tasks: git.yml

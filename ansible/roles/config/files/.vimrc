@@ -1,4 +1,3 @@
-"autocmd BufEnter * silent! lcd !echo $PWD
 autocmd BufEnter * lcd $PWD
 set autochdir
 autocmd VimEnter * set autochdir
@@ -40,6 +39,7 @@ if !filereadable(vundle_readme)
   silent !mkdir -p .vim/bundle
   silent !mkdir -p .vim/tmp
   silent !mkdir -p .vim/backup
+  silent !mkdir -p .vim/colors
   silent !git clone https://github.com/VundleVim/Vundle.vim .vim/bundle/Vundle.vim
   let i_have_vundle=0
 endif
@@ -49,7 +49,7 @@ filetype off
 set rtp+=$HOME/.vim/bundle/Vundle.vim
 call vundle#begin('$HOME/.vim/bundle/')
 Plugin 'VundleVim/Vundle.vim'             "Plugin manager
-Plugin 'Ziwi01/ide.vim'                   "Main vimrc configuration
+"Plugin 'Ziwi01/ide.vim'                   "Main vimrc configuration
 Plugin 'junegunn/fzf'                     "Fuzzy finder
 Plugin 'junegunn/fzf.vim'                 "Fuzzy finder
 Plugin 'scrooloose/nerdtree'              "File manager
@@ -87,40 +87,6 @@ call vundle#end()
 
 " Enable filetype for autocmd
 filetype plugin indent on
-
-" Source main config file for windows
-if has("win32")
-  " Fix for vimdiff on windows
-  set diffexpr=MyDiff()
-  function MyDiff()
-    let opt = '-a --binary '
-    if &diffopt =~ 'icase' | let opt = opt . '-i ' | endif
-    if &diffopt =~ 'iwhite' | let opt = opt . '-b ' | endif
-    let arg1 = v:fname_in
-    if arg1 =~ ' ' | let arg1 = '"' . arg1 . '"' | endif
-    let arg2 = v:fname_new
-    if arg2 =~ ' ' | let arg2 = '"' . arg2 . '"' | endif
-    let arg3 = v:fname_out
-    if arg3 =~ ' ' | let arg3 = '"' . arg3 . '"' | endif
-    if $VIMRUNTIME =~ ' '
-      if &sh =~ '\<cmd'
-        if empty(&shellxquote)
-          let l:shxq_sav = ''
-          set shellxquote&
-        endif
-        let cmd = '"' . $VIMRUNTIME . '\diff"'
-      else
-        let cmd = substitute($VIMRUNTIME, ' ', '" ', '') . '\diff"'
-      endif
-    else
-      let cmd = $VIMRUNTIME . '\diff'
-    endif
-    silent execute '!' . cmd . ' ' . opt . arg1 . ' ' . arg2 . ' > ' . arg3
-    if exists('l:shxq_sav')
-      let &shellxquote=l:shxq_sav
-    endif
-  endfunction
-endif
 
 " Set files and directories
 set directory=~/.vim/tmp
@@ -165,17 +131,8 @@ source $VIMRUNTIME/menu.vim
 set fileformat=unix
 set fileformats=unix,dos
 
-" Set font for Gvim
-set guifont=Consolas:h9
-
 " Disable mouse tips
 "set guioptions-=T
-
-" Disable gvim menus ant toolbars
-set go-=m
-set go-=T
-set go-=r
-set go-=L
 
 " Search options
 set hlsearch
@@ -292,13 +249,6 @@ let g:mucomplete#chains = {
       \ 'ruby' : [ 'path', 'omni', 'keyn', 'keyp', 'c-n', 'c-p', 'uspl', 'ulti', 'tags' ],
       \ }
 
-" CtrlP
-let g:ctrlp_match_window = 'bottom,order:btt,min:1,max:15,results:30'
-let g:ctrlp_show_hidden = 1
-let g:ctrlp_custom_ignore = {
-\ 'dir':  '\.git$\|\.svn$\|\.hg$\|\.yardoc$\|node_modules\|spec\\fixtures\\modules$',
-\ }
-
 " vim-puppet
 " Enable => autointent
 let g:puppet_align_hashes = 1
@@ -316,11 +266,7 @@ let g:ale_warn_about_trailing_whitespace=1
 let g:ale_fixers = {
 \   '*': ['remove_trailing_lines', 'trim_whitespace'],
 \ }
-if has("win32")
-  let g:ale_ruby_rubocop_options = '-c %USERPROFILE%\.rubocop.yaml'
-else
-  let g:ale_ruby_rubocop_options = '-c ~/.rubocop.yaml'
-endif
+let g:ale_ruby_rubocop_options = '-c ~/.rubocop.yaml'
 let g:ale_lint_on_save = 1
 let g:ale_lint_on_text_changed = 0
 let g:ale_fix_on_save = 1
@@ -341,7 +287,6 @@ endfunction
 " Disable folding for .md files
 let g:vim_markdown_folding_disabled = 1
 let g:vim_markdown_conceal = 0
-
 
 " Yank
 let g:yankstack_map_keys = 0
@@ -385,7 +330,7 @@ au BufNewFile,BufReadPost *.yml setlocal tabstop=2 shiftwidth=2 syntax=yaml file
 au BufNewFile,BufReadPost *.bat setlocal tabstop=2 shiftwidth=2 ff=dos
 au BufNewFile,BufReadPost *.md setlocal textwidth=80
 
-" Run rspec on Windows 10 with WFL
+" Run rspec on Windows 10 with WSL
 autocmd Filetype ruby let b:dispatch = "bash.exe --login -c \"echo '%' \| tr -s '\\' '/' \| xargs -i rspec {}\""
 autocmd Filetype groovy let b:dispatch = 'gradlew clean test'
 nnoremap <F7> :Dispatch<CR>
@@ -417,7 +362,6 @@ let g:EditorConfig_exclude_patterns = ['fugitive://.*']
 nmap du :wincmd w<cr>:normal u<cr>:wincmd w<cr>
 
 "NerdTree auto open
-"autocmd VimEnter * wincmd p
 autocmd StdinReadPre * let s:std_in=1
 autocmd VimEnter * if argc() == 0 && !exists("s:std_in") | NERDTree | endif
 
@@ -427,7 +371,7 @@ autocmd bufenter * if (winnr("$") == 1 && exists("b:NERDTree") && b:NERDTree.isT
 "Toggle NerdTree using tf
 nnoremap tf :NERDTreeToggle<CR>
 
-"let g:NERDTreeIndicatorMapCustom = {
+"NerdTree Git icons
 let g:NERDTreeGitStatusIndicatorMapCustom = {
     \ "Modified"  : "✹",
     \ "Staged"    : "✚",
@@ -440,6 +384,7 @@ let g:NERDTreeGitStatusIndicatorMapCustom = {
     \ "Unknown"   : "?"
     \ }
 
+"Add function to diff current unsaved changes with local saved file
 function! s:DiffWithSaved()
   let filetype=&ft
   diffthis

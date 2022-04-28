@@ -1,0 +1,21 @@
+# Configure .zshrc
+# Set backup/overwrite flags in `vars/main.yml`
+---
+- name: "[Config][ZSH] Check for .zshrc"
+  stat:
+    path: "{{ ansible_env.HOME }}/.zshrc"
+  register: zshrc_config
+
+- name: "[Config][ZSH] Backup .zshrc. Backup flag is: {{ zshrc_backup | default(dotfiles_backup) }}"
+  ansible.builtin.copy:
+    src: "{{ ansible_env.HOME }}/.zshrc"
+    dest: "{{ dotfiles_backup_dir }}/.zshrc-{{ lookup('pipe','date +%Y-%m-%d-%H-%M-%S') }}"
+    remote_src: yes
+  when: zshrc_config.stat.exists and zshrc_backup | default(dotfiles_backup) | bool
+
+- name: "[Config][ZSH] Overwrite .zshrc. Overwrite flag is: {{ zshrc_overwrite | default(dotfiles_overwrite) }}"
+  ansible.builtin.copy:
+    src: .zshrc
+    dest: "{{ ansible_env.HOME }}/.zshrc"
+    mode: '0644'
+  when: zshrc_overwrite | default(dotfiles_overwrite) | bool

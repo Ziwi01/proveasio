@@ -1,0 +1,12 @@
+# Fuzzy finder
+# Source: https://github.com/junegunn/fzf
+---
+- name: "[FZF] Clone/update latest version"
+  git:
+    repo: "{{ fzf_git_url }}"
+    dest: "{{ fzf_home }}"
+    update: yes
+  notify: "[FZF] Run install script"
+
+- name: Flush handlers
+  meta: flush_handlers

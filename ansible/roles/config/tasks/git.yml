@@ -1,0 +1,21 @@
+
+# Configure GIT
+# Set backup/overwrite flags in `vars/main.yml`
+---
+- name: "[Config][git] Check for .gitconfig"
+  stat:
+    path: "{{ ansible_env.HOME }}/.gitconfig"
+  register: gitconfig_config
+
+- name: "[Config][git] Backup .gitconfig. Backup flag is: {{ gitconfig_backup | default(dotfiles_backup) }}"
+  ansible.builtin.copy:
+    src: "{{ ansible_env.HOME }}/.gitconfig"
+    dest: "{{ dotfiles_backup_dir }}/.gitconfig-{{ lookup('pipe','date +%Y-%m-%d-%H-%M-%S') }}"
+    remote_src: yes
+  when: gitconfig_config.stat.exists and gitconfig_backup | default(dotfiles_backup) | bool
+
+- name: "[Config][git] Overwrite .gitconfig. Overwrite flag is: {{ gitconfig_overwrite | default(dotfiles_overwrite) }}"
+  ansible.builtin.template:
+    src: gitconfig.j2
+    dest: "{{ ansible_env.HOME }}/.gitconfig"
+  when: gitconfig_overwrite | default(dotfiles_overwrite) | bool

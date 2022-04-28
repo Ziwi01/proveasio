@@ -1,0 +1,26 @@
+---
+# Common software
+- include_tasks: packages.yml
+
+# FZF (fuzzy-finder)
+- include_tasks: fzf.yml
+
+# Diff-so-fancy
+- include_tasks: dsf.yml
+
+# TODO: Add git-fuzzy installation
+
+# thefuck
+- include_tasks: tf.yml
+
+# BAT
+- include_tasks: bat.yml
+
+# Zoxide
+- include_tasks: zoxide.yml
+
+# Helm
+- include_tasks: helm.yml
+
+# ZSH
+- include_tasks: zsh.yml

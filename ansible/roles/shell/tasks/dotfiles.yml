@@ -1,6 +1,0 @@
----
-# TODO: Copy necessary dotfiles from root
-
-# TODO: Setup VIM
-- name: '[Shell] Run PlugInstall in Vim'
-  shell: vim +'PlugInstall --sync' +qa
