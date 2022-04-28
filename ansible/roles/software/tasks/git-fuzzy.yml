@@ -1,0 +1,10 @@
+# Git fuzzy installation
+# For usage see README.md
+#
+# Source: https://github.com/bigH/git-fuzzy.git
+---
+- name: "[Git-fuzzy] Clone/update latest version"
+  git:
+    repo: "{{ git_fuzzy_url }}"
+    dest: "{{ git_fuzzy_home }}"
+    update: yes

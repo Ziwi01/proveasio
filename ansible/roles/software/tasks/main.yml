@@ -6,12 +6,13 @@
 - include_tasks: fzf.yml
 
 # Diff-so-fancy
-- include_tasks: dsf.yml
+- include_tasks: diff-so-fancy.yml
 
-# TODO: Add git-fuzzy installation
+# Git-fuzzy
+- include_tasks: git-fuzzy.yml
 
 # thefuck
-- include_tasks: tf.yml
+- include_tasks: thefuck.yml
 
 # BAT
 - include_tasks: bat.yml

@@ -220,7 +220,7 @@ alias gb='fzf-git-branch'
 alias gco='fzf-git-checkout' # usage: `gco` for search window or `gco <branch_name>` for particular branch
 
 # Git-fuzzy
-export PATH="$HOME/.git-fuzzy/bin:$PATH"
+export PATH="$HOME/.local/opt/git-fuzzy/bin:$PATH"
 alias glo='git-fuzzy log'
 alias gd='git-fuzzy diff'
 
