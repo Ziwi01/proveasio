@@ -32,7 +32,7 @@ fzf_git_url: "https://github.com/junegunn/fzf.git"
 fzf_home: "{{ ansible_env.HOME }}/.fzf"
 
 git_fuzzy_url: "https://github.com/bigH/git-fuzzy.git"
-git_fuzzy_home: "{{ local_opt_dir }}/git-fuzzy"
+git_fuzzy_home: "{{ ansible_env.HOME }}/.local/opt/git-fuzzy"
 
 # Oh-My-Zsh
 omz_home: "{{ ansible_env.HOME }}/.oh-my-zsh"

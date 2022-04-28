@@ -223,6 +223,7 @@ alias gco='fzf-git-checkout' # usage: `gco` for search window or `gco <branch_na
 export PATH="$HOME/.local/opt/git-fuzzy/bin:$PATH"
 alias glo='git-fuzzy log'
 alias gd='git-fuzzy diff'
+alias gst='git-fuzzy status'
 
 ### Other exports
 export EDITOR='vim'

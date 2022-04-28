@@ -24,7 +24,7 @@
 
 - name: "[Helm] Check if Helm {{ helm_version }} is installed"
   stat:
-    path: "{{ local_opt_dir }}/helm-{{ helm_version }}"
+    path: "{{ ansible_env.HOME }}/.local/opt/helm-{{ helm_version }}"
   register: helm_dir
 
 - name: "Installation"
@@ -35,20 +35,20 @@
         dest: "/tmp/helm-{{ helm_version }}.tar.gz"
         mode: '0755'
 
-    - name: "[Helm] Create directory in {{ local_opt_dir }}"
+    - name: "[Helm] Create directory in {{ ansible_env.HOME }}/.local/opt"
       file:
-        path: "{{ local_opt_dir }}/helm-{{ helm_version }}"
+        path: "{{ ansible_env.HOME }}/.local/opt/helm-{{ helm_version }}"
         state: directory
 
     - name: "[Helm] Untar archive"
       unarchive:
         src: "/tmp/helm-{{ helm_version }}.tar.gz"
-        dest: "{{ local_opt_dir }}/helm-{{ helm_version }}"
+        dest: "{{ ansible_env.HOME }}/.local/opt/helm-{{ helm_version }}"
 
     - name: "[Helm] Link {{ helm_version }} binary"
       ansible.builtin.file:
-        src: "{{ local_opt_dir }}/helm-{{ helm_version }}/linux-amd64/helm"
-        dest: "{{ local_bin_dir }}/helm"
+        src: "{{ ansible_env.HOME }}/.local/opt/helm-{{ helm_version }}/linux-amd64/helm"
+        dest: "{{ ansible_env.HOME }}/.local/bin/helm"
         state: link
         force: true
 

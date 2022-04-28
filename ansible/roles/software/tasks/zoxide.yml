@@ -23,7 +23,7 @@
 
 - name: "[Zoxide] Check if Zoxide {{ zoxide_version }} is installed"
   stat:
-    path: "{{ local_opt_dir }}/zoxide-{{ zoxide_version }}"
+    path: "{{ ansible_env.HOME }}/.local/opt/zoxide-{{ zoxide_version }}"
   register: zoxide_dir
 
 - name: "Installation"
@@ -34,20 +34,20 @@
         dest: "/tmp/zoxide-{{ zoxide_version }}.tar.gz"
         mode: '0755'
 
-    - name: "[Zoxide] Create directory in {{ local_opt_dir }}"
+    - name: "[Zoxide] Create directory in {{ ansible_env.HOME }}/.local/opt"
       file:
-        path: "{{ local_opt_dir }}/zoxide-{{ zoxide_version }}"
+        path: "{{ ansible_env.HOME }}/.local/opt/zoxide-{{ zoxide_version }}"
         state: directory
 
     - name: "[Zoxide] Untar archive"
       unarchive:
         src: "/tmp/zoxide-{{ zoxide_version }}.tar.gz"
-        dest: "{{ local_opt_dir }}/zoxide-{{ zoxide_version }}"
+        dest: "{{ ansible_env.HOME }}/.local/opt/zoxide-{{ zoxide_version }}"
 
     - name: "[Zoxide] Link {{ zoxide_version }} binary"
       ansible.builtin.file:
-        src: "{{ local_opt_dir }}/zoxide-{{ zoxide_version }}/zoxide"
-        dest: "{{ local_bin_dir }}/zoxide"
+        src: "{{ ansible_env.HOME }}/.local/opt/zoxide-{{ zoxide_version }}/zoxide"
+        dest: "{{ ansible_env.HOME }}/.local/bin/zoxide"
         state: link
         force: true
 

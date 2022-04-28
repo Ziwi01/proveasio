@@ -32,18 +32,18 @@
 
 - name: "Installation"
   block:
-    - name: "[BAT] Create directory in {{ local_opt_dir }}"
+    - name: "[BAT] Create directory in {{ ansible_env.HOME }}/.local/opt"
       file:
-        path: "{{ local_opt_dir }}/bat-{{ bat_version }}"
+        path: "{{ ansible_env.HOME }}/.local/opt/bat-{{ bat_version }}"
         state: directory
 
     - name: "[BAT] Download BAT {{ bat_version }}"
       get_url:
         url: "{{ bat_url }}"
-        dest: "{{ local_opt_dir }}/bat-{{ bat_version }}"
+        dest: "{{ ansible_env.HOME }}/.local/opt/bat-{{ bat_version }}"
         mode: '0755'
 
     - name: "[BAT] Install {{ bat_version }} .deb package"
-      apt: deb="{{ local_opt_dir }}/bat-{{ bat_version }}/bat_{{ bat_version }}_amd64.deb"
+      apt: deb="{{ ansible_env.HOME }}/.local/opt/bat-{{ bat_version }}/bat_{{ bat_version }}_amd64.deb"
       become: True
   when: bat_check_deb.stdout | regex_search('[0-9]+\.[0-9]+\.[0-9]+') | default(0) != bat_version

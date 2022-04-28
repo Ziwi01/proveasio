@@ -23,27 +23,27 @@
 
 - name: "[Diff-so-fancy] Check if Diff-so-fancy {{ dsf_version }} is installed"
   stat:
-    path: "{{ local_opt_dir }}/diff-so-fancy-{{ dsf_version }}"
+    path: "{{ ansible_env.HOME }}/.local/opt/diff-so-fancy-{{ dsf_version }}"
   register: dsf_dir
 
 - name: "Installation"
   block:
 
-    - name: "[Diff-so-fancy] Create directory in {{ local_opt_dir }}"
+    - name: "[Diff-so-fancy] Create directory in {{ ansible_env.HOME }}/.local/opt"
       file:
-        path: "{{ local_opt_dir }}/diff-so-fancy-{{ dsf_version }}"
+        path: "{{ ansible_env.HOME }}/.local/opt/diff-so-fancy-{{ dsf_version }}"
         state: directory
 
     - name: "[Diff-so-fancy] Download Diff-so-fancy {{ dsf_version }}"
       get_url:
         url: "{{ dsf_url }}"
-        dest: "{{ local_opt_dir }}/diff-so-fancy-{{ dsf_version }}/diff-so-fancy"
+        dest: "{{ ansible_env.HOME }}/.local/opt/diff-so-fancy-{{ dsf_version }}/diff-so-fancy"
         mode: '0755'
 
     - name: "[Diff-so-fancy] Link {{ dsf_version }} binary"
       ansible.builtin.file:
-        src: "{{ local_opt_dir }}/diff-so-fancy-{{ dsf_version }}/diff-so-fancy"
-        dest: "{{ local_bin_dir }}/diff-so-fancy"
+        src: "{{ ansible_env.HOME }}/.local/opt/diff-so-fancy-{{ dsf_version }}/diff-so-fancy"
+        dest: "{{ ansible_env.HOME }}/.local/bin/diff-so-fancy"
         state: link
         force: true
 
