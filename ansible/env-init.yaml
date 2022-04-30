@@ -3,8 +3,8 @@
     - vars/environment.yml
   ### Comment out roles you don't need ###
   roles:
-    - software
-    - config
-#    - dev
+    # - software
+    # - config
+    - dev
   ### Set this in vars/environment! ###
   user: "{{ user }}"

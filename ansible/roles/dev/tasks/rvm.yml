@@ -1,1 +1,48 @@
+# Use official ansible role for RVM installation
+# Source: https://github.com/rvm/rvm1-ansible
 ---
+- name: "[RVM] Get latest version if requested"
+  shell: curl -s https://api.github.com/repos/rvm/rvm1-ansible/releases/latest | jq .name -r | cut -f2 -d'v'
+  register: version
+  changed_when: false
+  ignore_errors: true
+  args:
+    warn: off
+  when: rvm1_ansible_role_version == 'latest'
+
+- name: "[RVM] Set version to {{ version.stdout | default(rvm1_ansible_role_version) }}"
+  set_fact:
+    rvm_role_version: "{{ version.stdout | default(rvm1_ansible_role_version) }}"
+
+- name: "[RVM] Set proper download URL"
+  set_fact:
+    rvm_role_url: "https://github.com/rvm/rvm1-ansible/archive/refs/tags/v{{ rvm_role_version }}.tar.gz"
+
+- name: "[RVM] Check if we have RVM ansible role {{ rvm_role_version }} source"
+  stat:
+    path: "{{ ansible_env.HOME }}/.local/opt/rvm1-ansible-{{ rvm_role_version }}"
+  register: rvm1_ansible_dir
+
+- name: "Get RVM ansible role"
+  block:
+    - name: "[RVM] Download RVM ansible role {{ rvm_role_version }}"
+      get_url:
+        url: "{{ rvm_role_url }}"
+        dest: "/tmp/rvm1-ansible-{{ rvm_role_version }}.tar.gz"
+        mode: '0755'
+
+    - name: "[RVM] Untar archive"
+      unarchive:
+        src: "/tmp/rvm1-ansible-{{ rvm_role_version }}.tar.gz"
+        dest: "{{ ansible_env.HOME }}/.local/opt"
+
+    - name: "[RVM] Cleanup tar.gz file"
+      file:
+        path: "/tmp/rvm1-ansible-{{ rvm_role_version }}.tar.gz"
+        state: absent
+  when: not rvm1_ansible_dir.stat.exists
+
+- name: "[RVM] Install RVM and rubies"
+  include_role:
+    name: "{{ ansible_env.HOME }}/.local/opt/rvm1-ansible-{{ rvm_role_version }}"
+  

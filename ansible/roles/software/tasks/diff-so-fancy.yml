@@ -46,5 +46,4 @@
         dest: "{{ ansible_env.HOME }}/.local/bin/diff-so-fancy"
         state: link
         force: true
-
   when: not dsf_dir.stat.exists

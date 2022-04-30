@@ -1,4 +1,14 @@
 ---
+
+# Ensure local bin/opt directories are there
+- name: "[Software] Ensure `~/.local/*` directories are there"
+  file:
+    path: "{{ ansible_env.HOME }}/.local/{{ item }}"
+    state: directory
+  loop:
+    - bin
+    - opt
+
 # Common software
 - include_tasks: packages.yml
 

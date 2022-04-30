@@ -1,8 +1,5 @@
 ---
-# Language Version Management
-#- include_tasks: asdf.yml # TODO: Install asdf + manage needed languages
-
 # Languages
 - include_tasks: rvm.yml
-- include_tasks: npm.yml
-- include_tasks: sdkman.yml # TODO
+# - include_tasks: npm.yml
+# - include_tasks: sdkman.yml # TODO

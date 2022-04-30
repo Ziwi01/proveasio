@@ -23,10 +23,6 @@ packages:
   - zip
   - ctags
 
-# OS
-local_bin_dir: "{{ ansible_env.HOME }}/.local/bin"
-local_opt_dir: "{{ ansible_env.HOME }}/.local/opt"
-
 # FZF
 fzf_git_url: "https://github.com/junegunn/fzf.git"
 fzf_home: "{{ ansible_env.HOME }}/.fzf"

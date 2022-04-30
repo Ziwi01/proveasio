@@ -20,9 +20,6 @@ set nocompatible
 
 " Set language
 set langmenu=en_US.UTF-8
-if has("win32")
-  language en
-endif
 
 " Apply defaults everyone wants
 source $VIMRUNTIME/vimrc_example.vim
@@ -49,7 +46,6 @@ filetype off
 set rtp+=$HOME/.vim/bundle/Vundle.vim
 call vundle#begin('$HOME/.vim/bundle/')
 Plugin 'VundleVim/Vundle.vim'             "Plugin manager
-"Plugin 'Ziwi01/ide.vim'                   "Main vimrc configuration
 Plugin 'junegunn/fzf'                     "Fuzzy finder
 Plugin 'junegunn/fzf.vim'                 "Fuzzy finder
 Plugin 'scrooloose/nerdtree'              "File manager
@@ -138,7 +134,7 @@ set fileformats=unix,dos
 set hlsearch
 set incsearch
 
-" Setup encoding for cygwin mostly
+" Setup encoding
 setglobal fileencoding=utf-8
 set encoding=utf-8
 set fileencodings=utf-8
@@ -232,7 +228,7 @@ let OmniCpp_GlobalScopeSearch = 1
 let OmniCpp_DisplayMode = 1
 let OmniCpp_ShowAccess = 1
 set shortmess+=c
-" Disable to scan inlucdes and tags since it tends to work very slow
+" Disable to scan includes and tags since it tends to work very slow
 set complete-=i
 set complete-=t
 
@@ -335,7 +331,7 @@ autocmd Filetype ruby let b:dispatch = "bash.exe --login -c \"echo '%' \| tr -s 
 autocmd Filetype groovy let b:dispatch = 'gradlew clean test'
 nnoremap <F7> :Dispatch<CR>
 
-" Ruby change syntaxt to 2.1
+" Ruby change syntax to 2.1
 nnoremap <F8> :%s/\(\w*\)[ ]*=>/\1:/gc<CR>
 
 " Set status line
