@@ -1,13 +1,14 @@
 ---
 # RVM / Ruby
-rvm1_ansible_role_version: latest # Version of https://github.com/rvm/rvm1-ansible 
+rvm1_ansible_role_version: 2.2.0 # Version of https://github.com/rvm/rvm1-ansible 
 rvm1_rubies:
   - ruby-2.4.10
-  - ruby-2.7.6
   - ruby-3.1.2
 rvm1_user: "{{ user }}"
 
-# NVM / NodeJS
-nodejs:
-  versions:
-    - 14.17.0
+# PDK (Puppet Development KIT)
+# Please note the module does not support package downgrades - if PDK is already installed in higher version, remove it first.
+pdk_version: latest
+
+# NVM (Node Version Manager)
+nvm_version: latest

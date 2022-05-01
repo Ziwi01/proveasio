@@ -1,15 +1,21 @@
+# Install Node Version Manager
+# Source: https://github.com/nvm-sh/nvm
 ---
-- name: '[Node] Install Node dependencies'
-  become: true
-  apt:
-    name: "{{ node_dependencies }}"
-  vars:
-    node_dependencies:
-      - dirmngr
-      - gpg
+- name: "[NVM] Get latest version if requested"
+  shell: curl -s https://api.github.com/repos/nvm-sh/nvm/releases/latest | jq .name -r | cut -f2 -d'v'
+  register: version
+  changed_when: false
+  ignore_errors: true
+  args:
+    warn: off
+  when: nvm_version == 'latest'
 
-- name: '[NVM/Node] Install Nodejs'
-  shell: "asdf install nodejs {{ nodejs_version }}"
+- name: "[NVM] Set version to {{ version.stdout | default(nvm_version) }}"
+  set_fact:
+    nvm_git_version: "{{ version.stdout | default(nvm_version) }}"
 
-- name: '[NVM/Node] Set global Nodejs'
-  shell: "asdf global nodejs {{ nodejs_version }}"
+- name: "[NVM] Clone NVM repository and checkout {{ nvm_git_version }}"
+  git:
+    repo: "https://github.com/nvm-sh/nvm.git"
+    dest: "{{ ansible_env.HOME }}/.local/opt/nvm"
+    version: "v{{ nvm_git_version }}"

@@ -1,7 +1,7 @@
 ---
-# WSL2 username
-user: ziwi
+user: ziwi        # WSL2 current username
+hostname: hell.no # Desired hostname
 
-git:
+git:              # .gitconfig info
   name: Ziwi
   mail: ziwi01@gmail.com
