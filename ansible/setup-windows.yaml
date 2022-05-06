@@ -1,10 +1,8 @@
-- hosts: wsl
+- hosts: windows
   vars_files:
     - vars/environment.yml
   ### Comment out roles you don't need ###
   roles:
-    # - software
-    - config
-    # - dev
+    - windows
   ### Set this in vars/environment! ###
   user: "{{ user }}"

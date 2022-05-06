@@ -1,0 +1,10 @@
+---
+- include_tasks: common.yml
+
+- include_tasks: dev.yml
+
+- include_tasks: context_menu.yml
+
+- include_tasks: desktop_icons.yml
+
+- include_tasks: terminal.yml

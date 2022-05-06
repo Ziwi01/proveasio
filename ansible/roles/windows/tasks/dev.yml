@@ -1,0 +1,35 @@
+---
+- name: Install Git
+  win_chocolatey:
+    name:
+      - git
+    state: latest
+
+- name: Install IDEs
+  win_chocolatey:
+    name:
+      - vscode
+      - intellijidea-community
+    state: latest
+    
+- name: Install Windows Terminal
+  win_chocolatey:
+    name:
+      - microsoft-windows-terminal
+    state: latest
+
+- name: Install Chocolatey GUI
+  win_chocolatey:
+    name: chocolateygui
+    state: latest
+
+- name: Install Docker Desktop
+  win_chocolatey:
+    name: docker-desktop
+    state: latest
+
+- name: Install dev utilities
+  win_chocolatey:
+    name:
+      - postman
+    state: latest

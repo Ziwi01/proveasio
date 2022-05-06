@@ -124,6 +124,7 @@ source $ZSH/oh-my-zsh.sh
 # alias ohmyzsh="mate ~/.oh-my-zsh"
 
 ### PYTHON ENV
+# TODO: organize this
 # alias pyinit="source ~/var/vscode-python-venv/bin/activate"
 # eyamldecrypt() {
 #     eyaml decrypt --pkcs7-private-key=/etc/puppetlabs/puppet/keys/private_key.pkcs7.pem --pkcs7-public-key=/etc/puppetlabs/puppet/keys/public_key.pkcs7.pem -f $1
@@ -173,6 +174,7 @@ zstyle ':completion:*:descriptions' format '[%d]'
 # set list-colors to enable filename colorizing
 zstyle ':completion:*' list-colors ${(s.:.)LS_COLORS}
 
+# Below fzf-git-* functions are based (with slight modifications) on this blog entry: https://polothy.github.io/post/2019-08-19-fzf-git-checkout/
 # browse git branches using fzf
 fzf-git-branch() {
     git rev-parse HEAD > /dev/null 2>&1 || return
@@ -188,6 +190,7 @@ fzf-git-branch() {
 fzf-git-checkout() {
     local branch
 
+    # if we pass a parameter, set it as branch to checkout
     if [[ -n $1 ]]; then
         branch=$1
     else
@@ -228,7 +231,7 @@ alias gst='git-fuzzy status'
 ### Other exports
 export EDITOR='vim'
 export MANPAGER="sh -c 'col -bx | bat -l man -p'"
-export GEM_SOURCE=http://xxnexus3.gtk.gtech.com/repository/rubygems-all/
+export GEM_SOURCE=http://xxnexus3.gtk.gtech.com/repository/rubygems-all/ # TODO: remove this
 export ANSIBLE_TRANSFORM_INVALID_GROUP_CHARS=ignore
 
 # To customize prompt, run `p10k configure` or edit ~/.p10k.zsh.

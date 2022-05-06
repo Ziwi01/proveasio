@@ -1,0 +1,60 @@
+---
+- name: "Remove Firefox icon"
+  win_shortcut:
+    dest: "%USERPROFILE%\\Desktop\\Firefox.lnk"
+    state: absent
+
+- name: "Remove Thunderbird icon"
+  win_shortcut:
+    dest: "%USERPROFILE%\\Desktop\\Mozilla Thunderbird.lnk"
+    state: absent
+
+- name: "Remove Bitwarden icon"
+  win_shortcut:
+    dest: "%USERPROFILE%\\Desktop\\Bitwarden.lnk"
+    state: absent
+
+- name: "Remove Kleopatra icon"
+  win_shortcut:
+    dest: "%PUBLIC%\\Desktop\\Kleopatra.lnk"
+    state: absent
+
+- name: "Remove VLC icon"
+  win_shortcut:
+    dest: "%PUBLIC%\\Desktop\\VLC media player.lnk"
+    state: absent
+
+- name: "Remove Edge icon (all users)"
+  win_shortcut:
+    dest: "%PUBLIC%\\Desktop\\Microsoft Edge.lnk"
+    state: absent
+
+- name: "Remove VS Code icon"
+  win_shortcut:
+    dest: "%PUBLIC%\\Desktop\\Visual Studio Code.lnk"
+    state: absent
+
+- name: "Remove Docker Desktop icon"
+  win_shortcut:
+    dest: "%USERPROFILE%\\Desktop\\Docker Desktop.lnk"
+    state: absent
+
+- name: "Remove Postman icon"
+  win_shortcut:
+    dest: "%USERPROFILE%\\Desktop\\Postman.lnk"
+    state: absent
+
+- name: "Remove Discord icon"
+  win_shortcut:
+    dest: "%USERPROFILE%\\Desktop\\Discord.lnk"
+    state: absent
+
+- name: "Remove Spotify icon"
+  win_shortcut:
+    dest: "%USERPROFILE%\\Desktop\\Spotify.lnk"
+    state: absent
+
+- name: "Remove Edge icon (current user)"
+  win_shortcut:
+    dest: "%USERPROFILE%\\Desktop\\Microsoft Edge.lnk"
+    state: absent
