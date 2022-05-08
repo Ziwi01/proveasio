@@ -1,6 +1,6 @@
 # This is a basic workflow to help you get started with Actions
 
-name: Test workflow
+name: WSL2 Ubuntu ansible test
 
 # Controls when the action will run. 
 on:
@@ -29,7 +29,7 @@ jobs:
         run: "sed -i 's/user: ziwi/user: runner/g' ansible/vars/environment.yml"
 
       - name: Prepare for setup
-        run: sudo sh prepare.sh
+        run: sudo sh prepare-wsl.sh
 
       - name: Setup environment
         working-directory: ./ansible
