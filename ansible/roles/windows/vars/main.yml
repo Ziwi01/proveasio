@@ -1,0 +1,41 @@
+---
+# Control which groups of tasks will be included
+bundle_include:
+  common: true
+  dev: true
+  terminal: true
+  entertainment: true
+  context_menu: true
+
+# On which drive we should install those bundles
+target_installation_drives:
+  common: "C:"
+  dev: "C:"
+  terminal: "C:"
+  entertainment: "D:"
+
+# Mapping for installation directory names
+install_dir_names:
+  7zip: 7 Zip
+  notepadplusplus: Notepad++
+  firefox: Firefox
+  thunderbird: Thunderbird
+  bitwarden: Bitwarden
+  boxcryptor: Boxcryptor
+  naps2: NAPS2
+  todoist: Todoist
+  openvpn: OpenVPN
+  veracrypt: VeraCrypt
+  tor-browser: Tor Browser
+  git: GIT
+  vscode: Visual Studio Code
+  intellijidea-community: IntelliJ IDEA
+  microsoft-windows-terminal: Windows Terminal
+  chocolateygui: Chocolatey GUI
+  docker_desktop: Docker Desktop
+  postman: Postman
+  vlc: VLC Media Player
+  spotify: Spotify
+  foobar2000: Foobar2000
+  discord: Discord
+  steam-client: Steam

@@ -1,4 +1,6 @@
 ---
+win_username: ziwi01@gmail.com
+
 user: ziwi        # WSL2 current username
 hostname: hell.no # Desired hostname
 

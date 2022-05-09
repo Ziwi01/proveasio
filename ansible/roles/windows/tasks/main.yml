@@ -1,10 +1,15 @@
 ---
 - include_tasks: common.yml
+  when: bundle_include.common | boolean
 
 - include_tasks: dev.yml
+  when: bundle_include.dev | boolean
 
 - include_tasks: context_menu.yml
-
-- include_tasks: desktop_icons.yml
+  when: bundle_include.context_menu | boolean
 
 - include_tasks: terminal.yml
+  when: bundle_include.terminal | boolean
+
+- include_tasks: enterntainment.yml
+  when: bundle_include.entertainment | boolean

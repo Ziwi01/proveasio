@@ -33,4 +33,4 @@ jobs:
 
       - name: Setup environment
         working-directory: ./ansible
-        run: ansible-playbook -i hosts setup-wsl.yaml
+        run: ansible-playbook -i inventory.yml setup-wsl.yaml

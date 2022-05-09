@@ -1,35 +1,39 @@
 ---
-- name: Install Git
+- name: Install GIT
   win_chocolatey:
-    name:
-      - git
+    name: git
+    install_args: "--install-directory {{ target_installation_drives['dev'] }}\\{{ install_dir_names['git'] }}"  
     state: latest
 
-- name: Install IDEs
+- name: Install VSCode + IntelliJ IDEA
   win_chocolatey:
-    name:
+    name: "{{ item }}"
+    install_args: "--install-directory {{ target_installation_drives['dev'] }}\\{{ install_dir_names[item] }}"
+    state: latest
+    loop:
       - vscode
       - intellijidea-community
-    state: latest
     
 - name: Install Windows Terminal
   win_chocolatey:
-    name:
-      - microsoft-windows-terminal
+    name: microsoft-windows-terminal
+    install_args: "--install-directory {{ target_installation_drives['dev'] }}\\{{ install_dir_names['microsoft-windows-terminal'] }}"
     state: latest
 
 - name: Install Chocolatey GUI
   win_chocolatey:
     name: chocolateygui
+    install_args: "--install-directory {{ target_installation_drives['dev'] }}\\{{ install_dir_names['chocolateygui'] }}"
     state: latest
 
 - name: Install Docker Desktop
   win_chocolatey:
     name: docker-desktop
+    install_args: "--install-directory {{ target_installation_drives['dev'] }}\\{{ install_dir_names['docker_desktop'] }}"
     state: latest
 
-- name: Install dev utilities
+- name: Install Postman
   win_chocolatey:
-    name:
-      - postman
+    name: postman
+    install_args: "--install-directory {{ target_installation_drives['dev'] }}\\{{ install_dir_names['postman'] }}"
     state: latest

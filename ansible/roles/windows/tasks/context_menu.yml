@@ -1,3 +1,4 @@
+# Cleanup some context menu items not to show up.
 ---
 # VLC
 - name: Remove VLC context menu item (Add to playlist)

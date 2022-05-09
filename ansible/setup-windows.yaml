@@ -4,5 +4,3 @@
   ### Comment out roles you don't need ###
   roles:
     - windows
-  ### Set this in vars/environment! ###
-  user: "{{ user }}"

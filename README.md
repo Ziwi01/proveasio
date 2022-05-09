@@ -1,4 +1,4 @@
-# Windows-WSL2 power environment
+# Windows-WSL2 Power Environment
 
 THIS IS A WORK IN PROGRESS
 
@@ -25,35 +25,17 @@ Script will set up WSL2 with:
 
 Please detailed description for all customizations and added functionality please see below sections
 
-TODO: Add sections for all installed things.
-
-## Additional files
-
-Optional files to be put manually where they belong
-
-In Windows:
-
-- Windows Terminal settings file
-- PowerShell PS1 file
 
 ## Manual actions
 
 - Generate SSH keys and put them into `~/.ssh`
 - Generate GPG keys and use them in `~/.git/config`
 
-## Prerequisites
-
-TODO: describe
-
-## Usage
-
-TODO: describe
-
 ## Author
 
-Ziwi <ziwi01@gmail.com>
+Eryk 'Ziwi' Kozakiewicz
 
 ## Mentions
 
-`ide.vim` configuration/setup is based on old (modified) version of [run2cmd/ide.vim](https://github.com/run2cmd/ide.vim) by Piotr Bugała <piotr.bugala@gmail.com>
-Windows setup was inspired and mostly based on https://github.com/lholota/dev-setup
+- `ide.vim` configuration/setup is based on old (modified) version of [run2cmd/ide.vim](https://github.com/run2cmd/ide.vim) by Piotr Bugała <piotr.bugala@gmail.com>
+- Windows setup was inspired and mostly based on https://github.com/lholota/dev-setup
