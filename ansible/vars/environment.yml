@@ -1,7 +1,7 @@
 ---
-win_username: ziwi01@gmail.com
+win_username: ziwi01@gmail.com # Windows username
 
-user: ziwi        # WSL2 current username
+user: ziwi        # WSL2 created username
 hostname: hell.no # Desired hostname
 
 git:              # .gitconfig info

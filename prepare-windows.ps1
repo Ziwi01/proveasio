@@ -19,6 +19,4 @@ winrm quickconfig -transport:http -force
 Write-Host "Installing Chocolatey package manager"
 Set-ExecutionPolicy Bypass -Scope Process -Force; [System.Net.ServicePointManager]::SecurityProtocol = [System.Net.ServicePointManager]::SecurityProtocol -bor 3072; iex ((New-Object System.Net.WebClient).DownloadString('https://community.chocolatey.org/install.ps1'))
 
-Write-Host "Done!"
-
-Write-Host "To finalize the setup, clone this repository into your WSL and continue from there. Refer to README step by step instructions for details."
+Write-Host "Done! To finalize the setup, clone this repository into your WSL and continue from there. Refer to README for step by step instructions or details."
