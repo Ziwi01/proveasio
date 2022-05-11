@@ -2,13 +2,12 @@
 - name: Install entertainment applications
   win_chocolatey:
     name: "{{ package }}"
-    install_args: "--install-directory {{ target_installation_drives['entertainment'] }}\\{{ install_dir_names[package] }}"
     state: latest
-    loop:
-      - vlc
-      - spotify
-      - foobar2000
-      - discord
-      - steam-client
-    loop_control:
-      loop_var: package
+  loop:
+    - vlc
+    - spotify
+    - foobar2000
+    - discord
+    - steam-client
+  loop_control:
+    loop_var: package

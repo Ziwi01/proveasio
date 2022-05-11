@@ -1,9 +1,9 @@
 ---
 ansible_user: "{{ win_username }}"
-ansible_host: localhost
+ansible_host: "{{ lookup('file', '/etc/resolv.conf').split() | last }}"
 
 ansible_connection: winrm
-ansible_winrm_transport: ntlm
+ansible_winrm_transport: basic
 ansible_winrm_server_cert_validation: ignore
-ansible_winrm_scheme: http
-ansible_port: 5985
+ansible_winrm_scheme: https
+ansible_port: 5986

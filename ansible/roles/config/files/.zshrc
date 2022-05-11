@@ -91,7 +91,7 @@ plugins=(
     fzf
     fzf-tab
     zsh-autosuggestions
-    zsh-sdkman
+    #zsh-sdkman
     zsh-syntax-highlighting
     you-should-use
     k

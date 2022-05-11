@@ -1,5 +1,5 @@
 ---
-win_username: ziwi01@gmail.com # Windows username
+win_username: Ziwi # Windows username
 
 user: ziwi        # WSL2 created username
 hostname: hell.no # Desired hostname

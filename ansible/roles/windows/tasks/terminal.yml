@@ -21,14 +21,7 @@
     - 'MesloLGS NF Bold Italic.ttf'
 
 ## Windows Terminal Options
-- name: "Find Windows Terminal AppData Directory"
-  register: terminal_appdata
-  win_find:
-    paths: "{{ ansible_env.LOCALAPPDATA }}\\Packages"
-    patterns: "Microsoft.WindowsTerminal_*"
-    file_type: "directory"
-
 - name: Copy Windows Terminal settings.json
   win_template:
     src: "settings.json.j2"
-    dest: "{{ terminal_appdata.files[0].path }}\\LocalState\\settings.json"
+    dest: "{{ ansible_env.LOCALAPPDATA }}\\Packages\\Microsoft.WindowsTerminal_8wekyb3d8bbwe\\LocalState\\settings.json"

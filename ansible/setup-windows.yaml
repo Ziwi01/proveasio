@@ -1,4 +1,4 @@
-- hosts: windows
+- hosts: win
   vars_files:
     - vars/environment.yml
   ### Comment out roles you don't need ###
