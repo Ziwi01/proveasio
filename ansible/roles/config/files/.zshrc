@@ -95,6 +95,7 @@ plugins=(
     zsh-syntax-highlighting
     you-should-use
     k
+    zoxide
 )
 
 source $ZSH/oh-my-zsh.sh

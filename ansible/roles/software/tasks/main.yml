@@ -12,6 +12,9 @@
 # Common software
 - include_tasks: packages.yml
 
+# ls-with-git-status
+- include_tasks: lsg.yml
+
 # FZF (fuzzy-finder)
 - include_tasks: fzf.yml
 
