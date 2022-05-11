@@ -1,8 +1,8 @@
 ---
 # Control which groups of tasks will be included
 bundle_include:
-  common: false
-  dev: false
+  common: true
+  dev: true
   terminal: true
-  entertainment: false
-  context_menu: false
+  entertainment: true
+  context_menu: true
