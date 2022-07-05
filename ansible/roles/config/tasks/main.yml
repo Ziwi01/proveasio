@@ -15,5 +15,3 @@
 - include_tasks: tmux.yml
 
 - include_tasks: git.yml
-
-- include_tasks: git.yml

@@ -1,5 +1,5 @@
 ---
 # Languages
-# - include_tasks: rvm.yml
-# - include_tasks: nvm.yml
+- include_tasks: rvm.yml
+- include_tasks: nvm.yml
 - include_tasks: pdk.yml

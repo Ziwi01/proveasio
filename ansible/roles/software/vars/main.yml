@@ -1,5 +1,5 @@
 ---
-# Specific versions for software
+# Specific versions for software (github)
 # Fixed versions should be set without `v` prefix (e.g: 1.4.3)
 versions:
   diff-so-fancy: latest 
@@ -8,7 +8,7 @@ versions:
   helm: latest
   thefuck: latest
 
-# Useful packages
+# Useful packages (apt)
 packages:
   - vim
   - git

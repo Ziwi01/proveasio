@@ -84,7 +84,6 @@ plugins=(
     colorize
     helm
     rvm
-    tmux
     dotenv
     colored-man-pages
     dirhistory
@@ -96,6 +95,7 @@ plugins=(
     you-should-use
     k
     zoxide
+    tmux
 )
 
 source $ZSH/oh-my-zsh.sh
@@ -232,7 +232,6 @@ alias gst='git-fuzzy status'
 ### Other exports
 export EDITOR='vim'
 export MANPAGER="sh -c 'col -bx | bat -l man -p'"
-export GEM_SOURCE=http://xxnexus3.gtk.gtech.com/repository/rubygems-all/ # TODO: remove this
 export ANSIBLE_TRANSFORM_INVALID_GROUP_CHARS=ignore
 
 # To customize prompt, run `p10k configure` or edit ~/.p10k.zsh.
