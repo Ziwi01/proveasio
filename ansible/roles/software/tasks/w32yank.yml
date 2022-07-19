@@ -1,0 +1,25 @@
+# win32yank (clipboard support from Neovim to Windows)
+# Source:
+#  - https://github.com/equalsraf/win32yank
+#  - https://github.com/neovim/neovim/wiki/FAQ#how-to-use-the-windows-clipboard-from-wsl
+---
+- name: "[Win32Yank] Get latest version"
+  shell: curl -s https://api.github.com/repos/equalsraf/win32yank/releases/latest | jq .name -r | cut -f2 -d'v'
+  register: version
+  changed_when: false
+  ignore_errors: true
+  args:
+    warn: off
+
+- name: "[Win32Yank] Download archive"
+  ansible.builtin.get_url:
+    url: "https://github.com/equalsraf/win32yank/releases/download/v{{ version.stdout }}/win32yank-x64.zip"
+    dest: "/tmp/win32yank-x64.zip"
+    mode: '0644'
+
+- name: "[Win32Yank] Extract binary"
+  ansible.builtin.unarchive:
+    src: "/tmp/win32yank-x64.zip"
+    dest: "{{ ansible_env.HOME }}/.local/bin/"
+    creates: "{{ ansible_env.HOME }}/.local/bin/win32yank.exe"
+    mode: '0755'

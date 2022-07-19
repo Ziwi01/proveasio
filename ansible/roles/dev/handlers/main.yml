@@ -1,0 +1,10 @@
+---
+# LunarVIM
+- name: "[LunarVIM] Install LunarVIM"
+  shell: "dos2unix {{ lunarvim_home }}/utils/installer/install.sh; {{ lunarvim_home }}/utils/installer/install.sh -y"
+  register: lunarvim_install
+  notify: "[LunarVIM] Show LunarVIM install info"
+
+- name: "[LunarVIM] Show LunarVIM install info"
+  debug:
+    msg: "{{ lunarvim_install.stdout | default('No output was passed from LunarVIM install command') }}"

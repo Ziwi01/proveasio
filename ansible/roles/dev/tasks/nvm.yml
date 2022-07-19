@@ -1,4 +1,5 @@
 # Install Node Version Manager
+# Please note this is a requirement for LunarVIM plugin which is being installed later.
 # Source: https://github.com/nvm-sh/nvm
 ---
 - name: "[NVM] Get latest version if requested"
@@ -19,3 +20,9 @@
     repo: "https://github.com/nvm-sh/nvm.git"
     dest: "{{ ansible_env.HOME }}/.local/opt/nvm"
     version: "v{{ nvm_git_version }}"
+
+# TODO: Check if this version is already there for this user
+- name: "[NVM] Install Node {{ node_version }}"
+  shell: "source {{ ansible_env.HOME }}/.nvm/nvm.sh; nvm install {{ node_version }}"
+  args:
+    executable: /bin/bash

@@ -19,3 +19,9 @@
   register: pip_out
   changed_when: "'Requirement already up-to-date' not in pip_out.stdout"
   when: versions['thefuck'] == 'latest'
+
+- name: "[TheFuck] Copy config"
+  ansible.builtin.copy:
+    src: "thefuck-settings.py"
+    dest: "{{ ansible_env.HOME }}/.config/thefuck/settings.py"
+    mode: '0644'

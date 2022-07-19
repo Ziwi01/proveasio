@@ -10,8 +10,6 @@
 
 - include_tasks: p10k.yml
 
-- include_tasks: vim.yml
-
 - include_tasks: tmux.yml
 
 - include_tasks: git.yml

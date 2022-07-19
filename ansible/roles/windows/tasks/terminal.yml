@@ -1,13 +1,13 @@
 ---
-- name: "Copy MesloLGS fonts"
+- name: "Copy DejaVuSans fonts"
   win_copy:
     src: "fonts/{{ item }}"
     dest: "%SYSTEMROOT%\\fonts\\{{ item }}"
   loop:
-    - 'MesloLGS NF Regular.ttf'
-    - 'MesloLGS NF Bold.ttf'
-    - 'MesloLGS NF Italic.ttf'
-    - 'MesloLGS NF Bold Italic.ttf'
+    - 'DejaVu Sans Mono Nerd Font Complete Windows Compatible.ttf'
+    - 'DejaVu Sans Mono Bold Nerd Font Complete Windows Compatible.ttf'
+    - 'DejaVu Sans Mono Oblique Nerd Font Complete Windows Compatible.ttf'
+    - 'DejaVu Sans Mono Bold Oblique Nerd Font Complete Windows Compatible.ttf'
 
 - name: "Create registry entries"
   win_regedit:
@@ -15,10 +15,10 @@
     name: "{{ item }}"
     data: "{{ item }}"
   loop:
-    - 'MesloLGS NF Regular.ttf'
-    - 'MesloLGS NF Bold.ttf'
-    - 'MesloLGS NF Italic.ttf'
-    - 'MesloLGS NF Bold Italic.ttf'
+    - 'DejaVu Sans Mono Nerd Font Complete Windows Compatible.ttf'
+    - 'DejaVu Sans Mono Bold Nerd Font Complete Windows Compatible.ttf'
+    - 'DejaVu Sans Mono Oblique Nerd Font Complete Windows Compatible.ttf'
+    - 'DejaVu Sans Mono Bold Oblique Nerd Font Complete Windows Compatible.ttf'
 
 ## Windows Terminal Options
 - name: Copy Windows Terminal settings.json

@@ -3,6 +3,7 @@
 rvm1_ansible_role_version: 2.2.0 # Version of https://github.com/rvm/rvm1-ansible 
 rvm1_rubies:
   - ruby-2.4.10
+  - ruby-2.7.6
   - ruby-3.1.2
 rvm1_user: "{{ user }}"
 
@@ -12,3 +13,12 @@ pdk_version: latest
 
 # NVM (Node Version Manager)
 nvm_version: latest
+node_version: 'lts/gallium'
+
+# Neovim
+neovim_version: latest
+
+# LunarVIM
+lunarvim_url: https://github.com/lunarvim/lunarvim.git
+lunarvim_home: "{{ ansible_env.HOME }}/.local/opt/lunarvim"
+lunarvim_version: master

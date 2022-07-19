@@ -19,10 +19,7 @@ Below project is an opinionated set of tools which I use for my everyday work, b
 
 # TODO
 
-- add thefuck config with excluded `/mnt`
-- add [gita](https://github.com/nosarthur/gita) installation
-- desribe customizations (Tips and tricks), add usage videos
-- refactor/update vimrc file (plugins, config etc.)
+- describe customizations (Tips and tricks), add usage videos
 - (?) add [SDKMan](https://sdkman.io) installation (with Groovy/Gradle?)
 - (?) Use [ASDF](https://github.com/asdf-vm/asdf) version manager instead of RVM/NVM etc.
 
@@ -54,10 +51,10 @@ Windows setup should be done manually, however there is an experimental automati
 
     For details, see [Microsoft WSL installation docs](https://docs.microsoft.com/en-us/windows/wsl/install)
 
-2. Install MesloLGS fonts (it can be found in this repo in `ansible/roles/windows/files/fonts`)
-3. Install [Microsoft Terminal](https://github.com/microsoft/terminal) and configure Ubuntu profile with MesloLGS font. You can check `ansible/roles/windows/templates/settings.json.j2` for settings reference with useful overrides.
+2. Install DejaVuSans fonts (it can be found in this repo in `ansible/roles/windows/files/fonts`)
+3. Install [Microsoft Terminal](https://github.com/microsoft/terminal) and configure Ubuntu profile with DejaVuSans font. You can check `ansible/roles/windows/templates/settings.json.j2` for settings reference with useful overrides.
 
-Points #2 and #3 are optional (I use them personally) - you can use any terminal of your choice and any font supporting iconic fonts (like [Nerd Fonts](https://www.nerdfonts.com/))
+Points #2 and #3 are optional (I use them personally) - you can use any terminal of your choice and any font supporting iconic fonts (like [Nerd Fonts](https://www.nerdfonts.com/) - please note that not all fonts have the same amount of glyphs/icons. DejaVu has lots of them)
 
 Thats it, you can move to [WSL2 setup](#wsl2-setup)
 
@@ -126,6 +123,7 @@ This role will install all necessary things to have the WSL pretty and useful.
 3. [FZF Fuzzy finder](https://github.com/junegunn/fzf) - insane speed fuzzy finder with milion usage scenarios
 4. [Diff-so-fancy](https://github.com/so-fancy/diff-so-fancy) - alternate GIT DIFF presentation
 5. [Git fuzzy](https://github.com/bigH/git-fuzzy.git) - managing GIT commands using FZF
+6. [Gita](https://github.com/nosarthur/gita) - managing multiple GIT repositories at once (add groups, execute git or shell commands for those groups etc.)
 6. [TheFuck](https://github.com/nvbn/thefuck) - corrects errors in previous console commands
 7. [BAT](https://github.com/sharkdp/bat) - (much) better CAT
 8. [Zoxide](https://github.com/ajeetdsouza/zoxide) - traverse directories with ease (also with FZF)
@@ -138,6 +136,8 @@ Also, common useful packages, like:
 - tree (directory tree)
 - htop (better top)
 - jq (json/yaml parser)
+
+More useful packages will be installed in `dev` role.
 
 In `roles/software/vars/main.yml` file, you can configure for example:
 
@@ -163,13 +163,18 @@ You can also granulize this on per-component basis - see mentioned `vars/main.ym
 
 ### `dev` role
 
-This role installs programming-related tools which I currently use in my work:
+This role installs programming-related tools which I currently use in my work.
 
-- [RVM](https://rvm.io/) (Ruby enVironment Manager, installed using [rvm1-ansible-role](https://github.com/rvm/rvm1-ansible)), along with Rubies: 2.4.10 and 3.1.2
+Essential:
+ - [Neovim](https://github.com/neovim/neovim) - more handsome VIM brother
+ - [LunarVIM](https://github.com/LunarVim/LunarVim) - Neovim IDE-like extension with awesome plugins/configurations included out of the box
+
+Programming:
+- [RVM](https://rvm.io/) (Ruby enVironment Manager, installed using [rvm1-ansible-role](https://github.com/rvm/rvm1-ansible)), along with Rubies: 2.4.10, 2.7.6 and 3.1.2
 - [PDK](https://puppet.com/try-puppet/puppet-development-kit/) (Puppet Development Kit)
-- [NVM](https://github.com/nvm-sh/nvm) (Node Version Manager)
+- [NVM](https://github.com/nvm-sh/nvm) (Node Version Manager) with latest LTS Node version (by default). Among all - dependency for LunarVIM installation
 
-In `roles/dev/vars/main.yml` you can specify RVM/PDK/NVM versions.
+In `roles/dev/vars/main.yml` you can specify Neovim/LunarVIM and RVM/PDK/NVM versions.
 
 ## Tips and tricks
 
@@ -181,5 +186,4 @@ Eryk 'Ziwi' Kozakiewicz
 
 # Mentions
 
-- `ide.vim` configuration/setup is based on very old (modified) version of [run2cmd/ide.vim](https://github.com/run2cmd/ide.vim)
 - Windows setup was inspired and mostly based on [lholota/dev-setup](https://github.com/lholota/dev-setup)

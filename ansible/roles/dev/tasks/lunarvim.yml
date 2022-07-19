@@ -1,0 +1,21 @@
+# Install LunarVIM overlay/bundle for Neovim
+# Source: https://github.com/LunarVim/LunarVim
+---
+- name: "[LunarVIM] Clone/update latest version"
+  git:
+    repo: "{{ lunarvim_url }}"
+    dest: "{{ lunarvim_home }}"
+    update: yes
+  notify: "[LunarVIM] Install LunarVIM"
+
+- name: "[LunarVIM] Ensure LunarVIM is really installed"
+  shell: which lvim
+  register: check_lvim
+  changed_when: check_lvim.rc == 1
+  failed_when: check_lvim.rc > 1
+  args:
+    warn: off
+  notify: "[LunarVIM] Install LunarVIM"
+
+- name: Flush handlers
+  meta: flush_handlers
