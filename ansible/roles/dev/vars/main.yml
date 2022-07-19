@@ -22,3 +22,4 @@ neovim_version: latest
 lunarvim_url: https://github.com/lunarvim/lunarvim.git
 lunarvim_home: "{{ ansible_env.HOME }}/.local/opt/lunarvim"
 lunarvim_version: master
+lunarvim_config_overwrite: true # Set to false to leave local config.lua alone

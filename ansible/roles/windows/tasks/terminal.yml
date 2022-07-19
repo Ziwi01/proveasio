@@ -4,10 +4,7 @@
     src: "fonts/{{ item }}"
     dest: "%SYSTEMROOT%\\fonts\\{{ item }}"
   loop:
-    - 'DejaVu Sans Mono Nerd Font Complete Windows Compatible.ttf'
-    - 'DejaVu Sans Mono Bold Nerd Font Complete Windows Compatible.ttf'
-    - 'DejaVu Sans Mono Oblique Nerd Font Complete Windows Compatible.ttf'
-    - 'DejaVu Sans Mono Bold Oblique Nerd Font Complete Windows Compatible.ttf'
+    - 'DejaVu Sans Mono Nerd Font Complete.ttf'
 
 - name: "Create registry entries"
   win_regedit:
@@ -15,10 +12,7 @@
     name: "{{ item }}"
     data: "{{ item }}"
   loop:
-    - 'DejaVu Sans Mono Nerd Font Complete Windows Compatible.ttf'
-    - 'DejaVu Sans Mono Bold Nerd Font Complete Windows Compatible.ttf'
-    - 'DejaVu Sans Mono Oblique Nerd Font Complete Windows Compatible.ttf'
-    - 'DejaVu Sans Mono Bold Oblique Nerd Font Complete Windows Compatible.ttf'
+    - 'DejaVu Sans Mono Nerd Font Complete.ttf'
 
 ## Windows Terminal Options
 - name: Copy Windows Terminal settings.json

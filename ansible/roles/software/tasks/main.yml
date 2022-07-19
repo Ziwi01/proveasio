@@ -9,38 +9,38 @@
     - bin
     - opt
 
-# # Common software
-# - include_tasks: packages.yml
+# Common software
+- include_tasks: packages.yml
 
-# # ls-with-git-status
-# - include_tasks: lsg.yml
+# ls-with-git-status
+- include_tasks: lsg.yml
 
-# # FZF (fuzzy-finder)
-# - include_tasks: fzf.yml
+# FZF (fuzzy-finder)
+- include_tasks: fzf.yml
 
-# # Diff-so-fancy
-# - include_tasks: diff-so-fancy.yml
+# Diff-so-fancy
+- include_tasks: diff-so-fancy.yml
 
-# # Git-fuzzy
-# - include_tasks: git-fuzzy.yml
+# Git-fuzzy
+- include_tasks: git-fuzzy.yml
 
 # Gita
 - include_tasks: gita.yml
 
-# # thefuck
-# - include_tasks: thefuck.yml
+# thefuck
+- include_tasks: thefuck.yml
 
-# # BAT
-# - include_tasks: bat.yml
+# BAT
+- include_tasks: bat.yml
 
-# # Zoxide
-# - include_tasks: zoxide.yml
+# Zoxide
+- include_tasks: zoxide.yml
 
-# # Helm
-# - include_tasks: helm.yml
+# Helm
+- include_tasks: helm.yml
 
-# # ZSH
-# - include_tasks: zsh.yml
+# ZSH
+- include_tasks: zsh.yml
 
 # Win32yank (windows clipboard support for Neovim)
 - include_tasks: w32yank.yml

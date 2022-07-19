@@ -232,7 +232,6 @@ alias gst='git-fuzzy status'
 ### Other exports
 export EDITOR='lvim'
 alias vim=lvim
-alias vi=lvim
 alias vimdiff='lvim -d'
 export MANPAGER="sh -c 'col -bx | bat -l man -p'"
 export ANSIBLE_TRANSFORM_INVALID_GROUP_CHARS=ignore
