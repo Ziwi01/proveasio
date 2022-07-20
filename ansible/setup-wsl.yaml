@@ -3,6 +3,6 @@
     - vars/environment.yml
   ### Comment out roles you don't need ###
   roles:
-    # - software
-    # - config
+    - software
+    - config
     - dev
