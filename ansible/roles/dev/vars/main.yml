@@ -16,6 +16,7 @@ nvm_version: latest
 node_version: 'lts/gallium'
 
 # Ansible
+ansible_version: latest
 ansible_lint_version: latest
 
 # Neovim

@@ -11,6 +11,23 @@
 #
 # ansible-lint
 #
+- name: "[Ansible] Install Ansible specific version"
+  pip:
+    name: "ansible=={{ ansible_version }}"
+    executable: pip3
+  register: pip_out
+  changed_when: "'Requirement already up-to-date' not in pip_out.stdout"
+  when: ansible_version != 'latest'
+
+- name: "[Ansible] Install ansible latest version"
+  pip:
+    name: "ansible"
+    executable: pip3
+    extra_args: --upgrade
+  register: pip_out
+  changed_when: "'Requirement already up-to-date' not in pip_out.stdout"
+  when: ansible_version == 'latest'
+
 - name: "[Ansible] Install ansible-lint specific version"
   pip:
     name: "ansible-lint=={{ ansible_lint_version }}"
