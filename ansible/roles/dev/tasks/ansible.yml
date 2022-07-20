@@ -1,0 +1,29 @@
+# Additional Ansible language tools
+---
+#
+# Ansible Language Server
+# Source: https://github.com/ansible/ansible-language-server
+#
+- name: "[Ansible] Install Ansible Language server"
+  shell: 'source {{ ansible_env.HOME }}/.nvm/nvm.sh; npm -g @ansible/ansible-language-server'
+  changed_when: false
+
+#
+# ansible-lint
+#
+- name: "[Ansible] Install ansible-lint specific version"
+  pip:
+    name: "ansible-lint=={{ ansible_lint_version }}"
+    executable: pip3
+  register: pip_out
+  changed_when: "'Requirement already up-to-date' not in pip_out.stdout"
+  when: ansible_lint_version != 'latest'
+
+- name: "[Ansible] Install ansible-lint latest version"
+  pip:
+    name: "ansible-lint"
+    executable: pip3
+    extra_args: --upgrade
+  register: pip_out
+  changed_when: "'Requirement already up-to-date' not in pip_out.stdout"
+  when: ansible_lint_version == 'latest'

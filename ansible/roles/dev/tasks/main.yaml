@@ -5,4 +5,4 @@
 - include_tasks: rust.yml # Dependency for lvim.yml
 - include_tasks: neovim.yml
 - include_tasks: lunarvim.yml
-- include_tasks: pdk.yml
+- include_tasks: puppet.yml

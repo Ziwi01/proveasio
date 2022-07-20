@@ -15,6 +15,9 @@ pdk_version: latest
 nvm_version: latest
 node_version: 'lts/gallium'
 
+# Ansible
+ansible_lint_version: latest
+
 # Neovim
 neovim_version: latest
 
@@ -23,3 +26,6 @@ lunarvim_url: https://github.com/lunarvim/lunarvim.git
 lunarvim_home: "{{ ansible_env.HOME }}/.local/opt/lunarvim"
 lunarvim_version: master
 lunarvim_config_overwrite: true # Set to false to leave local config.lua alone
+
+# Puppet
+puppet_pes_url: https://github.com/puppetlabs/puppet-editor-services.git

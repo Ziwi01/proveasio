@@ -1,0 +1,57 @@
+# Install Puppet related tools
+---
+# Ruby gems
+- name: "[Puppet] Install Puppet/puppet-lint ruby gems"
+  shell: "{{ ansible_env.HOME }}/.rvm/bin/rvm all do gem install puppet puppet-lint"
+  args:
+    chdir: "{{ ansible_env.HOME }}/.lsp/puppet-editor-services"
+  changed_when: false
+  ignore_errors: true # Some rubies can't install puppet/puppet-lint gems due to dependency
+
+#
+# Puppet Editor Services (Language server protocol instance)
+# Source: https://github.com/puppetlabs/puppet-editor-services
+#
+- name: "[Puppet Editor Services] Clone/update latest version"
+  git:
+    repo: "{{ puppet_pes_url }}"
+    dest: "{{ ansible_env.HOME }}/.lsp"
+    update: yes
+
+- name: "[Puppet Editor Services] Run bundle install"
+  shell: 'bundle install'
+  args:
+    chdir: "{{ ansible_env.HOME }}/.lsp/puppet-editor-services"
+  changed_when: false
+
+- name: "[Puppet Editor Services] Run bundle exec rake gem_revendor"
+  shell: 'bundle exec rake gem_revendor'
+  args:
+    chdir: "{{ ansible_env.HOME }}/.lsp/puppet-editor-services"
+  changed_when: false
+
+#
+# PDK (Puppet Development Kit)
+#   - https://github.com/puppetlabs/pdk
+#   - https://puppet.com/docs/pdk/2.x/pdk.html
+#
+- name: "[Puppet PDK] Install PDK repository sources"
+  apt:
+    deb: https://apt.puppet.com/puppet-tools-release-focal.deb
+  become: True
+
+- name: "[Puppet PDK] Install latest PDK"
+  apt:
+    name: pdk
+    state: latest
+    update_cache: yes
+  become: True
+  when: pdk_version == 'latest'
+
+- name: "[Puppet PDK] Install PDK specific version"
+  apt:
+    name: "pdk={{ pdk_version }}"
+    state: present
+    update_cache: yes
+  become: True
+  when: pdk_version != 'latest'

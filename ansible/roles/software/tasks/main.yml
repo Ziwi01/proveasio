@@ -1,13 +1,15 @@
 ---
 
 # Ensure local bin/opt directories are there
-- name: "[Software] Ensure `~/.local/*` directories are there"
+- name: "[Software] Ensure dotted directories are there"
   file:
-    path: "{{ ansible_env.HOME }}/.local/{{ item }}"
+    path: "{{ ansible_env.HOME }}/{{ item }}"
     state: directory
   loop:
-    - bin
-    - opt
+    - .local/bin
+    - .local/opt
+    - .config
+    - .lsp
 
 # Common software
 - include_tasks: packages.yml
