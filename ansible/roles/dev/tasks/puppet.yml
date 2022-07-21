@@ -16,6 +16,10 @@
     dest: "{{ ansible_env.HOME }}/.lsp/puppet-editor-services"
     update: yes
 
+- name: "[Puppet] Update bundler for all rubies"
+  shell: "{{ ansible_env.HOME }}/.rvm/bin/rvm all-gemsets do gem update bundler"
+  ignore_errors: true
+
 - name: "[Puppet Editor Services] Run bundle install"
   shell: ". {{ ansible_env.HOME }}/.zshrc; bundle install"
   args:

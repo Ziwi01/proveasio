@@ -167,6 +167,8 @@ alias bfind="fzf --preview '$FZF_PREVIEW_COMMAND' --bind shift-up:preview-page-u
 btail() {
     tail -f $1 | batcat --paging=never -l log
 }
+# cat alias
+alias cat=bat
 
 # disable sort when completing `git checkout`
 zstyle ':completion:*:git-checkout:*' sort false
