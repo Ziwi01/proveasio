@@ -1,6 +1,6 @@
 # This is a basic workflow to help you get started with Actions
 
-name: WSL2 Ubuntu ansible test
+name: WSL/Ubuntu build
 
 # Controls when the action will run. 
 on:

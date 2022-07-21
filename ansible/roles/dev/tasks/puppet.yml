@@ -21,12 +21,16 @@
   ignore_errors: true
 
 - name: "[Puppet Editor Services] Run bundle install"
-  shell: ". {{ ansible_env.HOME }}/.zshrc; bundle install"
+  shell: "bundle install"
+  environment:
+    PATH: "{{ ansible_env.PATH }}:{{ ansible_env.HOME }}/.rvm/bin"
   args:
     chdir: "{{ ansible_env.HOME }}/.lsp/puppet-editor-services"
 
 - name: "[Puppet Editor Services] Run bundle exec rake gem_revendor"
-  shell: ". {{ ansible_env.HOME }}/.zshrc; bundle exec rake gem_revendor"
+  shell: "bundle exec rake gem_revendor"
+  environment:
+    PATH: "{{ ansible_env.PATH }}:{{ ansible_env.HOME }}/.rvm/bin"
   args:
     chdir: "{{ ansible_env.HOME }}/.lsp/puppet-editor-services"
 
