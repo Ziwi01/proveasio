@@ -21,8 +21,14 @@
     dest: "{{ ansible_env.HOME }}/.local/opt/nvm"
     version: "v{{ nvm_git_version }}"
 
+- name: "[NVM] Install NVM "
+  shell: "./install.sh"
+  args:
+    chdir: "{{ ansible_env.HOME }}/.local/opt/nvm"
+    executable: /bin/bash
+
 # TODO: Check if this version is already there for this user
 - name: "[NVM] Install Node {{ node_version }}"
-  shell: "source {{ ansible_env.HOME }}/.nvm/nvm.sh; nvm install {{ node_version }}"
+  shell: "source {{ ansible_env.HOME }}/.local/opt/nvm/nvm.sh; nvm install {{ node_version }}"
   args:
     executable: /bin/bash

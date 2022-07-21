@@ -72,7 +72,7 @@ There is a script `prepare-windows.ps1`, which will:
 
 #### prepare-wsl.sh
 
-From Ubuntu, run `prepare-wsl.sh` - this will update the system and install required ansible packages.
+From Ubuntu, run `sudo ./prepare-wsl.sh` - this will update the system and install required ansible packages.
 
 #### setup-windows.yml
 
@@ -91,7 +91,7 @@ You can switch off the whole sections from #2 by modifying `ansible/roles/window
 After everything is prepared, you can run (from `ansible/` dir):
 
 ```shell
-ansible-playbook -i inventory.yml setup-windows.yaml -K
+ansible-playbook -i inventory.yml setup-windows.yaml -k
 ```
 
 It will prompt for you Windows password. If the terminal hangs during an execution for more than couple minutes, just break it (CTRL+C) and run again. This is because Chocolatey installations from WSL ansible can get clogged up sometimes (not sure why this happens).
@@ -101,11 +101,11 @@ It will prompt for you Windows password. If the terminal hangs during an executi
 Now for the main part :). Assuming all the [requirements](#requirements) are met:
 
 1. Clone this repository in WSL Ubuntu.
-2. Run `prepare-wsl.sh` (if not already run during windows setup) to update the system and install required ansible packages.
+2. Run `sudo ./prepare-wsl.sh` (if not already run during windows setup) to update the system and install required ansible packages.
 3. Run ansible (from `ansible/` dir):
 
     ```shell
-    ansible-playbook -i inventory.yml setup-wsl.yaml -k
+    ansible-playbook -i inventory.yml setup-wsl.yaml -K
     ```
 
 This will install everything see [tools overview](#tools-overview) for details. You might want to go through [very basic config](#roles-overview) before running the installation. Most of the software packages are installed directly from Github repositories and are placed in `${HOME}/.local/` directory, however others are installed either from PIP, direct links or other things.

@@ -23,6 +23,8 @@ packages:
   - zip
   - ctags
   - dos2unix
+  - ripgrep
+  - fd-find
 
 # FZF
 fzf_git_url: "https://github.com/junegunn/fzf.git"

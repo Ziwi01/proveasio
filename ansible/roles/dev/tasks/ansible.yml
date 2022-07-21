@@ -5,42 +5,42 @@
 # Source: https://github.com/ansible/ansible-language-server
 #
 - name: "[Ansible] Install Ansible Language server"
-  shell: 'source {{ ansible_env.HOME }}/.nvm/nvm.sh; npm -g @ansible/ansible-language-server'
+  shell: '. {{ ansible_env.HOME }}/.local/opt/nvm/nvm.sh; npm install @ansible/ansible-language-server --location=global'
   changed_when: false
 
 #
 # ansible-lint
 #
-- name: "[Ansible] Install Ansible specific version"
+- name: "[Ansible] Install Ansible PIP specific version"
   pip:
-    name: "ansible=={{ ansible_version }}"
+    name: "ansible=={{ ansible_pip_version }}"
     executable: pip3
   register: pip_out
   changed_when: "'Requirement already up-to-date' not in pip_out.stdout"
-  when: ansible_version != 'latest'
+  when: ansible_pip_version != 'latest'
 
-- name: "[Ansible] Install ansible latest version"
+- name: "[Ansible] Install Ansible PIP latest version"
   pip:
     name: "ansible"
     executable: pip3
     extra_args: --upgrade
   register: pip_out
   changed_when: "'Requirement already up-to-date' not in pip_out.stdout"
-  when: ansible_version == 'latest'
+  when: ansible_pip_version == 'latest'
 
-- name: "[Ansible] Install ansible-lint specific version"
+- name: "[Ansible] Install ansible-lint PIP specific version"
   pip:
-    name: "ansible-lint=={{ ansible_lint_version }}"
+    name: "ansible-lint=={{ ansible_lint_pip_version }}"
     executable: pip3
   register: pip_out
   changed_when: "'Requirement already up-to-date' not in pip_out.stdout"
-  when: ansible_lint_version != 'latest'
+  when: ansible_lint_pip_version != 'latest'
 
-- name: "[Ansible] Install ansible-lint latest version"
+- name: "[Ansible] Install ansible-lint PIP latest version"
   pip:
     name: "ansible-lint"
     executable: pip3
     extra_args: --upgrade
   register: pip_out
   changed_when: "'Requirement already up-to-date' not in pip_out.stdout"
-  when: ansible_lint_version == 'latest'
+  when: ansible_lint_pip_version == 'latest'

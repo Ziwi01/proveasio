@@ -142,11 +142,13 @@ lvim.builtin.treesitter.highlight.enabled = true
 
 -- Additional Plugins
 lvim.plugins = {
-    {"folke/tokyonight.nvim"},
-    {
+    {"folke/tokyonight.nvim"}, -- Colorscheme
+    { -- Diagnostic
       "folke/trouble.nvim",
       cmd = "TroubleToggle",
     },
+    { "rodjek/vim-puppet" }, -- Puppet support
+    {"pearofducks/ansible-vim"}, -- Ansible syntax highlight
 }
 
 -- Autocommands (https://neovim.io/doc/user/autocmd.html)
