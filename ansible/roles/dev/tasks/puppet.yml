@@ -17,12 +17,12 @@
     update: yes
 
 - name: "[Puppet Editor Services] Run bundle install"
-  shell: "{{ ansible_env.HOME }}/.rvm/rubies/default/bin/bundle install"
+  shell: ". {{ ansible_env.HOME }}/.zshrc; bundle install"
   args:
     chdir: "{{ ansible_env.HOME }}/.lsp/puppet-editor-services"
 
 - name: "[Puppet Editor Services] Run bundle exec rake gem_revendor"
-  shell: "{{ ansible_env.HOME }}/.rvm/rubies/default/bin/bundle exec rake gem_revendor"
+  shell: ". {{ ansible_env.HOME }}/.zshrc; bundle exec rake gem_revendor"
   args:
     chdir: "{{ ansible_env.HOME }}/.lsp/puppet-editor-services"
 
