@@ -1,9 +1,13 @@
-<p align="center">
+```text
+ _ _ _ _____ __       _____                      _____
+| | | |   __|  |     |  _  |___ _ _ _ ___ ___   |   __|___ _ _ 
+| | | |__   |  |__   |   __| . | | | | -_|  _|  |   __|   | | |
+|_____|_____|_____|  |__|  |___|_____|___|_|    |_____|_|_|\_/ 
+```
 
-░▒█░░▒█░▒█▀▀▀█░▒█░░░░█▀█░░░▒█▀▀█░▄▀▀▄░█░░░█░█▀▀░█▀▀▄░░░▒█▀▀▀░▒█▄░▒█░▒█░░▒█
-░▒█▒█▒█░░▀▀▀▄▄░▒█░░░░▒▄▀░░░▒█▄▄█░█░░█░▀▄█▄▀░█▀▀░█▄▄▀░░░▒█▀▀▀░▒█▒█▒█░░▒█▒█░
-░▒▀▄▀▄▀░▒█▄▄▄█░▒█▄▄█░█▄▄░░░▒█░░░░░▀▀░░░▀░▀░░▀▀▀░▀░▀▀░░░▒█▄▄▄░▒█░░▀█░░░▀▄▀░
-</p>
+![WSL build](https://github.com/Ziwi01/wsl-power-env/actions/workflows/ci.yml/badge.svg?branch=master)
+![license](https://img.shields.io/github/license/Ziwi01/wsl-power-env)
+![last commit](https://img.shields.io/github/last-commit/Ziwi01/wsl-power-env)
 
 # Introduction
 

@@ -74,6 +74,7 @@ lvim.builtin.treesitter.ensure_installed = {
   "rust",
   "java",
   "yaml",
+  "ruby",
 }
 
 lvim.builtin.treesitter.ignore_install = { "haskell" }
@@ -86,9 +87,19 @@ lvim.builtin.treesitter.highlight.enabled = true
 
 -- ---configure a server manually. !!Requires `:LvimCacheReset` to take effect!!
 -- ---see the full default list `:lua print(vim.inspect(lvim.lsp.automatic_configuration.skipped_servers))`
--- vim.list_extend(lvim.lsp.automatic_configuration.skipped_servers, { "pyright" })
--- local opts = {} -- check the lspconfig documentation for a list of all possible options
--- require("lvim.lsp.manager").setup("pyright", opts)
+vim.list_extend(lvim.lsp.automatic_configuration.skipped_servers, { "ansiblels", "puppet" }) -- Manually configure Ansible/Puppet Language Servers
+local puppet_opts = {
+  cmd = {
+    vim.env.HOME .. "/.rvm/rubies/default/bin/ruby",
+    vim.env.HOME .. "/.lsp/puppet-editor-services/puppet-languageserver",
+    "--stdio",
+  }
+}
+local ansible_opts = {
+  cmd = {}
+}
+require("lvim.lsp.manager").setup("puppet", puppet_opts)
+require("lvim.lsp.manager").setup("ansiblels")
 
 -- ---remove a server from the skipped list, e.g. eslint, or emmet_ls. !!Requires `:LvimCacheReset` to take effect!!
 -- ---`:LvimInfo` lists which server(s) are skiipped for the current filetype
@@ -142,13 +153,25 @@ lvim.builtin.treesitter.highlight.enabled = true
 
 -- Additional Plugins
 lvim.plugins = {
-    {"folke/tokyonight.nvim"}, -- Colorscheme
-    { -- Diagnostic
+    -- Diagnostic
+    {
       "folke/trouble.nvim",
       cmd = "TroubleToggle",
     },
-    { "rodjek/vim-puppet" }, -- Puppet support
-    {"pearofducks/ansible-vim"}, -- Ansible syntax highlight
+    -- Puppet support
+    { "rodjek/vim-puppet" },
+    -- Ansible syntax highlight
+    {"pearofducks/ansible-vim"},
+    -- Directory traverse
+    { "nanotee/zoxide.vim" },
+    -- Fuzzy finder
+    { "junegunn/fzf" },
+    { "junegunn/fzf.vim" },
+    -- GIT integration
+    { "mhinz/vim-signify" },
+    { "tpope/vim-fugitive" },
+    { "tpope/vim-rhubarb" },
+    { "junegunn/gv.vim" },
 }
 
 -- Autocommands (https://neovim.io/doc/user/autocmd.html)
@@ -159,6 +182,17 @@ vim.api.nvim_create_autocmd("FileType", {
     require("nvim-treesitter.highlight").attach(0, "bash")
   end,
 })
+vim.api.nvim_create_autocmd("BufEnter", {
+  pattern = { "*.json", "*.jsonc" },
+  -- enable wrap mode for json files only
+  command = "setlocal wrap",
+})
+vim.api.nvim_create_autocmd("BufRead", {
+  -- Force `yaml.ansible` filetype in ansible projects directory.
+  pattern = { vim.env.HOME .. "/projects/ansible/*.yml", vim.env.HOME .. "/projects/ansible/*.yaml" },
+  command = "set ft=yaml.ansible",
+})
+
 
 -- Windows clipboard support
 vim.opt.clipboard = "unnamedplus"
