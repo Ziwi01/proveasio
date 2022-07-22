@@ -23,13 +23,45 @@ Below project is an opinionated set of tools which I use for my everyday work, b
 
 # TODO
 
-- describe customizations (Tips and tricks), add usage videos
-- (?) add [SDKMan](https://sdkman.io) installation (with Groovy/Gradle?)
-- (?) Use [ASDF](https://github.com/asdf-vm/asdf) version manager instead of RVM/NVM etc.
+- finish usage descriptions with videos and images
+- add [SDKMan](https://sdkman.io) installation (with Groovy/Gradle?) or:
+- use [ASDF](https://github.com/asdf-vm/asdf) version manager instead of RVM/NVM/SDKman etc.
 
 # Table of contents
 
-@TODO
+# Table of contents
+
+- [Introduction](#introduction)
+- [Concept](#concept)
+- [Notice](#notice)
+- [TODO](#todo)
+- [Table of contents](#table-of-contents)
+- [Requirements](#requirements)
+  - [Windows setup](#windows-setup)
+    - [Manual](#manual)
+    - [Automated](#automated)
+      - [prepare-windows.ps1](#prepare-windowsps1)
+      - [prepare-wsl.sh](#prepare-wslsh)
+      - [setup-windows.yml](#setup-windowsyml)
+  - [WSL2 setup](#wsl2-setup)
+  - [Roles overview](#roles-overview)
+    - [`software` role](#software-role)
+    - [`config` role](#config-role)
+    - [`dev` role](#dev-role)
+  - [Usages](#usages)
+    - [Terminal](#terminal)
+      - [Tmux](#tmux)
+    - [Git](#git)
+    - [Neovim with LunarVIM](#neovim-with-lunarvim)
+    - [Helm](#helm)
+    - [Languages](#languages)
+      - [Ruby](#ruby)
+      - [Node](#node)
+      - [Puppet](#puppet)
+      - [Ansible](#ansible)
+      - [Rust](#rust)
+- [Author](#author)
+- [Mentions](#mentions)
 
 # Requirements
 
@@ -76,11 +108,11 @@ There is a script `prepare-windows.ps1`, which will:
 
 #### prepare-wsl.sh
 
+After `prepare-windows.ps1` is run, login to Ubuntu WSL and clone this repository.
+
 From Ubuntu, run `sudo ./prepare-wsl.sh` - this will update the system and install required ansible packages.
 
 #### setup-windows.yml
-
-After `prepare-windows.ps1` is run, login to Ubuntu WSL and clone this repository.
 
 1. Modify `ansible/roles/vars/environment.yml` and set `win_username` to your windows User
 2. Investigate `ansible/roles/windows/tasks/main.yml` and review all other tasks in that directory to see what would be done
@@ -102,9 +134,9 @@ It will prompt for you Windows password. If the terminal hangs during an executi
 
 ## WSL2 setup
 
-Now for the main part :). Assuming all the [requirements](#requirements) are met:
+Now for the main part :). Assuming all the [requirements](#requirements) are met (Windows manual or automatic setup covered):
 
-1. Clone this repository in WSL Ubuntu.
+1. Clone this repository in WSL Ubuntu if not yet already.
 2. Run `sudo ./prepare-wsl.sh` (if not already run during windows setup) to update the system and install required ansible packages.
 3. Run ansible (from `ansible/` dir):
 
@@ -112,11 +144,11 @@ Now for the main part :). Assuming all the [requirements](#requirements) are met
     ansible-playbook -i inventory.yml setup-wsl.yaml -K
     ```
 
-This will install everything see [tools overview](#tools-overview) for details. You might want to go through [very basic config](#roles-overview) before running the installation. Most of the software packages are installed directly from Github repositories and are placed in `${HOME}/.local/` directory, however others are installed either from PIP, direct links or other things.
+You might want to go through [very basic config](#roles-overview) before running the installation. This will install everything - see [usages](#usages) for details. Most of the software packages are installed directly from Github repositories and are placed in `${HOME}/.local/` directory, however others are installed either from PIP, direct links or other things.
 
 ## Roles overview
 
-All of the roles have their main configuration in `ansible/roles/<role>/vars/main.yml`. Also, their tasks are gathered in `ansible/roles/<role>/tasks/main.yml`. It is good idea to take a peek on all the .yml files in `tasks/` directories also. For detailed description of how do those things work together, see [Usage](#usage) section below.
+All of the roles have their main configuration in `ansible/roles/<role>/vars/main.yml`. Also, their tasks are gathered in `ansible/roles/<role>/tasks/main.yml`. It is good idea to take a peek on all the .yml files in `tasks/` directories also. For detailed description of how do those things work together, see [Usages](#usages) section below.
 
 ### `software` role
 
@@ -132,13 +164,15 @@ This role will install all necessary things to have the WSL pretty and useful.
 7. [BAT](https://github.com/sharkdp/bat) - (much) better CAT
 8. [Zoxide](https://github.com/ajeetdsouza/zoxide) - traverse directories with ease (also with FZF)
 9. [Helm](https://github.com/helm/helm) - Kubernetes 'package manager'
+10. [Ripgrep](https://github.com/BurntSushi/ripgrep) - `grep` on steroids. Blazing fast, easy to use
+11. [fd](https://github.com/sharkdp/fd) - `find` alternative, much faster
+12. [htop](https://htop.dev/) - process viewer, prettier `top` alternative
 
 Also, common useful packages, like:
 
 - tmux (terminal multiplexer)
 - mlocate (file search)
 - tree (directory tree)
-- htop (better top)
 - jq (json/yaml parser)
 
 More useful packages will be installed in `dev` role.
@@ -155,7 +189,6 @@ This role is mostly `dotfiles` management. It will apply configuration for:
 
 - ZSH/powerlevel10k theme (`.zshrc` / `.p10k.zsh`)
 - Tmux (`.tmux.conf`)
-- VIM (`.vimrc`)
 - GIT config (`.gitconfig`)
 
 If you already have any of those files, you can either turn off overwrites, or back them up before overwriting, by setting appropriate option in `roles/config/vars/main.yml`:
@@ -180,9 +213,109 @@ Programming:
 
 In `roles/dev/vars/main.yml` you can specify Neovim/LunarVIM and RVM/PDK/NVM versions.
 
-## Tips and tricks
+## Usages
 
 Below you can find some useful commands/shortcuts/tips on how to use all of this fancy software. For more details, see the [software role](#software-role) section and take a look at the links there. Below you will find most common scenarios I use and custom added things (configs, modifications, functions).
+
+### Terminal
+
+Terminal is ZSH-based, configured with [Oh-my-ZSH](https://github.com/ohmyzsh/ohmyzsh) framework, with [powerlevel10k](https://github.com/romkatv/powerlevel10k):
+<details>
+  <summary>Click to expand!</summary>
+  ![terminal](./resources/terminal_preview.png)
+</details>
+
+There are couple of useful plugins installed there (you can find them in `roles/config/files/.zshrc`), like:
+
+- syntax highlighting
+- commands autocompletion (based on history and/or completion scripts)
+- [`FZF`](https://github.com/junegunn/fzf) integration (fuzzy search command history with `CTRL+r` and lots other places - try using TAB or `**TAB` here and there)
+    - TODO: video
+- Fuzzy search/go to directory with `ALT+c`
+- traversing directories back and forth (and parent/child) with `ALT+<left|right|up|down>`
+- aliases autosuggestions - tells you that you have an alias for particular commands
+    - TODO: example
+- easily traversing through visited directories (using [`zoxide`](https://github.com/ajeetdsouza/zoxide))
+    <details>
+    <summary>Click to expand!</summary>
+    ![zoxide](https://github.com/ajeetdsouza/zoxide/raw/main/contrib/tutorial.webp)
+    </details>
+- correct your commands with `fuck` or `ESC ESC`
+    - TODO: video
+- finding files with FZF using custom `bfind` alias - with preview and all
+    - TODO: image
+- prettier cat (with [`bat`](https://github.com/sharkdp/bat)) with syntax highlight and all
+
+#### Tmux
+
+For TMUX overall usage, please see its documentation with `man tmux`.
+
+Basic usage:
+
+- start with `tmux new`
+- `<C-b>c` - new window
+- `<C-b>%` - split window vertically
+- `<C-b>"` - split window horizontally
+- `<C-b><arrows>` - move between panes
+- `<C-b>xy` - kill pane
+- `<C-b>n` - next window
+- `<C-b>l` - last window
+- `<C-b>p` - previous window (in order)
+
+Custom modifications in `roles/config/files/.tmux.conf` include:
+
+- colorscheme
+- session management (`<C-b><C-s>` to save session, `<C-b><C-r>` to restore)
+- enabled mouse support
+- prevent deselect+auto scroll on mouse selection copy (very annoying..)
+
+### Git
+
+For smooth GIT experience there are some tools configured:
+
+- [diff-so-fancy](https://github.com/so-fancy/diff-so-fancy) - better looking diffs.
+- [git-fuzzy](https://github.com/bigH/git-fuzzy) - GIT on FZF steroids. Commands like `git-fuzzy status` (`gst`), `git-fuzzy log` (`glo`)
+    - TODO: video
+- [Gita](https://github.com/nosarthur/gita) - gather your GIT repositories in groups and execute command on them at once (either GIT command or shell commands)
+    - TODO: video
+- [LS with GIT status](https://github.com/gerph/ls-with-git-status) - list directories and show their GIT status (`lsg` command)
+    - TODO: image
+- **truly** useful `gco` alias for checking out branch with FZF. You can also use it to checkout without searching (`gco branch_name`)
+- `k` command for listing files with git status
+
+### Neovim with LunarVIM
+
+Neovim/LunarVIM configuration/post setup is a **work in progress**, as I recently switched to it from pure VIM. It is still light years better than my previous VIM config, and already usable. And very handy.
+
+[WIP] TODO: description
+
+### Helm
+
+[Helm](https://github.com/helm/helm) gets installed with latest 3.x version. To work with it properly, you need to either be running [Docker for Desktop](https://docs.docker.com/get-docker/) on Windows machine, with Kubernetes launched (so `kubectl` command is available in WSL terminal), or properly configured docker+kubernetes on WSL. I'd say use the first method if you can, definitely.
+
+### Languages
+
+#### Ruby
+
+For Ruby management, there is [Ruby Version Manager (RVM)](https://rvm.io/) installed. See available Ruby's with `rvm list`, use particular with `rvm use <ruby_version>`. There are some gems alredy preinstalled on Rubys available here (mostly for Puppet support).
+
+#### Node
+
+For Node, there is [NVM](https://github.com/nvm-sh/nvm) installed. See NPM versions with `nvm list`. By default there is latest LTS installed (currently `gallium` 16.x)
+
+#### Puppet
+
+`Puppet` and `puppet-lint` gems are installed on all configured rubys (>= 2.5). Also, latest [PDK](https://puppet.com/try-puppet/puppet-development-kit/) is available.
+
+There is Puppet LSP (language server protocol) called [Puppet Editor Services](https://github.com/puppetlabs/puppet-editor-services) installed in `~/.lsp/puppet-editor-services`. Currently I'm trying to get it to work with LunarVIM as autocompletion/go to definition etc. mechanism
+
+#### Ansible
+
+TODO: description
+
+#### Rust
+
+As LunarVIM requires it, [Rust](https://www.rust-lang.org/) is installed with [Cargo](https://github.com/rust-lang/cargo/) package manager.
 
 # Author
 

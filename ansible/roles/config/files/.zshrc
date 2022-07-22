@@ -95,7 +95,6 @@ plugins=(
     you-should-use
     k
     zoxide
-    tmux
 )
 
 source $ZSH/oh-my-zsh.sh
@@ -130,11 +129,6 @@ source $ZSH/oh-my-zsh.sh
 # eyamldecrypt() {
 #     eyaml decrypt --pkcs7-private-key=/etc/puppetlabs/puppet/keys/private_key.pkcs7.pem --pkcs7-public-key=/etc/puppetlabs/puppet/keys/public_key.pkcs7.pem -f $1
 # }
-
-### TMUX
-ZSH_TMUX_AUTOSTART="true"
-ZSH_TMUX_AUTOSTART_ONCE="true"
-ZSH_TMUX_AUTOQUIT="true"
 
 ### Colorize
 ZSH_COLORIZE_TOOL=chroma
@@ -235,6 +229,7 @@ alias gst='git-fuzzy status'
 export EDITOR='lvim'
 alias vim=lvim
 alias vimdiff='lvim -d'
+alias top=htop
 export MANPAGER="sh -c 'col -bx | bat -l man -p'"
 export ANSIBLE_TRANSFORM_INVALID_GROUP_CHARS=ignore
 
