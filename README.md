@@ -29,8 +29,6 @@ Below project is an opinionated set of tools which I use for my everyday work, b
 
 # Table of contents
 
-# Table of contents
-
 - [Introduction](#introduction)
 - [Concept](#concept)
 - [Notice](#notice)
