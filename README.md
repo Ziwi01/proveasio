@@ -221,8 +221,8 @@ Below you can find some useful commands/shortcuts/tips on how to use all of this
 
 Terminal is ZSH-based, configured with [Oh-my-ZSH](https://github.com/ohmyzsh/ohmyzsh) framework, with [powerlevel10k](https://github.com/romkatv/powerlevel10k):
 <details>
-  <summary>Click to expand!</summary>
-  ![terminal](./resources/terminal_preview.png)
+  <summary><b>Click to expand!</b></summary>
+  ![terminal](resources/terminal_preview.png?raw=true)
 </details>
 
 There are couple of useful plugins installed there (you can find them in `roles/config/files/.zshrc`), like:
@@ -309,9 +309,13 @@ For Node, there is [NVM](https://github.com/nvm-sh/nvm) installed. See NPM versi
 
 There is Puppet LSP (language server protocol) called [Puppet Editor Services](https://github.com/puppetlabs/puppet-editor-services) installed in `~/.lsp/puppet-editor-services`. Currently I'm trying to get it to work with LunarVIM as autocompletion/go to definition etc. mechanism
 
+TODO: Finish integration, add usage example videos
+
 #### Ansible
 
-TODO: description
+Ansible gets installed using both APT (during first step in `setup-wsl.sh`, for further installation) and then the playbooks install PIP3 Ansible in latest available version, along with ansible-lint.
+
+Also, there is an [Ansible Language Server](https://github.com/ansible/ansible-language-server) installed globally using default NPM. It will be integrated with LunarVIM for autocompletion/go to definition etc.
 
 #### Rust
 

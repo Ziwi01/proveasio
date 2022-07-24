@@ -1,13 +1,3 @@
---[[
-lvim is the global options object
-
-Linters should be
-filled in as strings with either
-a global executable or a path to
-an executable
-]]
--- THESE ARE EXAMPLE CONFIGS FEEL FREE TO CHANGE TO WHATEVER YOU WANT
-
 -- general
 lvim.log.level = "warn"
 lvim.format_on_save = false
@@ -15,42 +5,11 @@ lvim.colorscheme = "onedarker"
 
 -- keymappings [view all the defaults by pressing <leader>Lk]
 lvim.leader = "space"
--- add your own keymapping
 lvim.keys.normal_mode["<C-s>"] = ":w<cr>"
 -- unmap a default keymapping
 -- vim.keymap.del("n", "<C-Up>")
 -- override a default keymapping
 -- lvim.keys.normal_mode["<C-q>"] = ":q<cr>" -- or vim.keymap.set("n", "<C-q>", ":q<cr>" )
-
--- Change Telescope navigation to use j and k for navigation and n and p for history in both input and normal mode.
--- we use protected-mode (pcall) just in case the plugin wasn't loaded yet.
--- local _, actions = pcall(require, "telescope.actions")
--- lvim.builtin.telescope.defaults.mappings = {
---   -- for input mode
---   i = {
---     ["<C-j>"] = actions.move_selection_next,
---     ["<C-k>"] = actions.move_selection_previous,
---     ["<C-n>"] = actions.cycle_history_next,
---     ["<C-p>"] = actions.cycle_history_prev,
---   },
---   -- for normal mode
---   n = {
---     ["<C-j>"] = actions.move_selection_next,
---     ["<C-k>"] = actions.move_selection_previous,
---   },
--- }
-
--- Use which-key to add extra bindings with the leader-key prefix
--- lvim.builtin.which_key.mappings["P"] = { "<cmd>Telescope projects<CR>", "Projects" }
--- lvim.builtin.which_key.mappings["t"] = {
---   name = "+Trouble",
---   r = { "<cmd>Trouble lsp_references<cr>", "References" },
---   f = { "<cmd>Trouble lsp_definitions<cr>", "Definitions" },
---   d = { "<cmd>Trouble document_diagnostics<cr>", "Diagnostics" },
---   q = { "<cmd>Trouble quickfix<cr>", "QuickFix" },
---   l = { "<cmd>Trouble loclist<cr>", "LocationList" },
---   w = { "<cmd>Trouble workspace_diagnostics<cr>", "Wordspace Diagnostics" },
--- }
 
 -- After changing plugin config exit and reopen LunarVim, Run :PackerInstall :PackerCompile
 lvim.builtin.alpha.active = true
@@ -58,7 +17,7 @@ lvim.builtin.alpha.mode = "dashboard"
 lvim.builtin.notify.active = true
 lvim.builtin.terminal.active = true
 lvim.builtin.nvimtree.setup.view.side = "left"
-lvim.builtin.nvimtree.setup.renderer.icons.show.git = false
+lvim.builtin.nvimtree.setup.renderer.icons.show.git = true
 
 -- if you don't want all the parsers change this to a table of the ones you want
 lvim.builtin.treesitter.ensure_installed = {
@@ -153,7 +112,7 @@ require("lvim.lsp.manager").setup("ansiblels")
 
 -- Additional Plugins
 lvim.plugins = {
-    -- Diagnostic
+    -- Diagnostics, references, telescope results, quickfix and location lists
     {
       "folke/trouble.nvim",
       cmd = "TroubleToggle",
@@ -169,9 +128,96 @@ lvim.plugins = {
     { "junegunn/fzf.vim" },
     -- GIT integration
     { "mhinz/vim-signify" },
-    { "tpope/vim-fugitive" },
+    {
+      "tpope/vim-fugitive",
+      cmd = {
+        "G",
+        "Git",
+        "Gdiffsplit",
+        "Gread",
+        "Gwrite",
+        "Ggrep",
+        "GMove",
+        "GDelete",
+        "GBrowse",
+        "GRemove",
+        "GRename",
+        "Glgrep",
+        "Gedit"
+      },
+      ft = {"fugitive"}
+    },    
     { "tpope/vim-rhubarb" },
     { "junegunn/gv.vim" },
+    {
+      "f-person/git-blame.nvim",
+      event = "BufRead",
+      config = function()
+        vim.cmd "highlight default link gitblame SpecialComment"
+        vim.g.gitblame_enabled = 0
+      end,
+    },
+    
+    -- Search and replace
+    {
+      "windwp/nvim-spectre",
+      event = "BufRead",
+      config = function()
+        require("spectre").setup()
+      end,
+    },
+    -- Completion
+    {
+      "tzachar/cmp-tabnine",
+      run = "./install.sh",
+      requires = "hrsh7th/nvim-cmp",
+      event = "InsertEnter",
+    },
+    -- goto Preview
+    {
+      "rmagatti/goto-preview",
+      config = function()
+      require('goto-preview').setup {
+            width = 120; -- Width of the floating window
+            height = 25; -- Height of the floating window
+            default_mappings = true; -- Bind default mappings
+            debug = false; -- Print debug information
+            opacity = nil; -- 0-100 opacity level of the floating window where 100 is fully transparent.
+            post_open_hook = nil; -- A function taking two arguments, a buffer and a window to be ran as a hook.
+            -- You can use "default_mappings = true" setup option
+            -- Or explicitly set keybindings
+            -- vim.cmd("nnoremap gpd <cmd>lua require('goto-preview').goto_preview_definition()<CR>")
+            -- vim.cmd("nnoremap gpi <cmd>lua require('goto-preview').goto_preview_implementation()<CR>")
+            -- vim.cmd("nnoremap gP <cmd>lua require('goto-preview').close_all_win()<CR>")
+        }
+      end
+    },
+    -- Underline cursor under the word
+    {
+      "itchyny/vim-cursorword",
+        event = {"BufEnter", "BufNewFile"},
+        config = function()
+          vim.api.nvim_command("augroup user_plugin_cursorword")
+          vim.api.nvim_command("autocmd!")
+          vim.api.nvim_command("autocmd FileType NvimTree,lspsagafinder,dashboard,vista let b:cursorword = 0")
+          vim.api.nvim_command("autocmd WinEnter * if &diff || &pvw | let b:cursorword = 0 | endif")
+          vim.api.nvim_command("autocmd InsertEnter * let b:cursorword = 0")
+          vim.api.nvim_command("autocmd InsertLeave * let b:cursorword = 1")
+          vim.api.nvim_command("augroup END")
+          end
+    },
+    -- Session management
+    {
+      "folke/persistence.nvim",
+        event = "BufReadPre", -- this will only start session saving when an actual file was opened
+        module = "persistence",
+        config = function()
+          require("persistence").setup {
+            dir = vim.fn.expand(vim.fn.stdpath "config" .. "/session/"),
+            options = { "buffers", "curdir", "tabpages", "winsize" },
+          }
+      end,
+    },    
 }
 
 -- Autocommands (https://neovim.io/doc/user/autocmd.html)
@@ -199,3 +245,22 @@ vim.opt.clipboard = "unnamedplus"
 
 -- Enable transparency
 lvim.transparent_window = true
+
+-- Trouble Toggle
+lvim.builtin.which_key.mappings["t"] = {
+  name = "Diagnostics",
+  t = { "<cmd>TroubleToggle<cr>", "trouble" },
+  w = { "<cmd>TroubleToggle workspace_diagnostics<cr>", "workspace" },
+  d = { "<cmd>TroubleToggle document_diagnostics<cr>", "document" },
+  q = { "<cmd>TroubleToggle quickfix<cr>", "quickfix" },
+  l = { "<cmd>TroubleToggle loclist<cr>", "loclist" },
+  r = { "<cmd>TroubleToggle lsp_references<cr>", "references" },
+}
+
+-- Session management
+lvim.builtin.which_key.mappings["S"]= {
+  name = "Session",
+  c = { "<cmd>lua require('persistence').load()<cr>", "Restore last session for current dir" },
+  l = { "<cmd>lua require('persistence').load({ last = true })<cr>", "Restore last session" },
+  Q = { "<cmd>lua require('persistence').stop()<cr>", "Quit without saving session" },
+}
