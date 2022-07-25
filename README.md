@@ -178,7 +178,7 @@ Also, common useful packages, like:
 
 More useful packages will be installed in `dev` role.
 
-In `roles/software/vars/main.yml` file, you can configure for example:
+In `roles/software/vars/main.yml` file, you can configure for <b>Example:</b>
 
 - particular versions of software in `versions` key - by default they are set to `latest`, so that they will get updated when re-running the `setup-wsl.yml` playbook
 - list of packages that will get installed from apt repository (like git, tmux, tree, htop etc.)
@@ -221,8 +221,9 @@ Below you can find some useful commands/shortcuts/tips on how to use all of this
 ## Terminal
 
 Terminal is ZSH-based, configured with [Oh-my-ZSH](https://github.com/ohmyzsh/ohmyzsh) framework, with [powerlevel10k](https://github.com/romkatv/powerlevel10k):
+
 <details>
-  <summary><b>Click to expand!</b></summary>
+  <summary><b>Example:</b> Terminal commandline</summary>
   ![terminal](resources/terminal_preview.png?raw=true)
 </details>
 
@@ -232,35 +233,35 @@ There are couple of useful plugins installed there (you can find them in `roles/
 - commands autocompletion (based on history and/or completion scripts)
 - [`FZF`](https://github.com/junegunn/fzf) integration (fuzzy search command history with `CTRL+r` and lots other places - try using TAB or `**TAB` here and there)
     <details>
-    <summary>Click to expand!</summary>
-    TODO: video
+    <summary><b>Example:</b> History/file FZF search</summary>
+    @TODO: video
     </details>
 - fuzzy search/go to directory with `ALT+c`
 - traversing directories back and forth (and parent/child) with `ALT+<left|right|up|down>`
 - aliases autosuggestions - tells you that you have an alias for particular commands
     <details>
-    <summary>Click to expand!</summary>
-    TODO: image
+    <summary><b>Example:</b> Alias suggestion</summary>
+    @TODO: image
     </details>
 - easily traversing through visited directories (using [`zoxide`](https://github.com/ajeetdsouza/zoxide))
     <details>
-    <summary>Click to expand!</summary>
+    <summary><b>Example:</b> Zoxide usage</summary>
     ![zoxide](https://github.com/ajeetdsouza/zoxide/raw/main/contrib/tutorial.webp)
     </details>
 - correct your commands with `fuck` or `ESC ESC`
     <details>
-    <summary>Click to expand!</summary>
-    TODO: video
+    <summary><b>Example:</b> `thefuck` correction</summary>
+    @TODO: video
     </details>
 - finding files with FZF using custom `bfind` alias - with preview and all
     <details>
-    <summary>Click to expand!</summary>
-    TODO: image
+    <summary><b>Example:</b> FZF file search with preview</summary>
+    @TODO: image
     </details>
 - prettier cat (with [`bat`](https://github.com/sharkdp/bat)) with syntax highlight and all
     <details>
-    <summary>Click to expand!</summary>
-    TODO: video
+    <summary><b>Example:</b> BAT output</summary>
+    @TODO: video
     </details>
 
 ### Tmux
@@ -296,20 +297,20 @@ For smooth GIT experience there are some tools configured:
     - `git-fuzzy status` (alias: `gst`)
     - `git-fuzzy log` (alias: `glo`)
     <details>
-    <summary>Example: browsing GIT log/status</summary>
-    TODO: video
+    <summary><b>Example:</b> Browsing GIT log/status</summary>
+    @TODO: video
     </details>
 - [Gita](https://github.com/nosarthur/gita) - gather your GIT repositories in groups and execute command on them at once (either GIT command or shell commands)
     <details>
-    <summary>Example: grouping GIT repositories</summary>
-    TODO: video
+    <summary><b>Example:</b> Grouping GIT repositories</summary>
+    @TODO: video
     </details>
 - [LS with GIT status](https://github.com/gerph/ls-with-git-status) and `k` ohmyzsh plugin - list directories/files and show their GIT status. Command:
     - `lsg` - list directories
     - `k` - list files
     <details>
-    <summary>Example: Listing GIT files/directories</summary>
-    TODO: image
+    <summary><b>Example:</b> Listing GIT files/directories</summary>
+    @TODO: image
     </details>
 - **truly** useful: `gco` alias for searching and checking out branch with FZF. You can also use it to checkout without searching (`gco branch_name`)
 
@@ -366,8 +367,8 @@ For Node, there is [NVM](https://github.com/nvm-sh/nvm) installed. See NPM versi
 There is Puppet LSP (language server protocol) called [Puppet Editor Services](https://github.com/puppetlabs/puppet-editor-services) installed in `~/.lsp/puppet-editor-services`.
 
 <details>
-<summary>Example: Puppet autocompletion/LSP</summary>
-**@TODO**: Add working Puppet LSP autocompletion/goto defition videos
+<summary><b>Example:</b> Puppet autocompletion/LSP</summary>
+@TODO: Add working Puppet LSP autocompletion/goto defition videos
 </details>
 
 #### Ansible
@@ -379,8 +380,8 @@ Also, there is an [Ansible Language Server](https://github.com/ansible/ansible-l
 To configure linter diagnostics (enable/disable some checks) in LunarVIM for Ansible files, please edit `~/.ansible-lint` on filesystem, source: `ansible/roles/dev/files/.ansible-lint`
 
 <details>
-<summary>Example: Ansible lint/autocompletion</summary>
-**@TODO**: Add working Ansible LSP autocompletion/linting image
+<summary><b>Example:</b> Ansible lint/autocompletion</summary>
+@TODO: Add working Ansible LSP autocompletion/linting image
 </details>
 
 ### Rust
