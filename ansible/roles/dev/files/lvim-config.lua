@@ -55,10 +55,14 @@ local puppet_opts = {
   }
 }
 local ansible_opts = {
-  cmd = {}
+  settings = {
+    ansibleLint = {
+      arguments = 'ansible-lint -c ~/.ansible-lint'
+    }
+  }
 }
 require("lvim.lsp.manager").setup("puppet", puppet_opts)
-require("lvim.lsp.manager").setup("ansiblels")
+require("lvim.lsp.manager").setup("ansiblels", ansible_opts)
 
 -- ---remove a server from the skipped list, e.g. eslint, or emmet_ls. !!Requires `:LvimCacheReset` to take effect!!
 -- ---`:LvimInfo` lists which server(s) are skiipped for the current filetype
@@ -157,15 +161,6 @@ lvim.plugins = {
         vim.g.gitblame_enabled = 0
       end,
     },
-    
-    -- Search and replace
-    {
-      "windwp/nvim-spectre",
-      event = "BufRead",
-      config = function()
-        require("spectre").setup()
-      end,
-    },
     -- Completion
     {
       "tzachar/cmp-tabnine",
@@ -228,16 +223,11 @@ vim.api.nvim_create_autocmd("FileType", {
     require("nvim-treesitter.highlight").attach(0, "bash")
   end,
 })
-vim.api.nvim_create_autocmd("BufEnter", {
-  pattern = { "*.json", "*.jsonc" },
-  -- enable wrap mode for json files only
-  command = "setlocal wrap",
-})
-vim.api.nvim_create_autocmd("BufRead", {
-  -- Force `yaml.ansible` filetype in ansible projects directory.
-  pattern = { vim.env.HOME .. "/projects/ansible/*.yml", vim.env.HOME .. "/projects/ansible/*.yaml" },
-  command = "set ft=yaml.ansible",
-})
+-- vim.api.nvim_create_autocmd("BufRead", {
+--   -- Force `yaml.ansible` filetype in ansible projects directory.
+--   pattern = { vim.env.HOME .. "/projects/ansible/*.yml", vim.env.HOME .. "/projects/ansible/*.yaml" },
+--   command = "set ft=yaml.ansible",
+-- })
 
 
 -- Windows clipboard support

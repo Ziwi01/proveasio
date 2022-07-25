@@ -44,3 +44,10 @@
   register: pip_out
   changed_when: "'Requirement already up-to-date' not in pip_out.stdout"
   when: ansible_lint_pip_version == 'latest'
+
+- name: "[Ansible] Overwrite .ansible-lint. Overwrite flag is: {{ ansible_lint_overwrite }}"
+  ansible.builtin.copy:
+    src: .ansible-lint
+    dest: "{{ ansible_env.HOME }}/.ansible-lint"
+    mode: '0644'
+  when: ansible_lint_overwrite | bool

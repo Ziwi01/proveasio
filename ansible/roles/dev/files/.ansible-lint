@@ -1,0 +1,6 @@
+use_default_rules: true
+skip_list:
+  - fqcn-builtins
+#  - 204 # line length limit
+#  - ANSIBLE0012 # Commands should not change things if nothing needs doing
+#  - ANSIBLE0013 # Use shell only when shell functionality is required

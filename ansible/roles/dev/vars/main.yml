@@ -18,6 +18,7 @@ node_version: 'lts/gallium'
 # Ansible
 ansible_pip_version: latest
 ansible_lint_pip_version: latest
+ansible_lint_overwrite: true # overwrite ~/.ansible-lint dotfile
 
 # Neovim
 neovim_version: latest
