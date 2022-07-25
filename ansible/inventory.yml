@@ -1,6 +1,6 @@
 all:
   children:
-    wsl:
+    ubuntu:
       hosts:
         wsl
     win:

@@ -124,7 +124,7 @@ lvim.plugins = {
     -- Puppet support
     { "rodjek/vim-puppet" },
     -- Ansible syntax highlight
-    {"pearofducks/ansible-vim"},
+    { "pearofducks/ansible-vim" },
     -- Directory traverse
     { "nanotee/zoxide.vim" },
     -- Fuzzy finder
@@ -151,7 +151,6 @@ lvim.plugins = {
       },
       ft = {"fugitive"}
     },    
-    { "tpope/vim-rhubarb" },
     { "junegunn/gv.vim" },
     {
       "f-person/git-blame.nvim",

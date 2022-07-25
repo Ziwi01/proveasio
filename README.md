@@ -23,9 +23,10 @@ Below project is an opinionated set of tools which I use for my everyday work, b
 
 # TODO
 
-- finish usage descriptions with videos and images
-- add [SDKMan](https://sdkman.io) installation (with Groovy/Gradle?) or:
-- use [ASDF](https://github.com/asdf-vm/asdf) version manager instead of RVM/NVM/SDKman etc.
+- docs: add usage descriptions with videos and images
+- docs: update lunarvim.md with detailed workflow examples and shortcuts
+- feat: add [SDKMan](https://sdkman.io) installation (with Groovy/Gradle) **or**:
+- refactor: use [ASDF](https://github.com/asdf-vm/asdf) version manager instead of RVM/NVM/SDKman etc.
 
 # Table of contents
 
@@ -104,6 +105,8 @@ There is a script `prepare-windows.ps1`, which will:
 - Enable WinRM protocol with CredSSP authentication transport (to be able to run Ansible from WSL2 to configure Windows)
 - Install [Chocolatey](https://chocolatey.org/) package manager to install software
 
+It must be run as Administrator.
+
 ### prepare-wsl.sh
 
 After `prepare-windows.ps1` is run, login to Ubuntu WSL and clone this repository.
@@ -117,7 +120,7 @@ From Ubuntu, run `sudo ./prepare-wsl.sh` - this will update the system and insta
     1. `common.yml` will install common software packages, like 7Zip, Firefox, BitWarden etc.
     2. `dev.yml` will install GIT, Windows Terminal, IntelliJ, VSCode, Docker Desktop, Postman
     3. `context_menu.yml` will clean up context menu from things added by some of the packages above
-    4. `terminal.yml` will install MesloLGS fonts and apply custom settings for Windows Terminal
+    4. `terminal.yml` will install DejaVu font and apply custom settings for Windows Terminal
     5. `entertainment.yml` will install additional software, like Spotify, VLC, Discord etc.
 
 You can switch off the whole sections from #2 by modifying `ansible/roles/windows/vars/main.yml`. For customization, just edit the yaml files.
@@ -228,21 +231,37 @@ There are couple of useful plugins installed there (you can find them in `roles/
 - syntax highlighting
 - commands autocompletion (based on history and/or completion scripts)
 - [`FZF`](https://github.com/junegunn/fzf) integration (fuzzy search command history with `CTRL+r` and lots other places - try using TAB or `**TAB` here and there)
-    - TODO: video
-- Fuzzy search/go to directory with `ALT+c`
+    <details>
+    <summary>Click to expand!</summary>
+    TODO: video
+    </details>
+- fuzzy search/go to directory with `ALT+c`
 - traversing directories back and forth (and parent/child) with `ALT+<left|right|up|down>`
 - aliases autosuggestions - tells you that you have an alias for particular commands
-    - TODO: example
+    <details>
+    <summary>Click to expand!</summary>
+    TODO: image
+    </details>
 - easily traversing through visited directories (using [`zoxide`](https://github.com/ajeetdsouza/zoxide))
     <details>
     <summary>Click to expand!</summary>
     ![zoxide](https://github.com/ajeetdsouza/zoxide/raw/main/contrib/tutorial.webp)
     </details>
 - correct your commands with `fuck` or `ESC ESC`
-    - TODO: video
+    <details>
+    <summary>Click to expand!</summary>
+    TODO: video
+    </details>
 - finding files with FZF using custom `bfind` alias - with preview and all
-    - TODO: image
+    <details>
+    <summary>Click to expand!</summary>
+    TODO: image
+    </details>
 - prettier cat (with [`bat`](https://github.com/sharkdp/bat)) with syntax highlight and all
+    <details>
+    <summary>Click to expand!</summary>
+    TODO: video
+    </details>
 
 ### Tmux
 
@@ -272,20 +291,59 @@ Custom modifications in `roles/config/files/.tmux.conf` include:
 For smooth GIT experience there are some tools configured:
 
 - [diff-so-fancy](https://github.com/so-fancy/diff-so-fancy) - better looking diffs.
-- [git-fuzzy](https://github.com/bigH/git-fuzzy) - GIT on FZF steroids. Commands like `git-fuzzy status` (`gst`), `git-fuzzy log` (`glo`)
-    - TODO: video
+- [git-fuzzy](https://github.com/bigH/git-fuzzy) - GIT on FZF steroids. Commands:
+    - `git-fuzzy`
+    - `git-fuzzy status` (alias: `gst`)
+    - `git-fuzzy log` (alias: `glo`)
+    <details>
+    <summary>Example: browsing GIT log/status</summary>
+    TODO: video
+    </details>
 - [Gita](https://github.com/nosarthur/gita) - gather your GIT repositories in groups and execute command on them at once (either GIT command or shell commands)
-    - TODO: video
-- [LS with GIT status](https://github.com/gerph/ls-with-git-status) - list directories and show their GIT status (`lsg` command)
-    - TODO: image
-- **truly** useful `gco` alias for checking out branch with FZF. You can also use it to checkout without searching (`gco branch_name`)
-- `k` command for listing files with git status
+    <details>
+    <summary>Example: grouping GIT repositories</summary>
+    TODO: video
+    </details>
+- [LS with GIT status](https://github.com/gerph/ls-with-git-status) and `k` ohmyzsh plugin - list directories/files and show their GIT status. Command:
+    - `lsg` - list directories
+    - `k` - list files
+    <details>
+    <summary>Example: Listing GIT files/directories</summary>
+    TODO: image
+    </details>
+- **truly** useful: `gco` alias for searching and checking out branch with FZF. You can also use it to checkout without searching (`gco branch_name`)
 
 ## Neovim with LunarVIM
 
-Neovim/LunarVIM configuration/post setup is a **work in progress**, as I recently switched to it from pure VIM. It is still light years better than my previous VIM config, and already usable. And very handy.
+Neovim/LunarVIM configuration/post setup is a continouous work in progress, as I recently switched to it from pure VIM and still polish it here and there with new keybindings and plugins. It is still light years better than my previous VIM config, and I will never go back to pure VIM (I think)
 
-[WIP] TODO: description
+[LunarVIM](https://github.com/LunarVim/LunarVim) is set as default `EDITOR`, also aliased as `vim` (you can change it `~/.zshrc`).
+
+Core Neovim plugins, which are installed by LunarVIM, can be found [here](https://www.lunarvim.org/plugins/01-core-plugins-list.html).
+
+Additionally, I setup the plugins below:
+
+- [folke/trouble.nvim](https://github.com/folke/trouble.nvim) - Toggle diagnostic windows and browse through them (`<Space>td` for document diagnostic items)
+- [rodjek/vim-puppet](https://github.com/rodjek/vim-puppet) - Puppet syntax support
+- [nanotee/zoxide.vim](https://github.com/nanotee/zoxide.vim) - Zoxide inside VIM: `:Zi` or `:Z <query>`.For Zoxide descrption see above for Zoxide descprition
+- [junegunn/fzf](https://github.com/junegunn/fzf) and [junegunn/fzf.vim](https://github.com/junegunn/fzf.vim) - FZF integration in VIM
+- GIT integration plugins:
+    - [mhinz/vim-signify](https://github.com/mhinz/vim-signify) - shows GIT info about modified/added/removed lines
+    - [tpope/vim-fugitive](https://github.com/tpope/vim-fugitive) - GIT wrapper in VIM: `:Git <command>`, like `:Git add` or some complex variants, like `:Gvdiffsplit` or so. Read the docs for details :)
+    - [junegunn/gv.vim](https://github.com/junegunn/gv.vim) - commit browser (`:GV`)
+    - [f-person/git-blame.nvim](https://github.com/f-person/git-blame.nvim) - show Git blame in-line virtual text.
+- [tzachar/cmp-tabnine](https://github.com/tzachar/cmp-tabnine) - AI completion mechanism
+- [rmagatti/goto-preview](https://github.com/rmagatti/goto-preview) - do not jump around the definition in new tabs/buffers - show preview window and edit it there, close the preview. Being on top of searched function: `gpd`. Enjoy.
+- [itchyny/vim-cursorword](https://github.com/itchyny/vim-cursorword) - underline all the words that the cursor is on right now. Handy for typo spotting.
+- [folke/persistence.nvim](https://github.com/folke/persistence.nvim) - session management. Restore all your buffers and windows. Saving is done automatically, restore with: `<Space>Sl`. Awesome!
+
+In LunarVIM there is an automatic [LSP installer plugin](https://github.com/williamboman/nvim-lsp-installer) which will automatically install supported language servers and use them, when you open a specific filetype. This should work out of the box in most cases, however for Puppet I setup the LSP server manually, as it doesn't work with RVM by default. Also Ansible gets linter configuration override.
+
+For all configuration overrides, see `ansible/roles/dev/files/lvim-config.lua` in this repo or `~/.config/lvim/config.lua` on the filesystem.
+
+If you have problems with plugins, try to execute `:PackerInstall` and `:PackerCompile` commands from `lvim`. From time to time also `:PackerUpdate` would be nice.
+
+For detailed usage examples, shortcuts and basic workflow videos, please see [`lunarvim.md`](./lunarvim.md)
 
 ## Helm
 
@@ -305,15 +363,25 @@ For Node, there is [NVM](https://github.com/nvm-sh/nvm) installed. See NPM versi
 
 `Puppet` and `puppet-lint` gems are installed on all configured rubys (>= 2.5). Also, latest [PDK](https://puppet.com/try-puppet/puppet-development-kit/) is available.
 
-There is Puppet LSP (language server protocol) called [Puppet Editor Services](https://github.com/puppetlabs/puppet-editor-services) installed in `~/.lsp/puppet-editor-services`. Currently I'm trying to get it to work with LunarVIM as autocompletion/go to definition etc. mechanism
+There is Puppet LSP (language server protocol) called [Puppet Editor Services](https://github.com/puppetlabs/puppet-editor-services) installed in `~/.lsp/puppet-editor-services`.
 
-TODO: Finish integration, add usage example videos
+<details>
+<summary>Example: Puppet autocompletion/LSP</summary>
+**@TODO**: Add working Puppet LSP autocompletion/goto defition videos
+</details>
 
 #### Ansible
 
 Ansible gets installed using both APT (during first step in `setup-wsl.sh`, for further installation) and then the playbooks install PIP3 Ansible in latest available version, along with ansible-lint.
 
-Also, there is an [Ansible Language Server](https://github.com/ansible/ansible-language-server) installed globally using default NPM. It will be integrated with LunarVIM for autocompletion/go to definition etc.
+Also, there is an [Ansible Language Server](https://github.com/ansible/ansible-language-server) installed globally using default NPM, but LunarVIM uses it's own, auto-installed language server.
+
+To configure linter diagnostics (enable/disable some checks) in LunarVIM for Ansible files, please edit `~/.ansible-lint` on filesystem, source: `ansible/roles/dev/files/.ansible-lint`
+
+<details>
+<summary>Example: Ansible lint/autocompletion</summary>
+**@TODO**: Add working Ansible LSP autocompletion/linting image
+</details>
 
 ### Rust
 

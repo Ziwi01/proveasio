@@ -20,6 +20,9 @@
 - name: Flush handlers
   meta: flush_handlers
 
+- name: "[LunarVIM] Update LunarVIM"
+  shell: 'lvim +LvimUpdate +q'
+
 - name: "[LunarVIM] Overwrite config.lua. Overwrite flag is: {{ lunarvim_config_overwrite }}"
   ansible.builtin.copy:
     src: lvim-config.lua
