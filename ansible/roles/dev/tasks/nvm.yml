@@ -29,6 +29,6 @@
 
 # TODO: Check if this version is already there for this user
 - name: "[NVM] Install Node {{ node_version }}"
-  shell: "source {{ ansible_env.HOME }}/.local/opt/nvm/nvm.sh; nvm install {{ node_version }}"
+  shell: ". {{ ansible_env.HOME }}/.local/opt/nvm/nvm.sh; nvm install {{ node_version }}"
   args:
     executable: /bin/bash
