@@ -6,6 +6,11 @@
     path: "{{ dotfiles_backup_dir }}"
     state: directory
 
+- name: "[Config] Set hostname"
+  become: true
+  ansible.builtin.hostname:
+    name: "{{ hostname }}"
+
 - include_tasks: zsh.yml
 
 - include_tasks: p10k.yml

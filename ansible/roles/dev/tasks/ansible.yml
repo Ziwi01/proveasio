@@ -5,7 +5,7 @@
 # Source: https://github.com/ansible/ansible-language-server
 #
 - name: "[Ansible] Install Ansible Language server"
-  shell: '. {{ ansible_env.HOME }}/.local/opt/nvm/nvm.sh; npm install @ansible/ansible-language-server --location=global'
+  shell: "{{ ansible_env.NVM_BIN }}/npm install @ansible/ansible-language-server --location=global"
   changed_when: false
 
 #

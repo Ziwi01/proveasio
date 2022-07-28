@@ -137,9 +137,10 @@ It will prompt for you Windows password. If the terminal hangs during an executi
 
 Now for the main part :). Assuming all the [requirements](#requirements) are met (Windows manual or automatic setup covered):
 
-1. Clone this repository in WSL Ubuntu if not yet already.
-2. Run `sudo ./prepare-wsl.sh` (if not already run during windows setup) to update the system and install required ansible packages.
-3. Run ansible (from `ansible/` dir):
+1. Update variables in `ansible/vars/environment.yml` - set `user` to your Ubuntu user and desired GIT config info. Optionally change your hostname to whatever you like.
+2. Clone this repository in WSL Ubuntu if not yet already.
+3. Run `sudo ./prepare-wsl.sh` (if not already run during windows setup) to update the system and install required ansible packages.
+4. Run ansible (from `ansible/` dir):
 
     ```shell
     ansible-playbook -i inventory.yml setup-wsl.yaml -K
