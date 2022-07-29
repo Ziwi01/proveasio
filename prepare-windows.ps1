@@ -15,9 +15,9 @@ winrm quickconfig
 
 #[Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
 $url = "https://raw.githubusercontent.com/ansible/ansible/devel/examples/scripts/ConfigureRemotingForAnsible.ps1"
-Invoke-Webrequest $url -OutFile C:\Temp\AnsibleWinrmConfig.ps1 -Verbose
+Invoke-Webrequest $url -OutFile ${env:USERPROFILE}\AnsibleWinrmConfig.ps1 -Verbose
 sleep 2
-Set-ExecutionPolicy Bypass -Scope Process -Force; C:\Temp\AnsibleWinrmConfig.ps1 -EnableCredSSP -DisableBasicAuth -Verbose
+Set-ExecutionPolicy Bypass -Scope Process -Force; ${env:USERPROFILE}\AnsibleWinrmConfig.ps1 -EnableCredSSP -DisableBasicAuth -Verbose
 Enable-WSManCredSSP -Role Server -Force
 
 Write-Host "`r`n`r`n"
