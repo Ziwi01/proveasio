@@ -22,6 +22,8 @@
 
 - name: "[LunarVIM] Update LunarVIM"
   shell: 'lvim +LvimUpdate +q'
+  environment:
+    PATH: "{{ ansible_env.HOME }}/.local/bin/:{{ ansible_env.PATH }}"
 
 - name: "[LunarVIM] Overwrite config.lua. Overwrite flag is: {{ lunarvim_config_overwrite }}"
   ansible.builtin.copy:

@@ -69,7 +69,7 @@ Below project is an opinionated set of tools which I use for my everyday work, b
 - Ubuntu 20.04 installed
 - Any terminal using any iconic font (like [Nerd Fonts](https://www.nerdfonts.com/) - see windows setup for details)
 
-If you have all that, you can skip to [WSL2 setup](#wsl2-setup).
+Please verify you have correct Windows setup by going through Windows manual setup below, or try experimental Windows automation even more below (feedback welcome!)
 
 # Windows setup
 
@@ -87,9 +87,9 @@ Windows setup should be done manually, however there is an experimental automati
     For details, see [Microsoft WSL installation docs](https://docs.microsoft.com/en-us/windows/wsl/install)
 
 2. Install DejaVuSans fonts (it can be found in this repo in `ansible/roles/windows/files/fonts`)
-3. Install [Microsoft Terminal](https://github.com/microsoft/terminal) and configure Ubuntu profile with DejaVuSans font. You can check `ansible/roles/windows/templates/settings.json.j2` for settings reference with useful overrides.
+3. Install [Microsoft Terminal](https://github.com/microsoft/terminal) and configure this Terminals Ubuntu profile with DejaVuSans font. You can check `ansible/roles/windows/templates/settings.json.j2` for settings reference with useful overrides.
 
-Points #2 and #3 are optional (I use them personally) - you can use any terminal of your choice and any font supporting iconic fonts (like [Nerd Fonts](https://www.nerdfonts.com/) - please note that not all fonts have the same amount of glyphs/icons. DejaVu has lots of them)
+In points #2 and #3 specific font+terminal duo is just a suggestion (I use them personally) - you can use any terminal of your choice and any font supporting iconic fonts (like [Nerd Fonts](https://www.nerdfonts.com/) - please note that not all fonts have the same amount of glyphs/icons. DejaVu has lots of them. Remember to configure you terminal to use this font!
 
 Thats it, you can move to [WSL2 setup](#wsl2-setup)
 
@@ -357,6 +357,8 @@ For detailed usage examples, shortcuts and basic workflow videos, please see [`l
 
 For Ruby management, there is [Ruby Version Manager (RVM)](https://rvm.io/) installed. See available Ruby's with `rvm list`, use particular with `rvm use <ruby_version>`. There are some gems alredy preinstalled on Rubys available here (mostly for Puppet support).
 
+**NOTE:** During ansible run with default setup there could will be some ignored errors during Puppet gems installation - this is because older rubies (like 2.4.10 which I use) don't have some of the dependencies. You can saely ignore those messages, or if you don't like them, either remove ruby 2.4.10 from installation list, or disable Puppet installation at all.
+
 ### Node
 
 For Node, there is [NVM](https://github.com/nvm-sh/nvm) installed. See NPM versions with `nvm list`. By default there is latest LTS installed (currently `gallium` 16.x)
@@ -371,6 +373,8 @@ There is Puppet LSP (language server protocol) called [Puppet Editor Services](h
 <summary><b>Example:</b> Puppet autocompletion/LSP</summary>
 @TODO: Add working Puppet LSP autocompletion/goto defition videos
 </details>
+
+**NOTE:** During ansible run with default setup there could will be some ignored errors during Puppet gems installation - this is because older rubies (like 2.4.10 which I use) don't have some of the dependencies. You can saely ignore those messages, or if you don't like them, either remove ruby 2.4.10 from installation list, or disable Puppet installation at all.
 
 #### Ansible
 

@@ -4,8 +4,12 @@
 # Ansible Language Server
 # Source: https://github.com/ansible/ansible-language-server
 #
-- name: "[Ansible] Install Ansible Language server"
-  shell: "{{ ansible_env.NVM_BIN }}/npm install @ansible/ansible-language-server --location=global"
+- name: "[Ansible] Get NVM version string"
+  shell: ". {{ ansible_env.HOME }}/.local/opt/nvm/nvm.sh; nvm list current | grep -E 'v[0-9]*\\.[0-9]*\\.[0-9]*' -o"
+  register: npm_vesion
+
+- name: "[Ansible] Install Ansible Language server for current NPM"
+  shell: "{{ ansible_env.HOME }}/.local/opt/nvm/versions/node/{{ npm_vesion.stdout }}/bin/npm install @ansible/ansible-language-server --location=global"
   changed_when: false
 
 #

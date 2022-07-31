@@ -3,6 +3,8 @@
 - name: "[LunarVIM] Install LunarVIM"
   shell: ". {{ ansible_env.HOME }}/.cargo/env; . {{ ansible_env.HOME }}/.local/opt/nvm/nvm.sh; dos2unix {{ lunarvim_home }}/utils/installer/install.sh; {{ lunarvim_home }}/utils/installer/install.sh -y"
   register: lunarvim_install
+  environment:
+    PATH: "{{ ansible_env.HOME }}/.local/bin/:{{ ansible_env.PATH }}"
   notify: "[LunarVIM] Show LunarVIM install info"
 
 - name: "[LunarVIM] Show LunarVIM install info"
