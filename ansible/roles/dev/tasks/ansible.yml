@@ -4,14 +4,16 @@
 # Ansible Language Server
 # Source: https://github.com/ansible/ansible-language-server
 #
-- name: "[Ansible] Get NVM version string"
+- name: "[Ansible] Get NPM version string"
   shell: "source {{ ansible_env.HOME }}/.local/opt/nvm/nvm.sh; nvm list current | grep -E 'v[0-9]*\\.[0-9]*\\.[0-9]*' -o"
   args:
     executable: /bin/bash
-  register: npm_vesion
+  register: npm_version
 
 - name: "[Ansible] Install Ansible Language server for current NPM"
-  shell: "{{ ansible_env.HOME }}/.local/opt/nvm/versions/node/{{ npm_vesion.stdout }}/bin/npm install @ansible/ansible-language-server --location=global"
+  shell: "npm install @ansible/ansible-language-server --location=global"
+  environment:
+    PATH: "{{ ansible_env.HOME }}/.local/opt/nvm/versions/node/{{ npm_version.stdout }}/bin:{{ ansible_env.PATH }}"
   changed_when: false
 
 #

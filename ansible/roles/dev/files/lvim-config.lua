@@ -127,6 +127,8 @@ lvim.plugins = {
     { "pearofducks/ansible-vim" },
     -- Directory traverse
     { "nanotee/zoxide.vim" },
+    -- Markdown support
+    { "plasticboy/vim-markdown" },
     -- Fuzzy finder
     { "junegunn/fzf" },
     { "junegunn/fzf.vim" },
@@ -149,9 +151,7 @@ lvim.plugins = {
         "Glgrep",
         "Gedit"
       },
-      ft = {"fugitive"}
-    },    
-    { "junegunn/gv.vim" },
+    },
     {
       "f-person/git-blame.nvim",
       event = "BufRead",
@@ -211,7 +211,7 @@ lvim.plugins = {
             options = { "buffers", "curdir", "tabpages", "winsize" },
           }
       end,
-    },    
+    },
 }
 
 -- Autocommands (https://neovim.io/doc/user/autocmd.html)

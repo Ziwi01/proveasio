@@ -23,10 +23,12 @@ Below project is an opinionated set of tools which I use for my everyday work, b
 
 # TODO
 
+- feat: add [LazyGIT](https://github.com/jesseduffield/lazygit) installation with [lazygit.nvim](https://github.com/kdheepak/lazygit.nvim)
+- feat: add [SDKMan](https://sdkman.io), install Groovy/Gradle/java
+- feat: add [GVM (Go Version Manager)](https://github.com/moovweb/gvm), install GO
 - docs: add usage descriptions with videos and images
 - docs: update lunarvim.md with detailed workflow examples and shortcuts
-- feat: add [SDKMan](https://sdkman.io) installation (with Groovy/Gradle) **or**:
-- refactor: use [ASDF](https://github.com/asdf-vm/asdf) version manager instead of RVM/NVM/SDKman etc.
+
 
 # Table of contents
 
@@ -145,6 +147,10 @@ Now for the main part :). Assuming all the [requirements](#requirements) are met
     ```shell
     ansible-playbook -i inventory.yml setup-wsl.yaml -K
     ```
+5. Open new shell, launch vim (`vim` or `lvim`) and execute:
+    - `:PackerInstall`
+    - `:PackerCompile`
+    - exit (`:q!`)
 
 You might want to go through [very basic config](#roles-overview) before running the installation. This will install everything - see [usages](#usages) for details. Most of the software packages are installed directly from Github repositories and are placed in `${HOME}/.local/` directory, however others are installed either from PIP, direct links or other things.
 
