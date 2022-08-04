@@ -13,3 +13,11 @@
 - include_tasks: tmux.yml
 
 - include_tasks: git.yml
+
+- include_tasks: lazygit.yml
+
+- include_tasks: lunarvim.yml
+
+- include_tasks: thefuck.yml
+
+- include_tasks: ansible.yml

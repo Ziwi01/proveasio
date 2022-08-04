@@ -1,0 +1,18 @@
+# Install LazyGIT
+# Source: https://github.com/jesseduffield/lazygit
+---
+- name: "[LazyGIT] Add lazygit-team/release repository"
+  become: true
+  ansible.builtin.apt_repository:
+    repo: ppa:lazygit-team/release
+
+- name: "[LazyGIT] Update OS packages list"
+  become: true
+  package:
+    update_cache: yes
+
+- name: "[LazyGIT] Install LazyGIT {{ versions.lazygit }}"
+  become: true
+  apt:
+    name: "lazygit"
+    state: "{{ versions.lazygit }}"

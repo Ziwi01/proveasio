@@ -8,6 +8,7 @@ versions:
   helm: latest
   thefuck: latest
   gita: latest
+  lazygit: latest
 
 # Useful packages (apt)
 packages:
@@ -25,10 +26,8 @@ packages:
   - dos2unix
   - ripgrep
   - fd-find
-  - luarocks
   - php
   - composer
-  - julia
 
 # FZF
 fzf_git_url: "https://github.com/junegunn/fzf.git"

@@ -1,0 +1,15 @@
+# TheFuck config
+# For usage see README.md
+#
+# Source: https://github.com/nvbn/thefuck
+- name: "[TheFuck] Ensure thefuck config directory"
+  file:
+    path: "{{ ansible_env.HOME }}/.config/thefuck"
+    state: directory
+
+- name: "[TheFuck] Copy config"
+  ansible.builtin.copy:
+    src: "thefuck-settings.py"
+    dest: "{{ ansible_env.HOME }}/.config/thefuck/settings.py"
+    mode: '0644'
+  when: thefuck_config_overwrite | bool

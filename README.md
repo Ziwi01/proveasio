@@ -363,7 +363,7 @@ For detailed usage examples, shortcuts and basic workflow videos, please see [`l
 
 For Ruby management, there is [Ruby Version Manager (RVM)](https://rvm.io/) installed. See available Ruby's with `rvm list`, use particular with `rvm use <ruby_version>`. There are some gems alredy preinstalled on Rubys available here (mostly for Puppet support).
 
-**NOTE:** During ansible run with default setup there could will be some ignored errors during Puppet gems installation - this is because older rubies (like 2.4.10 which I use) don't have some of the dependencies. You can saely ignore those messages, or if you don't like them, either remove ruby 2.4.10 from installation list, or disable Puppet installation at all.
+**NOTE:** By default, Puppet gets installed in version 5.5.22 **for all rubies**. If you choose to install latest puppet, there might be some dependencies errors for lower ruby versions (for example 2.4.10). If you don't want to install Puppet for all rubies, set `puppet_rubies`  in `ansible/roles/dev/vars/main.yml` to an array with rubies names.
 
 ### Node
 
@@ -371,16 +371,16 @@ For Node, there is [NVM](https://github.com/nvm-sh/nvm) installed. See NPM versi
 
 ### Puppet
 
-`Puppet` and `puppet-lint` gems are installed on all configured rubys (>= 2.5). Also, latest [PDK](https://puppet.com/try-puppet/puppet-development-kit/) is available.
+`Puppet` and `puppet-lint` gems are installed on all configured rubys. Also, latest [PDK](https://puppet.com/try-puppet/puppet-development-kit/) is available.
 
 There is Puppet LSP (language server protocol) called [Puppet Editor Services](https://github.com/puppetlabs/puppet-editor-services) installed in `~/.lsp/puppet-editor-services`.
+
+**NOTE:** By default, Puppet gets installed in version 5.5.22 **for all rubies**. If you choose to install latest puppet, there might be some dependencies errors for lower ruby versions (for example 2.4.10). If you don't want to install Puppet for all rubies, set `puppet_rubies` in `ansible/roles/dev/vars/main.yml` to an array with rubies names.
 
 <details>
 <summary><b>Example:</b> Puppet autocompletion/LSP</summary>
 @TODO: Add working Puppet LSP autocompletion/goto defition videos
 </details>
-
-**NOTE:** During ansible run with default setup there could will be some ignored errors during Puppet gems installation - this is because older rubies (like 2.4.10 which I use) don't have some of the dependencies. You can saely ignore those messages, or if you don't like them, either remove ruby 2.4.10 from installation list, or disable Puppet installation at all.
 
 #### Ansible
 
