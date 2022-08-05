@@ -23,6 +23,7 @@ Below project is an opinionated set of tools which I use for my everyday work, b
 
 # TODO
 
+- fix: Add TMUX plugin manager installation/plugins initialize
 - docs: add usage descriptions with videos and images
 - docs: update lunarvim.md with detailed workflow examples and shortcuts
 - feat: add [SDKMan](https://sdkman.io) installation (with Groovy/Gradle) **or**:
@@ -280,11 +281,15 @@ Basic usage:
 - `<C-b>n` - next window
 - `<C-b>l` - last window
 - `<C-b>p` - previous window (in order)
+- `<C-b><C-s>` - save session (windows/panes/directories)
+- `<C-b><C-r>` - load saved session
+- `<C-b>?` - search back TMUX buffer with FZF
 
 Custom modifications in `roles/config/files/.tmux.conf` include:
 
 - colorscheme
 - session management (`<C-b><C-s>` to save session, `<C-b><C-r>` to restore)
+- ability to search back tmux buffer with FZF (`<C-b>?`)
 - enabled mouse support
 - prevent deselect+auto scroll on mouse selection copy (very annoying..)
 
