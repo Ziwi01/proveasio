@@ -4,5 +4,5 @@
   ### Comment out roles you don't need ###
   roles:
     - software
-    - config
     - dev
+    - config

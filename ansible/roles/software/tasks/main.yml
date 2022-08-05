@@ -26,6 +26,9 @@
 # Git-fuzzy
 - include_tasks: git-fuzzy.yml
 
+# LazyGIT
+- include_tasks: lazygit.yml
+
 # Gita
 - include_tasks: gita.yml
 

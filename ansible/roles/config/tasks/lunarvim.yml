@@ -1,0 +1,9 @@
+# Configure LunarVIM
+# Source: https://github.com/LunarVim/LunarVim
+---
+- name: "[LunarVIM] Overwrite config.lua. Overwrite flag is: {{ lunarvim_config_overwrite }}"
+  ansible.builtin.copy:
+    src: lvim-config.lua
+    dest: "{{ ansible_env.HOME }}/.config/lvim/config.lua"
+    mode: '0644'
+  when: lunarvim_config_overwrite | bool

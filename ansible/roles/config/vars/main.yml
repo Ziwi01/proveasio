@@ -1,15 +1,27 @@
+# For included dotfiles see below comments
 dotfiles_overwrite: true
-dotfiles_backup: false
+dotfiles_backup: false 
 dotfiles_backup_dir: "{{ ansible_env.HOME }}/.dotfiles_backup"
 
-# Uncomment below to override `dotfiles_overwrite`` / `dotfiles_backup`` setting(s) for specific thing
-# zshrc_overwrite: true
+### Uncomment below to override `dotfiles_overwrite`` / `dotfiles_backup`` setting(s) for specific thing
+# zshrc_overwrite: true # overwrite ~/.zshrc
 # zshrc_backup: true
-# p10k_overwrite: true
+# p10k_overwrite: true # overwrite ~/.p10k.zsh
 # p10k_backup: true
-# vimrc_overwrite: true
-# vimrc_backup: true
-# tmuxconf_overwrite: true
+# tmuxconf_overwrite: true # overwrite ~/.tmux.conf
 # tmuxconf_backup: false
-# gitconfig_overwrite: true
+# gitconfig_overwrite: true # overwrite ~/.gitconfig
 # gitconfig_backup: true
+
+### Other config overwrites; This won't be backed up
+# TheFuck
+thefuck_config_overwrite: true # overwrite ~/.config/thefuck/settings.py
+
+# LazyGIT
+lazygit_config_overwrite: true # overwrite ~/.config/lazygit/config.yml
+
+# Ansible
+ansible_lint_overwrite: true # overwrite ~/.ansible-lint dotfile
+
+# LunarVIM
+lunarvim_config_overwrite: true # overwrite ~/.config/lvim/config.lua

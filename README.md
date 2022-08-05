@@ -24,10 +24,11 @@ Below project is an opinionated set of tools which I use for my everyday work, b
 # TODO
 
 - fix: Add TMUX plugin manager installation/plugins initialize
+- feat: add [SDKMan](https://sdkman.io), install Groovy/Gradle/java
+- feat: add [GVM (Go Version Manager)](https://github.com/moovweb/gvm), install GO
 - docs: add usage descriptions with videos and images
 - docs: update lunarvim.md with detailed workflow examples and shortcuts
-- feat: add [SDKMan](https://sdkman.io) installation (with Groovy/Gradle) **or**:
-- refactor: use [ASDF](https://github.com/asdf-vm/asdf) version manager instead of RVM/NVM/SDKman etc.
+
 
 # Table of contents
 
@@ -146,6 +147,10 @@ Now for the main part :). Assuming all the [requirements](#requirements) are met
     ```shell
     ansible-playbook -i inventory.yml setup-wsl.yaml -K
     ```
+5. Open new shell, launch vim (`vim` or `lvim`) and execute:
+    - `:PackerInstall`
+    - `:PackerCompile`
+    - exit (`:q!`)
 
 You might want to go through [very basic config](#roles-overview) before running the installation. This will install everything - see [usages](#usages) for details. Most of the software packages are installed directly from Github repositories and are placed in `${HOME}/.local/` directory, however others are installed either from PIP, direct links or other things.
 
@@ -186,21 +191,6 @@ In `roles/software/vars/main.yml` file, you can configure for <b>Example:</b>
 - list of packages that will get installed from apt repository (like git, tmux, tree, htop etc.)
 - Oh-My-ZSH plugin list
 
-## `config` role
-
-This role is mostly `dotfiles` management. It will apply configuration for:
-
-- ZSH/powerlevel10k theme (`.zshrc` / `.p10k.zsh`)
-- Tmux (`.tmux.conf`)
-- GIT config (`.gitconfig`)
-
-If you already have any of those files, you can either turn off overwrites, or back them up before overwriting, by setting appropriate option in `roles/config/vars/main.yml`:
-
-- `dotfiles_overwrite` (default: true)
-- `dotfiles_backup` (default: false)
-
-You can also granulize this on per-component basis - see mentioned `vars/main.yml`.
-
 ## `dev` role
 
 This role installs programming-related tools which I currently use in my work.
@@ -215,6 +205,28 @@ Programming:
 - [NVM](https://github.com/nvm-sh/nvm) (Node Version Manager) with latest LTS Node version (by default). Among all - dependency for LunarVIM installation
 
 In `roles/dev/vars/main.yml` you can specify Neovim/LunarVIM and RVM/PDK/NVM versions.
+
+## `config` role
+
+This role is mostly `dotfiles` or configs management. It will apply configuration for:
+
+- ZSH/powerlevel10k theme (`.zshrc` / `.p10k.zsh`)
+- Tmux (`.tmux.conf`)
+- GIT config (`.gitconfig`)
+
+If you already have any of those files, you can either turn off overwrites, or back them up before overwriting, by setting appropriate option in `roles/config/vars/main.yml`:
+
+- `dotfiles_overwrite` (default: true)
+- `dotfiles_backup` (default: false)
+
+You can also granulize this on per-component basis - see mentioned `vars/main.yml`.
+
+Additionally, configs for below apps will be updated (disable overwrite in `vars/main.yml` if needed)
+
+- thefuck (`~/.config/thefuck/settings.py`)
+- LazyGIT (`~/.config/lazygit/config.yml`)
+- ansible-lint (`~/.ansible-lint`)
+- lunarvim (`~/.config/lvim/config.lua`)
 
 # Usages
 
@@ -297,8 +309,13 @@ Custom modifications in `roles/config/files/.tmux.conf` include:
 
 For smooth GIT experience there are some tools configured:
 
+- [LazyGIT](https://github.com/jesseduffield/lazygit) - great GUI terminal GIT wrapper. Command: `lazygit`. See docs for usages. Also available through LunarVIM (see Neovim/LunarVIM section)
+    <details>
+    <summary><b>Example:</b> Using LazyGIT</summary>
+    @TODO: link to video
+    </details>
 - [diff-so-fancy](https://github.com/so-fancy/diff-so-fancy) - better looking diffs.
-- [git-fuzzy](https://github.com/bigH/git-fuzzy) - GIT on FZF steroids. Commands:
+- [git-fuzzy](https://github.com/bigH/git-fuzzy) - GIT on FZF steroids. I use LazyGIT now instead, but maybe useful for simpler checkups. Commands:
     - `git-fuzzy`
     - `git-fuzzy status` (alias: `gst`)
     - `git-fuzzy log` (alias: `glo`)
@@ -306,6 +323,7 @@ For smooth GIT experience there are some tools configured:
     <summary><b>Example:</b> Browsing GIT log/status</summary>
     @TODO: video
     </details>
+- **truly** useful: `gco` alias for searching and checking out branch with FZF. You can also use it to checkout without searching (`gco branch_name`)
 - [Gita](https://github.com/nosarthur/gita) - gather your GIT repositories in groups and execute command on them at once (either GIT command or shell commands)
     <details>
     <summary><b>Example:</b> Grouping GIT repositories</summary>
@@ -318,7 +336,6 @@ For smooth GIT experience there are some tools configured:
     <summary><b>Example:</b> Listing GIT files/directories</summary>
     @TODO: image
     </details>
-- **truly** useful: `gco` alias for searching and checking out branch with FZF. You can also use it to checkout without searching (`gco branch_name`)
 
 ## Neovim with LunarVIM
 
@@ -333,18 +350,19 @@ Additionally, I setup the plugins below:
 - [folke/trouble.nvim](https://github.com/folke/trouble.nvim) - Toggle diagnostic windows and browse through them (`<Space>td` for document diagnostic items)
 - [rodjek/vim-puppet](https://github.com/rodjek/vim-puppet) - Puppet syntax support
 - [nanotee/zoxide.vim](https://github.com/nanotee/zoxide.vim) - Zoxide inside VIM: `:Zi` or `:Z <query>`.For Zoxide descrption see above for Zoxide descprition
+- [plasticboy/vim-markdown]() - Markdown support
+- [pearofducks/ansible-vim]() - Ansible support
 - [junegunn/fzf](https://github.com/junegunn/fzf) and [junegunn/fzf.vim](https://github.com/junegunn/fzf.vim) - FZF integration in VIM
 - GIT integration plugins:
+    - [kdheepak/lazygit.nvim](https://github.com/kdheepak/lazygit.nvim) - Neovim integration with awesome GIT wrapper (LazyGIT). See `software` role description for details.
     - [mhinz/vim-signify](https://github.com/mhinz/vim-signify) - shows GIT info about modified/added/removed lines
-    - [tpope/vim-fugitive](https://github.com/tpope/vim-fugitive) - GIT wrapper in VIM: `:Git <command>`, like `:Git add` or some complex variants, like `:Gvdiffsplit` or so. Read the docs for details :)
-    - [junegunn/gv.vim](https://github.com/junegunn/gv.vim) - commit browser (`:GV`)
     - [f-person/git-blame.nvim](https://github.com/f-person/git-blame.nvim) - show Git blame in-line virtual text.
 - [tzachar/cmp-tabnine](https://github.com/tzachar/cmp-tabnine) - AI completion mechanism
-- [rmagatti/goto-preview](https://github.com/rmagatti/goto-preview) - do not jump around the definition in new tabs/buffers - show preview window and edit it there, close the preview. Being on top of searched function: `gpd`. Enjoy.
+- [rmagatti/goto-preview](https://github.com/rmagatti/goto-preview) - do not jump around the definition in new tabs/buffers - show floating preview window and edit it there, close the preview. Being on top of searched function: `gpd` (for definition).
 - [itchyny/vim-cursorword](https://github.com/itchyny/vim-cursorword) - underline all the words that the cursor is on right now. Handy for typo spotting.
 - [folke/persistence.nvim](https://github.com/folke/persistence.nvim) - session management. Restore all your buffers and windows. Saving is done automatically, restore with: `<Space>Sl`. Awesome!
 
-In LunarVIM there is an automatic [LSP installer plugin](https://github.com/williamboman/nvim-lsp-installer) which will automatically install supported language servers and use them, when you open a specific filetype. This should work out of the box in most cases, however for Puppet I setup the LSP server manually, as it doesn't work with RVM by default. Also Ansible gets linter configuration override.
+In LunarVIM there is an automatic [LSP installer plugin](https://github.com/williamboman/nvim-lsp-installer) which will install supported language servers and use them, when you open a specific filetype. This should work out of the box in most cases, however for Puppet I setup the LSP server manually, as it doesn't work with RVM by default. Also Ansible gets linter configuration override.
 
 For all configuration overrides, see `ansible/roles/dev/files/lvim-config.lua` in this repo or `~/.config/lvim/config.lua` on the filesystem.
 
@@ -362,7 +380,7 @@ For detailed usage examples, shortcuts and basic workflow videos, please see [`l
 
 For Ruby management, there is [Ruby Version Manager (RVM)](https://rvm.io/) installed. See available Ruby's with `rvm list`, use particular with `rvm use <ruby_version>`. There are some gems alredy preinstalled on Rubys available here (mostly for Puppet support).
 
-**NOTE:** During ansible run with default setup there could will be some ignored errors during Puppet gems installation - this is because older rubies (like 2.4.10 which I use) don't have some of the dependencies. You can saely ignore those messages, or if you don't like them, either remove ruby 2.4.10 from installation list, or disable Puppet installation at all.
+**NOTE:** By default, Puppet gets installed in version 5.5.22 **for all rubies**. If you choose to install latest puppet, there might be some dependencies errors for lower ruby versions (for example 2.4.10). If you don't want to install Puppet for all rubies, set `puppet_rubies`  in `ansible/roles/dev/vars/main.yml` to an array with rubies names.
 
 ### Node
 
@@ -370,16 +388,16 @@ For Node, there is [NVM](https://github.com/nvm-sh/nvm) installed. See NPM versi
 
 ### Puppet
 
-`Puppet` and `puppet-lint` gems are installed on all configured rubys (>= 2.5). Also, latest [PDK](https://puppet.com/try-puppet/puppet-development-kit/) is available.
+`Puppet` and `puppet-lint` gems are installed on all configured rubys. Also, latest [PDK](https://puppet.com/try-puppet/puppet-development-kit/) is available.
 
 There is Puppet LSP (language server protocol) called [Puppet Editor Services](https://github.com/puppetlabs/puppet-editor-services) installed in `~/.lsp/puppet-editor-services`.
+
+**NOTE:** By default, Puppet gets installed in version 5.5.22 **for all rubies**. If you choose to install latest puppet, there might be some dependencies errors for lower ruby versions (for example 2.4.10). If you don't want to install Puppet for all rubies, set `puppet_rubies` in `ansible/roles/dev/vars/main.yml` to an array with rubies names.
 
 <details>
 <summary><b>Example:</b> Puppet autocompletion/LSP</summary>
 @TODO: Add working Puppet LSP autocompletion/goto defition videos
 </details>
-
-**NOTE:** During ansible run with default setup there could will be some ignored errors during Puppet gems installation - this is because older rubies (like 2.4.10 which I use) don't have some of the dependencies. You can saely ignore those messages, or if you don't like them, either remove ruby 2.4.10 from installation list, or disable Puppet installation at all.
 
 #### Ansible
 

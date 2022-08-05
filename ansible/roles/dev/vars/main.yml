@@ -7,6 +7,15 @@ rvm1_rubies:
   - ruby-3.1.2
 rvm1_user: "{{ user }}"
 
+# Puppet
+puppet_version: 5.5.22 # Very old, but we still use it... Does not support `latest`, see https://rubygems.org/gems/puppet for latest version
+puppet_rubies:
+  - all # to install only for specific rubies, list their names (must match `rvm1_rubies`)
+# Example:
+#puppet_rubies:
+#  - ruby-2.7.6
+#  - ruby-3.1.2
+
 # PDK (Puppet Development KIT)
 # Please note the module does not support package downgrades - if PDK is already installed in higher version, remove it first.
 pdk_version: latest
@@ -18,7 +27,6 @@ node_version: 'lts/gallium'
 # Ansible
 ansible_pip_version: latest
 ansible_lint_pip_version: latest
-ansible_lint_overwrite: true # overwrite ~/.ansible-lint dotfile
 
 # Neovim
 neovim_version: latest
@@ -27,7 +35,6 @@ neovim_version: latest
 lunarvim_url: https://github.com/lunarvim/lunarvim.git
 lunarvim_home: "{{ ansible_env.HOME }}/.local/opt/lunarvim"
 lunarvim_version: master
-lunarvim_config_overwrite: true # Set to false to leave local config.lua alone
 
 # Puppet
 puppet_pes_url: https://github.com/puppetlabs/puppet-editor-services.git

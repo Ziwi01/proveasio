@@ -52,6 +52,7 @@ local puppet_opts = {
     vim.env.HOME .. "/.rvm/rubies/default/bin/ruby",
     vim.env.HOME .. "/.lsp/puppet-editor-services/puppet-languageserver",
     "--stdio",
+    "--puppet-settings=--modulepath," .. vim.env.HOME .. "/projects/puppet", -- set this to the director(y/ies) you keep puppet modules
   }
 }
 local ansible_opts = {
@@ -127,33 +128,16 @@ lvim.plugins = {
     { "pearofducks/ansible-vim" },
     -- Directory traverse
     { "nanotee/zoxide.vim" },
+    -- Markdown support
+    { "plasticboy/vim-markdown" },
     -- Fuzzy finder
     { "junegunn/fzf" },
     { "junegunn/fzf.vim" },
     -- GIT integration
-    { "mhinz/vim-signify" },
+    { "kdheepak/lazygit.nvim" }, -- GIT manager in VIM. Awesome. (`:LazyGit`)
+    { "mhinz/vim-signify" }, -- show git status on particular lines
     {
-      "tpope/vim-fugitive",
-      cmd = {
-        "G",
-        "Git",
-        "Gdiffsplit",
-        "Gread",
-        "Gwrite",
-        "Ggrep",
-        "GMove",
-        "GDelete",
-        "GBrowse",
-        "GRemove",
-        "GRename",
-        "Glgrep",
-        "Gedit"
-      },
-      ft = {"fugitive"}
-    },    
-    { "junegunn/gv.vim" },
-    {
-      "f-person/git-blame.nvim",
+      "f-person/git-blame.nvim", -- show Git Blame info inline virtual text
       event = "BufRead",
       config = function()
         vim.cmd "highlight default link gitblame SpecialComment"
@@ -169,7 +153,7 @@ lvim.plugins = {
     },
     -- goto Preview
     {
-      "rmagatti/goto-preview",
+      "rmagatti/goto-preview", -- Edit preview in a floating windows. (`gpd`)
       config = function()
       require('goto-preview').setup {
             width = 120; -- Width of the floating window
@@ -211,7 +195,7 @@ lvim.plugins = {
             options = { "buffers", "curdir", "tabpages", "winsize" },
           }
       end,
-    },    
+    },
 }
 
 -- Autocommands (https://neovim.io/doc/user/autocmd.html)
