@@ -11,4 +11,5 @@
   git:
     repo: "{{ tpm_git_url }}"
     dest: "{{ tmux_plugins_dir }}/tpm"
+    force: true
     update: yes
