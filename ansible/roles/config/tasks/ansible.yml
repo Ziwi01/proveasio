@@ -1,6 +1,6 @@
 # Configure ansible-related stuff
 ---
-- name: "[Ansible] Overwrite .ansible-lint. Overwrite flag is: {{ ansible_lint_overwrite }}"
+- name: "[Config][Ansible] Overwrite .ansible-lint. Overwrite flag is: {{ ansible_lint_overwrite }}"
   ansible.builtin.copy:
     src: .ansible-lint
     dest: "{{ ansible_env.HOME }}/.ansible-lint"

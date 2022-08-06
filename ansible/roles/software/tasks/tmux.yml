@@ -1,0 +1,14 @@
+# TMUX plugin manager
+# Source: https://github.com/tmux-plugins/tpm
+- name: "[TMUX] Create Tmux plugin dir {{ ansible_env.HOME }}/.tmux/plugins"
+  file:
+    path: "{{ ansible_env.HOME }}/.tmux/plugins"
+    state: directory
+    mode: 0755
+    recurse: yes
+
+- name: "[TMUX] Clone/update Tmux plugin manager"
+  git:
+    repo: "{{ tpm_git_url }}"
+    dest: "{{ tmux_plugins_dir }}/tpm"
+    update: yes

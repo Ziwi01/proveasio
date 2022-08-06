@@ -49,3 +49,6 @@
 
 # Win32yank (windows clipboard support for Neovim)
 - include_tasks: w32yank.yml
+
+# TMUX Plugins
+- include_tasks: tmux.yml

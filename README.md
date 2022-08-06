@@ -23,12 +23,10 @@ Below project is an opinionated set of tools which I use for my everyday work, b
 
 # TODO
 
-- fix: Add TMUX plugin manager installation/plugins initialize
 - feat: add [SDKMan](https://sdkman.io), install Groovy/Gradle/java
 - feat: add [GVM (Go Version Manager)](https://github.com/moovweb/gvm), install GO
 - docs: add usage descriptions with videos and images
 - docs: update lunarvim.md with detailed workflow examples and shortcuts
-
 
 # Table of contents
 
@@ -289,19 +287,20 @@ Basic usage:
 - `<C-b>%` - split window vertically
 - `<C-b>"` - split window horizontally
 - `<C-b><arrows>` - move between panes
+- `<C-b><C+<arrows>>` - resize panes
 - `<C-b>xy` - kill pane
 - `<C-b>n` - next window
 - `<C-b>l` - last window
 - `<C-b>p` - previous window (in order)
 - `<C-b><C-s>` - save session (windows/panes/directories)
 - `<C-b><C-r>` - load saved session
-- `<C-b>?` - search back TMUX buffer with FZF
+- `<C-b><C-f>` - search back TMUX buffer with FZF
 
 Custom modifications in `roles/config/files/.tmux.conf` include:
 
-- colorscheme
+- custom theme
 - session management (`<C-b><C-s>` to save session, `<C-b><C-r>` to restore)
-- ability to search back tmux buffer with FZF (`<C-b>?`)
+- ability to search back tmux buffer with FZF (`<C-b><C-f>`)
 - enabled mouse support
 - prevent deselect+auto scroll on mouse selection copy (very annoying..)
 
@@ -309,7 +308,7 @@ Custom modifications in `roles/config/files/.tmux.conf` include:
 
 For smooth GIT experience there are some tools configured:
 
-- [LazyGIT](https://github.com/jesseduffield/lazygit) - great GUI terminal GIT wrapper. Command: `lazygit`. See docs for usages. Also available through LunarVIM (see Neovim/LunarVIM section)
+- [LazyGIT](https://github.com/jesseduffield/lazygit) - great GUI terminal GIT wrapper. Command: `lazygit`. See docs for usages. Also available from LunarVIM (see Neovim/LunarVIM section)
     <details>
     <summary><b>Example:</b> Using LazyGIT</summary>
     @TODO: link to video
@@ -350,8 +349,8 @@ Additionally, I setup the plugins below:
 - [folke/trouble.nvim](https://github.com/folke/trouble.nvim) - Toggle diagnostic windows and browse through them (`<Space>td` for document diagnostic items)
 - [rodjek/vim-puppet](https://github.com/rodjek/vim-puppet) - Puppet syntax support
 - [nanotee/zoxide.vim](https://github.com/nanotee/zoxide.vim) - Zoxide inside VIM: `:Zi` or `:Z <query>`.For Zoxide descrption see above for Zoxide descprition
-- [plasticboy/vim-markdown]() - Markdown support
-- [pearofducks/ansible-vim]() - Ansible support
+- [plasticboy/vim-markdown](https://github.com/preservim/vim-markdown) - Markdown support
+- [pearofducks/ansible-vim](https://github.com/pearofducks/ansible-vim) - Ansible support
 - [junegunn/fzf](https://github.com/junegunn/fzf) and [junegunn/fzf.vim](https://github.com/junegunn/fzf.vim) - FZF integration in VIM
 - GIT integration plugins:
     - [kdheepak/lazygit.nvim](https://github.com/kdheepak/lazygit.nvim) - Neovim integration with awesome GIT wrapper (LazyGIT). See `software` role description for details.
@@ -380,7 +379,7 @@ For detailed usage examples, shortcuts and basic workflow videos, please see [`l
 
 For Ruby management, there is [Ruby Version Manager (RVM)](https://rvm.io/) installed. See available Ruby's with `rvm list`, use particular with `rvm use <ruby_version>`. There are some gems alredy preinstalled on Rubys available here (mostly for Puppet support).
 
-**NOTE:** By default, Puppet gets installed in version 5.5.22 **for all rubies**. If you choose to install latest puppet, there might be some dependencies errors for lower ruby versions (for example 2.4.10). If you don't want to install Puppet for all rubies, set `puppet_rubies`  in `ansible/roles/dev/vars/main.yml` to an array with rubies names.
+**NOTE:** By default, Puppet gets installed in version 5.5.22 **for all rubies**. If you choose to install latest puppet, there might be some dependencies errors for lower ruby versions (for example 2.4.10, which is included by default). If you don't want to install Puppet for all rubies, set `puppet_rubies` in `ansible/roles/dev/vars/main.yml` to an array with rubies names.
 
 ### Node
 
@@ -392,7 +391,7 @@ For Node, there is [NVM](https://github.com/nvm-sh/nvm) installed. See NPM versi
 
 There is Puppet LSP (language server protocol) called [Puppet Editor Services](https://github.com/puppetlabs/puppet-editor-services) installed in `~/.lsp/puppet-editor-services`.
 
-**NOTE:** By default, Puppet gets installed in version 5.5.22 **for all rubies**. If you choose to install latest puppet, there might be some dependencies errors for lower ruby versions (for example 2.4.10). If you don't want to install Puppet for all rubies, set `puppet_rubies` in `ansible/roles/dev/vars/main.yml` to an array with rubies names.
+**NOTE:** By default, Puppet gets installed in version 5.5.22 **for all rubies**. If you choose to install latest puppet, there might be some dependencies errors for lower ruby versions (for example 2.4.10, which is included by default). If you don't want to install Puppet for all rubies, set `puppet_rubies` in `ansible/roles/dev/vars/main.yml` to an array with rubies names.
 
 <details>
 <summary><b>Example:</b> Puppet autocompletion/LSP</summary>

@@ -33,6 +33,7 @@ packages:
 fzf_git_url: "https://github.com/junegunn/fzf.git"
 fzf_home: "{{ ansible_env.HOME }}/.fzf"
 
+# GIT Fuzzy
 git_fuzzy_url: "https://github.com/bigH/git-fuzzy.git"
 git_fuzzy_home: "{{ ansible_env.HOME }}/.local/opt/git-fuzzy"
 
@@ -45,3 +46,7 @@ omz_plugins:
   zsh-autosuggestions: https://github.com/zsh-users/zsh-autosuggestions
   zsh-syntax-highlighting: https://github.com/zsh-users/zsh-syntax-highlighting.git
   zsh-sdkman: https://github.com/matthieusb/zsh-sdkman.git
+
+# TMUX Plugin Manager
+tpm_git_url: https://github.com/tmux-plugins/tpm.git
+tmux_plugins_dir: "{{ ansible_env.HOME }}/.tmux/plugins"

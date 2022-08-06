@@ -2,12 +2,12 @@
 # For usage see README.md
 #
 # Source: https://github.com/nvbn/thefuck
-- name: "[TheFuck] Ensure thefuck config directory"
+- name: "[Config][TheFuck] Ensure thefuck config directory"
   file:
     path: "{{ ansible_env.HOME }}/.config/thefuck"
     state: directory
 
-- name: "[TheFuck] Copy config"
+- name: "[Config][TheFuck] Copy config"
   ansible.builtin.copy:
     src: "thefuck-settings.py"
     dest: "{{ ansible_env.HOME }}/.config/thefuck/settings.py"
