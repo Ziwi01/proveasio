@@ -5,7 +5,7 @@
 # Source: https://github.com/ansible/ansible-language-server
 #
 - name: "[Ansible] Get NPM version string"
-  shell: "source {{ ansible_env.HOME }}/.local/opt/nvm/nvm.sh || echo 'NVM is not installed here'; nvm list current | grep -E 'v[0-9]*\\.[0-9]*\\.[0-9]*' -o"
+  shell: "(source {{ ansible_env.HOME }}/.local/opt/nvm/nvm.sh || echo 'nvm.sh cannot be found in this directory'); (nvm list current | grep -E 'v[0-9]*\\.[0-9]*\\.[0-9]*' -o) || echo 'Cannot get current NVM version'"
   args:
     executable: /bin/bash
   register: npm_version
