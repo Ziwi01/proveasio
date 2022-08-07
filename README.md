@@ -9,17 +9,23 @@
 ![license](https://img.shields.io/github/license/Ziwi01/wsl-power-env)
 ![last commit](https://img.shields.io/github/last-commit/Ziwi01/wsl-power-env)
 
-# Introduction
+# TL;DR
 
 Repository containing bunch of automation scripts (mostly Ansible tasks) to install, configure and maintain Windows WSL2 environment based on Ubuntu 20.04, including set of very useful dev tools and customizations to ease out and speed up terminal usage during day-to-day work and bump up productivity.
 
-# Concept
+# About
 
-The idea is to have something consistent when trying to configure new Windows machine with WSL2 for automation development purposes (like DevOps/SysAdmin thingy). Also, it should be able to run it repeatably to also update installed tools and customizations to latest versions. Last, but not least, it should be easily extendable and configurable to suit personal needs.
+The idea is:
 
-# Notice
+- to have something consistent when trying to configure new Windows machine with WSL2 mainly for automation development purposes (like DevOps/SysAdmin thingy), but for general usage also.
+- to be able to be run repeatably to also update installed tools and customizations to latest versions
+- to be easily extendable and configurable to suit personal needs.
 
-Below project is an opinionated set of tools which I use for my everyday work, but I hope someone will find it useful after tailoring it to ones needs. Please read below README carefully and go through the scripts to see whats going on there before using on existing Windows/WSL. All the tools/customizations I use will be listed, described and if there are any customizations they will be shown. If you clone this repository and have some new ideas/functionalities/fixes, feel free to create a Pull Request, it will be very much appreciated!
+In the process of making, I figured out that this can be also beneficial for all the people who want to learn how use Linux as their development base. By documenting the tools and usage scenarios, this repository can be used by tech-savvy wannabies to get a grip of some advanced workflows and tools, with a little less effort than figuring it out themselves from scratch.
+
+**NOTE**: Below project is an opinionated set of tools which I use for my everyday work, but I hope someone will find it useful after tailoring it to ones needs. All the tools/customizations I use will be listed, described and if there are any customizations, they will be shown. If you clone this repository and have some new ideas/functionalities/fixes, feel free to create a Pull Request, it will be very much appreciated!
+
+Please read below README carefully and go through the scripts to see whats going on there before using on existing Windows/WSL.
 
 # TODO
 
@@ -27,12 +33,13 @@ Below project is an opinionated set of tools which I use for my everyday work, b
 - feat: add [GVM (Go Version Manager)](https://github.com/moovweb/gvm), install GO
 - docs: add usage descriptions with videos and images
 - docs: update lunarvim.md with detailed workflow examples and shortcuts
+- feat(vim): Install neovim-ruby-host for all rubies
+- feat(vim)(?): Install Neovim:Ext + App::cpanminus cpan module
 
 # Table of contents
 
-- [Introduction](#introduction)
-- [Concept](#concept)
-- [Notice](#notice)
+- [TL;DR](#tl;dr)
+- [About](#about)
 - [TODO](#todo)
 - [Table of contents](#table-of-contents)
 - [Requirements](#requirements)
@@ -170,8 +177,8 @@ This role will install all necessary things to have the WSL pretty and useful.
 7. [BAT](https://github.com/sharkdp/bat) - (much) better CAT
 8. [Zoxide](https://github.com/ajeetdsouza/zoxide) - traverse directories with ease (also with FZF)
 9. [Helm](https://github.com/helm/helm) - Kubernetes 'package manager'
-10. [Ripgrep](https://github.com/BurntSushi/ripgrep) - `grep` on steroids. Blazing fast, easy to use
-11. [fd](https://github.com/sharkdp/fd) - `find` alternative, much faster
+10. [Ripgrep](https://github.com/BurntSushi/ripgrep) - `grep` on steroids. Blazing fast, easy to use. Command: `rg <query>`
+11. [fd](https://github.com/sharkdp/fd) - `find` alternative, much faster. Command: `fdfind`
 12. [htop](https://htop.dev/) - process viewer, prettier `top` alternative
 
 Also, common useful packages, like:
@@ -219,7 +226,7 @@ If you already have any of those files, you can either turn off overwrites, or b
 
 You can also granulize this on per-component basis - see mentioned `vars/main.yml`.
 
-Additionally, configs for below apps will be updated (disable overwrite in `vars/main.yml` if needed)
+Additionally, configs for below apps will be updated (disable overwrite in `roles/config/vars/main.yml` if needed)
 
 - thefuck (`~/.config/thefuck/settings.py`)
 - LazyGIT (`~/.config/lazygit/config.yml`)
@@ -228,7 +235,7 @@ Additionally, configs for below apps will be updated (disable overwrite in `vars
 
 # Usages
 
-Below you can find some useful commands/shortcuts/tips on how to use all of this fancy software. For more details, see the [software role](#software-role) section and take a look at the links there. Below you will find most common scenarios I use and custom added things (configs, modifications, functions).
+Below you can find some useful commands/shortcuts/tips on how to use all of this fancy software. For more details, see the [software](#software-role) and [dev](#dev-role) roles section and take a look at the links there. Below you will find most common scenarios I use and custom added things (configs, modifications, functions).
 
 ## Terminal
 
@@ -238,6 +245,8 @@ Terminal is ZSH-based, configured with [Oh-my-ZSH](https://github.com/ohmyzsh/oh
   <summary><b>Example:</b> Terminal commandline</summary>
   ![terminal](resources/terminal_preview.png?raw=true)
 </details>
+
+If you want different terminal style, just run `p10k configure` and set it as you prefer.
 
 There are couple of useful plugins installed there (you can find them in `roles/config/files/.zshrc`), like:
 
@@ -255,7 +264,7 @@ There are couple of useful plugins installed there (you can find them in `roles/
     <summary><b>Example:</b> Alias suggestion</summary>
     @TODO: image
     </details>
-- easily traversing through visited directories (using [`zoxide`](https://github.com/ajeetdsouza/zoxide))
+- easily traversing through **visited** directories (using [`zoxide`](https://github.com/ajeetdsouza/zoxide))
     <details>
     <summary><b>Example:</b> Zoxide usage</summary>
     ![zoxide](https://github.com/ajeetdsouza/zoxide/raw/main/contrib/tutorial.webp)
@@ -265,7 +274,7 @@ There are couple of useful plugins installed there (you can find them in `roles/
     <summary><b>Example:</b> `thefuck` correction</summary>
     @TODO: video
     </details>
-- finding files with FZF using custom `bfind` alias - with preview and all
+- finding files with FZF using custom `bfind` alias - with preview and all. Can be used with vim to search file and edit selected (`vim $(bfind)`). Similar functionality (but without file preview) can be achieved with `vim **<TAB>`.
     <details>
     <summary><b>Example:</b> FZF file search with preview</summary>
     @TODO: image
@@ -360,6 +369,7 @@ Additionally, I setup the plugins below:
 - [rmagatti/goto-preview](https://github.com/rmagatti/goto-preview) - do not jump around the definition in new tabs/buffers - show floating preview window and edit it there, close the preview. Being on top of searched function: `gpd` (for definition).
 - [itchyny/vim-cursorword](https://github.com/itchyny/vim-cursorword) - underline all the words that the cursor is on right now. Handy for typo spotting.
 - [folke/persistence.nvim](https://github.com/folke/persistence.nvim) - session management. Restore all your buffers and windows. Saving is done automatically, restore with: `<Space>Sl`. Awesome!
+- [auto-save.nvim](https://github.com/Pocco81/auto-save.nvim) - exactly what the name suggests.
 
 In LunarVIM there is an automatic [LSP installer plugin](https://github.com/williamboman/nvim-lsp-installer) which will install supported language servers and use them, when you open a specific filetype. This should work out of the box in most cases, however for Puppet I setup the LSP server manually, as it doesn't work with RVM by default. Also Ansible gets linter configuration override.
 

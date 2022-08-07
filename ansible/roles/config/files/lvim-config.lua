@@ -196,6 +196,15 @@ lvim.plugins = {
           }
       end,
     },
+    -- Auto save
+    {
+      "Pocco81/auto-save.nvim",
+      config = function()
+         require("auto-save").setup {
+          -- your config goes here
+         }
+      end,
+    }
 }
 
 -- Autocommands (https://neovim.io/doc/user/autocmd.html)
