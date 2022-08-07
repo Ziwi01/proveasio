@@ -25,9 +25,6 @@ jobs:
       # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
       - uses: actions/checkout@v3
 
-      - name: Set up correct configuration files
-        run: "sed -i 's/user: ziwi/user: runner/g' ansible/vars/environment.yml"
-
       - name: Prepare for setup
         run: sudo sh prepare-wsl.sh
 

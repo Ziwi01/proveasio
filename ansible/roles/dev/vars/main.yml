@@ -5,7 +5,7 @@ rvm1_rubies:
   - ruby-2.4.10
   - ruby-2.7.6
   - ruby-3.1.2
-rvm1_user: "{{ user }}"
+rvm1_user: "{{ ansible_user_id }}"
 
 # Puppet
 puppet_version: 5.5.22 # Very old, but we still use it... Does not support `latest`, see https://rubygems.org/gems/puppet for latest version

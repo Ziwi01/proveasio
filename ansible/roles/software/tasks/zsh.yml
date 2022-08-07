@@ -16,14 +16,14 @@
 - name: '[Zsh] Check current default shell'
   become: True
   become_user: root
-  command: sh -c "grep {{ user }} /etc/passwd | grep -o '[^:]*$'"
+  command: sh -c "grep {{ ansible_user_id }} /etc/passwd | grep -o '[^:]*$'"
   register: user_shell
   changed_when: user_shell.rc < 0
 
 - name: '[Zsh] Update shell to Zsh'
   become: True
   become_user: root
-  command: chsh -s /bin/zsh {{ user }}
+  command: chsh -s /bin/zsh {{ ansible_user_id }}
   when: user_shell.stdout != '/bin/zsh'
 
 - name: '[Zsh] Check for Oh-My-Zsh'
