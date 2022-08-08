@@ -16,3 +16,11 @@
   apt:
     name: "lazygit"
     state: "{{ versions.lazygit }}"
+
+- name: "[LazyGIT] Get installed LazyGIT version"
+  shell: "apt info lazygit 2>/dev/null | grep Version | awk '{print $2}' | awk -F '~' '{print $1}'"
+  register: lazygit_version
+
+- name: "[LazyGIT] Save used version"
+  set_fact:
+    used_software_versions: "{{ used_software_versions | combine({'lazygit': lazygit_version}) }}"

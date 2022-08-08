@@ -47,3 +47,7 @@
       apt: deb="{{ ansible_env.HOME }}/.local/opt/bat-{{ bat_version }}/bat_{{ bat_version }}_amd64.deb"
       become: True
   when: bat_check_deb.stdout | regex_search('[0-9]+\.[0-9]+\.[0-9]+') | default(0) != bat_version
+
+- name: "[BAT] Save used version"
+  set_fact:
+    used_software_versions: "{{ used_software_versions | combine({'bat': bat_version}) }}"

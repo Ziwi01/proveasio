@@ -1,5 +1,4 @@
 ---
-
 # Ensure local bin/opt directories are there
 - name: "[Software] Ensure dotted directories are there"
   file:
@@ -10,6 +9,12 @@
     - .local/opt
     - .config
     - .lsp
+
+# Set software versions fact, will be updated in the tasks above, then printed at the end of play
+- name: "[Software] Reset software versions fact"
+  set_fact:
+    used_software_versions: {}
+    cacheable: true
 
 # Common software
 - include_tasks: packages.yml

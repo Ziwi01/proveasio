@@ -6,3 +6,12 @@
     - software
     - dev
     - config
+
+  tasks:
+    - name: "[Software] Show installed versions"
+      debug:
+        msg: "{{ used_software_versions | default('Software role not included, not showing installed versions') }}"
+    
+    - name: "[dev] Show installed versions"
+      debug:
+        msg: "{{ used_dev_versions | default('Dev role not included, not showing installed versions') }}"

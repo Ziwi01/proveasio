@@ -8,3 +8,4 @@
     repo: "{{ git_fuzzy_url }}"
     dest: "{{ git_fuzzy_home }}"
     update: yes
+    version: "{{ git_fuzzy_branch }}"

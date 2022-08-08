@@ -19,3 +19,11 @@
   register: pip_out
   changed_when: "'Requirement already up-to-date' not in pip_out.stdout"
   when: versions['gita'] == 'latest'
+
+- name: "[Gita] Get installed Gita version"
+  shell: "pip3 show gita | grep Version | awk '{print $2}'"
+  register: gita_version
+
+- name: "[Gita] Save used version"
+  set_fact:
+    used_software_versions: "{{ used_software_versions | combine({'gita': gita_version}) }}"

@@ -3,7 +3,6 @@
 #
 # Source: https://github.com/ajeetdsouza/zoxide
 ---
-
 - name: "[Zoxide] Get latest version if requested"
   shell: curl -s https://api.github.com/repos/ajeetdsouza/zoxide/releases/latest | jq .name -r | cut -f2 -d'v'
   register: version
@@ -56,3 +55,7 @@
         path: "/tmp/zoxide-{{ zoxide_version }}.tar.gz"
         state: absent
   when: not zoxide_dir.stat.exists
+
+- name: "[Zoxide] Save used version"
+  set_fact:
+    used_software_versions: "{{ used_software_versions | combine({'zoxide': zoxide_version}) }}"

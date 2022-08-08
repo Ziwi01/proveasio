@@ -15,26 +15,29 @@ Repository containing bunch of automation scripts (mostly Ansible tasks) to inst
 
 # About
 
-The idea is:
+The idea is to:
 
-- to have something consistent when trying to configure new Windows machine with WSL2 mainly for automation development purposes (like DevOps/SysAdmin thingy), but for general usage also.
-- to be able to be run repeatably to also update installed tools and customizations to latest versions
-- to be easily extendable and configurable to suit personal needs.
+- have something consistent when trying to configure new Windows machine with WSL2 mainly for automation development purposes (like DevOps/SysAdmin thingy), but for general usage also.
+- be able to be run repeatably to also update installed tools and customizations to latest versions (or stay on particular versions for stability)
+- be easily extendable and configurable to suit personal needs.
+- have all the features and usages described so they are easily assimilated for someone new to this
 
-In the process of making, I figured out that this can be also beneficial for all the people who want to learn how use Linux as their development base. By documenting the tools and usage scenarios, this repository can be used by tech-savvy wannabies to get a grip of some advanced workflows and tools, with a little less effort than figuring it out themselves from scratch.
+In the process of making, I figured out that this can be beneficial for all the people who want to learn how use Linux as their development base. By documenting the tools and usage scenarios, this repository can be used by tech-savvy wannabies to get a grip of some advanced workflows and tools, with a little less effort than figuring it out themselves from scratch.
 
-**NOTE**: Below project is an opinionated set of tools which I use for my everyday work, but I hope someone will find it useful after tailoring it to ones needs. All the tools/customizations I use will be listed, described and if there are any customizations, they will be shown. If you clone this repository and have some new ideas/functionalities/fixes, feel free to create a Pull Request, it will be very much appreciated!
+**NOTE**: Below project is an opinionated set of tools which I use for my everyday work, but I hope someone will find it useful after tailoring it to ones needs. All the tools/customizations I use will be listed, described and if there are any customizations, they will be shown. If you have some new ideas/functionalities/fixes, feel free to create a Pull Request, it will be very much appreciated!
 
 Please read below README carefully and go through the scripts to see whats going on there before using on existing Windows/WSL.
 
 # TODO
 
+- feat: migrate to Ubuntu-22.04 LTS
 - feat: add [SDKMan](https://sdkman.io), install Groovy/Gradle/java
 - feat: add [GVM (Go Version Manager)](https://github.com/moovweb/gvm), install GO
+- feat: install latest `ripgrep` and `fd`, instead of default old ubuntu ones.
 - docs: add usage descriptions with videos and images
 - docs: update lunarvim.md with detailed workflow examples and shortcuts
 - feat(vim): Install neovim-ruby-host for all rubies
-- feat(vim)(?): Install Neovim:Ext + App::cpanminus cpan module
+- feat(vim)(?): Install Perls Neovim:Ext + App::cpanminus cpan modules
 
 # Table of contents
 
@@ -138,7 +141,7 @@ After everything is prepared, you can run (from `ansible/` dir):
 ansible-playbook -i inventory.yml setup-windows.yaml -k
 ```
 
-It will prompt for you Windows password. If the terminal hangs during an execution for more than couple minutes, just break it (CTRL+C) and run again. This is because Chocolatey installations from WSL ansible can get clogged up sometimes (not sure why this happens).
+It will prompt for you Windows password. If the terminal hangs during an execution for more than couple minutes, just break it (`<C-c>`) and run again. This is because Chocolatey installations from WSL ansible can get clogged up sometimes (not sure why this happens).
 
 # WSL2 setup
 
@@ -180,20 +183,20 @@ This role will install all necessary things to have the WSL pretty and useful.
 10. [Ripgrep](https://github.com/BurntSushi/ripgrep) - `grep` on steroids. Blazing fast, easy to use. Command: `rg <query>`
 11. [fd](https://github.com/sharkdp/fd) - `find` alternative, much faster. Command: `fdfind`
 12. [htop](https://htop.dev/) - process viewer, prettier `top` alternative
+13. [TMUX](https://github.com/tmux/tmux) - terminal multiplexer
 
 Also, common useful packages, like:
 
-- tmux (terminal multiplexer)
 - mlocate (file search)
 - tree (directory tree)
-- jq (json/yaml parser)
+- jq (JSON/YAML parser)
 
 More useful packages will be installed in `dev` role.
 
-In `roles/software/vars/main.yml` file, you can configure for <b>Example:</b>
+In `roles/software/vars/main.yml` file, you can configure for example:
 
 - particular versions of software in `versions` key - by default they are set to `latest`, so that they will get updated when re-running the `setup-wsl.yml` playbook
-- list of packages that will get installed from apt repository (like git, tmux, tree, htop etc.)
+- list of packages that will get installed from apt repository (like git, tree, htop etc.)
 - Oh-My-ZSH plugin list
 
 ## `dev` role
@@ -205,7 +208,7 @@ Essential:
  - [LunarVIM](https://github.com/LunarVim/LunarVim) - Neovim IDE-like extension with awesome plugins/configurations included out of the box
 
 Programming:
-- [RVM](https://rvm.io/) (Ruby enVironment Manager, installed using [rvm1-ansible-role](https://github.com/rvm/rvm1-ansible)), along with Rubies: 2.4.10, 2.7.6 and 3.1.2
+- [RVM](https://rvm.io/) (Ruby enVironment Manager, installed using [rvm1-ansible-role](https://github.com/rvm/rvm1-ansible)), along with Rubies: `2.4.10`, `2.7.6` and `3.1.2`
 - [PDK](https://puppet.com/try-puppet/puppet-development-kit/) (Puppet Development Kit)
 - [NVM](https://github.com/nvm-sh/nvm) (Node Version Manager) with latest LTS Node version (by default). Among all - dependency for LunarVIM installation
 
@@ -213,7 +216,7 @@ In `roles/dev/vars/main.yml` you can specify Neovim/LunarVIM and RVM/PDK/NVM ver
 
 ## `config` role
 
-This role is mostly `dotfiles` or configs management. It will apply configuration for:
+This role is mostly configs management. It will apply configuration for:
 
 - ZSH/powerlevel10k theme (`.zshrc` / `.p10k.zsh`)
 - Tmux (`.tmux.conf`)
@@ -235,7 +238,7 @@ Additionally, configs for below apps will be updated (disable overwrite in `role
 
 # Usages
 
-Below you can find some useful commands/shortcuts/tips on how to use all of this fancy software. For more details, see the [software](#software-role) and [dev](#dev-role) roles section and take a look at the links there. Below you will find most common scenarios I use and custom added things (configs, modifications, functions).
+Below you can find some useful commands/shortcuts/tips on how to use all of this fancy software. For more details for each tool, see the [software](#software-role) and [dev](#dev-role) roles section and take a look at the links there. Below you will find most common scenarios I use and custom added things (configs, modifications, functions).
 
 ## Terminal
 
@@ -243,16 +246,16 @@ Terminal is ZSH-based, configured with [Oh-my-ZSH](https://github.com/ohmyzsh/oh
 
 <details>
   <summary><b>Example:</b> Terminal commandline</summary>
-  ![terminal](resources/terminal_preview.png?raw=true)
+  ![terminal](/resources/terminal_preview.png?raw=true)
 </details>
 
-If you want different terminal style, just run `p10k configure` and set it as you prefer.
+**If you want different terminal style, just run `p10k configure` and set it as you prefer.**
 
 There are couple of useful plugins installed there (you can find them in `roles/config/files/.zshrc`), like:
 
 - syntax highlighting
 - commands autocompletion (based on history and/or completion scripts)
-- [`FZF`](https://github.com/junegunn/fzf) integration (fuzzy search command history with `CTRL+r` and lots other places - try using TAB or `**TAB` here and there)
+- [`FZF`](https://github.com/junegunn/fzf) integration (fuzzy search command history with `<C-r>` and lots other places - try using TAB or `**TAB` here and there)
     <details>
     <summary><b>Example:</b> History/file FZF search</summary>
     @TODO: video
@@ -267,7 +270,7 @@ There are couple of useful plugins installed there (you can find them in `roles/
 - easily traversing through **visited** directories (using [`zoxide`](https://github.com/ajeetdsouza/zoxide))
     <details>
     <summary><b>Example:</b> Zoxide usage</summary>
-    ![zoxide](https://github.com/ajeetdsouza/zoxide/raw/main/contrib/tutorial.webp)
+        ![](https://github.com/ajeetdsouza/zoxide/raw/main/contrib/tutorial.webp?raw=true)
     </details>
 - correct your commands with `fuck` or `ESC ESC`
     <details>

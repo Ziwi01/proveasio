@@ -9,14 +9,17 @@ versions:
   thefuck: latest
   gita: latest
   lazygit: latest
+  fzf: latest
+  git-fuzzy: latest
+  tmux: latest
 
 # Useful packages (apt)
 packages:
   - git
   - curl
-  - tmux
   - unzip
   - mlocate
+  - libevent-dev # Required for latest Tmux install
   - tree
   - htop
   - jq
@@ -24,8 +27,8 @@ packages:
   - zip
   - ctags
   - dos2unix
-  - ripgrep
-  - fd-find
+  - ripgrep # TODO: install latest available
+  - fd-find # TODO: install latest available
   - php
   - composer
 
@@ -36,6 +39,7 @@ fzf_home: "{{ ansible_env.HOME }}/.fzf"
 # GIT Fuzzy
 git_fuzzy_url: "https://github.com/bigH/git-fuzzy.git"
 git_fuzzy_home: "{{ ansible_env.HOME }}/.local/opt/git-fuzzy"
+git_fuzzy_branch: "master"
 
 # Oh-My-Zsh
 omz_home: "{{ ansible_env.HOME }}/.oh-my-zsh"

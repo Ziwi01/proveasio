@@ -1,9 +1,27 @@
 ---
-# Languages
+# Set dev software versions fact, will be updated in the tasks above, then printed at the end of play
+- name: "[Software] Reset dev versions fact"
+  set_fact:
+    used_dev_versions: {}
+    cacheable: true
+
+# Ruby Version Manager
 - include_tasks: rvm.yml
+
+# Node Version Manager
 - include_tasks: nvm.yml # Dependency for lvim.yml
+
+# Rust
 - include_tasks: rust.yml # Dependency for lvim.yml
+
+# Ansible PIP
 - include_tasks: ansible.yml
+
+# Neovim
 - include_tasks: neovim.yml
+
+# LunarVIM
 - include_tasks: lunarvim.yml
+
+# Puppet
 - include_tasks: puppet.yml

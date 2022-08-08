@@ -57,3 +57,7 @@
         path: "/tmp/helm-{{ helm_version }}.tar.gz"
         state: absent
   when: not helm_dir.stat.exists
+
+- name: "[Helm] Save used version"
+  set_fact:
+    used_software_versions: "{{ used_software_versions | combine({'helm': helm_version}) }}"
