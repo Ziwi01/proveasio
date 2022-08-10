@@ -44,3 +44,7 @@
       apt: deb="{{ ansible_env.HOME }}/.local/opt/neovim-{{ neovim_version }}/nvim-{{ neovim_version }}-linux64.deb"
       become: True
   when: neovim_check_deb.stdout | regex_search('[0-9]+\.[0-9]+\.[0-9]+') | default(0) != neovim_version
+
+- name: "[Neovim] Save used version"
+  set_fact:
+    used_dev_versions: "{{ used_dev_versions | combine({'neovim_version': version.stdout}) }}"

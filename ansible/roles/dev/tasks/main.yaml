@@ -1,6 +1,6 @@
 ---
 # Set dev software versions fact, will be updated in the tasks above, then printed at the end of play
-- name: "[Software] Reset dev versions fact"
+- name: "[DEV] Reset dev versions fact"
   set_fact:
     used_dev_versions: {}
     cacheable: true

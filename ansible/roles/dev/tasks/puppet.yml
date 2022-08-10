@@ -21,6 +21,7 @@
     repo: "{{ puppet_pes_url }}"
     dest: "{{ ansible_env.HOME }}/.lsp/puppet-editor-services"
     update: yes
+    version: "{{ puppet_pes_version }}"
 
 - name: "[Puppet] Update bundler for all rubies"
   shell: "{{ ansible_env.HOME }}/.rvm/bin/rvm all-gemsets do gem update bundler"
@@ -63,3 +64,11 @@
     update_cache: yes
   become: True
   when: pdk_version != 'latest'
+
+- name: "[Puppet PDK] Get installed Puppet PDK version from APT"
+  shell: "apt info pdk 2>/dev/null | grep Version | awk '{print $2}'"
+  register: pdk_apt_version
+
+- name: "[Puppet PDK] Save used version"
+  set_fact:
+    used_dev_versions: "{{ used_dev_versions | combine({'pdk_version': pdk_apt_version.stdout}) }}"

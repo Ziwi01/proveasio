@@ -6,6 +6,7 @@
     repo: "{{ lunarvim_url }}"
     dest: "{{ lunarvim_home }}"
     update: yes
+    version: "{{ lunarvim_version }}"
   notify: "[LunarVIM] Install LunarVIM"
 
 - name: "[LunarVIM] Ensure LunarVIM is really installed"
@@ -24,3 +25,14 @@
   shell: 'lvim +LvimUpdate +q'
   environment:
     PATH: "{{ ansible_env.HOME }}/.local/bin/:{{ ansible_env.PATH }}"
+  when: lunarvim_version in ['master', 'rolling']
+
+- name: "[LunarVIM] Get installed version tag"
+  shell: "git describe --tags | head -n 1 | awk -F'-' '{ print $1 }'"
+  args:
+    chdir: "{{ lunarvim_home }}"
+  register: lunarvim_git_version
+
+- name: "[LunarVIM] Save Lunarvim tag"
+  set_fact:
+    used_dev_versions: "{{ used_dev_versions | combine({'lunarvim_version': lunarvim_git_version.stdout}) }}"

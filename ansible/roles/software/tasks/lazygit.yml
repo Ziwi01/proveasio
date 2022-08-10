@@ -23,4 +23,4 @@
 
 - name: "[LazyGIT] Save used version"
   set_fact:
-    used_software_versions: "{{ used_software_versions | combine({'lazygit': lazygit_version}) }}"
+    used_software_versions: "{{ used_software_versions | combine({'lazygit': lazygit_version.stdout}) }}"
