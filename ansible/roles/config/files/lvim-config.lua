@@ -128,13 +128,19 @@ lvim.plugins = {
     { "pearofducks/ansible-vim" },
     -- Directory traverse
     { "nanotee/zoxide.vim" },
+    -- Search and replace for project (:Ack for search, :Acks to substitute)
+    { "wincent/ferret" },
+    -- Preview Quickfix window (<Leader><space>)
+    { "ronakg/quickr-preview.vim" },
+    -- Diff directories (:DirDiff <dir1> <dir2>)
+    { "will133/vim-dirdiff" },
     -- Markdown support
     { "plasticboy/vim-markdown" },
     -- Fuzzy finder
     { "junegunn/fzf" },
     { "junegunn/fzf.vim" },
     -- GIT integration
-    { "kdheepak/lazygit.nvim" }, -- GIT manager in VIM. Awesome. (`:LazyGit`)
+    { "kdheepak/lazygit.nvim" }, -- GIT manager in VIM. Awesome. (`:LazyGit`, or <Leader>gg)
     { "mhinz/vim-signify" }, -- show git status on particular lines
     {
       "f-person/git-blame.nvim", -- show Git Blame info inline virtual text
@@ -184,18 +190,6 @@ lvim.plugins = {
           vim.api.nvim_command("augroup END")
           end
     },
-    -- Session management
-    {
-      "folke/persistence.nvim",
-        event = "BufReadPre", -- this will only start session saving when an actual file was opened
-        module = "persistence",
-        config = function()
-          require("persistence").setup {
-            dir = vim.fn.expand(vim.fn.stdpath "config" .. "/session/"),
-            options = { "buffers", "curdir", "tabpages", "winsize" },
-          }
-      end,
-    },
     -- Auto save
     {
       "Pocco81/auto-save.nvim",
@@ -239,10 +233,5 @@ lvim.builtin.which_key.mappings["t"] = {
   r = { "<cmd>TroubleToggle lsp_references<cr>", "references" },
 }
 
--- Session management
-lvim.builtin.which_key.mappings["S"]= {
-  name = "Session",
-  c = { "<cmd>lua require('persistence').load()<cr>", "Restore last session for current dir" },
-  l = { "<cmd>lua require('persistence').load({ last = true })<cr>", "Restore last session" },
-  Q = { "<cmd>lua require('persistence').stop()<cr>", "Quit without saving session" },
-}
+-- Ignore .git/ and node_modules/ in Telescopes find_files <Leader>f
+lvim.builtin.telescope.defaults.file_ignore_patterns = { "%.git/", "^node_modules/" }

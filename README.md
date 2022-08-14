@@ -358,7 +358,7 @@ Core Neovim plugins, which are installed by LunarVIM, can be found [here](https:
 
 Additionally, I setup the plugins below:
 
-- [folke/trouble.nvim](https://github.com/folke/trouble.nvim) - Toggle diagnostic windows and browse through them (`<Space>td` for document diagnostic items)
+- [folke/trouble.nvim](https://github.com/folke/trouble.nvim) - Toggle diagnostic windows and browse through them (`<Space>t` will list options to open)
 - [rodjek/vim-puppet](https://github.com/rodjek/vim-puppet) - Puppet syntax support
 - [nanotee/zoxide.vim](https://github.com/nanotee/zoxide.vim) - Zoxide inside VIM: `:Zi` or `:Z <query>`.For Zoxide descrption see above for Zoxide descprition
 - [plasticboy/vim-markdown](https://github.com/preservim/vim-markdown) - Markdown support
@@ -370,8 +370,10 @@ Additionally, I setup the plugins below:
     - [f-person/git-blame.nvim](https://github.com/f-person/git-blame.nvim) - show Git blame in-line virtual text.
 - [tzachar/cmp-tabnine](https://github.com/tzachar/cmp-tabnine) - AI completion mechanism
 - [rmagatti/goto-preview](https://github.com/rmagatti/goto-preview) - do not jump around the definition in new tabs/buffers - show floating preview window and edit it there, close the preview. Being on top of searched function: `gpd` (for definition).
+- [wincent/ferret](https://github.com/wincent/ferret) - Search and replace for files in your project. (see LunarVim usage docs for details)
+- [ronakg/quickr-preview.vim](https://github.com/ronakg/quickr-preview.vim) - Preview files in Quickfix window. Great combination with ferret.
+- [will133/vim-dirdiff](https://github.com/will133/vim-dirdiff) - Diff directories. (`:DirDiff <dir1> <dir2>`)
 - [itchyny/vim-cursorword](https://github.com/itchyny/vim-cursorword) - underline all the words that the cursor is on right now. Handy for typo spotting.
-- [folke/persistence.nvim](https://github.com/folke/persistence.nvim) - session management. Restore all your buffers and windows. Saving is done automatically, restore with: `<Space>Sl`. Awesome!
 - [auto-save.nvim](https://github.com/Pocco81/auto-save.nvim) - exactly what the name suggests.
 
 In LunarVIM there is an automatic [LSP installer plugin](https://github.com/williamboman/nvim-lsp-installer) which will install supported language servers and use them, when you open a specific filetype. This should work out of the box in most cases, however for Puppet I setup the LSP server manually, as it doesn't work with RVM by default. Also Ansible gets linter configuration override.
