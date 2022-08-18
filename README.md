@@ -57,6 +57,8 @@ Please read below README carefully and go through the scripts to see whats going
   - [`software` role](#software-role)
   - [`config` role](#config-role)
   - [`dev` role](#dev-role)
+- [Releases](#releases)
+- [Configuration customization](#configuration-customizations)
 - [Usages](#usages)
   - [Terminal](#terminal)
     - [Tmux](#tmux)
@@ -133,7 +135,7 @@ From Ubuntu, run `sudo ./prepare-wsl.sh` - this will update the system and insta
     4. `terminal.yml` will install DejaVu font and apply custom settings for Windows Terminal
     5. `entertainment.yml` will install additional software, like Spotify, VLC, Discord etc.
 
-You can switch off the whole sections from #2 by modifying `ansible/roles/windows/vars/main.yml`. For customization, just edit the yaml files.
+You can switch off the whole sections from #2 by modifying `vars/overrides.yml`. For customization, just edit the yaml files.
 
 After everything is prepared, you can run (from `ansible/` dir):
 
@@ -164,7 +166,7 @@ You might want to go through [very basic config](#roles-overview) before running
 
 # Roles overview
 
-All of the roles have their main configuration in `ansible/roles/<role>/vars/main.yml`. Also, their tasks are gathered in `ansible/roles/<role>/tasks/main.yml`. It is good idea to take a peek on all the .yml files in `tasks/` directories also. For detailed description of how do those things work together, see [Usages](#usages) section below.
+All of the roles have their main configuration in `ansible/roles/<role>/vars/main.yml`. Also, their tasks are gathered in `ansible/roles/<role>/tasks/main.yml`. It is good idea to take a peek on all the .yml files in `tasks/` directories also. For detailed description of how do those things work together, see [Usages](#usages) section below. To override any variable, please use `vars/overrides.yml`. 
 
 ## `software` role
 
@@ -199,6 +201,8 @@ In `roles/software/vars/main.yml` file, you can configure for example:
 - list of packages that will get installed from apt repository (like git, tree, htop etc.)
 - Oh-My-ZSH plugin list
 
+To override, set variables you want in `vars/overrides.yml`
+
 ## `dev` role
 
 This role installs programming-related tools which I currently use in my work.
@@ -212,7 +216,7 @@ Programming:
 - [PDK](https://puppet.com/try-puppet/puppet-development-kit/) (Puppet Development Kit)
 - [NVM](https://github.com/nvm-sh/nvm) (Node Version Manager) with latest LTS Node version (by default). Among all - dependency for LunarVIM installation
 
-In `roles/dev/vars/main.yml` you can specify Neovim/LunarVIM and RVM/PDK/NVM versions.
+In `vars/overrides.yml` you can specify Neovim/LunarVIM and RVM/PDK/NVM versions (see `roles/dev/vars/main.yml` for key reference).
 
 ## `config` role
 
@@ -222,19 +226,35 @@ This role is mostly configs management. It will apply configuration for:
 - Tmux (`.tmux.conf`)
 - GIT config (`.gitconfig`)
 
-If you already have any of those files, you can either turn off overwrites, or back them up before overwriting, by setting appropriate option in `roles/config/vars/main.yml`:
+If you already have any of those files, you can either turn off overwrites, or back them up before overwriting, by setting appropriate option in `vars/overrides.yml`:
 
 - `dotfiles_overwrite` (default: true)
 - `dotfiles_backup` (default: false)
 
 You can also granulize this on per-component basis - see mentioned `vars/main.yml`.
 
-Additionally, configs for below apps will be updated (disable overwrite in `roles/config/vars/main.yml` if needed)
+Additionally, configs for below apps will be updated (disable overwrite in `vars/overrides.yml` if needed)
 
 - thefuck (`~/.config/thefuck/settings.py`)
 - LazyGIT (`~/.config/lazygit/config.yml`)
 - ansible-lint (`~/.ansible-lint`)
 - lunarvim (`~/.config/lvim/config.lua`)
+
+# Releases
+
+Using `master` branch comes with certain amount of danger, as most of the tools used are set to `latest` version. This can cause issues, when those underlying tools introduce a breaking change. Moreover, as I personally try very hard not to make any breaking changes, it can always happen. If you want more stability, please checkout to a release tag before applying the changes - it will have fixed versions of (almost) all used tools.
+
+I will try push new releases with updated (tested) software versions once in a while (even when there is no change to the automation itself), but you can set them yourself:
+
+1. After automation is run (either with `latest` or fixed versions set), it will print out all used versions and save them in `current-versions.yaml` file (this file is added to `.gitignore`)
+2. You can copy-paste those versions into `vars/overrides.yml` so they will be used for future runs.
+
+# Configuration customizations
+
+As described in [`config role`](#config-role) section, there are certain configuration files which are part of this automation. In order to keep you personal configuration in those files, there are two options:
+
+1. (not recommended) Disable particular config file(s) management in `vars/overrides.yml` using variables like `dotfiles_overwrite: false` or similar. This will prevent any updates of those config files in the future. For list of possible variables, see respective `roles/<role>/vars/main.yml`.
+2. (**recommended**) I personally suggest to checkout a local branch, modify any configuration file(s) there (+commit), and just merge upstream changes to your branch (either from master or tag) when needed. That way, you can have both your own modifications to the file, and possible upcoming improvements/features which will come with those files. In case of confilcts, you can either choose your own piece of config, or the incoming one.
 
 # Usages
 
@@ -366,6 +386,7 @@ Additionally, I setup the plugins below:
 - [junegunn/fzf](https://github.com/junegunn/fzf) and [junegunn/fzf.vim](https://github.com/junegunn/fzf.vim) - FZF integration in VIM
 - GIT integration plugins:
     - [kdheepak/lazygit.nvim](https://github.com/kdheepak/lazygit.nvim) - Neovim integration with awesome GIT wrapper (LazyGIT). See `software` role description for details.
+    - [tpope/fugitive](https://github.com/tpope/vim-fugitive) - Git wrapper, execute any Git command from VIM
     - [mhinz/vim-signify](https://github.com/mhinz/vim-signify) - shows GIT info about modified/added/removed lines
     - [f-person/git-blame.nvim](https://github.com/f-person/git-blame.nvim) - show Git blame in-line virtual text.
 - [tzachar/cmp-tabnine](https://github.com/tzachar/cmp-tabnine) - AI completion mechanism
@@ -394,7 +415,7 @@ For detailed usage examples, shortcuts and basic workflow videos, please see [`l
 
 For Ruby management, there is [Ruby Version Manager (RVM)](https://rvm.io/) installed. See available Ruby's with `rvm list`, use particular with `rvm use <ruby_version>`. There are some gems alredy preinstalled on Rubys available here (mostly for Puppet support).
 
-**NOTE:** By default, Puppet gets installed in version 5.5.22 **for all rubies**. If you choose to install latest puppet, there might be some dependencies errors for lower ruby versions (for example 2.4.10, which is included by default). If you don't want to install Puppet for all rubies, set `puppet_rubies` in `ansible/roles/dev/vars/main.yml` to an array with rubies names.
+**NOTE:** By default, Puppet gets installed in version 5.5.22 **for all rubies**. If you choose to install latest puppet, there might be some dependencies errors for lower ruby versions (for example 2.4.10, which is included by default). If you don't want to install Puppet for all rubies, set `puppet_rubies` in `vars/overrides.yml` to an array with rubies names.
 
 ### Node
 
@@ -406,7 +427,7 @@ For Node, there is [NVM](https://github.com/nvm-sh/nvm) installed. See NPM versi
 
 There is Puppet LSP (language server protocol) called [Puppet Editor Services](https://github.com/puppetlabs/puppet-editor-services) installed in `~/.lsp/puppet-editor-services`.
 
-**NOTE:** By default, Puppet gets installed in version 5.5.22 **for all rubies**. If you choose to install latest puppet, there might be some dependencies errors for lower ruby versions (for example 2.4.10, which is included by default). If you don't want to install Puppet for all rubies, set `puppet_rubies` in `ansible/roles/dev/vars/main.yml` to an array with rubies names.
+**NOTE:** By default, Puppet gets installed in version 5.5.22 **for all rubies**. If you choose to install latest puppet, there might be some dependencies errors for lower ruby versions (for example 2.4.10, which is included by default). If you don't want to install Puppet for all rubies, set `puppet_rubies` in `vars/overrides.yml` to an array with rubies names.
 
 <details>
 <summary><b>Example:</b> Puppet autocompletion/LSP</summary>

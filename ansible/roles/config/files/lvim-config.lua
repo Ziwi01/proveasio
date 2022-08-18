@@ -140,6 +140,7 @@ lvim.plugins = {
     { "junegunn/fzf" },
     { "junegunn/fzf.vim" },
     -- GIT integration
+    { "tpope/vim-fugitive" }, -- GIT wrapper (`:G <any_git_command>`)
     { "kdheepak/lazygit.nvim" }, -- GIT manager in VIM. Awesome. (`:LazyGit`, or <Leader>gg)
     { "mhinz/vim-signify" }, -- show git status on particular lines
     {

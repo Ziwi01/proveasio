@@ -1,0 +1,15 @@
+---
+{% if used_software_versions -%}
+# `software` role versions
+versions:
+  {% for app, version in used_software_versions | items %}
+{{ app -}}: {{ version }} 
+  {% endfor %}
+{% endif %}
+
+{% if used_dev_versions %}
+# `dev` role versions
+{% for app, version in used_dev_versions | items %}
+{{ app -}}: {{ version }}
+{% endfor -%}
+{% endif -%}
