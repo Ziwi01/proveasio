@@ -215,6 +215,16 @@ vim.api.nvim_create_autocmd("FileType", {
 --   command = "set ft=yaml.ansible",
 -- })
 
+-- -- Do not show Git Blame inline for NvimTree
+-- vim.api.nvim_create_autocmd("BufEnter", {
+--   callback = function()
+--     if &ft == 'NvimTree'
+--       vim.g.gitblame_display_virtual_text = 0
+--     else
+--       vim.g.gitblame_display_virtual_text = 1
+--     endif
+--   end
+-- })
 
 -- Windows clipboard support
 vim.opt.clipboard = "unnamedplus"
