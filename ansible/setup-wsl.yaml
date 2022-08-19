@@ -1,6 +1,7 @@
 - hosts: ubuntu
   vars_files:
     - vars/environment.yml
+    - vars/overrides.yml
   ### Comment out roles you don't need ###
   roles:
     - software
@@ -15,3 +16,9 @@
     - name: "[dev] Show installed versions"
       debug:
         msg: "{{ used_dev_versions | default('Dev role not included, not showing installed versions') }}"
+
+    - name: "[Summary] Save all versions in current-versions.yaml"
+      ansible.builtin.template:
+        src: 'templates/current-versions.j2'
+        dest: 'current-versions.yaml'
+        mode: '0644'
