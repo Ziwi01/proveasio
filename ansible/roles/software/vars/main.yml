@@ -12,6 +12,8 @@ versions:
   fzf: latest
   git-fuzzy: latest
   tmux: latest
+  ripgrep: latest
+  fd: latest
 
 # Useful packages (apt)
 packages:
@@ -27,8 +29,6 @@ packages:
   - zip
   - ctags
   - dos2unix
-  - ripgrep # TODO: install latest available
-  - fd-find # TODO: install latest available
   - php
   - composer
 

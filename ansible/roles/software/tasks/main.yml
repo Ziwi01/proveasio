@@ -19,6 +19,12 @@
 # Common software
 - include_tasks: packages.yml
 
+# ripgrep
+- include_tasks: ripgrep.yml
+
+# FD
+- include_tasks: fd.yml
+
 # ls-with-git-status
 - include_tasks: lsg.yml
 

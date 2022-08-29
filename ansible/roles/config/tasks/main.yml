@@ -12,6 +12,8 @@
 
 - include_tasks: tmux.yml
 
+- include_tasks: sdkman.yml
+
 - include_tasks: git.yml
 
 - include_tasks: lazygit.yml

@@ -1,0 +1,50 @@
+# RIPGREP (better, faster GREP)
+# Source: https://github.com/BurntSushi/ripgrep
+---
+- name: "[Ripgrep] Check installed Ripgrep version"
+  command: dpkg-query -W ripgrep
+  register: ripgrep_check_deb
+  ignore_errors: true
+  changed_when: ripgrep_check_deb.rc > 1
+  failed_when: ripgrep_check_deb.rc > 1
+  args:
+    warn: off
+
+- name: "[Ripgrep] Get latest version if requested"
+  shell: curl -s https://api.github.com/repos/BurntSushi/ripgrep/releases/latest | jq .name -r | cut -f2 -d'v'
+  register: version
+  changed_when: false
+  ignore_errors: true
+  args:
+    warn: off
+  when: versions['ripgrep'] == 'latest'
+
+- name: "[Ripgrep] Set version to {{ version.stdout | default(versions['ripgrep']) }}"
+  set_fact:
+    ripgrep_version: "{{ version.stdout | default(versions['ripgrep']) }}"
+
+- name: "[Ripgrep] Set proper download URL"
+  set_fact:
+    ripgrep_url: "https://github.com/BurntSushi/ripgrep/releases/download/{{ ripgrep_version }}/ripgrep_{{ ripgrep_version }}_amd64.deb"
+
+- name: "Installation"
+  block:
+    - name: "[Ripgrep] Create directory in {{ ansible_env.HOME }}/.local/opt"
+      file:
+        path: "{{ ansible_env.HOME }}/.local/opt/ripgrep-{{ ripgrep_version }}"
+        state: directory
+
+    - name: "[Ripgrep] Download Ripgrep {{ ripgrep_version }}"
+      get_url:
+        url: "{{ ripgrep_url }}"
+        dest: "{{ ansible_env.HOME }}/.local/opt/ripgrep-{{ ripgrep_version }}"
+        mode: '0755'
+
+    - name: "[Ripgrep] Install {{ ripgrep_version }} .deb package"
+      apt: deb="{{ ansible_env.HOME }}/.local/opt/ripgrep-{{ ripgrep_version }}/ripgrep_{{ ripgrep_version }}_amd64.deb"
+      become: True
+  when: ripgrep_check_deb.stdout | regex_search('[0-9]+\.[0-9]+\.[0-9]+') | default(0) != ripgrep_version
+
+- name: "[Ripgrep] Save used version"
+  set_fact:
+    used_software_versions: "{{ used_software_versions | combine({'ripgrep': ripgrep_version}) }}"

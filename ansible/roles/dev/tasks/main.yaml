@@ -8,6 +8,9 @@
 # Ruby Version Manager
 - include_tasks: rvm.yml
 
+# SDKMan!
+- include_tasks: sdkman.yml
+
 # Node Version Manager
 - include_tasks: nvm.yml # Dependency for lvim.yml
 
