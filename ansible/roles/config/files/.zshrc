@@ -239,6 +239,7 @@ ssh() {
 ### Other exports
 export EDITOR='lvim'
 alias vim=lvim
+alias nvim=lvim
 alias vimdiff='lvim -d'
 alias top=htop
 export MANPAGER="sh -c 'col -bx | bat -l man -p'"
