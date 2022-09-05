@@ -246,3 +246,9 @@ lvim.builtin.which_key.mappings["t"] = {
 
 -- Ignore .git/ and node_modules/ in Telescopes find_files <Leader>f
 lvim.builtin.telescope.defaults.file_ignore_patterns = { "%.git/", "^node_modules/" }
+-- Use fd to "find files" and return absolute paths
+lvim.builtin.telescope.defaults = {
+	find_command = { "fd", "-t=f", "-a" },
+	path_display = { "absolute" },
+  wrap_results = true
+}
