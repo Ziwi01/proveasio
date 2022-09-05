@@ -90,7 +90,7 @@ plugins=(
     fzf
     fzf-tab
     zsh-autosuggestions
-    #zsh-sdkman
+    zsh-sdkman
     zsh-syntax-highlighting
     you-should-use
     k
@@ -239,6 +239,7 @@ ssh() {
 ### Other exports
 export EDITOR='lvim'
 alias vim=lvim
+alias nvim=lvim
 alias vimdiff='lvim -d'
 alias top=htop
 export MANPAGER="sh -c 'col -bx | bat -l man -p'"
@@ -251,6 +252,9 @@ export ANSIBLE_TRANSFORM_INVALID_GROUP_CHARS=ignore
 export NVM_DIR="$HOME/.local/opt/nvm"
 [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm
 [ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"  # This loads nvm bash_completion
+
+# SDKMan
+[[ -s "${HOME}/.sdkman/bin/sdkman-init.sh" ]] && source "${HOME}/.sdkman/bin/sdkman-init.sh"
 
 # RVM
 # Add RVM to PATH for scripting. Make sure this is the last PATH variable change.

@@ -39,3 +39,33 @@ lunarvim_version: master # `master` is latest release, `rolling` is latest snaps
 # Puppet
 puppet_pes_url: https://github.com/puppetlabs/puppet-editor-services.git
 puppet_pes_version: main
+
+# SDK Man
+sdkman_update: true
+sdkman_user: "{{ ansible_user_id }}"
+sdkman_group: "{{ ansible_user_gid }}"
+sdkman_user_home_dir: "{{ ansible_env.HOME }}"
+sdkman_dir: "{{ sdkman_user_home_dir + '/.sdkman' }}"
+sdkman_tmp_dir: /tmp
+sdkman_validate_ssl: true
+sdkman_install_packages:
+  - { candidate: java, version: '18.0.2-open' }
+  - { candidate: gradle, version: '7.5.1' }
+  - { candidate: groovy, version: '4.0.4' }
+  - { candidate: maven, version: '3.8.6' }
+sdkman_uninstall_packages: []
+# sdkman_uninstall_packages:
+#   - { candidate: java, version: 6u45 }
+# Configure default candidate versions
+sdkman_defaults:
+  java: '18.0.2-open'
+  gradle: '7.5.1'
+  groovy: '4.0.4'
+  maven: '3.8.6'
+# Flush caches before/after installing SDK packages
+# Reference: http://sdkman.io/usage (Flush section)
+sdkman_flush_caches_before: []
+sdkman_flush_caches_after: []
+# Link SDKMAN installed packages
+# Reference: https://linux.die.net/man/8/update-alternatives
+sdkman_update_alternatives: []

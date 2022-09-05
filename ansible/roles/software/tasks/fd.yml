@@ -1,0 +1,66 @@
+# FD - fast and user-friendly alternative to find
+# Source: https://github.com/sharkdp/fd
+---
+- name: "[FD] Check if Ubuntu native fd-find is installed"
+  command: dpkg-query -W fd-find
+  register: fd_find_check_deb
+  ignore_errors: true
+  changed_when: fd_find_check_deb.rc > 1
+  failed_when: fd_find_check_deb.rc > 1
+  args:
+    warn: off
+
+- name: "[FD] Remove fd-find Ubuntu package"
+  apt:
+    name: fd-find
+    state: absent
+  become: True
+  when: fd_find_check_deb.rc == 0
+
+- name: "[FD] Check installed FD version"
+  command: dpkg-query -W fd
+  register: fd_check_deb
+  ignore_errors: true
+  changed_when: fd_check_deb.rc > 1
+  failed_when: fd_check_deb.rc > 1
+  args:
+    warn: off
+
+- name: "[FD] Get latest version if requested"
+  shell: curl -s https://api.github.com/repos/sharkdp/fd/releases/latest | jq .name -r | cut -f2 -d'v'
+  register: version
+  changed_when: false
+  ignore_errors: true
+  args:
+    warn: off
+  when: versions['fd'] == 'latest'
+
+- name: "[FD] Set version to {{ version.stdout | default(versions['fd']) }}"
+  set_fact:
+    fd_version: "{{ version.stdout | default(versions['fd']) }}"
+
+- name: "[FD] Set proper download URL"
+  set_fact:
+    fd_url: "https://github.com/sharkdp/fd/releases/download/v{{ fd_version }}/fd_{{ fd_version }}_amd64.deb"
+
+- name: "Installation"
+  block:
+    - name: "[FD] Create directory in {{ ansible_env.HOME }}/.local/opt"
+      file:
+        path: "{{ ansible_env.HOME }}/.local/opt/fd-{{ fd_version }}"
+        state: directory
+
+    - name: "[FD] Download FD {{ fd_version }}"
+      get_url:
+        url: "{{ fd_url }}"
+        dest: "{{ ansible_env.HOME }}/.local/opt/fd-{{ fd_version }}"
+        mode: '0755'
+
+    - name: "[FD] Install {{ fd_version }} .deb package"
+      apt: deb="{{ ansible_env.HOME }}/.local/opt/fd-{{ fd_version }}/fd_{{ fd_version }}_amd64.deb"
+      become: True
+  when: fd_check_deb.stdout | regex_search('[0-9]+\.[0-9]+\.[0-9]+') | default(0) != fd_version
+
+- name: "[FD] Save used version"
+  set_fact:
+    used_software_versions: "{{ used_software_versions | combine({'fd': fd_version}) }}"

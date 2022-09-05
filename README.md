@@ -22,7 +22,7 @@ The idea is to:
 - be easily extendable and configurable to suit personal needs.
 - have all the features and usages described so they are easily assimilated for someone new to this
 
-In the process of making, I figured out that this can be beneficial for all the people who want to learn how use Linux as their development base. By documenting the tools and usage scenarios, this repository can be used by tech-savvy wannabies to get a grip of some advanced workflows and tools, with a little less effort than figuring it out themselves from scratch.
+In the process of making, I figured out that this can be beneficial for all the people who want to learn how to use Linux as their development base. By documenting the tools and usage scenarios, this repository can be used by tech-savvy wannabies to get a grip of some advanced workflows and tools, with a little less effort than figuring it out themselves from scratch.
 
 **NOTE**: Below project is an opinionated set of tools which I use for my everyday work, but I hope someone will find it useful after tailoring it to ones needs. All the tools/customizations I use will be listed, described and if there are any customizations, they will be shown. If you have some new ideas/functionalities/fixes, feel free to create a Pull Request, it will be very much appreciated!
 
@@ -31,13 +31,9 @@ Please read below README carefully and go through the scripts to see whats going
 # TODO
 
 - feat: migrate to Ubuntu-22.04 LTS
-- feat: add [SDKMan](https://sdkman.io), install Groovy/Gradle/java
-- feat: add [GVM (Go Version Manager)](https://github.com/moovweb/gvm), install GO
-- feat: install latest `ripgrep` and `fd`, instead of default old ubuntu ones.
 - docs: add usage descriptions with videos and images
 - docs: update lunarvim.md with detailed workflow examples and shortcuts
 - feat(vim): Install neovim-ruby-host for all rubies
-- feat(vim)(?): Install Perls Neovim:Ext + App::cpanminus cpan modules
 
 # Table of contents
 
@@ -251,10 +247,10 @@ I will try push new releases with updated (tested) software versions once in a w
 
 # Configuration customizations
 
-As described in [`config role`](#config-role) section, there are certain configuration files which are part of this automation. In order to keep you personal configuration in those files, there are two options:
+As described in [`config role`](#config-role) section, there are certain configuration files which are part of this automation. In order to keep your personal configuration in those files, there are two options:
 
 1. (not recommended) Disable particular config file(s) management in `vars/overrides.yml` using variables like `dotfiles_overwrite: false` or similar. This will prevent any updates of those config files in the future. For list of possible variables, see respective `roles/<role>/vars/main.yml`.
-2. (**recommended**) I personally suggest to checkout a local branch, modify any configuration file(s) there (+commit), and just merge upstream changes to your branch (either from master or tag) when needed. That way, you can have both your own modifications to the file, and possible upcoming improvements/features which will come with those files. In case of confilcts, you can either choose your own piece of config, or the incoming one.
+2. (**recommended**) I personally suggest to checkout a local branch, modify any configuration file(s) there and commit them. When updating, just merge upstream changes to your branch (either from master or tag) when needed. That way, you can have both your own modifications to the file, and possible upcoming improvements/features which will come with those files. In case of confilcts, you can either choose your own piece of config, or the incoming one.
 
 # Usages
 
@@ -457,4 +453,5 @@ Eryk 'Ziwi' Kozakiewicz
 
 # Mentions
 
-- Windows setup was inspired and mostly based on [lholota/dev-setup](https://github.com/lholota/dev-setup)
+- Windows setup was inspired and mostly based on [lholota/dev-setup](https://github.com/lholota/dev-setup) by [Lukas Holota](https://github.com/lholota)
+- SDKMan! installation was deeply based on [Comcast/sdkman](https://github.com/Comcast/ansible-sdkman) by Elliot Weiser

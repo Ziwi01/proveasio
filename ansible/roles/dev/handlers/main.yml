@@ -15,3 +15,9 @@
 - name: "[LunarVIM] Show LunarVIM install info"
   debug:
     msg: "{{ lunarvim_install.stdout | default('No output was passed from LunarVIM install command') }}"
+
+# SDKMan
+- name: "[SDKMan] Cleanup SDKMAN script"
+  file:
+    path: '{{ sdkman_tmp_dir }}/sdkman_script'
+    state: absent
