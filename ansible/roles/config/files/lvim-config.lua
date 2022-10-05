@@ -239,6 +239,10 @@ vim.g.vim_markdown_folding_disabled = 1
 -- Enable transparency
 lvim.transparent_window = true
 
+-- <S-h> and <S-l> for buffer previous/next
+vim.api.nvim_set_keymap('n', '<S-h>', ':bprevious<CR>', { noremap = true, silent = true })
+vim.api.nvim_set_keymap('n', '<S-l>', ':bnext<CR>', { noremap = true, silent = true })
+
 -- Trouble Toggle
 lvim.builtin.which_key.mappings["t"] = {
   name = "Diagnostics",
