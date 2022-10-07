@@ -202,6 +202,8 @@ lvim.plugins = {
     },
     -- Session manager
     { "tpope/vim-obsession" },
+    -- Remove trailing whitespace
+    { "ntpeters/vim-better-whitespace" },
 }
 
 -- Autocommands (https://neovim.io/doc/user/autocmd.html)
@@ -262,3 +264,7 @@ lvim.builtin.telescope.defaults = {
 	path_display = { "absolute" },
   wrap_results = true
 }
+
+-- Strip Whitespace on save
+vim.g.strip_whitespace_on_save = 1
+vim.g.strip_whitespace_confirm = 0
