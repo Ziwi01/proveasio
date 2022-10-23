@@ -31,6 +31,7 @@ Please read below README carefully and go through the scripts to see whats going
 # TODO
 
 - feat: migrate to Ubuntu-22.04 LTS
+- feat: AWS cli installation/setup
 - docs: add usage descriptions with videos and images
 - docs: update lunarvim.md with detailed workflow examples and shortcuts
 - feat(vim): Install neovim-ruby-host for all rubies

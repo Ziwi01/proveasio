@@ -204,6 +204,10 @@ lvim.plugins = {
     { "tpope/vim-obsession" },
     -- Remove trailing whitespace
     { "ntpeters/vim-better-whitespace" },
+    -- Running commands in TMUX split
+    { "preservim/vimux" },
+    -- Seamless TMUX panes Navigation
+    { "christoomey/vim-tmux-navigator" },
 }
 
 -- Autocommands (https://neovim.io/doc/user/autocmd.html)
@@ -268,3 +272,10 @@ lvim.builtin.telescope.defaults = {
 -- Strip Whitespace on save
 vim.g.strip_whitespace_on_save = 1
 vim.g.strip_whitespace_confirm = 0
+
+-- TMUX panes / VIM splits navigation config (Alt+Arrows)
+vim.g.tmux_navigator_no_mappings = 1
+lvim.keys.normal_mode["<A-Left>"] = ":TmuxNavigateLeft<cr>"
+lvim.keys.normal_mode["<A-Right>"] = ":TmuxNavigateRight<cr>"
+lvim.keys.normal_mode["<A-Up>"] = ":TmuxNavigateUp<cr>"
+lvim.keys.normal_mode["<A-Down>"] = ":TmuxNavigateDown<cr>"
