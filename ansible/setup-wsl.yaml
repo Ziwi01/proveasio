@@ -1,7 +1,6 @@
 - hosts: ubuntu
   vars_files:
     - vars/environment.yml
-    - vars/overrides.yml
   ### Comment out roles you don't need ###
   vars:
     summary: |

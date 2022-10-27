@@ -6,6 +6,10 @@
     path: "{{ dotfiles_backup_dir }}"
     state: directory
 
+# Include override variables
+- name: "[Config] Include vars/overrides.yml"
+  include_vars: '../../../vars/overrides.yml'
+
 - name: "[Config] Configure zsh"
   include_tasks: zsh.yml
   when: "'zsh' not in config_tasks_exclude"
