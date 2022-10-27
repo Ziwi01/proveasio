@@ -6,25 +6,41 @@
     cacheable: true
 
 # Ruby Version Manager
-- include_tasks: rvm.yml
+- name: "[DEV] Install Ruby Version Manager"
+  include_tasks: rvm.yml
+  when: "'rvm' not in dev_tasks_exclude"
 
 # SDKMan!
-- include_tasks: sdkman.yml
+- name: "[DEV] Install SDKMAN!"
+  include_tasks: sdkman.yml
+  when: "'sdkman' not in dev_tasks_exclude"
 
 # Node Version Manager
-- include_tasks: nvm.yml # Dependency for lvim.yml
+- name: "[DEV] Install Node Version Manager"
+  include_tasks: nvm.yml # Dependency for lvim.yml
+  when: "'nvm' not in dev_tasks_exclude"
 
 # Rust
-- include_tasks: rust.yml # Dependency for lvim.yml
+- name: "[DEV] Install Rust language with Cargo"
+  include_tasks: rust.yml # Dependency for lvim.yml
+  when: "'rust' not in dev_tasks_exclude"
 
 # Ansible PIP
-- include_tasks: ansible.yml
+- name: "[DEV] Install Ansible"
+  include_tasks: ansible.yml
+  when: "'ansible' not in dev_tasks_exclude"
 
 # Neovim
-- include_tasks: neovim.yml
+- name: "[DEV] Install Neovim"
+  include_tasks: neovim.yml
+  when: "'neovim' not in dev_tasks_exclude"
 
 # LunarVIM
-- include_tasks: lunarvim.yml
+- name: "[DEV] Install LunarVIM"
+  include_tasks: lunarvim.yml
+  when: "'lunarvim' not in dev_tasks_exclude"
 
 # Puppet
-- include_tasks: puppet.yml
+- name: "[DEV] Install Puppet"
+  include_tasks: puppet.yml
+  when: "'puppet' not in dev_tasks_exclude"

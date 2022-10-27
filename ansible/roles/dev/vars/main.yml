@@ -1,6 +1,11 @@
 ---
+# Add this variable to your ansible/vars/overrides.yml if needed
+# This is array of tasks to exclude from dev role.
+# For list of tasks see: dev/tasks/main.yml or see README.md
+dev_tasks_exclude: []
+
 # RVM / Ruby
-rvm1_ansible_role_version: 2.2.0 # Version of https://github.com/rvm/rvm1-ansible 
+rvm1_ansible_role_version: 2.2.0 # Version of https://github.com/rvm/rvm1-ansible
 rvm1_rubies:
   - ruby-2.4.10
   - ruby-2.7.6
@@ -12,9 +17,9 @@ puppet_version: 5.5.22 # Very old, but we still use it... Does not support `late
 puppet_rubies:
   - all # to install only for specific rubies, list their names (must match `rvm1_rubies`)
 # Example:
-#puppet_rubies:
-#  - ruby-2.7.6
-#  - ruby-3.1.2
+# puppet_rubies:
+#   - ruby-2.7.6
+#   - ruby-3.1.2
 
 # PDK (Puppet Development KIT)
 # Please note the module does not support package downgrades - if PDK is already installed in higher version, remove it first.

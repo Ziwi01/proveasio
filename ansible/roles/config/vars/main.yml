@@ -1,6 +1,14 @@
+---
+# Add this variable to your ansible/vars/overrides.yml if needed
+# This is array of tasks to exclude from config role.
+# For list of tasks see: config/tasks/main.yml or see README.md
+config_tasks_exclude: []
+
+# ALTERNATIVELY to adding particular exclude tasks above, you can switch off all dotfiles overwrites
+# or granulize for specific file.
 # For included dotfiles see below comments
 dotfiles_overwrite: true
-dotfiles_backup: false 
+dotfiles_backup: true
 dotfiles_backup_dir: "{{ ansible_env.HOME }}/.dotfiles_backup"
 
 ### Uncomment below to override `dotfiles_overwrite`` / `dotfiles_backup`` setting(s) for specific thing

@@ -208,6 +208,8 @@ lvim.plugins = {
     { "preservim/vimux" },
     -- Seamless TMUX panes Navigation
     { "christoomey/vim-tmux-navigator" },
+    -- HELM support
+    { "towolf/vim-helm" },
 }
 
 -- Autocommands (https://neovim.io/doc/user/autocmd.html)

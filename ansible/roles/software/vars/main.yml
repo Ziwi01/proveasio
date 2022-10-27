@@ -1,8 +1,13 @@
 ---
-# Specific versions for software (github)
+# Add this variable to your ansible/vars/overrides.yml if needed
+# This is array of tasks to exclude from software role.
+# For list of tasks see: software/tasks/main.yml or see README.md
+software_tasks_exclude: []
+
+  # Specific versions for software (github)
 # Fixed versions should be set without `v` prefix (e.g: 1.4.3)
 versions:
-  diff-so-fancy: latest 
+  diff-so-fancy: latest
   bat: latest
   zoxide: latest
   helm: latest

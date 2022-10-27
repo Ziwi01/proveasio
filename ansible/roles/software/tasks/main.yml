@@ -17,49 +17,81 @@
     cacheable: true
 
 # Common software
-- include_tasks: packages.yml
+- name: "[Software] Install packages"
+  include_tasks: packages.yml
+  when: "'packages' not in software_tasks_exclude"
 
 # ripgrep
-- include_tasks: ripgrep.yml
+- name: "[Software] Install ripgrep"
+  include_tasks: ripgrep.yml
+  when: "'ripgrep' not in software_tasks_exclude"
 
 # FD
-- include_tasks: fd.yml
+- name: "[Software] Install fd"
+  include_tasks: fd.yml
+  when: "'fd' not in software_tasks_exclude"
 
 # ls-with-git-status
-- include_tasks: lsg.yml
+- name: "[Software] Install lsg"
+  include_tasks: lsg.yml
+  when: "'lsg' not in software_tasks_exclude"
 
 # FZF (fuzzy-finder)
-- include_tasks: fzf.yml
+- name: "[Software] Install fzf"
+  include_tasks: fzf.yml
+  when: "'fzf' not in software_tasks_exclude"
 
 # Diff-so-fancy
-- include_tasks: diff-so-fancy.yml
+- name: "[Software] Install diff-so-fancy"
+  include_tasks: diff-so-fancy.yml
+  when: "'diff-so-fancy' not in software_tasks_exclude"
 
 # Git-fuzzy
-- include_tasks: git-fuzzy.yml
+- name: "[Software] Install git-fuzzy"
+  include_tasks: git-fuzzy.yml
+  when: "'git-fuzzy' not in software_tasks_exclude"
 
 # LazyGIT
-- include_tasks: lazygit.yml
+- name: "[Software] Install lazygit"
+  include_tasks: lazygit.yml
+  when: "'lazygit' not in software_tasks_exclude"
 
 # Gita
-- include_tasks: gita.yml
+- name: "[Software] Install gita"
+  include_tasks: gita.yml
+  when: "'gita' not in software_tasks_exclude"
 
 # thefuck
-- include_tasks: thefuck.yml
+- name: "[Software] Install thefuck"
+  include_tasks: thefuck.yml
+  when: "'thefuck' not in software_tasks_exclude"
 
 # BAT
-- include_tasks: bat.yml
+- name: "[Software] Install bat"
+  include_tasks: bat.yml
+  when: "'bat' not in software_tasks_exclude"
 
 # Zoxide
-- include_tasks: zoxide.yml
+- name: "[Software] Install zoxide"
+  include_tasks: zoxide.yml
+  when: "'zoxide' not in software_tasks_exclude"
 
 # Helm
-- include_tasks: helm.yml
+- name: "[Software] Install helm"
+  include_tasks: helm.yml
+  when: "'helm' not in software_tasks_exclude"
 
 # ZSH
-- include_tasks: zsh.yml
+- name: "[Software] Install zsh"
+  include_tasks: zsh.yml
+  when: "'zsh' not in software_tasks_exclude"
 
 # Win32yank (windows clipboard support for Neovim)
-- include_tasks: w32yank.yml
+- name: "[Software] Install w32yank"
+  include_tasks: w32yank.yml
+  when: "'w32yank' not in software_tasks_exclude"
 
 # TMUX Plugins
-- include_tasks: tmux.yml
+- name: "[Software] Install tmux"
+  include_tasks: tmux.yml
+  when: "'tmux' not in software_tasks_exclude"

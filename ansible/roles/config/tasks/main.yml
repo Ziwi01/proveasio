@@ -6,20 +6,38 @@
     path: "{{ dotfiles_backup_dir }}"
     state: directory
 
-- include_tasks: zsh.yml
+- name: "[Config] Configure zsh"
+  include_tasks: zsh.yml
+  when: "'zsh' not in config_tasks_exclude"
 
-- include_tasks: p10k.yml
+- name: "[Config] Configure p10k"
+  include_tasks: p10k.yml
+  when: "'p10k' not in config_tasks_exclude"
 
-- include_tasks: tmux.yml
+- name: "[Config] Configure tmux"
+  include_tasks: tmux.yml
+  when: "'tmux' not in config_tasks_exclude"
 
-- include_tasks: sdkman.yml
+- name: "[Config] Configure sdkman"
+  include_tasks: sdkman.yml
+  when: "'sdkman' not in config_tasks_exclude"
 
-- include_tasks: git.yml
+- name: "[Config] Configure git"
+  include_tasks: git.yml
+  when: "'git' not in config_tasks_exclude"
 
-- include_tasks: lazygit.yml
+- name: "[Config] Configure lazygit"
+  include_tasks: lazygit.yml
+  when: "'lazygit' not in config_tasks_exclude"
 
-- include_tasks: lunarvim.yml
+- name: "[Config] Configure lunarvim"
+  include_tasks: lunarvim.yml
+  when: "'lunarvim' not in config_tasks_exclude"
 
-- include_tasks: thefuck.yml
+- name: "[Config] Configure thefuck"
+  include_tasks: thefuck.yml
+  when: "'thefuck' not in config_tasks_exclude"
 
-- include_tasks: ansible.yml
+- name: "[Config] Configure ansible"
+  include_tasks: ansible.yml
+  when: "'ansible' not in config_tasks_exclude"

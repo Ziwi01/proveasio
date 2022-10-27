@@ -8,22 +8,22 @@
             #########################################################################
 
             Thank you for using
-             _ _ _ _____ __       _____                      _____         
-            | | | |   __|  |     |  _  |___ _ _ _ ___ ___   |   __|___ _ _ 
+             _ _ _ _____ __       _____                      _____
+            | | | |   __|  |     |  _  |___ _ _ _ ___ ___   |   __|___ _ _
             | | | |__   |  |__   |   __| . | | | | -_|  _|  |   __|   | | |
-            |_____|_____|_____|  |__|  |___|_____|___|_|    |_____|_|_|\_/ 
+            |_____|_____|_____|  |__|  |___|_____|___|_|    |_____|_|_|\_/
 
             For configuration, example usage and customization options, please see README.md.
-              
+
             #########################################################################
-            
+
             This Ansible run ended up with below versions set:
 
 
             Software role versions:
 
             {{ used_software_versions | default('Software role not included, not showing installed versions') | to_nice_yaml }}
-            
+
 
             Dev role versions:
 
@@ -32,7 +32,7 @@
 
             All above versions will be saved in `./current-versions.yaml` file.
             If you used `master` branch and want to force those versions for future runs (instead of `latest`), copy above outputs to `./vars/overrides.yml`.
-            
+
             See README.md for details.
   roles:
     - software
