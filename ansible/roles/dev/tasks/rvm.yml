@@ -45,7 +45,7 @@
 - name: "[RVM] Install RVM and rubies"
   include_role:
     name: "{{ ansible_env.HOME }}/.local/opt/rvm1-ansible-{{ rvm_role_version }}"
-  
+
 - name: "[RVM] Save used version"
   set_fact:
     used_dev_versions: "{{ used_dev_versions | combine({'rvm1_ansible_role_version': rvm_role_version}) }}"

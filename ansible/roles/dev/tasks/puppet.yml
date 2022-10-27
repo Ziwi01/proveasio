@@ -2,12 +2,12 @@
 ---
 # Ruby gems
 - name: "[Puppet] Install Puppet/puppet-lint ruby gems for ALL rubies"
-  shell: "{{ ansible_env.HOME }}/.rvm/bin/rvm all do gem install 'puppet:{{ puppet_version }}' puppet-lint"
+  shell: "{{ ansible_env.HOME }}/.rvm/bin/rvm all do gem install 'puppet:{{ puppet_version }}' 'puppet-lint:{{ puppet_lint_version }}'"
   changed_when: false
   when: "'all' in puppet_rubies"
 
 - name: "[Puppet] Install Puppet/puppet-lint ruby gems for subset of rubies"
-  shell: "{{ ansible_env.HOME }}/.rvm/bin/rvm {{ item }} do gem install 'puppet:{{ puppet_version }}' puppet-lint"
+  shell: "{{ ansible_env.HOME }}/.rvm/bin/rvm {{ item }} do gem install 'puppet:{{ puppet_version }}' 'puppet-lint:{{ puppet_lint_version }}'"
   changed_when: false
   loop: "{{ puppet_rubies }}"
   when: "'all' not in puppet_rubies and puppet_rubies | length > 0"
