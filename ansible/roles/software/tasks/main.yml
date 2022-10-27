@@ -21,6 +21,11 @@
   include_tasks: packages.yml
   when: "'packages' not in software_tasks_exclude"
 
+# Latest GIT
+- name: "[Software] Install git"
+  include_tasks: git.yml
+  when: "'git' not in software_tasks_exclude"
+
 # ripgrep
 - name: "[Software] Install ripgrep"
   include_tasks: ripgrep.yml

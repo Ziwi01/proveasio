@@ -12,6 +12,7 @@ versions:
   zoxide: latest
   helm: latest
   thefuck: latest
+  git: latest
   gita: latest
   lazygit: latest
   fzf: latest
