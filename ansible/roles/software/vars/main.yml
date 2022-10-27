@@ -2,11 +2,12 @@
 # Specific versions for software (github)
 # Fixed versions should be set without `v` prefix (e.g: 1.4.3)
 versions:
-  diff-so-fancy: latest 
+  diff-so-fancy: latest
   bat: latest
   zoxide: latest
   helm: latest
   thefuck: latest
+  git: latest
   gita: latest
   lazygit: latest
   fzf: latest

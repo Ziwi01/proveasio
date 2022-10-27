@@ -1,0 +1,25 @@
+# Install specific GIT version
+---
+- name: "[Git] Add git-core/ppa repository"
+  become: true
+  ansible.builtin.apt_repository:
+    repo: ppa:git-core/ppa
+
+- name: "[Git] Update OS packages list"
+  become: true
+  package:
+    update_cache: yes
+
+- name: "[Git] Install GIT {{ versions.lazygit }}"
+  become: true
+  apt:
+    name: "git"
+    state: "{{ versions.lazygit }}"
+
+- name: "[Git] Get installed GIT version"
+  shell: "apt info git 2>/dev/null | grep Version | awk '{print $2}' | awk -F '~' '{print $1}'"
+  register: git_version
+
+- name: "[Git] Save used version"
+  set_fact:
+    used_software_versions: "{{ used_software_versions | combine({'git': git_version.stdout}) }}"

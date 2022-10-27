@@ -143,6 +143,7 @@ lvim.plugins = {
     { "tpope/vim-fugitive" }, -- GIT wrapper (`:G <any_git_command>`)
     { "kdheepak/lazygit.nvim" }, -- GIT manager in VIM. Awesome. (`:LazyGit`, or <Leader>gg)
     { "mhinz/vim-signify" }, -- show git status on particular lines
+    { 'sindrets/diffview.nvim', requires = 'nvim-lua/plenary.nvim' }, -- Awesome Git diff (":DiffviewOpen <revision>")
     {
       "f-person/git-blame.nvim", -- show Git Blame info inline virtual text
       event = "BufRead",

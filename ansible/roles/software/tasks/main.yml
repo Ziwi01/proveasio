@@ -18,6 +18,9 @@
 
 # Common software
 - include_tasks: packages.yml
+  
+# Latest GIT
+- include_tasks: git.yml
 
 # ripgrep
 - include_tasks: ripgrep.yml
