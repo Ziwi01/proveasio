@@ -228,7 +228,8 @@ alias gst='git-fuzzy status'
 # SSH/TMUX - show SSH host name as window name
 ssh() {
     if [ "$(ps -p $(ps -p $$ -o ppid=) -o comm=)" = "tmux: server" ]; then
-        tmux rename-window "$(echo $* | cut -d . -f 1)"
+        tmux rename-window "$(echo $*)"
+        #tmux rename-window "$(echo $* | cut -d . -f 1)"
         TERM=xterm-256color command ssh "$@"
         tmux set-window-option automatic-rename "on" 1>/dev/null
     else

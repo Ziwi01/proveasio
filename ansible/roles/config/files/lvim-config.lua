@@ -211,6 +211,8 @@ lvim.plugins = {
     { "christoomey/vim-tmux-navigator" },
     -- HELM support
     { "towolf/vim-helm" },
+    -- Zoxide support
+    { "jvgrootveld/telescope-zoxide" },
 }
 
 -- Autocommands (https://neovim.io/doc/user/autocmd.html)
