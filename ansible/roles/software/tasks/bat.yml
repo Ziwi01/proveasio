@@ -10,16 +10,12 @@
   ignore_errors: true
   changed_when: bat_check_deb.rc > 1
   failed_when: bat_check_deb.rc > 1
-  args:
-    warn: off
 
 - name: "[BAT] Get latest version if requested"
   shell: curl -s https://api.github.com/repos/sharkdp/bat/releases/latest | jq .name -r | cut -f2 -d'v'
   register: version
   changed_when: false
   ignore_errors: true
-  args:
-    warn: off
   when: versions['bat'] == 'latest'
 
 - name: "[BAT] Set version to {{ version.stdout | default(versions['bat']) }}"

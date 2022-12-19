@@ -6,8 +6,6 @@
   register: version
   changed_when: false
   ignore_errors: true
-  args:
-    warn: off
   when: versions['tmux'] == 'latest'
 
 - name: "[Tmux] Set version to {{ version.stdout | default(versions['tmux']) }}"
@@ -49,7 +47,7 @@
       shell: "./configure && make"
       args:
         chdir: "{{ ansible_env.HOME }}/.local/opt/tmux-{{ tmux_version }}"
-    
+
     - name: "[Tmux] Make install"
       shell: "make install"
       args:
@@ -64,7 +62,7 @@
       file:
         path: "/tmp/tmux-{{ tmux_version }}.tar.gz"
         state: absent
-    
+
     - name: "[TMUX] Create Tmux plugin dir {{ ansible_env.HOME }}/.tmux/plugins"
       file:
         path: "{{ ansible_env.HOME }}/.tmux/plugins"

@@ -7,16 +7,12 @@
   ignore_errors: true
   changed_when: ripgrep_check_deb.rc > 1
   failed_when: ripgrep_check_deb.rc > 1
-  args:
-    warn: off
 
 - name: "[Ripgrep] Get latest version if requested"
   shell: curl -s https://api.github.com/repos/BurntSushi/ripgrep/releases/latest | jq .name -r | cut -f2 -d'v'
   register: version
   changed_when: false
   ignore_errors: true
-  args:
-    warn: off
   when: versions['ripgrep'] == 'latest'
 
 - name: "[Ripgrep] Set version to {{ version.stdout | default(versions['ripgrep']) }}"

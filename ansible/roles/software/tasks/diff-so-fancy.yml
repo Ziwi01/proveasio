@@ -9,8 +9,6 @@
   register: version
   changed_when: false
   ignore_errors: true
-  args:
-    warn: off
   when: versions['diff-so-fancy'] == 'latest'
 
 - name: "[Diff-so-fancy] Set version to {{ version.stdout | default(versions['diff-so-fancy']) }}"

@@ -7,8 +7,6 @@
   ignore_errors: true
   changed_when: fd_find_check_deb.rc > 1
   failed_when: fd_find_check_deb.rc > 1
-  args:
-    warn: off
 
 - name: "[FD] Remove fd-find Ubuntu package"
   apt:
@@ -23,16 +21,12 @@
   ignore_errors: true
   changed_when: fd_check_deb.rc > 1
   failed_when: fd_check_deb.rc > 1
-  args:
-    warn: off
 
 - name: "[FD] Get latest version if requested"
   shell: curl -s https://api.github.com/repos/sharkdp/fd/releases/latest | jq .name -r | cut -f2 -d'v'
   register: version
   changed_when: false
   ignore_errors: true
-  args:
-    warn: off
   when: versions['fd'] == 'latest'
 
 - name: "[FD] Set version to {{ version.stdout | default(versions['fd']) }}"

@@ -14,8 +14,6 @@
   register: check_lvim
   changed_when: check_lvim.rc == 1
   failed_when: check_lvim.rc > 1
-  args:
-    warn: off
   notify: "[LunarVIM] Install LunarVIM"
 
 - name: Flush handlers

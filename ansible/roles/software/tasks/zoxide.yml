@@ -8,8 +8,6 @@
   register: version
   changed_when: false
   ignore_errors: true
-  args:
-    warn: off
   when: versions['zoxide'] == 'latest'
 
 - name: "[Zoxide] Set version to {{ version.stdout | default(versions['zoxide']) }}"

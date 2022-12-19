@@ -7,16 +7,12 @@
   ignore_errors: true
   changed_when: neovim_check_deb.rc > 1
   failed_when: neovim_check_deb.rc > 1
-  args:
-    warn: off
 
 - name: "[Neovim] Get latest version if requested"
   shell: curl -s https://api.github.com/repos/neovim/neovim/releases/latest | jq .name -r | cut -f2 -d' ' | cut -f2 -d'v'
   register: version
   changed_when: false
   ignore_errors: true
-  args:
-    warn: off
   when: neovim_version == 'latest'
 
 - name: "[Neovim] Set version to {{ version.stdout | default(neovim_version) }}"

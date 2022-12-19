@@ -7,8 +7,6 @@
   register: version
   changed_when: false
   ignore_errors: true
-  args:
-    warn: off
   when: nvm_version == 'latest'
 
 - name: "[NVM] Set version to {{ version.stdout | default(nvm_version) }}"

@@ -8,8 +8,6 @@
   register: version
   changed_when: false
   ignore_errors: true
-  args:
-    warn: off
 
 - name: "[Win32Yank] Download archive"
   ansible.builtin.get_url:
