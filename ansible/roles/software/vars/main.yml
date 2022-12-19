@@ -33,7 +33,7 @@ packages:
   - jq
   - gcc
   - zip
-  - ctags
+  - universal-ctags
   - dos2unix
   - php
   - composer
