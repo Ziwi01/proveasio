@@ -35,6 +35,7 @@ packages:
   - zip
   - universal-ctags
   - ncurses-dev
+  - libevent-dev
   - dos2unix
   - php
   - composer

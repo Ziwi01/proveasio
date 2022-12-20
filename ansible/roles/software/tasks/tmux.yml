@@ -82,6 +82,11 @@
         path: "{{ ansible_env.HOME }}/.local/opt/tmux-{{ tmux_version }}"
         state: absent
       when: tmux_failed | bool
+
+    - name: "[Tmux] Fail run if TMUX installation failed"
+      ansible.builtin.fail:
+        msg: '[Tmux] There was an error during Tmux installation, failing build... See output above for more details.'
+      when: tmux_failed | bool
   when: not tmux_dir.stat.exists
 
 - name: "[Tmux] Save used version"
