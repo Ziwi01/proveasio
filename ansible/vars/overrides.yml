@@ -1,8 +1,5 @@
 # Use this file for overriding anything set in roles/<role>/vars/ file
 # For example, you can disable overriding particular config file, or set paticular software versions of your choosing.
 ---
-software_tasks_exclude:
-  - packages
-dev_tasks_exclude:
-  - rvm
-  - puppet
+software_tasks_exclude: []
+dev_tasks_exclude: []

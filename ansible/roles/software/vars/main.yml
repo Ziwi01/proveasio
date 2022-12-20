@@ -4,7 +4,7 @@
 # For list of tasks see: software/tasks/main.yml or see README.md
 software_tasks_exclude: []
 
-  # Specific versions for software (github)
+# Specific versions for software (github)
 # Fixed versions should be set without `v` prefix (e.g: 1.4.3)
 versions:
   diff-so-fancy: latest
@@ -27,19 +27,18 @@ packages:
   - curl
   - unzip
   - mlocate
-  - libevent-dev # Required for latest Tmux install
+  - libevent-dev    # Required for latest Tmux install
   - tree
   - htop
   - jq
   - gcc
   - zip
-  - universal-ctags
-  - ncurses-dev
-  - libevent-dev
+  - universal-ctags # Required for latest Tmux install
+  - ncurses-dev     # Required for latest Tmux install
   - dos2unix
   - php
   - composer
-  - groff # AWS cli req
+  - groff           # AWS cli req
 
 # FZF
 fzf_git_url: "https://github.com/junegunn/fzf.git"
