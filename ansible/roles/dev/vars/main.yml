@@ -7,14 +7,13 @@ dev_tasks_exclude: []
 # RVM / Ruby
 rvm1_ansible_role_version: 2.2.0 # Version of https://github.com/rvm/rvm1-ansible
 rvm1_rubies:
-  - ruby-2.4.10
-  - ruby-2.7.6
-  - ruby-3.1.2
+  - ruby-2.7.7
+  - ruby-3.1.3
 rvm1_user: "{{ ansible_user_id }}"
 
 # Puppet
-puppet_version: 5.5.22 # Very old, but we still use it... Does not support `latest`, see https://rubygems.org/gems/puppet for latest version
-puppet_lint_version: 2.5.2 # This one is compatible with ruby < 2.7. I use this since we use ruby 2.4.10 also (see: rvm1_rubies above)
+puppet_version: latest
+puppet_lint_version: latest
 puppet_rubies:
   - all # to install only for specific rubies, list their names (must match `rvm1_rubies`)
 # Example:
