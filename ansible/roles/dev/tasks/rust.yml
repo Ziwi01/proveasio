@@ -5,7 +5,6 @@
   shell: "curl https://sh.rustup.rs -sSf | sh -s -- -y"
   register: rust_install
   args:
-    warn: false
     chdir: "/tmp"
     creates: "{{ ansible_env.HOME }}/.rust"
 

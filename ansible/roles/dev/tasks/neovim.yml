@@ -9,7 +9,7 @@
   failed_when: neovim_check_deb.rc > 1
 
 - name: "[Neovim] Get latest version if requested"
-  shell: curl -s https://api.github.com/repos/neovim/neovim/releases/latest | jq .name -r | cut -f2 -d' ' | cut -f2 -d'v'
+  shell: curl -s https://api.github.com/repos/neovim/neovim/releases/latest | grep -oP 'NVIM v([0-9]*\.[0-9]*\.[0-9])\\n' | grep -Eo '[0-9]*\.[0-9]*\.[0-9]'
   register: version
   changed_when: false
   ignore_errors: true

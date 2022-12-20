@@ -24,7 +24,7 @@
     name: "ansible=={{ ansible_pip_version }}"
     executable: pip3
   register: pip_out
-  changed_when: "'Requirement already up-to-date' not in pip_out.stdout"
+  changed_when: "'Requirement already satisfied' not in pip_out.stdout"
   when: ansible_pip_version != 'latest'
 
 - name: "[Ansible] Install Ansible PIP latest version"
@@ -33,7 +33,7 @@
     executable: pip3
     extra_args: --upgrade
   register: pip_out
-  changed_when: "'Requirement already up-to-date' not in pip_out.stdout"
+  changed_when: "'Requirement already satisfied' not in pip_out.stdout"
   when: ansible_pip_version == 'latest'
 
 - name: "[Ansible] Get installed Ansible version from PIP"
@@ -49,7 +49,7 @@
     name: "ansible-lint=={{ ansible_lint_pip_version }}"
     executable: pip3
   register: pip_out
-  changed_when: "'Requirement already up-to-date' not in pip_out.stdout"
+  changed_when: "'Requirement already satisfied' not in pip_out.stdout"
   when: ansible_lint_pip_version != 'latest'
 
 - name: "[Ansible] Install ansible-lint PIP latest version"
@@ -58,7 +58,7 @@
     executable: pip3
     extra_args: --upgrade
   register: pip_out
-  changed_when: "'Requirement already up-to-date' not in pip_out.stdout"
+  changed_when: "'Requirement already satisfied' not in pip_out.stdout"
   when: ansible_lint_pip_version == 'latest'
 
 - name: "[Ansible] Get installed Ansible version from PIP"

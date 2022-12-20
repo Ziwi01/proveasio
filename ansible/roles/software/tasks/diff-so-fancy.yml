@@ -37,14 +37,14 @@
         url: "{{ dsf_url }}"
         dest: "{{ ansible_env.HOME }}/.local/opt/diff-so-fancy-{{ dsf_version }}/diff-so-fancy"
         mode: '0755'
-
-    - name: "[Diff-so-fancy] Link {{ dsf_version }} binary"
-      ansible.builtin.file:
-        src: "{{ ansible_env.HOME }}/.local/opt/diff-so-fancy-{{ dsf_version }}/diff-so-fancy"
-        dest: "{{ ansible_env.HOME }}/.local/bin/diff-so-fancy"
-        state: link
-        force: true
   when: not dsf_dir.stat.exists
+
+- name: "[Diff-so-fancy] Link {{ dsf_version }} binary"
+  ansible.builtin.file:
+    src: "{{ ansible_env.HOME }}/.local/opt/diff-so-fancy-{{ dsf_version }}/diff-so-fancy"
+    dest: "{{ ansible_env.HOME }}/.local/bin/diff-so-fancy"
+    state: link
+    force: true
 
 - name: "[Diff-so-fancy] Save used version"
   set_fact:

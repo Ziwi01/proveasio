@@ -19,6 +19,7 @@
 - name: "[Git] Get installed GIT version"
   shell: "apt info git 2>/dev/null | grep Version | awk '{print $2}' | awk -F '~' '{print $1}'"
   register: git_version
+  changed_when: false
 
 - name: "[Git] Save used version"
   set_fact:

@@ -41,18 +41,18 @@
         src: "/tmp/zoxide-{{ zoxide_version }}.tar.gz"
         dest: "{{ ansible_env.HOME }}/.local/opt/zoxide-{{ zoxide_version }}"
 
-    - name: "[Zoxide] Link {{ zoxide_version }} binary"
-      ansible.builtin.file:
-        src: "{{ ansible_env.HOME }}/.local/opt/zoxide-{{ zoxide_version }}/zoxide"
-        dest: "{{ ansible_env.HOME }}/.local/bin/zoxide"
-        state: link
-        force: true
-
     - name: "[Zoxide] Cleanup tar.gz file"
       file:
         path: "/tmp/zoxide-{{ zoxide_version }}.tar.gz"
         state: absent
   when: not zoxide_dir.stat.exists
+
+- name: "[Zoxide] Link {{ zoxide_version }} binary"
+  ansible.builtin.file:
+    src: "{{ ansible_env.HOME }}/.local/opt/zoxide-{{ zoxide_version }}/zoxide"
+    dest: "{{ ansible_env.HOME }}/.local/bin/zoxide"
+    state: link
+    force: true
 
 - name: "[Zoxide] Save used version"
   set_fact:

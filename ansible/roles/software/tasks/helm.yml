@@ -4,7 +4,6 @@
 #  - https://helm.sh/
 #  - https://github.com/helm/helm
 ---
-
 - name: "[Helm] Get latest version if requested"
   shell: curl -s https://api.github.com/repos/helm/helm/releases/latest | jq .name -r | cut -f2 -d'v' | grep -Po '\d+\.\d+\.\d+\.?\d?'
   register: version

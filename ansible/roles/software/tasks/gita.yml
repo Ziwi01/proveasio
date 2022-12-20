@@ -8,7 +8,7 @@
     name: "gita=={{ versions.gita }}"
     executable: pip3
   register: pip_out
-  changed_when: "'Requirement already up-to-date' not in pip_out.stdout"
+  changed_when: "'Requirement already satisfied' not in pip_out.stdout"
   when: versions['gita'] != 'latest'
 
 - name: "[Gita] Install Gita latest version"
@@ -17,11 +17,12 @@
     executable: pip3
     extra_args: --upgrade
   register: pip_out
-  changed_when: "'Requirement already up-to-date' not in pip_out.stdout"
+  changed_when: "'Requirement already satisfied' not in pip_out.stdout"
   when: versions['gita'] == 'latest'
 
 - name: "[Gita] Get installed Gita version"
   shell: "pip3 show gita | grep Version | awk '{print $2}'"
+  changed_when: false
   register: gita_version
 
 - name: "[Gita] Save used version"

@@ -34,6 +34,7 @@ packages:
   - gcc
   - zip
   - universal-ctags
+  - ncurses-dev
   - dos2unix
   - php
   - composer

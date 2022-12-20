@@ -8,7 +8,7 @@
     name: "thefuck=={{ versions.thefuck }}"
     executable: pip3
   register: pip_out
-  changed_when: "'Requirement already up-to-date' not in pip_out.stdout"
+  changed_when: "'Requirement already satisfied' not in pip_out.stdout"
   when: versions['thefuck'] != 'latest'
 
 - name: "[TheFuck] Install TheFuck latest version"
@@ -17,11 +17,12 @@
     executable: pip3
     extra_args: --upgrade
   register: pip_out
-  changed_when: "'Requirement already up-to-date' not in pip_out.stdout"
+  changed_when: "'Requirement already satisfied' not in pip_out.stdout"
   when: versions['thefuck'] == 'latest'
 
 - name: "[TheFuck] Get installed TheFuck version"
   shell: "pip3 show thefuck | grep Version | awk '{print $2}'"
+  changed_when: false
   register: thefuck_version
 
 - name: "[TheFuck] Save used version"
