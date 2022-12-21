@@ -11,8 +11,11 @@
 
 # Include override variables
 - name: "[DEV] Include ansible/vars/overrides.yml"
-  include_vars: '../../../vars/overrides.yml'
-  when: "playbook_dir | string ~ '/vars/overrides.yml' is file"
+  include_vars: "{{ item }}"
+  with_first_found:
+    - files:
+        - "{{ playbook_dir }}/vars/overrides.yml"
+      skip: true
 
 # Ruby Version Manager
 - name: "[DEV] Install Ruby Version Manager"
