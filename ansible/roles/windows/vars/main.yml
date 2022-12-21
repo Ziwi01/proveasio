@@ -1,5 +1,8 @@
 ---
-# Control which groups of tasks will be included
+# Overwrite below in `ansible/vars/overrides.yml` for your own info
+win_username: Jimmy # Windows username
+
+  # Control which groups of tasks will be included
 bundle_include:
   common: true
   dev: true

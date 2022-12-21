@@ -1,0 +1,8 @@
+---
+# RVM / Ruby
+rvm1_rubies:
+  - ruby-3.1.3
+
+# Puppet
+puppet_version: 7.21.0
+puppet_lint_version: 3.0.1

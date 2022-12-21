@@ -11,7 +11,7 @@
 
 # TL;DR
 
-Repository containing bunch of automation scripts (mostly Ansible tasks) to install, configure and maintain Windows WSL2 environment based on Ubuntu 20.04, including set of very useful dev tools and customizations to ease out and speed up terminal usage during day-to-day work and bump up productivity.
+Repository containing bunch of automation scripts (mostly Ansible tasks) to install, configure and maintain Windows WSL2 environment based on Ubuntu 20.04/22.04, including set of very useful dev tools and customizations to ease out and speed up terminal usage during day-to-day work and bump up productivity.
 
 # About
 
@@ -30,7 +30,7 @@ Please read below README carefully and go through the scripts to see whats going
 
 # TODO
 
-- feat: migrate to Ubuntu-22.04 LTS
+- ~feat: support both Ubuntu 20.04 and 22.04 LTS~
 - feat: AWS cli installation/setup
 - docs: add usage descriptions with videos and images
 - docs: update lunarvim.md with detailed workflow examples and shortcuts
@@ -75,7 +75,7 @@ Please read below README carefully and go through the scripts to see whats going
 
 - (obviously) Windows 10 version 2004 and higher (Build 19041 and higher) or Windows 11
 - WSL2 configured
-- Ubuntu 20.04 installed
+- Ubuntu 20.04 or 22.04 installed
 - Any terminal using any iconic font (like [Nerd Fonts](https://www.nerdfonts.com/) - see windows setup for details)
 
 Please verify you have correct Windows setup by going through Windows manual setup below, or try experimental Windows automation even more below (feedback welcome!)
@@ -86,7 +86,7 @@ Windows setup should be done manually, however there is an experimental automati
 
 ## Manual
 
-1. Install WSL, if not already installed - from Powershell (Administrator):
+1. Install Ubuntu 20.04, execute from Powershell (Administrator):
 
     ```shell
     wsl.exe --install -d 'Ubuntu-20.04'
@@ -94,6 +94,8 @@ Windows setup should be done manually, however there is an experimental automati
     ```
 
     For details, see [Microsoft WSL installation docs](https://docs.microsoft.com/en-us/windows/wsl/install)
+
+    **NOTE:** For Ubuntu 22.04 LTS you need to install it through Microsoft Store - there is no image available through `wsl` command.
 
 2. Install DejaVuSans fonts (it can be found in this repo in `ansible/roles/windows/files/fonts`)
 3. Install [Microsoft Terminal](https://github.com/microsoft/terminal) and configure this Terminals Ubuntu profile with DejaVuSans font. You can check `ansible/roles/windows/templates/settings.json.j2` for settings reference with useful overrides.
@@ -110,7 +112,7 @@ There is an initial automation for setting up Windows, which includes the steps 
 
 There is a script `prepare-windows.ps1`, which will:
 
-- Install WSL with Ubuntu 20.04
+- Install WSL with Ubuntu 20.04. To install 22.04, you need to install it through Microsoft Store. If you use 22.04, please comment out section `Install WSL2 distro` from the file
 - Enable WinRM protocol with CredSSP authentication transport (to be able to run Ansible from WSL2 to configure Windows)
 - Install [Chocolatey](https://chocolatey.org/) package manager to install software
 
@@ -209,7 +211,7 @@ Essential:
  - [LunarVIM](https://github.com/LunarVim/LunarVim) - Neovim IDE-like extension with awesome plugins/configurations included out of the box
 
 Programming:
-- [RVM](https://rvm.io/) (Ruby enVironment Manager, installed using [rvm1-ansible-role](https://github.com/rvm/rvm1-ansible)), along with Rubies: `2.4.10`, `2.7.6` and `3.1.2`
+- [RVM](https://rvm.io/) (Ruby enVironment Manager, installed using [rvm1-ansible-role](https://github.com/rvm/rvm1-ansible)), along with Ruby `3.1.3`
 - [PDK](https://puppet.com/try-puppet/puppet-development-kit/) (Puppet Development Kit)
 - [NVM](https://github.com/nvm-sh/nvm) (Node Version Manager) with latest LTS Node version (by default). Among all - dependency for LunarVIM installation
 
@@ -413,7 +415,9 @@ For detailed usage examples, shortcuts and basic workflow videos, please see [`l
 
 For Ruby management, there is [Ruby Version Manager (RVM)](https://rvm.io/) installed. See available Ruby's with `rvm list`, use particular with `rvm use <ruby_version>`. There are some gems alredy preinstalled on Rubys available here (mostly for Puppet support).
 
-**NOTE:** By default, Puppet gets installed in version 5.5.22 **for all rubies**. If you choose to install latest puppet, there might be some dependencies errors for lower ruby versions (for example 2.4.10, which is included by default). If you don't want to install Puppet for all rubies, set `puppet_rubies` in `vars/overrides.yml` to an array with rubies names.
+**NOTE**: There are different ruby versions installed depending if you are using Ubuntu 22.04 or 20.04 - for 20.04 except latest `3.1.x`, there is `2.4.x` and `2.7.x` installed.
+
+**NOTE 2**: There might be some issues with installing/managing Ruby versions `< 3.1.x` on Ubuntu 22.04 (that's why there is only latest 3.1 version listed for this OS).
 
 ### Node
 
@@ -425,7 +429,7 @@ For Node, there is [NVM](https://github.com/nvm-sh/nvm) installed. See NPM versi
 
 There is Puppet LSP (language server protocol) called [Puppet Editor Services](https://github.com/puppetlabs/puppet-editor-services) installed in `~/.lsp/puppet-editor-services`.
 
-**NOTE:** By default, Puppet gets installed in version 5.5.22 **for all rubies**. If you choose to install latest puppet, there might be some dependencies errors for lower ruby versions (for example 2.4.10, which is included by default). If you don't want to install Puppet for all rubies, set `puppet_rubies` in `vars/overrides.yml` to an array with rubies names.
+**NOTE:** For Ubuntu-20.04, by default, Puppet gets installed in version 5.5.22 **for all rubies**. If you choose to install latest puppet, there might be some dependencies errors for lower ruby versions (for example 2.4.10, which is included by default). If you don't want to install Puppet for all rubies, set `puppet_rubies` in `vars/overrides.yml` to an array with rubies names. Alternatively, you can override (`vars/overrides.yml`) ruby versions to list only 3.1.x Ruby (`rvm1_rubies` key) - that way you can use latest Puppet/puppet-lint gems - `puppet_version`/`puppet_lint_version`
 
 <details>
 <summary><b>Example:</b> Puppet autocompletion/LSP</summary>

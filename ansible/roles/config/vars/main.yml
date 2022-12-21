@@ -1,4 +1,9 @@
 ---
+# Overwrite below in `ansible/vars/overrides.yml` for your own info
+git: # .gitconfig info
+  name: James
+  mail: james.doe@hell.no
+
 # Add this variable to your ansible/vars/overrides.yml if needed
 # This is array of tasks to exclude from config role.
 # For list of tasks see: config/tasks/main.yml or see README.md

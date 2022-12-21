@@ -14,7 +14,6 @@ lvim.keys.normal_mode["<C-s>"] = ":w<cr>"
 -- After changing plugin config exit and reopen LunarVim, Run :PackerInstall :PackerCompile
 lvim.builtin.alpha.active = true
 lvim.builtin.alpha.mode = "dashboard"
-lvim.builtin.notify.active = true
 lvim.builtin.terminal.active = true
 lvim.builtin.nvimtree.setup.view.side = "left"
 lvim.builtin.nvimtree.setup.renderer.icons.show.git = true
@@ -46,7 +45,7 @@ lvim.builtin.treesitter.highlight.enabled = true
 
 -- ---configure a server manually. !!Requires `:LvimCacheReset` to take effect!!
 -- ---see the full default list `:lua print(vim.inspect(lvim.lsp.automatic_configuration.skipped_servers))`
-vim.list_extend(lvim.lsp.automatic_configuration.skipped_servers, { "ansiblels", "puppet" }) -- Manually configure Ansible/Puppet Language Servers
+vim.list_extend(lvim.lsp.automatic_configuration.skipped_servers, { "ansiblels", "puppet" }, 1, 1) -- Manually configure Ansible/Puppet Language Servers
 local puppet_opts = {
   cmd = {
     vim.env.HOME .. "/.rvm/rubies/default/bin/ruby",
@@ -82,20 +81,24 @@ require("lvim.lsp.manager").setup("ansiblels", ansible_opts)
 -- end
 
 -- -- set a formatter, this will override the language server formatting capabilities (if it exists)
--- local formatters = require "lvim.lsp.null-ls.formatters"
--- formatters.setup {
---   { command = "black", filetypes = { "python" } },
---   { command = "isort", filetypes = { "python" } },
---   {
---     -- each formatter accepts a list of options identical to https://github.com/jose-elias-alvarez/null-ls.nvim/blob/main/doc/BUILTINS.md#Configuration
---     command = "prettier",
---     ---@usage arguments to pass to the formatter
---     -- these cannot contain whitespaces, options such as `--line-width 80` become either `{'--line-width', '80'}` or `{'--line-width=80'}`
---     extra_args = { "--print-with", "100" },
---     ---@usage specify which filetypes to enable. By default a providers will attach to all the filetypes it supports.
---     filetypes = { "typescript", "typescriptreact" },
---   },
--- }
+local formatters = require "lvim.lsp.null-ls.formatters"
+formatters.setup {
+  { command = "black", filetypes = { "python" } },
+  {
+    command = "puppet-lint",
+    extra_args = { "--fix", "--no-autoloader_layout-check" },
+    filetypes = { "puppet" },
+  },
+  -- {
+  --   -- each formatter accepts a list of options identical to https://github.com/jose-elias-alvarez/null-ls.nvim/blob/main/doc/BUILTINS.md#Configuration
+  --   command = "prettier",
+  --   ---@usage arguments to pass to the formatter
+  --   -- these cannot contain whitespaces, options such as `--line-width 80` become either `{'--line-width', '80'}` or `{'--line-width=80'}`
+  --   extra_args = { "--print-with", "100" },
+  --   ---@usage specify which filetypes to enable. By default a providers will attach to all the filetypes it supports.
+  --   filetypes = { "typescript", "typescriptreact" },
+  -- },
+}
 
 -- -- set additional linters
 -- local linters = require "lvim.lsp.null-ls.linters"
@@ -277,6 +280,11 @@ lvim.builtin.telescope.defaults = {
 -- Strip Whitespace on save
 vim.g.strip_whitespace_on_save = 1
 vim.g.strip_whitespace_confirm = 0
+
+-- Wrap long lines
+vim.wo.wrap = true
+vim.wo.linebreak = true
+vim.wo.list = false
 
 -- TMUX panes / VIM splits navigation config (Alt+Arrows)
 vim.g.tmux_navigator_no_mappings = 1

@@ -21,7 +21,7 @@ Set-ExecutionPolicy Bypass -Scope Process -Force; ${env:USERPROFILE}\AnsibleWinr
 Enable-WSManCredSSP -Role Server -Force
 
 Write-Host "`r`n`r`n"
-Write-Host "To verify if WINRM got configured properly:`r`n" 
+Write-Host "To verify if WINRM got configured properly:`r`n"
 Write-Host "  - check if https listener port 5986 is open: winrm enumerate winrm/config/Listener`r`n"
 Write-Host "  - check service if CredSSP is active: winrm get winrm/config/Service`r`n"
 
