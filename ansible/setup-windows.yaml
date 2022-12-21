@@ -1,6 +1,6 @@
 - hosts: win
   vars_files:
-    - vars/overrides.yml
+    - [ vars/overrides.yml ]
   ### Comment out roles you don't need ###
   roles:
     - windows

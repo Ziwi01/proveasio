@@ -11,7 +11,8 @@
 
 # Include override variables
 - name: "[DEV] Include vars/overrides.yml"
-  include_vars: '../../../vars/overrides.yml'
+  include_vars: "{{ item }}"
+  with_first_found: [ '../../../vars/overrides.yml' ]
 
 # Ruby Version Manager
 - name: "[DEV] Install Ruby Version Manager"

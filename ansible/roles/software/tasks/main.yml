@@ -12,7 +12,8 @@
 
 # Include override variables
 - name: "[Software] Include vars/overrides.yml"
-  include_vars: '../../../vars/overrides.yml'
+  include_vars: "{{ item }}"
+  with_first_found: [ '../../../vars/overrides.yml' ]
 
 # Set software versions fact, will be updated in the tasks above, then printed at the end of play
 - name: "[Software] Reset software versions fact"

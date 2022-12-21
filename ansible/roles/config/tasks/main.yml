@@ -8,7 +8,8 @@
 
 # Include override variables
 - name: "[Config] Include vars/overrides.yml"
-  include_vars: '../../../vars/overrides.yml'
+  include_vars: "{{ item }}"
+  with_first_found: [ '../../../vars/overrides.yml' ]
 
 - name: "[Config] Configure zsh"
   include_tasks: zsh.yml
