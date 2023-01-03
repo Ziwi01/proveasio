@@ -131,10 +131,6 @@ lvim.plugins = {
     { "pearofducks/ansible-vim" },
     -- Directory traverse
     { "nanotee/zoxide.vim" },
-    -- Search and replace for project (:Ack for search, :Acks to substitute)
-    { "wincent/ferret" },
-    -- Preview Quickfix window (<Leader><space>)
-    { "ronakg/quickr-preview.vim" },
     -- Diff directories (:DirDiff <dir1> <dir2>)
     { "will133/vim-dirdiff" },
     -- Markdown support
@@ -206,6 +202,8 @@ lvim.plugins = {
     },
     -- Session manager
     { "tpope/vim-obsession" },
+    -- Convenient word surrounding
+    { "tpope/vim-surround" },
     -- Remove trailing whitespace
     { "ntpeters/vim-better-whitespace" },
     -- Running commands in TMUX split
@@ -216,6 +214,12 @@ lvim.plugins = {
     { "towolf/vim-helm" },
     -- Zoxide support
     { "jvgrootveld/telescope-zoxide" },
+    -- Better quickfix window
+    {'kevinhwang91/nvim-bqf', ft = 'qf'},
+    -- Spectre search and replace (:Spectre)
+    { 'windwp/nvim-spectre' },
+    -- Fallback search and replace (:Ack or <leader>a for search, :Acks or <leader>r to substitute)
+    { "wincent/ferret" },
 }
 
 -- Autocommands (https://neovim.io/doc/user/autocmd.html)
