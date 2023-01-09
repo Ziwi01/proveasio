@@ -139,6 +139,12 @@ lvim.plugins = {
     { "will133/vim-dirdiff" },
     -- Markdown support
     { "plasticboy/vim-markdown" },
+    -- Markdown dynamic preview (`:markdownPreview`)
+    { "iamcco/markdown-preview.nvim",
+      run = function() vim.fn["mkdp#util#install"]() end
+    },
+    -- Tabularize
+    { "godlygeek/tabular" },
     -- Fuzzy finder
     { "junegunn/fzf" },
     { "junegunn/fzf.vim" },
