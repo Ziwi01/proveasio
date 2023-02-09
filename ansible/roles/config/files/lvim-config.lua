@@ -1,7 +1,7 @@
 -- general
 lvim.log.level = "warn"
 lvim.format_on_save = false
-lvim.colorscheme = "onedarker"
+lvim.colorscheme = "catppuccin-mocha"
 
 -- keymappings [view all the defaults by pressing <leader>Lk]
 lvim.leader = "space"
@@ -226,6 +226,8 @@ lvim.plugins = {
     { 'windwp/nvim-spectre' },
     -- Fallback search and replace (:Ack or <leader>a for search, :Acks or <leader>r to substitute)
     { "wincent/ferret" },
+    -- Cool colorscheme :)
+    { "catppuccin/nvim", name = "catppuccin" },
 }
 
 -- Autocommands (https://neovim.io/doc/user/autocmd.html)
@@ -261,7 +263,7 @@ vim.opt.clipboard = "unnamedplus"
 vim.g.vim_markdown_folding_disabled = 1
 
 -- Enable transparency
-lvim.transparent_window = true
+-- lvim.transparent_window = true
 
 -- <S-h> and <S-l> for buffer previous/next
 vim.api.nvim_set_keymap('n', '<S-h>', ':bprevious<CR>', { noremap = true, silent = true })
