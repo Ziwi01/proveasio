@@ -137,20 +137,26 @@ lvim.plugins = {
     { "plasticboy/vim-markdown" },
     -- Markdown dynamic preview (`:markdownPreview`)
     { "iamcco/markdown-preview.nvim",
-      run = function() vim.fn["mkdp#util#install"]() end
+      build = function() vim.fn["mkdp#util#install"]() end
     },
     -- Tabularize
     { "godlygeek/tabular" },
     -- Fuzzy finder
     { "junegunn/fzf" },
     { "junegunn/fzf.vim" },
-    -- GIT integration
-    { "tpope/vim-fugitive" }, -- GIT wrapper (`:G <any_git_command>`)
-    { "kdheepak/lazygit.nvim" }, -- GIT manager in VIM. Awesome. (`:LazyGit`, or <Leader>gg)
-    { "mhinz/vim-signify" }, -- show git status on particular lines
-    { 'sindrets/diffview.nvim', requires = 'nvim-lua/plenary.nvim' }, -- Awesome Git diff (":DiffviewOpen <revision>")
+    -- GIT wrapper (`:G <any_git_command>`)
+    { "tpope/vim-fugitive" },
+    -- GIT manager in VIM. Awesome. (`:LazyGit`, or <Leader>gg)
+    { "kdheepak/lazygit.nvim" },
+    -- show git status on particular lines
+    { "mhinz/vim-signify" },
+    -- Awesome Git diff (":DiffviewOpen <revision>")
+    { 'sindrets/diffview.nvim',
+      dependencies = 'nvim-lua/plenary.nvim'
+    },
+    -- show Git Blame info inline virtual text
     {
-      "f-person/git-blame.nvim", -- show Git Blame info inline virtual text
+      "f-person/git-blame.nvim",
       event = "BufRead",
       config = function()
         vim.cmd "highlight default link gitblame SpecialComment"
@@ -160,8 +166,8 @@ lvim.plugins = {
     -- Completion
     {
       "tzachar/cmp-tabnine",
-      run = "./install.sh",
-      requires = "hrsh7th/nvim-cmp",
+      build = "./install.sh",
+      dependencies = "hrsh7th/nvim-cmp",
       event = "InsertEnter",
     },
     -- goto Preview
@@ -281,13 +287,23 @@ lvim.builtin.which_key.mappings["t"] = {
   r = { "<cmd>TroubleToggle lsp_references<cr>", "references" },
 }
 
--- Ignore .git/ and node_modules/ in Telescopes find_files <Leader>f
-lvim.builtin.telescope.defaults.file_ignore_patterns = { "%.git/", "^node_modules/" }
--- Use fd to "find files" and return absolute paths
 lvim.builtin.telescope.defaults = {
-	find_command = { "fd", "-t=f", "-a" },
+  file_ignore_patterns = { "%.git/", "^node_modules/" }, -- Ignore .git/ and node_modules/ in Telescopes find_files <Leader>f
 	path_display = { "absolute" },
-  wrap_results = true
+  wrap_results = true,
+  layout_config = { -- Set width and height for dropdown (default) config
+     width  = 0.8,
+     height = 0.2
+  },
+}
+
+-- Include hidden files when grepping for text
+lvim.builtin.telescope.pickers = {
+  live_grep = {
+      additional_args = function()
+          return { '--hidden' }
+      end
+  },
 }
 
 -- Strip Whitespace on save
