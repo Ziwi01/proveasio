@@ -2,9 +2,9 @@
 # Install WSL2 distro
 ###############
 
-Write-Host "Install WSL2 + Ubuntu 20.04`r`n"
-wsl.exe --install -d 'Ubuntu-20.04'
-wsl.exe --set-default 'Ubuntu-20.04'
+Write-Host "Install WSL2 + Ubuntu 22.04`r`n"
+wsl.exe --install -d 'Ubuntu-22.04'
+wsl.exe --set-default 'Ubuntu-22.04'
 
 ###############
 # Enable WinRM Windows service with CredSSP authentication, disable Basic Auth

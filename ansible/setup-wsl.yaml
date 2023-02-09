@@ -27,19 +27,21 @@
             {{ used_dev_versions | default('Dev role not included, not showing installed versions') | to_nice_yaml }}
 
 
-            All above versions will be saved in `./current-versions.yaml` file.
+            All above versions will be saved in `./current-versions.yaml` file (if playbook was run without particular `--tags`).
             If you used `master` branch and want to force those versions for future runs (instead of `latest`), copy above outputs to `ansible/vars/overrides.yml`.
 
             See README.md for details.
   roles:
-    - software
-    - dev
-    - config
+    - role: software
+    - role: dev
+    - role: config
 
   tasks:
     - name: "[Summary] Show detailed info"
       debug:
         var: summary
+      tags:
+        - always
 
     - name: "[Summary] Save all versions in current-versions.yaml"
       ansible.builtin.template:

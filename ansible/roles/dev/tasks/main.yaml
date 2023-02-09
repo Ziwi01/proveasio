@@ -4,10 +4,14 @@
   set_fact:
     used_dev_versions: {}
     cacheable: true
+  tags:
+    - always
 
 # Import vars for Ubuntu 20.04 / 22.04
 - name: '[DEV] Include OS-specific vars files'
   ansible.builtin.include_vars: "Ubuntu-{{ ansible_lsb.release }}.yml"
+  tags:
+    - always
 
 # Include override variables
 - name: "[DEV] Include ansible/vars/overrides.yml"
@@ -16,43 +20,111 @@
     - files:
         - "{{ playbook_dir }}/vars/overrides.yml"
       skip: true
+  tags:
+    - always
 
 # Ruby Version Manager
 - name: "[DEV] Install Ruby Version Manager"
-  include_tasks: rvm.yml
+  include_tasks:
+    file: rvm.yml
+    apply:
+      tags:
+        - dev
+        - rvm
   when: "'rvm' not in dev_tasks_exclude"
+  tags:
+    - dev
+    - rvm
 
 # SDKMan!
 - name: "[DEV] Install SDKMAN!"
-  include_tasks: sdkman.yml
+  include_tasks:
+    file: sdkman.yml
+    apply:
+      tags:
+        - dev
+        - sdkman
   when: "'sdkman' not in dev_tasks_exclude"
+  tags:
+    - dev
+    - sdkman
 
 # Node Version Manager
 - name: "[DEV] Install Node Version Manager"
-  include_tasks: nvm.yml # Dependency for lvim.yml
+  include_tasks:
+    file: nvm.yml # Dependency for lvim.yml
+    apply:
+      tags:
+        - dev
+        - nvm
   when: "'nvm' not in dev_tasks_exclude"
+  tags:
+    - dev
+    - nvm
 
 # Rust
 - name: "[DEV] Install Rust language with Cargo"
-  include_tasks: rust.yml # Dependency for lvim.yml
+  include_tasks:
+    file: rust.yml # Dependency for lvim.yml
+    apply:
+      tags:
+        - dev
+        - rust
   when: "'rust' not in dev_tasks_exclude"
+  tags:
+    - dev
+    - rust
 
 # Ansible PIP
 - name: "[DEV] Install Ansible"
-  include_tasks: ansible.yml
+  include_tasks:
+    file: ansible.yml
+    apply:
+      tags:
+        - dev
+        - ansible
   when: "'ansible' not in dev_tasks_exclude"
+  tags:
+    - dev
+    - ansible
 
 # Neovim
 - name: "[DEV] Install Neovim"
-  include_tasks: neovim.yml
+  include_tasks:
+    file: neovim.yml
+    apply:
+      tags:
+        - dev
+        - neovim
+        - lunarvim
   when: "'neovim' not in dev_tasks_exclude"
+  tags:
+    - dev
+    - neovim
+    - lunarvim
 
 # LunarVIM
 - name: "[DEV] Install LunarVIM"
-  include_tasks: lunarvim.yml
+  include_tasks:
+    file: lunarvim.yml
+    apply:
+      tags:
+        - dev
+        - lunarvim
   when: "'lunarvim' not in dev_tasks_exclude"
+  tags:
+    - dev
+    - lunarvim
 
 # Puppet
 - name: "[DEV] Install Puppet"
-  include_tasks: puppet.yml
+  include_tasks:
+    file: puppet.yml
+    apply:
+      tags:
+        - dev
+        - puppet
   when: "'puppet' not in dev_tasks_exclude"
+  tags:
+    - dev
+    - puppet

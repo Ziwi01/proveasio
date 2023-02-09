@@ -7,14 +7,20 @@
     dest: "{{ lunarvim_home }}"
     update: yes
     version: "{{ lunarvim_version }}"
-  notify: "[LunarVIM] Install LunarVIM"
+  notify:
+    - "[LunarVIM] Get NPM version string"
+    - "[LunarVIM] Install LunarVIM"
+    - "[LunarVIM] Show LunarVIM install info"
 
 - name: "[LunarVIM] Ensure LunarVIM is really installed"
   shell: which lvim
   register: check_lvim
   changed_when: check_lvim.rc == 1
   failed_when: check_lvim.rc > 1
-  notify: "[LunarVIM] Install LunarVIM"
+  notify:
+    - "[LunarVIM] Get NPM version string"
+    - "[LunarVIM] Install LunarVIM"
+    - "[LunarVIM] Show LunarVIM install info"
 
 - name: Flush handlers
   meta: flush_handlers

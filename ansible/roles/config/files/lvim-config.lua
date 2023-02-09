@@ -11,11 +11,11 @@ lvim.keys.normal_mode["<C-s>"] = ":w<cr>"
 -- override a default keymapping
 -- lvim.keys.normal_mode["<C-q>"] = ":q<cr>" -- or vim.keymap.set("n", "<C-q>", ":q<cr>" )
 
--- After changing plugin config exit and reopen LunarVim, Run :PackerInstall :PackerCompile
 lvim.builtin.alpha.active = true
 lvim.builtin.alpha.mode = "dashboard"
 lvim.builtin.terminal.active = true
 lvim.builtin.nvimtree.setup.view.side = "left"
+lvim.builtin.nvimtree.setup.view.width = 45
 lvim.builtin.nvimtree.setup.renderer.icons.show.git = true
 
 -- if you don't want all the parsers change this to a table of the ones you want
@@ -229,7 +229,7 @@ lvim.plugins = {
     -- Better quickfix window
     {'kevinhwang91/nvim-bqf', ft = 'qf'},
     -- Spectre search and replace (:Spectre)
-    { 'windwp/nvim-spectre' },
+    { 'nvim-pack/nvim-spectre' },
     -- Fallback search and replace (:Ack or <leader>a for search, :Acks or <leader>r to substitute)
     { "wincent/ferret" },
     -- Cool colorscheme :)

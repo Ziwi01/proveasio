@@ -9,6 +9,8 @@
     - .local/opt
     - .config
     - .lsp
+  tags:
+    - always
 
 # Include override variables
 - name: "[Software] Include ansible/vars/overrides.yml"
@@ -17,94 +19,234 @@
     - files:
         - "{{ playbook_dir }}/vars/overrides.yml"
       skip: true
+  tags:
+    - always
 
 # Set software versions fact, will be updated in the tasks above, then printed at the end of play
 - name: "[Software] Reset software versions fact"
   set_fact:
     used_software_versions: {}
     cacheable: true
+  tags:
+    - always
 
 # Common software
 - name: "[Software] Install packages"
-  include_tasks: packages.yml
+  include_tasks:
+    file: packages.yml
+    apply:
+      tags:
+        - software
+        - software_packages
   when: "'packages' not in software_tasks_exclude"
+  tags:
+    - software
+    - software_packages
 
 # Latest GIT
 - name: "[Software] Install git"
-  include_tasks: git.yml
+  include_tasks:
+    file: git.yml
+    apply:
+      tags:
+        - software
+        - git
   when: "'git' not in software_tasks_exclude"
+  tags:
+    - software
+    - git
 
 # ripgrep
 - name: "[Software] Install ripgrep"
-  include_tasks: ripgrep.yml
+  include_tasks:
+    file: ripgrep.yml
+    apply:
+      tags:
+        - software
+        - ripgrep
   when: "'ripgrep' not in software_tasks_exclude"
+  tags:
+    - software
+    - ripgrep
 
 # FD
 - name: "[Software] Install fd"
-  include_tasks: fd.yml
+  include_tasks:
+    file: fd.yml
+    apply:
+      tags:
+        - software
+        - fd
   when: "'fd' not in software_tasks_exclude"
+  tags:
+    - software
+    - fd
 
 # ls-with-git-status
 - name: "[Software] Install lsg"
-  include_tasks: lsg.yml
+  include_tasks:
+    file: lsg.yml
+    apply:
+      tags:
+        - software
+        - lsg
   when: "'lsg' not in software_tasks_exclude"
+  tags:
+    - software
+    - lsg
 
 # FZF (fuzzy-finder)
 - name: "[Software] Install fzf"
-  include_tasks: fzf.yml
+  include_tasks:
+    file: fzf.yml
+    apply:
+      tags:
+        - software
+        - fzf
   when: "'fzf' not in software_tasks_exclude"
+  tags:
+    - software
+    - fzf
 
 # Diff-so-fancy
 - name: "[Software] Install diff-so-fancy"
-  include_tasks: diff-so-fancy.yml
+  include_tasks:
+    file: diff-so-fancy.yml
+    apply:
+      tags:
+        - software
+        - diff-so-fancy
   when: "'diff-so-fancy' not in software_tasks_exclude"
+  tags:
+    - software
+    - diff-so-fancy
 
 # Git-fuzzy
 - name: "[Software] Install git-fuzzy"
-  include_tasks: git-fuzzy.yml
+  include_tasks:
+    file: git-fuzzy.yml
+    apply:
+      tags:
+        - software
+        - git-fuzzy
   when: "'git-fuzzy' not in software_tasks_exclude"
+  tags:
+    - software
+    - git-fuzzy
 
 # LazyGIT
 - name: "[Software] Install lazygit"
-  include_tasks: lazygit.yml
+  include_tasks:
+    file: lazygit.yml
+    apply:
+      tags:
+        - software
+        - lazygit
   when: "'lazygit' not in software_tasks_exclude"
+  tags:
+    - software
+    - lazygit
 
 # Gita
 - name: "[Software] Install gita"
-  include_tasks: gita.yml
+  include_tasks:
+    file: gita.yml
+    apply:
+      tags:
+        - software
+        - gita
   when: "'gita' not in software_tasks_exclude"
+  tags:
+    - software
+    - gita
 
 # thefuck
 - name: "[Software] Install thefuck"
-  include_tasks: thefuck.yml
+  include_tasks:
+    file: thefuck.yml
+    apply:
+      tags:
+        - software
+        - thefuck
   when: "'thefuck' not in software_tasks_exclude"
+  tags:
+    - software
+    - thefuck
 
 # BAT
 - name: "[Software] Install bat"
-  include_tasks: bat.yml
+  include_tasks:
+    file: bat.yml
+    apply:
+      tags:
+        - software
+        - bat
   when: "'bat' not in software_tasks_exclude"
+  tags:
+    - software
+    - bat
 
 # Zoxide
 - name: "[Software] Install zoxide"
-  include_tasks: zoxide.yml
+  include_tasks:
+    file: zoxide.yml
+    apply:
+      tags:
+        - software
+        - zoxide
   when: "'zoxide' not in software_tasks_exclude"
+  tags:
+    - software
+    - zoxide
 
 # Helm
 - name: "[Software] Install helm"
-  include_tasks: helm.yml
+  include_tasks:
+    file: helm.yml
+    apply:
+      tags:
+        - software
+        - helm
   when: "'helm' not in software_tasks_exclude"
+  tags:
+    - software
+    - helm
 
 # ZSH
 - name: "[Software] Install zsh"
-  include_tasks: zsh.yml
+  include_tasks:
+    file: zsh.yml
+    apply:
+      tags:
+        - software
+        - zsh
   when: "'zsh' not in software_tasks_exclude"
+  tags:
+    - software
+    - zsh
 
 # Win32yank (windows clipboard support for Neovim)
 - name: "[Software] Install w32yank"
-  include_tasks: w32yank.yml
+  include_tasks:
+    file: w32yank.yml
+    apply:
+      tags:
+        - software
+        - w32yank
   when: "'w32yank' not in software_tasks_exclude"
+  tags:
+    - software
+    - w32yank
 
 # TMUX Plugins
 - name: "[Software] Install tmux"
-  include_tasks: tmux.yml
+  include_tasks:
+    file: tmux.yml
+    apply:
+      tags:
+        - software
+        - tmux
   when: "'tmux' not in software_tasks_exclude"
+  tags:
+    - software
+    - tmux

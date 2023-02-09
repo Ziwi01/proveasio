@@ -5,6 +5,8 @@
   file:
     path: "{{ dotfiles_backup_dir }}"
     state: directory
+  tags:
+    - always
 
 # Include override variables
 - name: "[Config] Include ansible/vars/overrides.yml"
@@ -13,39 +15,115 @@
     - files:
         - "{{ playbook_dir }}/vars/overrides.yml"
       skip: true
+  tags:
+    - always
 
 - name: "[Config] Configure zsh"
-  include_tasks: zsh.yml
+  include_tasks:
+    file: zsh.yml
+    apply:
+      tags:
+        - config
+        - zsh
   when: "'zsh' not in config_tasks_exclude"
+  tags:
+    - config
+    - zsh
 
 - name: "[Config] Configure p10k"
-  include_tasks: p10k.yml
+  include_tasks:
+    file: p10k.yml
+    apply:
+      tags:
+        - config
+        - zsh
+        - p10k
   when: "'p10k' not in config_tasks_exclude"
+  tags:
+    - config
+    - zsh
+    - p10k
 
 - name: "[Config] Configure tmux"
-  include_tasks: tmux.yml
+  include_tasks:
+    file: tmux.yml
+    apply:
+      tags:
+        - config
+        - tmux
   when: "'tmux' not in config_tasks_exclude"
+  tags:
+    - config
+    - tmux
 
 - name: "[Config] Configure sdkman"
-  include_tasks: sdkman.yml
+  include_tasks:
+    file: sdkman.yml
+    apply:
+      tags:
+        - config
+        - sdkman
   when: "'sdkman' not in config_tasks_exclude"
+  tags:
+    - config
+    - sdkman
 
 - name: "[Config] Configure git"
-  include_tasks: git.yml
+  include_tasks:
+    file: git.yml
+    apply:
+      tags:
+        - config
+        - git
   when: "'git' not in config_tasks_exclude"
+  tags:
+    - config
+    - git
 
 - name: "[Config] Configure lazygit"
-  include_tasks: lazygit.yml
+  include_tasks:
+    file: lazygit.yml
+    apply:
+      tags:
+        - config
+        - lazygit
   when: "'lazygit' not in config_tasks_exclude"
+  tags:
+    - config
+    - lazygit
 
 - name: "[Config] Configure lunarvim"
-  include_tasks: lunarvim.yml
+  include_tasks:
+    file: lunarvim.yml
+    apply:
+      tags:
+        - config
+        - lunarvim
   when: "'lunarvim' not in config_tasks_exclude"
+  tags:
+    - config
+    - lunarvim
 
 - name: "[Config] Configure thefuck"
-  include_tasks: thefuck.yml
+  include_tasks:
+    file: thefuck.yml
+    apply:
+      tags:
+        - config
+        - thefuck
   when: "'thefuck' not in config_tasks_exclude"
+  tags:
+    - config
+    - thefuck
 
 - name: "[Config] Configure ansible"
-  include_tasks: ansible.yml
+  include_tasks:
+    file: ansible.yml
+    apply:
+      tags:
+        - config
+        - ansible
   when: "'ansible' not in config_tasks_exclude"
+  tags:
+    - config
+    - ansible
