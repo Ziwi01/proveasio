@@ -54,18 +54,19 @@ sdkman_tmp_dir: /tmp
 sdkman_validate_ssl: true
 sdkman_install_packages:
   - { candidate: java, version: '18.0.2-open' }
+  - { candidate: java, version: '11.0.12-open' }
   - { candidate: gradle, version: '7.5.1' }
   - { candidate: groovy, version: '4.0.4' }
-  - { candidate: maven, version: '3.8.6' }
+  - { candidate: maven, version: '3.9.0' }
 sdkman_uninstall_packages: []
 # sdkman_uninstall_packages:
 #   - { candidate: java, version: 6u45 }
 # Configure default candidate versions
 sdkman_defaults:
-  java: '18.0.2-open'
+  java: '11.0.12-open'
   gradle: '7.5.1'
   groovy: '4.0.4'
-  maven: '3.8.6'
+  maven: '3.9.0'
 # Flush caches before/after installing SDK packages
 # Reference: http://sdkman.io/usage (Flush section)
 sdkman_flush_caches_before: []
