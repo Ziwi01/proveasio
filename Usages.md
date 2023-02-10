@@ -50,6 +50,10 @@ This document describes all the tools and features which I find useful for every
 
 ### GIT
 
+#### Checkout branches
+
+#### Status
+
 ## Tmux
 
 For TMUX overall usage, please see its documentation with `man tmux`.
@@ -85,6 +89,12 @@ For all configuration overrides, see `ansible/roles/dev/files/lvim-config.lua` i
 
 ### File browser
 
+### Switch to opened buffer
+
+### Jump to last opened buffer
+
+### Diff opened buffer to current file
+
 ### Diff directories
 
 ### Search and replace
@@ -92,8 +102,6 @@ For all configuration overrides, see `ansible/roles/dev/files/lvim-config.lua` i
 #### Spectre
 
 #### Ferret
-
-### Diff loaded buffer
 
 ### Open recent file
 
