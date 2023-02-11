@@ -5,7 +5,7 @@
   ansible.builtin.git:
     repo: "{{ lunarvim_url }}"
     dest: "{{ lunarvim_home }}"
-    update: yes
+    update: true
     version: "{{ lunarvim_version }}"
   notify:
     - "[LunarVIM] Get NPM version string"
@@ -32,9 +32,11 @@
   when: lunarvim_version in ['master', 'rolling']
 
 - name: "[LunarVIM] Get installed version tag"
-  ansible.builtin.shell: "git describe --tags | head -n 1 | awk -F'-' '{ print $1 }'"
+  ansible.builtin.shell: "set -e -o pipefail; git describe --tags | head -n 1 | awk -F'-' '{ print $1 }'"
+  changed_when: false
   args:
     chdir: "{{ lunarvim_home }}"
+    executable: /bin/bash
   register: lunarvim_git_version
 
 - name: "[LunarVIM] Save Lunarvim tag"

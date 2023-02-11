@@ -19,6 +19,7 @@
     dest: "{{ ansible_env.HOME }}/.local/opt/nvm"
     version: "v{{ nvm_git_version }}"
 
+# TODO: do not install if already proper version installed
 - name: "[NVM] Install NVM"
   ansible.builtin.shell: "./install.sh"
   args:

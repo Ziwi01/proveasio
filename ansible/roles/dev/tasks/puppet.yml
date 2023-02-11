@@ -2,12 +2,12 @@
 ---
 # Ruby gems
 - name: "[Puppet] Install Puppet/puppet-lint ruby gems for ALL rubies"
-  shell: "{{ ansible_env.HOME }}/.rvm/bin/rvm all do gem install 'puppet:{{ puppet_version }}' 'puppet-lint:{{ puppet_lint_version }}'"
+  ansible.builtin.shell: "{{ ansible_env.HOME }}/.rvm/bin/rvm all do gem install 'puppet:{{ puppet_version }}' 'puppet-lint:{{ puppet_lint_version }}'"
   changed_when: false
   when: "'all' in puppet_rubies"
 
 - name: "[Puppet] Install Puppet/puppet-lint ruby gems for subset of rubies"
-  shell: "{{ ansible_env.HOME }}/.rvm/bin/rvm {{ item }} do gem install 'puppet:{{ puppet_version }}' 'puppet-lint:{{ puppet_lint_version }}'"
+  ansible.builtin.shell: "{{ ansible_env.HOME }}/.rvm/bin/rvm {{ item }} do gem install 'puppet:{{ puppet_version }}' 'puppet-lint:{{ puppet_lint_version }}'"
   changed_when: false
   loop: "{{ puppet_rubies }}"
   when: "'all' not in puppet_rubies and puppet_rubies | length > 0"
@@ -17,24 +17,24 @@
 # Source: https://github.com/puppetlabs/puppet-editor-services
 #
 - name: "[Puppet Editor Services] Clone/update latest version"
-  git:
+  ansible.builtin.git:
     repo: "{{ puppet_pes_url }}"
     dest: "{{ ansible_env.HOME }}/.lsp/puppet-editor-services"
-    update: yes
+    update: true
     version: "{{ puppet_pes_version }}"
 
 - name: "[Puppet] Update bundler for all rubies"
-  shell: "{{ ansible_env.HOME }}/.rvm/bin/rvm all-gemsets do gem update bundler"
+  ansible.builtin.shell: "{{ ansible_env.HOME }}/.rvm/bin/rvm all-gemsets do gem update bundler"
   ignore_errors: true
 
 - name: "[Puppet Editor Services] Run bundle install"
-  shell: "{{ ansible_env.HOME }}/.rvm/bin/rvm all-gemsets do bundle install"
+  ansible.builtin.shell: "{{ ansible_env.HOME }}/.rvm/bin/rvm all-gemsets do bundle install"
   ignore_errors: true
   args:
     chdir: "{{ ansible_env.HOME }}/.lsp/puppet-editor-services"
 
 - name: "[Puppet Editor Services] Run bundle exec rake gem_revendor"
-  shell: "{{ ansible_env.HOME }}/.rvm/bin/rvm all-gemsets do bundle exec rake gem_revendor"
+  ansible.builtin.shell: "{{ ansible_env.HOME }}/.rvm/bin/rvm all-gemsets do bundle exec rake gem_revendor"
   ignore_errors: true
   args:
     chdir: "{{ ansible_env.HOME }}/.lsp/puppet-editor-services"
@@ -45,30 +45,32 @@
 #   - https://puppet.com/docs/pdk/2.x/pdk.html
 #
 - name: "[Puppet PDK] Install PDK repository sources"
-  apt:
+  ansible.builtin.apt:
     deb: https://apt.puppet.com/puppet-tools-release-focal.deb
-  become: True
+  become: true
 
 - name: "[Puppet PDK] Install latest PDK"
-  apt:
+  ansible.builtin.apt:
     name: pdk
     state: latest
-    update_cache: yes
-  become: True
+    update_cache: true
+  become: true
   when: pdk_version == 'latest'
 
 - name: "[Puppet PDK] Install PDK specific version"
-  apt:
+  ansible.builtin.apt:
     name: "pdk={{ pdk_version }}"
     state: present
-    update_cache: yes
-  become: True
+    update_cache: true
+  become: true
   when: pdk_version != 'latest'
 
 - name: "[Puppet PDK] Get installed Puppet PDK version from APT"
-  shell: "apt info pdk 2>/dev/null | grep Version | awk '{print $2}'"
+  ansible.builtin.shell: "set -e -o pipefail; apt info pdk 2>/dev/null | grep Version | awk '{print $2}'"
+  args:
+    executable: /bin/bash
   register: pdk_apt_version
 
 - name: "[Puppet PDK] Save used version"
-  set_fact:
+  ansible.builtin.set_fact:
     used_dev_versions: "{{ used_dev_versions | combine({'pdk_version': pdk_apt_version.stdout}) }}"

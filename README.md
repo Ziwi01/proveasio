@@ -5,9 +5,9 @@
 |_____|_____|_____|  |__|  |___|_____|___|_|    |_____|_|_|\_/ 
 ```
 
-![WSL build](https://github.com/Ziwi01/wsl-power-env/actions/workflows/ci.yml/badge.svg?branch=master)
-![license](https://img.shields.io/github/license/Ziwi01/wsl-power-env)
-![last commit](https://img.shields.io/github/last-commit/Ziwi01/wsl-power-env)
+![CI build status](https://github.com/Ziwi01/wsl-power-env/actions/workflows/ci.yml/badge.svg?branch=master)
+![License](https://img.shields.io/github/license/Ziwi01/wsl-power-env)
+![Last commit](https://img.shields.io/github/last-commit/Ziwi01/wsl-power-env)
 
 ## TL;DR
 

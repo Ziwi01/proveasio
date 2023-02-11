@@ -4,41 +4,7 @@ This document describes all the tools and features which I find useful for every
 
 ## Table of contents
 
-* [Terminal](#terminal)
-  * [Find files](#find-files)
-  * [Traverse directories](#traverse-directories)
-  * [GIT](#git)
-* [Tmux](#tmux)
-  * [Basic commands](#basic-commands)
-  * [Manage sessions](#manage-sessions)
-  * [Search back buffer](#search-back-buffer)
-  * [Extract from buffer](#extract-from-buffer)
-* [Neovim/LunarVIM](#neovim/lunarvim)
-  * [File browser](#file-browser)
-  * [Diff directories](#diff-directories)
-  * [Search and replace](#search-and-replace)
-    * [Spectre](#spectre)
-    * [Ferret](#ferret)
-  * [Diff loaded buffer](#diff-loaded-buffer)
-  * [Open recent file](#open-recent-file)
-  * [Find text](#find-text)
-  * [Find files](#find-files)
-  * [Markdown](#markdown)
-    * [Table of Contents](#table-of-contents)
-    * [Preview](#preview)
-  * [Updates](#updates)
-  * [Resize/pick splits](#resize/pick-splits)
-  * [Align text](#align-text)
-  * [Commands with Vimux](#commands-with-vimux)
-  * [Plugin management](#plugin-management)
-  * [LSP integration](#lsp-integration)
-  * [GIT](#git)
-    * [Lazygit](#lazygit)
-    * [Diff current changes](#diff-current-changes)
-    * [Diff another branch](#diff-another-branch)
-    * [Preview hunk](#preview-hunk)
-    * [Git blame](#git-blame)
-    * [File history](#file-history)
+@TODO
 
 ## Terminal
 
@@ -92,6 +58,8 @@ For all configuration overrides, see `ansible/roles/dev/files/lvim-config.lua` i
 ### Switch to opened buffer
 
 ### Jump to last opened buffer
+
+### Close opened buffers
 
 ### Diff opened buffer to current file
 
