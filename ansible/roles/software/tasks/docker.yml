@@ -34,6 +34,12 @@
     state: present
     filename: docker
 
+- name: '[Docker] Update apt cache'
+  ansible.builtin.apt:
+    update_cache: true
+    force_apt_get: true
+    cache_valid_time: 3600
+
 - name: '[Docker] Ensure docker packages are installed as latest/present'
   become: true
   when: item.value in ['latest', 'present']
