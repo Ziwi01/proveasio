@@ -163,3 +163,4 @@ For all configuration overrides, see `ansible/roles/dev/files/lvim-config.lua` i
 
 #### File history
 
+#### Reload file after checkout

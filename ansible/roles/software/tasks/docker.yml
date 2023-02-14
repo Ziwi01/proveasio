@@ -35,6 +35,7 @@
     filename: docker
 
 - name: '[Docker] Update apt cache'
+  become: true
   ansible.builtin.apt:
     update_cache: true
     force_apt_get: true

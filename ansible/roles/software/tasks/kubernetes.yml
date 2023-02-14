@@ -8,8 +8,12 @@
 # kubectl
 #
 - name: "[kubectl] Get latest version if requested"
-  ansible.builtin.command: curl -L -s https://dl.k8s.io/release/stable.txt | cut -f2 -d'v'
+  ansible.builtin.shell: |
+    set -e -o pipefail
+    curl -L -s https://dl.k8s.io/release/stable.txt | cut -f2 -d'v'
   register: version
+  args:
+    executable: /bin/bash
   changed_when: false
   ignore_errors: true
   when: versions['kubectl'] == 'latest'
