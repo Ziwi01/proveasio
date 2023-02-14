@@ -1,26 +1,31 @@
-```text
- _ _ _ _____ __       _____                      _____
-| | | |   __|  |     |  _  |___ _ _ _ ___ ___   |   __|___ _ _ 
-| | | |__   |  |__   |   __| . | | | | -_|  _|  |   __|   | | |
-|_____|_____|_____|  |__|  |___|_____|___|_|    |_____|_|_|\_/ 
-```
+<div align="center">
+  <img width=400 height=400 src="./resources/wpe-logo.png">
+</div>
+  
+<div align="center">
 
-![CI build status](https://github.com/Ziwi01/wsl-power-env/actions/workflows/ci.yml/badge.svg?branch=master)
-![License](https://img.shields.io/github/license/Ziwi01/wsl-power-env)
-![Last commit](https://img.shields.io/github/last-commit/Ziwi01/wsl-power-env)
+  <a href="">![CI build status](https://github.com/Ziwi01/wsl-power-env/actions/workflows/ci.yml/badge.svg?branch=master)</a>
+  <a href="">![License](https://img.shields.io/github/license/Ziwi01/wsl-power-env)</a>
+  <a href="">![Last commit](https://img.shields.io/github/last-commit/Ziwi01/wsl-power-env)</a>
+
+</div>
 
 ## TL;DR
 
 Repository containing bunch of automation scripts (mostly Ansible tasks) to install, configure and maintain Windows WSL2 environment based on Ubuntu 20.04/22.04, including set of very useful dev tools and customizations to ease out and speed up terminal usage during day-to-day work and bump up productivity.
+
+<div align="center">
+  <img src="./resources/terminal_preview.png">
+</div>
 
 ## About
 
 The idea is to:
 
 - have something consistent when trying to configure new Windows machine with WSL2 mainly for automation development purposes (like DevOps/SysAdmin thingy), but for general usage also.
-- be able to be run repeatably to also update installed tools and customizations to latest versions (or stay on particular versions for stability)
+- be able to run it repeatably to also update installed tools and customizations to latest versions (or stay on particular versions for stability)
 - be easily extendable and configurable to suit personal needs.
-- have all the features and usages described so they are easily assimilated for someone new to this
+- have all the features and usages described so they are easily assimilated for someone new to this (or refreshed for someone who forgets easily, like me)
 
 In the process of making, I figured out that this can be beneficial for all the people who want to learn how to use Linux as their development base. By documenting the tools and usage scenarios, this repository can be used by tech-savvy wannabies to get a grip of some advanced workflows and tools, with a little less effort than figuring it out themselves from scratch.
 
@@ -31,14 +36,13 @@ Please read below README carefully and go through the scripts to see whats going
 ## TODO
 
 - ~feat: support both Ubuntu 20.04 and 22.04 LTS~
-- feat: install docker, kubectl, k9s, kind
+- ~feat: install docker, kubectl, k9s, kind~
+- feat: add and use `pyenv`, `pipenv`, use latest Python+Ansible
 - feat: AWS cli installation/setup
-- docs: add usage descriptions with videos and images
-- feat(vim): Install neovim-ruby-host for all rubies
-
+- docs: add usage descriptions with videos and images in `Usages.md`
+- feat(neovim): Install neovim-ruby-host for all rubies
 
 ## Table of contents
-
 
 * [TL;DR](#tl;dr)
 * [About](#about)
