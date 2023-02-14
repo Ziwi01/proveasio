@@ -3,9 +3,10 @@
 #
 # Source: https://github.com/nvbn/thefuck
 - name: "[Config][TheFuck] Ensure thefuck config directory"
-  file:
+  ansible.builtin.file:
     path: "{{ ansible_env.HOME }}/.config/thefuck"
     state: directory
+    mode: '0755'
 
 - name: "[Config][TheFuck] Copy config"
   ansible.builtin.copy:

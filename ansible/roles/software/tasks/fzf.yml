@@ -2,27 +2,27 @@
 # Source: https://github.com/junegunn/fzf
 ---
 - name: "[FZF] Get latest version if requested"
-  shell: curl -s https://api.github.com/repos/junegunn/fzf/releases/latest | jq .name -r | cut -f2 -d'v'
+  ansible.builtin.shell: curl -s https://api.github.com/repos/junegunn/fzf/releases/latest | jq .name -r | cut -f2 -d'v'
   register: version
   changed_when: false
   ignore_errors: true
   when: versions['fzf'] == 'latest'
 
 - name: "[FZF] Set version to {{ version.stdout | default(versions['fzf']) }}"
-  set_fact:
+  ansible.builtin.set_fact:
     fzf_version: "{{ version.stdout | default(versions['fzf']) }}"
 
 - name: "[FZF] Clone/update latest version"
-  git:
+  ansible.builtin.git:
     repo: "{{ fzf_git_url }}"
     dest: "{{ fzf_home }}"
-    update: yes
+    update: true
     version: "{{ fzf_version }}"
   notify: "[FZF] Run install script"
 
 - name: "[FZF] Save used version"
-  set_fact:
+  ansible.builtin.set_fact:
     used_software_versions: "{{ used_software_versions | combine({'fzf': fzf_version}) }}"
 
 - name: Flush handlers
-  meta: flush_handlers
+  ansible.builtin.meta: flush_handlers

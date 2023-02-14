@@ -4,25 +4,79 @@ This document describes all the tools and features which I find useful for every
 
 ## Table of contents
 
-@TODO
+* [Table of contents](#table-of-contents)
+* [Terminal](#terminal)
+  * [Find files](#find-files)
+  * [Traverse directories](#traverse-directories)
+  * [GIT](#git)
+    * [Checkout branches](#checkout-branches)
+    * [Status](#status)
+* [Tmux](#tmux)
+  * [Basic commands](#basic-commands)
+  * [Manage sessions](#manage-sessions)
+  * [Search back buffer](#search-back-buffer)
+  * [Extract from buffer](#extract-from-buffer)
+* [Neovim/LunarVIM](#neovim/lunarvim)
+  * [File browser](#file-browser)
+  * [Switch to opened buffer](#switch-to-opened-buffer)
+  * [Jump to last opened buffer](#jump-to-last-opened-buffer)
+  * [Close opened buffers](#close-opened-buffers)
+  * [Diff opened buffer to current file](#diff-opened-buffer-to-current-file)
+  * [Diff directories](#diff-directories)
+  * [Search and replace](#search-and-replace)
+    * [Spectre](#spectre)
+    * [Ferret](#ferret)
+  * [Open recent file](#open-recent-file)
+  * [Find text](#find-text)
+  * [Find files](#find-files)
+  * [Markdown](#markdown)
+    * [Table of Contents](#table-of-contents)
+    * [Preview](#preview)
+  * [Updates](#updates)
+  * [Resize/pick splits](#resize/pick-splits)
+  * [Align text](#align-text)
+  * [Commands with Vimux](#commands-with-vimux)
+  * [Plugin management](#plugin-management)
+  * [LSP integration](#lsp-integration)
+  * [GIT](#git)
+    * [Lazygit](#lazygit)
+    * [Diff current changes](#diff-current-changes)
+    * [Diff another branch](#diff-another-branch)
+    * [Preview hunk](#preview-hunk)
+    * [Git blame](#git-blame)
+    * [File history](#file-history)
 
 ## Terminal
 
-### Find files
+### Traverse directories with `Zoxide`
+
+### Find and open files with `fd` and `fzf`
 
 - finding files with FZF using custom `bfind` alias - with preview. Can be used with vim to search file and edit selected (`vim $(bfind)`). Similar functionality (but without file preview) can be achieved with `vim **<TAB>`.
 
-### Traverse directories
+### Browse command history
 
-### GIT
+### View files with BAT
+
+### Git
 
 #### Checkout branches
 
 #### Status
 
-## Tmux
+#### Clone
 
-For TMUX overall usage, please see its documentation with `man tmux`.
+#### Origin
+
+### Correct commands with thefuck
+
+### Docker/Kubernetes
+
+### Keychain ssh-agent
+
+### Grep with ripgrep
+
+## Tmux
 
 ### Basic commands
 

@@ -5,40 +5,42 @@
 #  - https://github.com/helm/helm
 ---
 - name: "[Helm] Get latest version if requested"
-  shell: curl -s https://api.github.com/repos/helm/helm/releases/latest | jq .name -r | cut -f2 -d'v' | grep -Po '\d+\.\d+\.\d+\.?\d?'
+  ansible.builtin.shell: curl -s https://api.github.com/repos/helm/helm/releases/latest | jq .name -r | cut -f2 -d'v' | grep -Po '\d+\.\d+\.\d+\.?\d?'
   register: version
   changed_when: false
   ignore_errors: true
   when: versions['helm'] == 'latest'
 
 - name: "[Helm] Set version to {{ version.stdout | default(versions['helm']) }}"
-  set_fact:
-    helm_version: "v{{ version.stdout | default(versions['helm']) }}"
+  ansible.builtin.set_fact:
+    helm_version: "{{ version.stdout | default(versions['helm']) }}"
 
 - name: "[Helm] Set proper download URL"
-  set_fact:
-    helm_url: "https://get.helm.sh/helm-{{ helm_version }}-linux-amd64.tar.gz"
+  ansible.builtin.set_fact:
+    helm_url: "https://get.helm.sh/helm-v{{ helm_version }}-linux-amd64.tar.gz"
 
 - name: "[Helm] Check if Helm {{ helm_version }} is installed"
-  stat:
+  ansible.builtin.stat:
     path: "{{ ansible_env.HOME }}/.local/opt/helm-{{ helm_version }}"
   register: helm_dir
 
 - name: "Installation"
+  when: not helm_dir.stat.exists
   block:
     - name: "[Helm] Download Helm {{ helm_version }}"
-      get_url:
+      ansible.builtin.get_url:
         url: "{{ helm_url }}"
         dest: "/tmp/helm-{{ helm_version }}.tar.gz"
         mode: '0755'
 
     - name: "[Helm] Create directory in {{ ansible_env.HOME }}/.local/opt"
-      file:
+      ansible.builtin.file:
         path: "{{ ansible_env.HOME }}/.local/opt/helm-{{ helm_version }}"
         state: directory
+        mode: '0755'
 
     - name: "[Helm] Untar archive"
-      unarchive:
+      ansible.builtin.unarchive:
         src: "/tmp/helm-{{ helm_version }}.tar.gz"
         dest: "{{ ansible_env.HOME }}/.local/opt/helm-{{ helm_version }}"
 
@@ -50,11 +52,10 @@
         force: true
 
     - name: "[Helm] Cleanup tar.gz file"
-      file:
+      ansible.builtin.file:
         path: "/tmp/helm-{{ helm_version }}.tar.gz"
         state: absent
-  when: not helm_dir.stat.exists
 
 - name: "[Helm] Save used version"
-  set_fact:
+  ansible.builtin.set_fact:
     used_software_versions: "{{ used_software_versions | combine({'helm': helm_version}) }}"

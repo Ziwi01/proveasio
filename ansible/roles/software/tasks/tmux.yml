@@ -2,83 +2,85 @@
 # Source: https://github.com/tmux-plugins/tpm
 ---
 - name: "[Tmux] Get latest version if requested"
-  shell: curl -s https://api.github.com/repos/tmux/tmux/releases/latest | jq .name -r | cut -f2 -d'v' | awk '{ print $2 }'
+  ansible.builtin.shell: curl -s https://api.github.com/repos/tmux/tmux/releases/latest | jq .name -r | cut -f2 -d'v' | awk '{ print $2 }'
   register: version
   changed_when: false
   ignore_errors: true
   when: versions['tmux'] == 'latest'
 
 - name: "[Tmux] Set version to {{ version.stdout | default(versions['tmux']) }}"
-  set_fact:
+  ansible.builtin.set_fact:
     tmux_version: "{{ version.stdout | default(versions['tmux']) }}"
 
 - name: "[Tmux] Set proper download URL"
-  set_fact:
+  ansible.builtin.set_fact:
     tmux_url: "https://github.com/tmux/tmux/releases/download/{{ tmux_version }}/tmux-{{ tmux_version }}.tar.gz"
 
 - name: "[Tmux] Check if Tmux {{ tmux_version }} is installed"
-  stat:
+  ansible.builtin.stat:
     path: "{{ ansible_env.HOME }}/.local/opt/tmux-{{ tmux_version }}"
   register: tmux_dir
 
 - name: "Installation"
+  when: not tmux_dir.stat.exists
   block:
     - name: "[Tmux] Download Tmux {{ tmux_version }}"
-      get_url:
+      ansible.builtin.get_url:
         url: "{{ tmux_url }}"
         dest: "/tmp/tmux-{{ tmux_version }}.tar.gz"
         mode: '0755'
 
     - name: "[Tmux] Create directory in {{ ansible_env.HOME }}/.local/opt"
-      file:
+      ansible.builtin.file:
         path: "{{ ansible_env.HOME }}/.local/opt/tmux-{{ tmux_version }}"
         state: directory
+        mode: '0755'
 
     - name: "[Tmux] Turn on failed installation handler"
-      set_fact:
+      ansible.builtin.set_fact:
         tmux_failed: true
 
     - name: "[Tmux] Untar archive"
-      unarchive:
+      ansible.builtin.unarchive:
         src: "/tmp/tmux-{{ tmux_version }}.tar.gz"
         dest: "{{ ansible_env.HOME }}/.local/opt"
 
     - name: "[Tmux] Configure & make"
-      shell: "./configure && make"
+      ansible.builtin.shell: "./configure && make"
       args:
         chdir: "{{ ansible_env.HOME }}/.local/opt/tmux-{{ tmux_version }}"
 
     - name: "[Tmux] Make install"
-      shell: "make install"
+      ansible.builtin.command: "make install"
       args:
         chdir: "{{ ansible_env.HOME }}/.local/opt/tmux-{{ tmux_version }}"
       become: true
 
     - name: "[Tmux] Turn off failed installation handler"
-      set_fact:
+      ansible.builtin.set_fact:
         tmux_failed: false
 
     - name: "[Tmux] Cleanup tar.gz file"
-      file:
+      ansible.builtin.file:
         path: "/tmp/tmux-{{ tmux_version }}.tar.gz"
         state: absent
 
     - name: "[TMUX] Create Tmux plugin dir {{ ansible_env.HOME }}/.tmux/plugins"
-      file:
+      ansible.builtin.file:
         path: "{{ ansible_env.HOME }}/.tmux/plugins"
         state: directory
         mode: 0755
-        recurse: yes
+        recurse: true
 
     - name: "[TMUX] Clone/update Tmux plugin manager"
-      git:
+      ansible.builtin.git:
         repo: "{{ tpm_git_url }}"
         dest: "{{ tmux_plugins_dir }}/tpm"
         force: true
-        update: yes
+        update: true
   rescue:
     - name: "[Tmux] Remove TMUX dir {{ ansible_env.HOME }}/.local/opt/tmux-{{ tmux_version }} as installation failed"
-      file:
+      ansible.builtin.file:
         path: "{{ ansible_env.HOME }}/.local/opt/tmux-{{ tmux_version }}"
         state: absent
       when: tmux_failed | bool
@@ -87,8 +89,7 @@
       ansible.builtin.fail:
         msg: '[Tmux] There was an error during Tmux installation, failing build... See output above for more details.'
       when: tmux_failed | bool
-  when: not tmux_dir.stat.exists
 
 - name: "[Tmux] Save used version"
-  set_fact:
+  ansible.builtin.set_fact:
     used_software_versions: "{{ used_software_versions | combine({'tmux': tmux_version}) }}"

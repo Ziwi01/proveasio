@@ -2,48 +2,49 @@
 # Source: https://github.com/jesseduffield/lazygit
 ---
 - name: "[LazyGIT] Get latest version if requested"
-  shell: curl -s https://api.github.com/repos/jesseduffield/lazygit/releases/latest | grep '"tag_name":' |  sed -E 's/.*"v*([^"]+)".*/\1/'
+  ansible.builtin.shell: curl -s https://api.github.com/repos/jesseduffield/lazygit/releases/latest | grep '"tag_name":' |  sed -E 's/.*"v*([^"]+)".*/\1/'
   register: version
   changed_when: false
   ignore_errors: true
   when: versions['lazygit'] == 'latest'
 
 - name: "[LazyGIT] Set version to {{ version.stdout | default(versions['lazygit']) }}"
-  set_fact:
+  ansible.builtin.set_fact:
     lazygit_version: "{{ version.stdout | default(versions['lazygit']) }}"
 
 - name: "[LazyGIT] Set proper download URL"
-  set_fact:
+  ansible.builtin.set_fact:
     lazygit_url: "https://github.com/jesseduffield/lazygit/releases/latest/download/lazygit_{{ lazygit_version }}_Linux_x86_64.tar.gz"
 
 - name: "[LazyGIT] Check if LazyGIT {{ lazygit_version }} is installed"
-  stat:
+  ansible.builtin.stat:
     path: "{{ ansible_env.HOME }}/.local/opt/lazygit-{{ lazygit_version }}"
   register: lazygit_dir
 
 - name: "Installation"
+  when: not lazygit_dir.stat.exists
   block:
     - name: "[LazyGIT] Download LazyGIT {{ lazygit_version }}"
-      get_url:
+      ansible.builtin.get_url:
         url: "{{ lazygit_url }}"
         dest: "/tmp/lazygit-{{ lazygit_version }}.tar.gz"
         mode: '0755'
 
     - name: "[LazyGIT] Create directory in {{ ansible_env.HOME }}/.local/opt"
-      file:
+      ansible.builtin.file:
         path: "{{ ansible_env.HOME }}/.local/opt/lazygit-{{ lazygit_version }}"
         state: directory
+        mode: '0755'
 
     - name: "[LazyGIT] Untar archive"
-      unarchive:
+      ansible.builtin.unarchive:
         src: "/tmp/lazygit-{{ lazygit_version }}.tar.gz"
         dest: "{{ ansible_env.HOME }}/.local/opt/lazygit-{{ lazygit_version }}"
 
     - name: "[LazyGIT] Cleanup tar.gz file"
-      file:
+      ansible.builtin.file:
         path: "/tmp/lazygit-{{ lazygit_version }}.tar.gz"
         state: absent
-  when: not lazygit_dir.stat.exists
 
 - name: "[LazyGIT] Link {{ lazygit_version }} binary"
   ansible.builtin.file:
@@ -53,5 +54,5 @@
     force: true
 
 - name: "[LazyGIT] Save used version"
-  set_fact:
+  ansible.builtin.set_fact:
     used_software_versions: "{{ used_software_versions | combine({'lazygit': lazygit_version}) }}"

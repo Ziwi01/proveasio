@@ -31,6 +31,7 @@
       ansible.builtin.file:
         path: "{{ ansible_env.HOME }}/.local/opt/neovim-{{ neovim_version }}"
         state: directory
+        mode: '0755'
 
     - name: "[Neovim] Download Neovim {{ neovim_version }}"
       ansible.builtin.get_url:
@@ -39,7 +40,8 @@
         mode: '0755'
 
     - name: "[Neovim] Install {{ neovim_version }} .deb package"
-      ansible.builtin.apt: deb="{{ ansible_env.HOME }}/.local/opt/neovim-{{ neovim_version }}/nvim-{{ neovim_version }}-linux64.deb"
+      ansible.builtin.apt:
+        deb: "{{ ansible_env.HOME }}/.local/opt/neovim-{{ neovim_version }}/nvim-{{ neovim_version }}-linux64.deb"
       become: true
 
 - name: "[Neovim] Save used version"

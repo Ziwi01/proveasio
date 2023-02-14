@@ -5,39 +5,40 @@
 # Source: https://github.com/so-fancy/diff-so-fancy
 
 - name: "[Diff-so-fancy] Get latest version if requested"
-  shell: curl -s https://api.github.com/repos/so-fancy/diff-so-fancy/releases/latest | jq .name -r | cut -f2 -d'v'
+  ansible.builtin.shell: curl -s https://api.github.com/repos/so-fancy/diff-so-fancy/releases/latest | jq .name -r | cut -f2 -d'v'
   register: version
   changed_when: false
   ignore_errors: true
   when: versions['diff-so-fancy'] == 'latest'
 
 - name: "[Diff-so-fancy] Set version to {{ version.stdout | default(versions['diff-so-fancy']) }}"
-  set_fact:
-    dsf_version: "v{{ version.stdout | default(versions['diff-so-fancy']) }}"
+  ansible.builtin.set_fact:
+    dsf_version: "{{ version.stdout | default(versions['diff-so-fancy']) }}"
 
 - name: "[Diff-so-fancy] Set proper download URL"
-  set_fact:
-    dsf_url: "https://github.com/so-fancy/diff-so-fancy/releases/download/{{ dsf_version }}/diff-so-fancy"
+  ansible.builtin.set_fact:
+    dsf_url: "https://github.com/so-fancy/diff-so-fancy/releases/download/v{{ dsf_version }}/diff-so-fancy"
 
 - name: "[Diff-so-fancy] Check if Diff-so-fancy {{ dsf_version }} is installed"
-  stat:
+  ansible.builtin.stat:
     path: "{{ ansible_env.HOME }}/.local/opt/diff-so-fancy-{{ dsf_version }}"
   register: dsf_dir
 
 - name: "Installation"
+  when: not dsf_dir.stat.exists
   block:
 
     - name: "[Diff-so-fancy] Create directory in {{ ansible_env.HOME }}/.local/opt"
-      file:
+      ansible.builtin.file:
         path: "{{ ansible_env.HOME }}/.local/opt/diff-so-fancy-{{ dsf_version }}"
         state: directory
+        mode: '0755'
 
     - name: "[Diff-so-fancy] Download Diff-so-fancy {{ dsf_version }}"
-      get_url:
+      ansible.builtin.get_url:
         url: "{{ dsf_url }}"
         dest: "{{ ansible_env.HOME }}/.local/opt/diff-so-fancy-{{ dsf_version }}/diff-so-fancy"
         mode: '0755'
-  when: not dsf_dir.stat.exists
 
 - name: "[Diff-so-fancy] Link {{ dsf_version }} binary"
   ansible.builtin.file:
@@ -47,5 +48,5 @@
     force: true
 
 - name: "[Diff-so-fancy] Save used version"
-  set_fact:
+  ansible.builtin.set_fact:
     used_software_versions: "{{ used_software_versions | combine({'diff-so-fancy': dsf_version}) }}"

@@ -20,6 +20,7 @@
         dest: '{{ sdkman_tmp_dir }}/sdkman_script'
         owner: '{{ sdkman_user }}'
         group: '{{ sdkman_group }}'
+        mode: '0755'
         validate_certs: '{{ sdkman_validate_ssl }}'
 
     - name: "[SDKMan] Run SDKMAN script"

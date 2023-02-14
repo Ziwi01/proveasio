@@ -20,14 +20,14 @@
     version: "v{{ nvm_git_version }}"
 
 # TODO: do not install if already proper version installed
-- name: "[NVM] Install NVM"
+- name: "[NVM] Install NVM" # noqa no-changed-when
   ansible.builtin.shell: "./install.sh"
   args:
     chdir: "{{ ansible_env.HOME }}/.local/opt/nvm"
     executable: /bin/bash
 
 # TODO: Check if this version is already there for this user
-- name: "[NVM] Install Node {{ node_version }}"
+- name: "[NVM] Install Node {{ node_version }}" # noqa no-changed-when
   ansible.builtin.shell: ". {{ ansible_env.HOME }}/.local/opt/nvm/nvm.sh; nvm install {{ node_version }}"
   args:
     executable: /bin/bash

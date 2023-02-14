@@ -4,6 +4,10 @@
 # For list of tasks see: software/tasks/main.yml or see README.md
 software_tasks_exclude: []
 
+# System manager to use. Ansible has issues detecting SysV vs. SystemD on WSL distributions
+# If you are using systemd WSL, overwrite this in `ansible/vars/overrides.yml` to `systemd`
+service_manager: sysvinit
+
 # Specific versions for software (github)
 # Fixed versions should be set without `v` prefix (e.g: 1.4.3)
 versions:
@@ -20,25 +24,41 @@ versions:
   tmux: latest
   ripgrep: latest
   fd: latest
+  kubectl: latest
+  kind: latest
+  k9s: latest
 
 # Useful packages (apt)
 packages:
-  - git
-  - curl
-  - unzip
-  - mlocate
-  - libevent-dev    # Required for latest Tmux install
-  - tree
-  - htop
-  - jq
-  - gcc
-  - zip
-  - universal-ctags # Required for latest Tmux install
-  - ncurses-dev     # Required for latest Tmux install
-  - dos2unix
-  - php
-  - composer
-  - groff           # AWS cli req
+  git: latest
+  curl: latest
+  unzip: latest
+  mlocate: latest
+  libevent-dev: latest    # Required for latest Tmux install
+  tree: latest
+  htop: latest
+  jq: latest
+  gcc: latest
+  zip: latest
+  universal-ctags: latest # Required for latest Tmux install
+  ncurses-dev: latest     # Required for latest Tmux install
+  dos2unix: latest
+  php: latest
+  composer: latest
+  groff: latest           # AWS cli req
+  keychain: latest
+
+# Docker dependency packages
+docker_dependencies:
+  ca-certificates: latest
+  gnupg: latest
+  lsb-release: latest
+
+docker_packages:
+  docker-ce: latest
+  docker-ce-cli: latest
+  containerd.io: latest
+  docker-compose-plugin: latest
 
 # FZF
 fzf_git_url: "https://github.com/junegunn/fzf.git"

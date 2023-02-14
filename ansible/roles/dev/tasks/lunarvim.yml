@@ -13,7 +13,7 @@
     - "[LunarVIM] Show LunarVIM install info"
 
 - name: "[LunarVIM] Ensure LunarVIM is really installed"
-  ansible.builtin.shell: which lvim
+  ansible.builtin.command: which lvim
   register: check_lvim
   changed_when: check_lvim.rc == 1
   failed_when: check_lvim.rc > 1
@@ -26,7 +26,7 @@
   ansible.builtin.meta: flush_handlers
 
 - name: "[LunarVIM] Update LunarVIM"
-  ansible.builtin.shell: 'lvim +LvimUpdate +q'
+  ansible.builtin.command: 'lvim +LvimUpdate +q'
   environment:
     PATH: "{{ ansible_env.HOME }}/.local/bin/:{{ ansible_env.PATH }}"
   when: lunarvim_version in ['master', 'rolling']

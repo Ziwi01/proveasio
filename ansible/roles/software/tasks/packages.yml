@@ -1,16 +1,18 @@
-- name: '[Packages] Update OS packages list'
+- name: '[Packages] Ensure useful packages are installed as latest/present'
   become: true
-  package:
-    update_cache: yes
+  when: item.value in ['latest', 'present']
+  ansible.builtin.apt:
+    update_cache: true
+    name: "{{ item.key }}"
+    state: "{{ item.value }}"
+  loop: "{{ packages | dict2items }}"
 
-- name: '[Packages] Upgrade OS packages'
+- name: '[Packages] Ensure useful packages are installed in particular versions'
   become: true
-  package:
-    name: "*"
-    state: latest
+  when: item.value not in ['latest', 'present']
+  ansible.builtin.apt:
+    update_cache: true
+    name: "{{ item.key }}={{ item.value }}"
+  loop: "{{ packages | dict2items }}"
 
-- name: '[Packages] Ensure useful packages are installed'
-  become: true
-  apt:
-    name: "{{ packages }}"
-    state: latest
+# @TODO: get which versions got installed and add them to `used_software_versions`

@@ -4,7 +4,7 @@
 #
 # Source: https://github.com/nvbn/thefuck
 - name: "[TheFuck] Install TheFuck specific version"
-  pip:
+  ansible.builtin.pip:
     name: "thefuck=={{ versions.thefuck }}"
     executable: pip3
   register: pip_out
@@ -12,7 +12,7 @@
   when: versions['thefuck'] != 'latest'
 
 - name: "[TheFuck] Install TheFuck latest version"
-  pip:
+  ansible.builtin.pip:
     name: "thefuck"
     executable: pip3
     extra_args: --upgrade
@@ -21,10 +21,14 @@
   when: versions['thefuck'] == 'latest'
 
 - name: "[TheFuck] Get installed TheFuck version"
-  shell: "pip3 show thefuck | grep Version | awk '{print $2}'"
+  ansible.builtin.shell: |
+    set -e -o pipefail
+    pip3 show thefuck | grep Version | awk '{print $2}'
   changed_when: false
+  args:
+    executable: /bin/bash
   register: thefuck_version
 
 - name: "[TheFuck] Save used version"
-  set_fact:
+  ansible.builtin.set_fact:
     used_software_versions: "{{ used_software_versions | combine({'thefuck': thefuck_version.stdout}) }}"

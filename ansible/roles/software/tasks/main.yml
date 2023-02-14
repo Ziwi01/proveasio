@@ -1,9 +1,10 @@
 ---
 # Ensure local bin/opt directories are there
 - name: "[Software] Ensure dotted directories are there"
-  file:
+  ansible.builtin.file:
     path: "{{ ansible_env.HOME }}/{{ item }}"
     state: directory
+    mode: '0755'
   loop:
     - .local/bin
     - .local/opt
@@ -14,7 +15,7 @@
 
 # Include override variables
 - name: "[Software] Include ansible/vars/overrides.yml"
-  include_vars: "{{ item }}"
+  ansible.builtin.include_vars: "{{ item }}"
   with_first_found:
     - files:
         - "{{ playbook_dir }}/vars/overrides.yml"
@@ -24,7 +25,7 @@
 
 # Set software versions fact, will be updated in the tasks above, then printed at the end of play
 - name: "[Software] Reset software versions fact"
-  set_fact:
+  ansible.builtin.set_fact:
     used_software_versions: {}
     cacheable: true
   tags:
@@ -32,7 +33,7 @@
 
 # Common software
 - name: "[Software] Install packages"
-  include_tasks:
+  ansible.builtin.include_tasks:
     file: packages.yml
     apply:
       tags:
@@ -45,7 +46,7 @@
 
 # Latest GIT
 - name: "[Software] Install git"
-  include_tasks:
+  ansible.builtin.include_tasks:
     file: git.yml
     apply:
       tags:
@@ -58,7 +59,7 @@
 
 # ripgrep
 - name: "[Software] Install ripgrep"
-  include_tasks:
+  ansible.builtin.include_tasks:
     file: ripgrep.yml
     apply:
       tags:
@@ -71,7 +72,7 @@
 
 # FD
 - name: "[Software] Install fd"
-  include_tasks:
+  ansible.builtin.include_tasks:
     file: fd.yml
     apply:
       tags:
@@ -84,7 +85,7 @@
 
 # ls-with-git-status
 - name: "[Software] Install lsg"
-  include_tasks:
+  ansible.builtin.include_tasks:
     file: lsg.yml
     apply:
       tags:
@@ -97,7 +98,7 @@
 
 # FZF (fuzzy-finder)
 - name: "[Software] Install fzf"
-  include_tasks:
+  ansible.builtin.include_tasks:
     file: fzf.yml
     apply:
       tags:
@@ -110,7 +111,7 @@
 
 # Diff-so-fancy
 - name: "[Software] Install diff-so-fancy"
-  include_tasks:
+  ansible.builtin.include_tasks:
     file: diff-so-fancy.yml
     apply:
       tags:
@@ -123,7 +124,7 @@
 
 # Git-fuzzy
 - name: "[Software] Install git-fuzzy"
-  include_tasks:
+  ansible.builtin.include_tasks:
     file: git-fuzzy.yml
     apply:
       tags:
@@ -136,7 +137,7 @@
 
 # LazyGIT
 - name: "[Software] Install lazygit"
-  include_tasks:
+  ansible.builtin.include_tasks:
     file: lazygit.yml
     apply:
       tags:
@@ -149,7 +150,7 @@
 
 # Gita
 - name: "[Software] Install gita"
-  include_tasks:
+  ansible.builtin.include_tasks:
     file: gita.yml
     apply:
       tags:
@@ -162,7 +163,7 @@
 
 # thefuck
 - name: "[Software] Install thefuck"
-  include_tasks:
+  ansible.builtin.include_tasks:
     file: thefuck.yml
     apply:
       tags:
@@ -175,7 +176,7 @@
 
 # BAT
 - name: "[Software] Install bat"
-  include_tasks:
+  ansible.builtin.include_tasks:
     file: bat.yml
     apply:
       tags:
@@ -188,7 +189,7 @@
 
 # Zoxide
 - name: "[Software] Install zoxide"
-  include_tasks:
+  ansible.builtin.include_tasks:
     file: zoxide.yml
     apply:
       tags:
@@ -201,7 +202,7 @@
 
 # Helm
 - name: "[Software] Install helm"
-  include_tasks:
+  ansible.builtin.include_tasks:
     file: helm.yml
     apply:
       tags:
@@ -214,7 +215,7 @@
 
 # ZSH
 - name: "[Software] Install zsh"
-  include_tasks:
+  ansible.builtin.include_tasks:
     file: zsh.yml
     apply:
       tags:
@@ -227,7 +228,7 @@
 
 # Win32yank (windows clipboard support for Neovim)
 - name: "[Software] Install w32yank"
-  include_tasks:
+  ansible.builtin.include_tasks:
     file: w32yank.yml
     apply:
       tags:
@@ -240,7 +241,7 @@
 
 # TMUX Plugins
 - name: "[Software] Install tmux"
-  include_tasks:
+  ansible.builtin.include_tasks:
     file: tmux.yml
     apply:
       tags:
@@ -250,3 +251,27 @@
   tags:
     - software
     - tmux
+
+- name: "[Software] Docker"
+  ansible.builtin.include_tasks:
+    file: docker.yml
+    apply:
+      tags:
+        - software
+        - docker
+  when: "'docker' not in software_tasks_exclude"
+  tags:
+    - software
+    - docker
+
+- name: "[Software] Kubernetes"
+  ansible.builtin.include_tasks:
+    file: kubernetes.yml
+    apply:
+      tags:
+        - software
+        - kubernetes
+  when: "'kubernetes' not in software_tasks_exclude"
+  tags:
+    - software
+    - kubernetes

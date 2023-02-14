@@ -4,8 +4,8 @@
 # Source: https://github.com/bigH/git-fuzzy.git
 ---
 - name: "[Git-fuzzy] Clone/update latest version"
-  git:
+  ansible.builtin.git:
     repo: "{{ git_fuzzy_url }}"
     dest: "{{ git_fuzzy_home }}"
-    update: yes
+    update: true
     version: "{{ git_fuzzy_branch }}"

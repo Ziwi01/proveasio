@@ -4,7 +4,7 @@
 #  - https://github.com/neovim/neovim/wiki/FAQ#how-to-use-the-windows-clipboard-from-wsl
 ---
 - name: "[Win32Yank] Get latest version"
-  shell: curl -s https://api.github.com/repos/equalsraf/win32yank/releases/latest | jq .name -r | cut -f2 -d'v'
+  ansible.builtin.shell: curl -s https://api.github.com/repos/equalsraf/win32yank/releases/latest | jq .name -r | cut -f2 -d'v'
   register: version
   changed_when: false
   ignore_errors: true

@@ -2,15 +2,16 @@
 # Set backup/overwrite flags in `vars/main.yml`
 ---
 - name: "[Config][p10k] Check for .p10k.zsh"
-  stat:
+  ansible.builtin.stat:
     path: "{{ ansible_env.HOME }}/.p10k.zsh"
   register: p10k_config
 
 - name: "[Config][p10k] Backup .p10k.zsh. Backup flag is: {{ p10k_backup | default(dotfiles_backup) }}"
   ansible.builtin.copy:
     src: "{{ ansible_env.HOME }}/.p10k.zsh"
-    dest: "{{ dotfiles_backup_dir }}/.p10k.zsh-{{ lookup('pipe','date +%Y-%m-%d-%H-%M-%S') }}"
-    remote_src: yes
+    dest: "{{ dotfiles_backup_dir }}/.p10k.zsh-{{ lookup('pipe', 'date +%Y-%m-%d-%H-%M-%S') }}"
+    mode: '0644'
+    remote_src: true
   when: p10k_config.stat.exists and p10k_backup | default(dotfiles_backup) | bool
 
 - name: "[Config][p10k] Overwrite .p10k.zsh. Overwrite flag is: {{ p10k_overwrite | default(dotfiles_overwrite) }}"

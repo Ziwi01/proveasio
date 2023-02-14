@@ -1,0 +1,162 @@
+# kubernetes related tools, like
+# - kubectl - https://kubernetes.io/docs/tasks/tools/install-kubectl-linux/
+# - KiND (Kubernetes in Docker) -
+# - k9s -
+#
+---
+#
+# kubectl
+#
+- name: "[kubectl] Get latest version if requested"
+  ansible.builtin.command: curl -L -s https://dl.k8s.io/release/stable.txt | cut -f2 -d'v'
+  register: version
+  changed_when: false
+  ignore_errors: true
+  when: versions['kubectl'] == 'latest'
+
+- name: "[kubectl] Set version to {{ version.stdout | default(versions['kubectl']) }}"
+  ansible.builtin.set_fact:
+    kubectl_version: "{{ version.stdout | default(versions['kubectl']) }}"
+
+- name: "[kubectl] Set proper download URL"
+  ansible.builtin.set_fact:
+    kubectl_url: "https://dl.k8s.io/release/v{{ kubectl_version }}/bin/linux/amd64/kubectl"
+
+- name: "[kubectl] Check if kubectl {{ kubectl_version }} is installed"
+  ansible.builtin.stat:
+    path: "{{ ansible_env.HOME }}/.local/opt/kubectl-{{ kubectl_version }}"
+  register: kubectl_dir
+
+- name: "Installation"
+  when: not kubectl_dir.stat.exists
+  block:
+    - name: "[kubectl] Create directory in {{ ansible_env.HOME }}/.local/opt"
+      ansible.builtin.file:
+        path: "{{ ansible_env.HOME }}/.local/opt/kubectl-{{ kubectl_version }}"
+        state: directory
+        mode: '0755'
+
+    - name: "[kubectl] Download kubectl {{ kubectl_version }}"
+      ansible.builtin.get_url:
+        url: "{{ kubectl_url }}"
+        dest: "{{ ansible_env.HOME }}/.local/opt/kubectl-{{ kubectl_version }}/kubectl"
+        mode: '0755'
+
+    - name: "[kubectl] Link {{ kubectl_version }} binary"
+      ansible.builtin.file:
+        src: "{{ ansible_env.HOME }}/.local/opt/kubectl-{{ kubectl_version }}/kubectl"
+        dest: "{{ ansible_env.HOME }}/.local/bin/kubectl"
+        state: link
+        force: true
+
+- name: "[kubectl] Save used version"
+  ansible.builtin.set_fact:
+    used_software_versions: "{{ used_software_versions | combine({'kubectl': kubectl_version}) }}"
+
+#
+# KiND
+#
+- name: "[kind] Get latest version if requested"
+  ansible.builtin.shell: curl -s https://api.github.com/repos/kubernetes-sigs/kind/releases/latest | jq .name -r | cut -f1 -d' ' | cut -f2 -d'v'
+  register: version
+  changed_when: false
+  ignore_errors: true
+  when: versions['kind'] == 'latest'
+
+- name: "[kind] Set version to {{ version.stdout | default(versions['kind']) }}"
+  ansible.builtin.set_fact:
+    kind_version: "{{ version.stdout | default(versions['kind']) }}"
+
+- name: "[kind] Set proper download URL"
+  ansible.builtin.set_fact:
+    kind_url: "https://github.com/kubernetes-sigs/kind/releases/download/v{{ kind_version }}/kind-linux-amd64"
+
+- name: "[kind] Check if kind {{ kind_version }} is installed"
+  ansible.builtin.stat:
+    path: "{{ ansible_env.HOME }}/.local/opt/kind-{{ kind_version }}"
+  register: kind_dir
+
+- name: "Installation"
+  when: not kind_dir.stat.exists
+  block:
+    - name: "[kind] Create directory in {{ ansible_env.HOME }}/.local/opt"
+      ansible.builtin.file:
+        path: "{{ ansible_env.HOME }}/.local/opt/kind-{{ kind_version }}"
+        state: directory
+        mode: '0755'
+
+    - name: "[kind] Download kind {{ kind_version }}"
+      ansible.builtin.get_url:
+        url: "{{ kind_url }}"
+        dest: "{{ ansible_env.HOME }}/.local/opt/kind-{{ kind_version }}/kind"
+        mode: '0755'
+
+    - name: "[kind] Link {{ kind_version }} binary"
+      ansible.builtin.file:
+        src: "{{ ansible_env.HOME }}/.local/opt/kind-{{ kind_version }}/kind"
+        dest: "{{ ansible_env.HOME }}/.local/bin/kind"
+        state: link
+        force: true
+
+- name: "[kind] Save used version"
+  ansible.builtin.set_fact:
+    used_software_versions: "{{ used_software_versions | combine({'kind': kind_version}) }}"
+
+#
+# k9s
+#
+- name: "[k9s] Get latest version if requested"
+  ansible.builtin.shell: curl -s https://api.github.com/repos/derailed/k9s/releases/latest | jq .name -r | cut -f2 -d'v'
+  register: version
+  changed_when: false
+  ignore_errors: true
+  when: versions['k9s'] == 'latest'
+
+- name: "[k9s] Set version to {{ version.stdout | default(versions['k9s']) }}"
+  ansible.builtin.set_fact:
+    k9s_version: "{{ version.stdout | default(versions['k9s']) }}"
+
+- name: "[k9s] Set proper download URL"
+  ansible.builtin.set_fact:
+    k9s_url: "https://github.com/derailed/k9s/releases/download/v{{ k9s_version }}/k9s_Linux_amd64.tar.gz"
+
+- name: "[k9s] Check if k9s {{ k9s_version }} is installed"
+  ansible.builtin.stat:
+    path: "{{ ansible_env.HOME }}/.local/opt/k9s-{{ k9s_version }}"
+  register: k9s_dir
+
+- name: "Installation"
+  when: not k9s_dir.stat.exists
+  block:
+    - name: "[k9s] Create directory in {{ ansible_env.HOME }}/.local/opt"
+      ansible.builtin.file:
+        path: "{{ ansible_env.HOME }}/.local/opt/k9s-{{ k9s_version }}"
+        state: directory
+        mode: '0755'
+
+    - name: "[k9s] Download k9s {{ k9s_version }}"
+      ansible.builtin.get_url:
+        url: "{{ k9s_url }}"
+        dest: "/tmp/k9s-{{ k9s_version }}.tar.gz"
+        mode: '0755'
+
+    - name: "[k9s] Untar archive"
+      ansible.builtin.unarchive:
+        src: "/tmp/k9s-{{ k9s_version }}.tar.gz"
+        dest: "{{ ansible_env.HOME }}/.local/opt/k9s-{{ k9s_version }}"
+
+    - name: "[k9s] Cleanup tar.gz file"
+      ansible.builtin.file:
+        path: "/tmp/k9s-{{ k9s_version }}.tar.gz"
+        state: absent
+
+- name: "[k9s] Link {{ k9s_version }} binary"
+  ansible.builtin.file:
+    src: "{{ ansible_env.HOME }}/.local/opt/k9s-{{ k9s_version }}/k9s"
+    dest: "{{ ansible_env.HOME }}/.local/bin/k9s"
+    state: link
+    force: true
+
+- name: "[k9s] Save used version"
+  ansible.builtin.set_fact:
+    used_software_versions: "{{ used_software_versions | combine({'k9s': k9s_version}) }}"

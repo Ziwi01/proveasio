@@ -4,48 +4,49 @@
 # Source: https://github.com/ajeetdsouza/zoxide
 ---
 - name: "[Zoxide] Get latest version if requested"
-  shell: curl -s https://api.github.com/repos/ajeetdsouza/zoxide/releases/latest | jq .name -r | cut -f2 -d'v'
+  ansible.builtin.shell: curl -s https://api.github.com/repos/ajeetdsouza/zoxide/releases/latest | jq .name -r | cut -f2 -d'v'
   register: version
   changed_when: false
   ignore_errors: true
   when: versions['zoxide'] == 'latest'
 
 - name: "[Zoxide] Set version to {{ version.stdout | default(versions['zoxide']) }}"
-  set_fact:
+  ansible.builtin.set_fact:
     zoxide_version: "{{ version.stdout | default(versions['zoxide']) }}"
 
 - name: "[Zoxide] Set proper download URL"
-  set_fact:
+  ansible.builtin.set_fact:
     zoxide_url: "https://github.com/ajeetdsouza/zoxide/releases/download/v{{ zoxide_version }}/zoxide-{{ zoxide_version }}-x86_64-unknown-linux-musl.tar.gz"
 
 - name: "[Zoxide] Check if Zoxide {{ zoxide_version }} is installed"
-  stat:
+  ansible.builtin.stat:
     path: "{{ ansible_env.HOME }}/.local/opt/zoxide-{{ zoxide_version }}"
   register: zoxide_dir
 
 - name: "Installation"
+  when: not zoxide_dir.stat.exists
   block:
     - name: "[Zoxide] Download Zoxide {{ zoxide_version }}"
-      get_url:
+      ansible.builtin.get_url:
         url: "{{ zoxide_url }}"
         dest: "/tmp/zoxide-{{ zoxide_version }}.tar.gz"
         mode: '0755'
 
     - name: "[Zoxide] Create directory in {{ ansible_env.HOME }}/.local/opt"
-      file:
+      ansible.builtin.file:
         path: "{{ ansible_env.HOME }}/.local/opt/zoxide-{{ zoxide_version }}"
         state: directory
+        mode: '0755'
 
     - name: "[Zoxide] Untar archive"
-      unarchive:
+      ansible.builtin.unarchive:
         src: "/tmp/zoxide-{{ zoxide_version }}.tar.gz"
         dest: "{{ ansible_env.HOME }}/.local/opt/zoxide-{{ zoxide_version }}"
 
     - name: "[Zoxide] Cleanup tar.gz file"
-      file:
+      ansible.builtin.file:
         path: "/tmp/zoxide-{{ zoxide_version }}.tar.gz"
         state: absent
-  when: not zoxide_dir.stat.exists
 
 - name: "[Zoxide] Link {{ zoxide_version }} binary"
   ansible.builtin.file:
@@ -55,5 +56,5 @@
     force: true
 
 - name: "[Zoxide] Save used version"
-  set_fact:
+  ansible.builtin.set_fact:
     used_software_versions: "{{ used_software_versions | combine({'zoxide': zoxide_version}) }}"

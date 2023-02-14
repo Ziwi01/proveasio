@@ -196,6 +196,7 @@ This role will install all necessary things to have the WSL pretty and useful.
 12. [htop](https://htop.dev/) - process viewer, prettier `top` alternative
 13. [TMUX](https://github.com/tmux/tmux) - terminal multiplexer
 14. [LazyGIT](https://github.com/jesseduffield/lazygit) - GIT wrapper for both terminal and VIM. Commands: `lazygit` (from terminal), `<Leader>gg` (from VIM)
+15. [keychain](https://www.funtoo.org/Funtoo:Keychain) - ssh-agent wrapper to keep SSH keys across terminal logins
 
 Also, common useful packages, like:
 
@@ -305,6 +306,7 @@ For functionality:
 - w32yank
 - zoxide
 - zsh
+- kubernetes
 
 ### Excluding code
 
@@ -441,10 +443,11 @@ In LunarVIM there is an automatic LSP installer plugin - [Mason.nvim](https://gi
 
 Worth noting:
 
-- [Helm](https://github.com/helm/helm) - Kubernetes package manager
 - [Docker](https://www.docker.com/) with [docker-compose](https://docs.docker.com/compose/)
 - [kubectl](https://kubernetes.io/docs/tasks/tools/#kubectl) - manage kubernetes cluster
 - [KinD](https://kind.sigs.k8s.io/) - Kubernetes in docker - create a cluster locally
+- [k9s](https://github.com/derailed/k9s) - Terminal GUI for managing kubernetes clusters
+- [Helm](https://github.com/helm/helm) - Kubernetes package manager
 
 ### Languages
 

@@ -4,7 +4,7 @@
 #
 # Source: https://github.com/nosarthur/gita
 - name: "[Gita] Install Gita specific version"
-  pip:
+  ansible.builtin.pip:
     name: "gita=={{ versions.gita }}"
     executable: pip3
   register: pip_out
@@ -12,7 +12,7 @@
   when: versions['gita'] != 'latest'
 
 - name: "[Gita] Install Gita latest version"
-  pip:
+  ansible.builtin.pip:
     name: "gita"
     executable: pip3
     extra_args: --upgrade
@@ -21,10 +21,14 @@
   when: versions['gita'] == 'latest'
 
 - name: "[Gita] Get installed Gita version"
-  shell: "pip3 show gita | grep Version | awk '{print $2}'"
+  ansible.builtin.shell: |
+    set -e -o pipefail
+    pip3 show gita | grep Version | awk '{print $2}'
+  args:
+    executable: /bin/bash
   changed_when: false
   register: gita_version
 
 - name: "[Gita] Save used version"
-  set_fact:
+  ansible.builtin.set_fact:
     used_software_versions: "{{ used_software_versions | combine({'gita': gita_version.stdout}) }}"

@@ -40,7 +40,7 @@
         path: "/tmp/rvm1-ansible-{{ rvm_role_version }}.tar.gz"
         state: absent
 
-- name: "[RVM] Install RVM and rubies"
+- name: "[RVM] Install RVM and rubies" # noqa role-name[path]
   ansible.builtin.include_role:
     name: "{{ ansible_env.HOME }}/.local/opt/rvm1-ansible-{{ rvm_role_version }}"
 
