@@ -1,4 +1,4 @@
 ---
 # FZF
 - name: "[FZF] Run install script"
-  shell: "{{ fzf_home }}/install"
+  ansible.builtin.shell: "{{ fzf_home }}/install"

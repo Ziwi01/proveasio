@@ -2,32 +2,32 @@
 ---
 # VLC
 - name: Remove VLC context menu item (Add to playlist)
-  win_regedit:
-    path: HKCR:\Directory\shell\AddToPlaylistVLC    
+  ansible.windows.win_regedit:
+    path: HKCR:\Directory\shell\AddToPlaylistVLC
     state: absent
 
 - name: Remove VLC context menu item (Play with VLC)
-  win_regedit:
+  ansible.windows.win_regedit:
     path: HKCR:\Directory\shell\PlayWithVLC
     state: absent
 
 # Git
 - name: Remove git gui context menu item (background)
-  win_regedit:
+  ansible.windows.win_regedit:
     path: HKCR:\Directory\Background\shell\git_gui
     state: absent
 
 - name: Remove git bash context menu item (background)
-  win_regedit:
+  ansible.windows.win_regedit:
     path: HKCR:\Directory\Background\shell\git_shell
     state: absent
 
 - name: Remove git gui context menu item
-  win_regedit:
+  ansible.windows.win_regedit:
     path: HKCR:\Directory\shell\git_gui
     state: absent
 
 - name: Remove git bash context menu item
-  win_regedit:
+  ansible.windows.win_regedit:
     path: HKCR:\Directory\shell\git_shell
     state: absent

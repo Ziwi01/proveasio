@@ -1,13 +1,14 @@
-# Install Rust 
+# Install Rust
 # Source: https://www.rust-lang.org/tools/install
 ---
 - name: "[Rust] Install/update Rust"
-  shell: "curl https://sh.rustup.rs -sSf | sh -s -- -y"
+  ansible.builtin.shell: "set -e -o pipefail; curl https://sh.rustup.rs -sSf | sh -s -- -y"
   register: rust_install
   args:
     chdir: "/tmp"
     creates: "{{ ansible_env.HOME }}/.rust"
+    executable: /bin/bash
 
 - name: "[Rust] Show Rust install/update info"
-  debug:
+  ansible.builtin.debug:
     msg: "{{ rust_install.stdout | default('No output was passed from Rust install command') }}"

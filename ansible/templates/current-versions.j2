@@ -2,8 +2,8 @@
 {% if used_software_versions is defined and used_software_versions | length -%}
 # `software` role versions
 versions:
-  {% for app, version in used_software_versions | items %}
-{{ app -}}: {{ version }} 
+  {% for app, version in used_software_versions.items() %}
+{{ app -}}: {{ version }}
   {% endfor %}
 {% else %}
 # INFO: `used_software_versions` variable not found or empty. Probably `software` role not included.
@@ -11,7 +11,7 @@ versions:
 
 {% if used_dev_versions is defined and used_dev_versions | length %}
 # `dev` role versions
-  {% for app, version in used_dev_versions | items %}
+  {% for app, version in used_dev_versions.items() %}
 {{ app -}}: {{ version }}
   {% endfor -%}
 {% else %}

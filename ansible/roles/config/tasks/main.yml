@@ -2,15 +2,16 @@
 # For setting backup/overwrite options see `vars/main.yml`
 ---
 - name: "[Config] Create backup dir {{ dotfiles_backup_dir }}"
-  file:
+  ansible.builtin.file:
     path: "{{ dotfiles_backup_dir }}"
     state: directory
+    mode: '0755'
   tags:
     - always
 
 # Include override variables
 - name: "[Config] Include ansible/vars/overrides.yml"
-  include_vars: "{{ item }}"
+  ansible.builtin.include_vars: "{{ item }}"
   with_first_found:
     - files:
         - "{{ playbook_dir }}/vars/overrides.yml"
@@ -19,7 +20,7 @@
     - always
 
 - name: "[Config] Configure zsh"
-  include_tasks:
+  ansible.builtin.include_tasks:
     file: zsh.yml
     apply:
       tags:
@@ -31,7 +32,7 @@
     - zsh
 
 - name: "[Config] Configure p10k"
-  include_tasks:
+  ansible.builtin.include_tasks:
     file: p10k.yml
     apply:
       tags:
@@ -45,7 +46,7 @@
     - p10k
 
 - name: "[Config] Configure tmux"
-  include_tasks:
+  ansible.builtin.include_tasks:
     file: tmux.yml
     apply:
       tags:
@@ -57,7 +58,7 @@
     - tmux
 
 - name: "[Config] Configure sdkman"
-  include_tasks:
+  ansible.builtin.include_tasks:
     file: sdkman.yml
     apply:
       tags:
@@ -69,7 +70,7 @@
     - sdkman
 
 - name: "[Config] Configure git"
-  include_tasks:
+  ansible.builtin.include_tasks:
     file: git.yml
     apply:
       tags:
@@ -81,7 +82,7 @@
     - git
 
 - name: "[Config] Configure lazygit"
-  include_tasks:
+  ansible.builtin.include_tasks:
     file: lazygit.yml
     apply:
       tags:
@@ -93,7 +94,7 @@
     - lazygit
 
 - name: "[Config] Configure lunarvim"
-  include_tasks:
+  ansible.builtin.include_tasks:
     file: lunarvim.yml
     apply:
       tags:
@@ -105,7 +106,7 @@
     - lunarvim
 
 - name: "[Config] Configure thefuck"
-  include_tasks:
+  ansible.builtin.include_tasks:
     file: thefuck.yml
     apply:
       tags:
@@ -117,7 +118,7 @@
     - thefuck
 
 - name: "[Config] Configure ansible"
-  include_tasks:
+  ansible.builtin.include_tasks:
     file: ansible.yml
     apply:
       tags:

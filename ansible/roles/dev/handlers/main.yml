@@ -2,10 +2,11 @@
 # LunarVIM
 - name: "[LunarVIM] Get NPM version string"
   ansible.builtin.shell: |
-    source {{ ansible_env.HOME }}/.local/opt/nvm/nvm.sh
-    echo 'list current:'
-    echo `nvm list current`
-    nvm list current | grep -E 'v[0-9]*\\.[0-9]*\\.[0-9]*' -o
+    set -e -o pipefail
+    . {{ ansible_env.HOME }}/.local/opt/nvm/nvm.sh
+    nvm use {{ node_version }} 2>&1 1>/dev/null
+    nvm list current | grep -E 'v[0-9]*\.[0-9]*\.[0-9]*' -o
+  changed_when: false
   args:
     executable: /bin/bash
   register: npm_version

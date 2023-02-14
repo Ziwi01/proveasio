@@ -4,45 +4,46 @@
 # Below code is largely based on https://github.com/Comcast/ansible-sdkman ansible role written by Elliot Weiser
 ---
 - name: "[SDKMan] Check for SDKMAN installation"
-  stat:
+  ansible.builtin.stat:
     path: '{{ sdkman_dir }}/bin/sdkman-init.sh'
   register: sdkman_init
 
 # Install SDKMAN if not uninstalled
-- block:
+- name: "[SDKMan] Install SDKMAN!"
+  when: not sdkman_init.stat.exists
+  become: '{{ sdkman_user != ansible_user_id }}'
+  become_user: '{{ sdkman_user }}'
+  block:
     - name: "[SDKMan] Download SDKMAN"
-      get_url:
+      ansible.builtin.get_url:
         url: https://get.sdkman.io
         dest: '{{ sdkman_tmp_dir }}/sdkman_script'
         owner: '{{ sdkman_user }}'
         group: '{{ sdkman_group }}'
+        mode: '0755'
         validate_certs: '{{ sdkman_validate_ssl }}'
 
     - name: "[SDKMan] Run SDKMAN script"
       environment:
         SDKMAN_DIR: '{{ sdkman_dir }}'
-      command: /bin/bash {{ sdkman_tmp_dir }}/sdkman_script
+      ansible.builtin.command: /bin/bash {{ sdkman_tmp_dir }}/sdkman_script
       args:
         creates: '{{ sdkman_dir }}/bin/sdkman-init.sh'
       notify: "[SDKMan] Cleanup SDKMAN script"
 
-  when: not sdkman_init.stat.exists
-  become: '{{ sdkman_user != ansible_user_id }}'
-  become_user: '{{ sdkman_user }}'
-
 - name: "[SDKMan] Fix permissions on SDKMAN_DIR"
-  file:
+  ansible.builtin.file:
     path: '{{ sdkman_dir }}'
     state: directory
     owner: '{{ sdkman_user }}'
     group: '{{ sdkman_group }}'
     recurse: true
-  become: yes
+  become: true
   tags:
     - sdkman_privilege
 
 - name: "[SDKMan] Flush SDK caches (before)"
-  shell: >-
+  ansible.builtin.shell: >-
     . {{ sdkman_dir }}/bin/sdkman-init.sh && sdk flush {{ item }}
   args:
     executable: /bin/bash
@@ -50,7 +51,7 @@
   changed_when: false
 
 - name: "[SDKMan] Update SDKMAN"
-  shell: . {{ sdkman_dir }}/bin/sdkman-init.sh && sdk selfupdate
+  ansible.builtin.shell: . {{ sdkman_dir }}/bin/sdkman-init.sh && sdk selfupdate
   args:
     executable: /bin/bash
   register: sdk_selfupdate
@@ -58,7 +59,7 @@
   when: sdkman_update | bool
 
 - name: "[SDKMan] Install SDK candidates/versions"
-  shell: >-
+  ansible.builtin.shell: >-
     . {{ sdkman_dir }}/bin/sdkman-init.sh &&
     sdk install {{ item.candidate }} {{ item.version | default('') }} {{ item.localpath | default('') }}
   args:
@@ -72,11 +73,11 @@
     'is already installed.' not in sdk_install.stdout
 
 - name: "[SDKMan] Save installed SDKs versions"
-  set_fact:
+  ansible.builtin.set_fact:
     used_dev_versions: "{{ used_dev_versions | combine({'sdkman_install_packages': sdkman_install_packages}) }}"
 
 - name: "[SDKMan] Uninstall SDK candidates/versions"
-  shell: >-
+  ansible.builtin.shell: >-
     . {{ sdkman_dir }}/bin/sdkman-init.sh &&
     sdk uninstall {{ item.candidate }} {{ item.version }}
   args:
@@ -88,7 +89,7 @@
     in sdk_uninstall.stdout
 
 - name: "[SDKMan] Get SDK defaults"
-  shell: . {{ sdkman_dir }}/bin/sdkman-init.sh && sdk current {{ item }}
+  ansible.builtin.shell: . {{ sdkman_dir }}/bin/sdkman-init.sh && sdk current {{ item }}
   args:
     executable: /bin/bash
   register: get_sdk_defaults
@@ -97,7 +98,7 @@
     {{ sdkman_install_packages | map(attribute="candidate") | unique | list }}
 
 - name: "[SDKMan] Set SDK defaults"
-  shell: >-
+  ansible.builtin.shell: >-
     . {{ sdkman_dir }}/bin/sdkman-init.sh &&
     sdk default {{ item.key }} {{ item.value }}
   args:
@@ -110,22 +111,22 @@
      first).stdout
 
 - name: "[SDKMan] Save default SDKs versions"
-  set_fact:
+  ansible.builtin.set_fact:
     used_dev_versions: "{{ used_dev_versions | combine({'sdkman_defaults': sdkman_defaults}) }}"
 
 - name: "[SDKMan] Flush SDK caches (after)"
-  shell: . {{ sdkman_dir }}/bin/sdkman-init.sh && sdk flush {{ item }}
+  ansible.builtin.shell: . {{ sdkman_dir }}/bin/sdkman-init.sh && sdk flush {{ item }}
   args:
     executable: /bin/bash
   loop: '{{ sdkman_flush_caches_after }}'
   changed_when: false
 
 - name: "[SDKMan] Update alternatives"
-  alternatives:
+  community.general.alternatives:
     name: "{{ item.name }}"
     path: "{{ sdkman_dir }}/candidates/{{ item.candidate }}/current/bin/{{ item.name }}"
     link: "{{ item.link }}"
   loop: "{{ sdkman_update_alternatives }}"
-  become: yes
+  become: true
   tags:
     - sdkman_privilege

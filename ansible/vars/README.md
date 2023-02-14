@@ -22,4 +22,10 @@ dev_tasks_exclude:
   - puppet # do not install Puppet
 ```
 
+If you are using `systemd` on your WSL distro, set below (default is `sysvinit``):
+
+```yaml
+service_manager: systemd
+```
+
 For all possibilities, see each role vars file (`ansible/<role>/vars/main.yml`)

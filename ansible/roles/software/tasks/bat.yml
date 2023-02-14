@@ -5,45 +5,47 @@
 # Source: https://github.com/sharkdp/bat
 
 - name: "[BAT] Check installed BAT version"
-  command: dpkg-query -W bat
+  ansible.builtin.command: dpkg-query -W bat
   register: bat_check_deb
   ignore_errors: true
   changed_when: bat_check_deb.rc > 1
   failed_when: bat_check_deb.rc > 1
 
 - name: "[BAT] Get latest version if requested"
-  shell: curl -s https://api.github.com/repos/sharkdp/bat/releases/latest | jq .name -r | cut -f2 -d'v'
+  ansible.builtin.shell: curl -s https://api.github.com/repos/sharkdp/bat/releases/latest | jq .name -r | cut -f2 -d'v'
   register: version
   changed_when: false
   ignore_errors: true
   when: versions['bat'] == 'latest'
 
 - name: "[BAT] Set version to {{ version.stdout | default(versions['bat']) }}"
-  set_fact:
+  ansible.builtin.set_fact:
     bat_version: "{{ version.stdout | default(versions['bat']) }}"
 
 - name: "[BAT] Set proper download URL"
-  set_fact:
+  ansible.builtin.set_fact:
     bat_url: "https://github.com/sharkdp/bat/releases/download/v{{ bat_version }}/bat_{{ bat_version }}_amd64.deb"
 
 - name: "Installation"
+  when: bat_check_deb.stdout | regex_search('[0-9]+\.[0-9]+\.[0-9]+') | default(0) != bat_version
   block:
     - name: "[BAT] Create directory in {{ ansible_env.HOME }}/.local/opt"
-      file:
+      ansible.builtin.file:
         path: "{{ ansible_env.HOME }}/.local/opt/bat-{{ bat_version }}"
         state: directory
+        mode: '0755'
 
     - name: "[BAT] Download BAT {{ bat_version }}"
-      get_url:
+      ansible.builtin.get_url:
         url: "{{ bat_url }}"
         dest: "{{ ansible_env.HOME }}/.local/opt/bat-{{ bat_version }}"
         mode: '0755'
 
     - name: "[BAT] Install {{ bat_version }} .deb package"
-      apt: deb="{{ ansible_env.HOME }}/.local/opt/bat-{{ bat_version }}/bat_{{ bat_version }}_amd64.deb"
-      become: True
-  when: bat_check_deb.stdout | regex_search('[0-9]+\.[0-9]+\.[0-9]+') | default(0) != bat_version
+      ansible.builtin.apt:
+        deb: "{{ ansible_env.HOME }}/.local/opt/bat-{{ bat_version }}/bat_{{ bat_version }}_amd64.deb"
+      become: true
 
 - name: "[BAT] Save used version"
-  set_fact:
+  ansible.builtin.set_fact:
     used_software_versions: "{{ used_software_versions | combine({'bat': bat_version}) }}"

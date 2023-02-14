@@ -5,22 +5,28 @@
 # Source: https://github.com/ansible/ansible-language-server
 #
 - name: "[Ansible] Get NPM version string"
-  shell: "source {{ ansible_env.HOME }}/.local/opt/nvm/nvm.sh || echo 'nvm.sh cannot be found in this directory'; nvm list current | grep -E 'v[0-9]*\\.[0-9]*\\.[0-9]*' -o || echo 'Cannot get current NVM version'"
+  ansible.builtin.shell: |
+    set -e -o pipefail
+    source {{ ansible_env.HOME }}/.local/opt/nvm/nvm.sh || echo 'nvm.sh cannot be found in this directory'
+    nvm list current | grep -E 'v[0-9]*\.[0-9]*\.[0-9]*' -o || echo 'Cannot get current NVM version'
+  changed_when: false
   args:
     executable: /bin/bash
   register: npm_version
 
 - name: "[Ansible] Install Ansible Language server for current NPM"
-  shell: "npm install @ansible/ansible-language-server --location=global"
+  ansible.builtin.shell: "set -e -o pipefail; npm install @ansible/ansible-language-server --location=global"
+  changed_when: false
+  args:
+    executable: /bin/bash
   environment:
     PATH: "{{ ansible_env.HOME }}/.local/opt/nvm/versions/node/{{ npm_version.stdout }}/bin:{{ ansible_env.PATH }}"
-  changed_when: false
 
 #
 # ansible-lint
 #
 - name: "[Ansible] Install Ansible PIP specific version"
-  pip:
+  ansible.builtin.pip:
     name: "ansible=={{ ansible_pip_version }}"
     executable: pip3
   register: pip_out
@@ -28,7 +34,7 @@
   when: ansible_pip_version != 'latest'
 
 - name: "[Ansible] Install Ansible PIP latest version"
-  pip:
+  ansible.builtin.pip:
     name: "ansible"
     executable: pip3
     extra_args: --upgrade
@@ -37,15 +43,18 @@
   when: ansible_pip_version == 'latest'
 
 - name: "[Ansible] Get installed Ansible version from PIP"
-  shell: "pip3 show ansible | grep Version | awk '{print $2}'"
+  ansible.builtin.shell: "set -e -o pipefail; pip3 show ansible | grep Version | awk '{print $2}'"
+  changed_when: false
+  args:
+    executable: /bin/bash
   register: ansible_version
 
 - name: "[Ansible] Save used ansible version"
-  set_fact:
+  ansible.builtin.set_fact:
     used_dev_versions: "{{ used_dev_versions | combine({'ansible_pip_version': ansible_version.full}) }}"
 
 - name: "[Ansible] Install ansible-lint PIP specific version"
-  pip:
+  ansible.builtin.pip:
     name: "ansible-lint=={{ ansible_lint_pip_version }}"
     executable: pip3
   register: pip_out
@@ -53,7 +62,7 @@
   when: ansible_lint_pip_version != 'latest'
 
 - name: "[Ansible] Install ansible-lint PIP latest version"
-  pip:
+  ansible.builtin.pip:
     name: "ansible-lint"
     executable: pip3
     extra_args: --upgrade
@@ -62,9 +71,12 @@
   when: ansible_lint_pip_version == 'latest'
 
 - name: "[Ansible] Get installed Ansible version from PIP"
-  shell: "pip3 show ansible-lint | grep Version | awk '{print $2}'"
+  ansible.builtin.shell: "set -e -o pipefail; pip3 show ansible-lint | grep Version | awk '{print $2}'"
+  changed_when: false
+  args:
+    executable: /bin/bash
   register: ansible_lint_version
 
 - name: "[Ansible] Save used ansible-lint version"
-  set_fact:
+  ansible.builtin.set_fact:
     used_dev_versions: "{{ used_dev_versions | combine({'ansible_lint_pip_version': ansible_lint_version.stdout}) }}"

@@ -1,7 +1,7 @@
 ---
 # Set dev software versions fact, will be updated in the tasks above, then printed at the end of play
 - name: "[DEV] Reset dev versions fact"
-  set_fact:
+  ansible.builtin.set_fact:
     used_dev_versions: {}
     cacheable: true
   tags:
@@ -15,7 +15,7 @@
 
 # Include override variables
 - name: "[DEV] Include ansible/vars/overrides.yml"
-  include_vars: "{{ item }}"
+  ansible.builtin.include_vars: "{{ item }}"
   with_first_found:
     - files:
         - "{{ playbook_dir }}/vars/overrides.yml"
@@ -25,7 +25,7 @@
 
 # Ruby Version Manager
 - name: "[DEV] Install Ruby Version Manager"
-  include_tasks:
+  ansible.builtin.include_tasks:
     file: rvm.yml
     apply:
       tags:
@@ -38,7 +38,7 @@
 
 # SDKMan!
 - name: "[DEV] Install SDKMAN!"
-  include_tasks:
+  ansible.builtin.include_tasks:
     file: sdkman.yml
     apply:
       tags:
@@ -51,7 +51,7 @@
 
 # Node Version Manager
 - name: "[DEV] Install Node Version Manager"
-  include_tasks:
+  ansible.builtin.include_tasks:
     file: nvm.yml # Dependency for lvim.yml
     apply:
       tags:
@@ -64,7 +64,7 @@
 
 # Rust
 - name: "[DEV] Install Rust language with Cargo"
-  include_tasks:
+  ansible.builtin.include_tasks:
     file: rust.yml # Dependency for lvim.yml
     apply:
       tags:
@@ -77,7 +77,7 @@
 
 # Ansible PIP
 - name: "[DEV] Install Ansible"
-  include_tasks:
+  ansible.builtin.include_tasks:
     file: ansible.yml
     apply:
       tags:
@@ -90,7 +90,7 @@
 
 # Neovim
 - name: "[DEV] Install Neovim"
-  include_tasks:
+  ansible.builtin.include_tasks:
     file: neovim.yml
     apply:
       tags:
@@ -105,7 +105,7 @@
 
 # LunarVIM
 - name: "[DEV] Install LunarVIM"
-  include_tasks:
+  ansible.builtin.include_tasks:
     file: lunarvim.yml
     apply:
       tags:
@@ -118,7 +118,7 @@
 
 # Puppet
 - name: "[DEV] Install Puppet"
-  include_tasks:
+  ansible.builtin.include_tasks:
     file: puppet.yml
     apply:
       tags:

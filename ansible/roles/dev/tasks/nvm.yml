@@ -3,34 +3,35 @@
 # Source: https://github.com/nvm-sh/nvm
 ---
 - name: "[NVM] Get latest version if requested"
-  shell: curl -s https://api.github.com/repos/nvm-sh/nvm/releases/latest | jq .name -r | cut -f2 -d'v'
+  ansible.builtin.shell: curl -s https://api.github.com/repos/nvm-sh/nvm/releases/latest | jq .name -r | cut -f2 -d'v'
   register: version
   changed_when: false
   ignore_errors: true
   when: nvm_version == 'latest'
 
 - name: "[NVM] Set version to {{ version.stdout | default(nvm_version) }}"
-  set_fact:
+  ansible.builtin.set_fact:
     nvm_git_version: "{{ version.stdout | default(nvm_version) }}"
 
 - name: "[NVM] Clone NVM repository and checkout {{ nvm_git_version }}"
-  git:
+  ansible.builtin.git:
     repo: "https://github.com/nvm-sh/nvm.git"
     dest: "{{ ansible_env.HOME }}/.local/opt/nvm"
     version: "v{{ nvm_git_version }}"
 
-- name: "[NVM] Install NVM"
-  shell: "./install.sh"
+# TODO: do not install if already proper version installed
+- name: "[NVM] Install NVM" # noqa no-changed-when
+  ansible.builtin.shell: "./install.sh"
   args:
     chdir: "{{ ansible_env.HOME }}/.local/opt/nvm"
     executable: /bin/bash
 
 # TODO: Check if this version is already there for this user
-- name: "[NVM] Install Node {{ node_version }}"
-  shell: ". {{ ansible_env.HOME }}/.local/opt/nvm/nvm.sh; nvm install {{ node_version }}"
+- name: "[NVM] Install Node {{ node_version }}" # noqa no-changed-when
+  ansible.builtin.shell: ". {{ ansible_env.HOME }}/.local/opt/nvm/nvm.sh; nvm install {{ node_version }}"
   args:
     executable: /bin/bash
 
 - name: "[NVM] Save used version"
-  set_fact:
+  ansible.builtin.set_fact:
     used_dev_versions: "{{ used_dev_versions | combine({'nvm_version': nvm_git_version}) }}"

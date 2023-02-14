@@ -2,10 +2,10 @@
 # Source: https://github.com/LunarVim/LunarVim
 ---
 - name: "[LunarVIM] Clone/update latest version"
-  git:
+  ansible.builtin.git:
     repo: "{{ lunarvim_url }}"
     dest: "{{ lunarvim_home }}"
-    update: yes
+    update: true
     version: "{{ lunarvim_version }}"
   notify:
     - "[LunarVIM] Get NPM version string"
@@ -13,7 +13,7 @@
     - "[LunarVIM] Show LunarVIM install info"
 
 - name: "[LunarVIM] Ensure LunarVIM is really installed"
-  shell: which lvim
+  ansible.builtin.command: which lvim
   register: check_lvim
   changed_when: check_lvim.rc == 1
   failed_when: check_lvim.rc > 1
@@ -23,20 +23,22 @@
     - "[LunarVIM] Show LunarVIM install info"
 
 - name: Flush handlers
-  meta: flush_handlers
+  ansible.builtin.meta: flush_handlers
 
 - name: "[LunarVIM] Update LunarVIM"
-  shell: 'lvim +LvimUpdate +q'
+  ansible.builtin.command: 'lvim +LvimUpdate +q'
   environment:
     PATH: "{{ ansible_env.HOME }}/.local/bin/:{{ ansible_env.PATH }}"
   when: lunarvim_version in ['master', 'rolling']
 
 - name: "[LunarVIM] Get installed version tag"
-  shell: "git describe --tags | head -n 1 | awk -F'-' '{ print $1 }'"
+  ansible.builtin.shell: "set -e -o pipefail; git describe --tags | head -n 1 | awk -F'-' '{ print $1 }'"
+  changed_when: false
   args:
     chdir: "{{ lunarvim_home }}"
+    executable: /bin/bash
   register: lunarvim_git_version
 
 - name: "[LunarVIM] Save Lunarvim tag"
-  set_fact:
+  ansible.builtin.set_fact:
     used_dev_versions: "{{ used_dev_versions | combine({'lunarvim_version': lunarvim_git_version.stdout}) }}"

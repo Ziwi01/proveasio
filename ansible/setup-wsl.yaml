@@ -1,4 +1,5 @@
-- hosts: ubuntu
+- name: WSL Ubuntu Power Environment
+  hosts: ubuntu
   ### Comment out roles you don't need ###
   vars:
     summary: |
@@ -28,7 +29,7 @@
 
 
             All above versions will be saved in `./current-versions.yaml` file (if playbook was run without particular `--tags`).
-            If you used `master` branch and want to force those versions for future runs (instead of `latest`), copy above outputs to `ansible/vars/overrides.yml`.
+            If want to force those versions for future runs (instead of `latest`), copy above outputs to `ansible/vars/overrides.yml`.
 
             See README.md for details.
   roles:
@@ -38,7 +39,7 @@
 
   tasks:
     - name: "[Summary] Show detailed info"
-      debug:
+      ansible.builtin.debug:
         var: summary
       tags:
         - always

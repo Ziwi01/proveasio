@@ -1,26 +1,31 @@
-```text
- _ _ _ _____ __       _____                      _____
-| | | |   __|  |     |  _  |___ _ _ _ ___ ___   |   __|___ _ _ 
-| | | |__   |  |__   |   __| . | | | | -_|  _|  |   __|   | | |
-|_____|_____|_____|  |__|  |___|_____|___|_|    |_____|_|_|\_/ 
-```
+<div align="center">
+  <img width=400 height=400 src="./resources/wpe-logo.png">
+</div>
+  
+<div align="center">
 
-![WSL build](https://github.com/Ziwi01/wsl-power-env/actions/workflows/ci.yml/badge.svg?branch=master)
-![license](https://img.shields.io/github/license/Ziwi01/wsl-power-env)
-![last commit](https://img.shields.io/github/last-commit/Ziwi01/wsl-power-env)
+  <a href="">![CI build status](https://github.com/Ziwi01/wsl-power-env/actions/workflows/ci.yml/badge.svg?branch=master)</a>
+  <a href="">![License](https://img.shields.io/github/license/Ziwi01/wsl-power-env)</a>
+  <a href="">![Last commit](https://img.shields.io/github/last-commit/Ziwi01/wsl-power-env)</a>
+
+</div>
 
 ## TL;DR
 
 Repository containing bunch of automation scripts (mostly Ansible tasks) to install, configure and maintain Windows WSL2 environment based on Ubuntu 20.04/22.04, including set of very useful dev tools and customizations to ease out and speed up terminal usage during day-to-day work and bump up productivity.
+
+<div align="center">
+  <img src="./resources/terminal_preview.png">
+</div>
 
 ## About
 
 The idea is to:
 
 - have something consistent when trying to configure new Windows machine with WSL2 mainly for automation development purposes (like DevOps/SysAdmin thingy), but for general usage also.
-- be able to be run repeatably to also update installed tools and customizations to latest versions (or stay on particular versions for stability)
+- be able to run it repeatably to also update installed tools and customizations to latest versions (or stay on particular versions for stability)
 - be easily extendable and configurable to suit personal needs.
-- have all the features and usages described so they are easily assimilated for someone new to this
+- have all the features and usages described so they are easily assimilated for someone new to this (or refreshed for someone who forgets easily, like me)
 
 In the process of making, I figured out that this can be beneficial for all the people who want to learn how to use Linux as their development base. By documenting the tools and usage scenarios, this repository can be used by tech-savvy wannabies to get a grip of some advanced workflows and tools, with a little less effort than figuring it out themselves from scratch.
 
@@ -31,11 +36,11 @@ Please read below README carefully and go through the scripts to see whats going
 ## TODO
 
 - ~feat: support both Ubuntu 20.04 and 22.04 LTS~
-- feat: install docker, kubectl, k9s, kind
+- ~feat: install docker, kubectl, k9s, kind~
+- feat: add and use `pyenv`, `pipenv`, use latest Python+Ansible
 - feat: AWS cli installation/setup
-- docs: add usage descriptions with videos and images
-- feat(vim): Install neovim-ruby-host for all rubies
-
+- docs: add usage descriptions with videos and images in `Usages.md`
+- feat(neovim): Install neovim-ruby-host for all rubies
 
 ## Table of contents
 
@@ -52,9 +57,9 @@ Please read below README carefully and go through the scripts to see whats going
     * [setup-windows.yml](#setup-windows.yml)
 * [WSL2 setup](#wsl2-setup)
 * [Roles overview](#roles-overview)
-  * [`software` role](#`software`-role)
-  * [`dev` role](#`dev`-role)
-  * [`config` role](#`config`-role)
+  * [`software` role](#software-role)
+  * [`dev` role](#dev-role)
+  * [`config` role](#config-role)
 * [Releases](#releases)
 * [Configuration customizations](#configuration-customizations)
   * [Tags](#tags)
@@ -65,16 +70,20 @@ Please read below README carefully and go through the scripts to see whats going
   * [Tmux](#tmux)
   * [Git](#git)
   * [Neovim with LunarVIM](#neovim-with-lunarvim)
-  * [Helm](#helm)
+  * [Software](#software)
   * [Languages](#languages)
     * [Ruby](#ruby)
+    * [JAVA/groovy](#java/groovy)
     * [Node](#node)
     * [Puppet](#puppet)
     * [Ansible](#ansible)
     * [Rust](#rust)
+* [Troubleshooting](#troubleshooting)
+  * [VPN connectivity issues](#vpn-connectivity-issues)
+  * [Ruby GPG keys import failed](#ruby-gpg-keys-import-failed)
+  * [Unable to get https endpoints](#unable-to-get-https-endpoints)
 * [Author](#author)
 * [Mentions](#mentions)
-
 
 ## Requirements
 
@@ -112,6 +121,8 @@ Thats it, you can move to [WSL2 setup](#wsl2-setup)
 ### Automated
 
 There is an initial automation for setting up Windows, which includes the steps above and some more things, like installing software I commonly use.
+
+**NOTE**: This is just experimental feature, it is not tested thoroughly, use at your own risk (with some feedback if you do, please)
 
 #### prepare-windows.ps1
 
@@ -189,6 +200,7 @@ This role will install all necessary things to have the WSL pretty and useful.
 12. [htop](https://htop.dev/) - process viewer, prettier `top` alternative
 13. [TMUX](https://github.com/tmux/tmux) - terminal multiplexer
 14. [LazyGIT](https://github.com/jesseduffield/lazygit) - GIT wrapper for both terminal and VIM. Commands: `lazygit` (from terminal), `<Leader>gg` (from VIM)
+15. [keychain](https://www.funtoo.org/Funtoo:Keychain) - ssh-agent wrapper to keep SSH keys across terminal logins
 
 Also, common useful packages, like:
 
@@ -298,6 +310,7 @@ For functionality:
 - w32yank
 - zoxide
 - zsh
+- kubernetes
 
 ### Excluding code
 
@@ -334,7 +347,9 @@ See [tags](#Tags) above for full list.
 
 ## Features
 
-Below you can find some useful commands/shortcuts/tips on how to use all of this fancy software. For more details for each tool, see the [software](#software-role) and [dev](#dev-role) roles section and take a look at the links there. Below you will find most common scenarios I use and custom added things (configs, modifications, functions).
+Below you can find brief summary of included tools and features. For more details for each tool, see the [software](#software-role) and [dev](#dev-role) roles section and take a look at the links there.
+
+For comprehensive description and scenarios with examples, see [Usages.md](./Usages.md).
 
 ### Terminal
 
@@ -345,63 +360,47 @@ Terminal is ZSH-based, configured with [Oh-my-ZSH](https://github.com/ohmyzsh/oh
   ![terminal](/resources/terminal_preview.png?raw=true)
 </details>
 
-There are couple of useful plugins installed there (you can find them in `ansible/roles/config/files/.zshrc`), like:
+There are couple of useful plugins installed there (you can find them in `ansible/roles/config/files/.zshrc`), which provide for example:
 
 - syntax highlighting
 - commands autocompletion (based on history and/or completion scripts)
-- [`FZF`](https://github.com/junegunn/fzf) integration (fuzzy search command history with `<C-r>` and lots other places - try using TAB or `**TAB` here and there)
-- fuzzy search/go to directory with `ALT+c`
-- traversing directories back and forth (and parent/child) with `ALT+<left|right|up|down>`
+- [`FZF`](https://github.com/junegunn/fzf) integration
+- fuzzy search/go to directory
+- traversing directories back and forth (and parent/child)
 - aliases autosuggestions - tells you that you have an alias for particular commands
 - easily traversing through **visited** directories (using [`zoxide`](https://github.com/ajeetdsouza/zoxide))
-- correct your commands with `fuck` or `ESC ESC`
-- finding files with FZF using custom `bfind` alias - with preview and all. Can be used with vim to search file and edit selected (`vim $(bfind)`). Similar functionality (but without file preview) can be achieved with `vim **<TAB>`.
-- prettier cat (with [`bat`](https://github.com/sharkdp/bat)) with syntax highlight and all
+- correct your commands automatically
+- finding files with FZF using custom
+- [fd](https://github.com/sharkdp/fd) command as faster `find` command
+- prettier cat (with [`bat`](https://github.com/sharkdp/bat)) with syntax highlight, line numbers etc.
+- blazingly faster grep with [ripgrep](https://github.com/BurntSushi/ripgrep) - also used from within VIM to grep for text.
+- Windows clipboard support - also works from VIM (copying in VIM makes it available in Windows clipboard)
+- `tree` - show directory structure recursively
+- `htop` - better top
+- `jq` - JSON parser
 
 ### Tmux
-
-For TMUX overall usage, please see its documentation with `man tmux`.
-
-Basic usage (@TODO: move to `Usage.md`):
-
-- start with `tmux new`
-- `<C-b>c` - new window
-- `<C-b>%` - split window vertically
-- `<C-b>"` - split window horizontally
-- `<C-b><arrows>` - move between panes
-- `<C-b><C+<arrows>>` - resize panes
-- `<C-b>xy` - kill pane
-- `<C-b>n` - next window
-- `<C-b>l` - last window
-- `<C-b>p` - previous window (in order)
-- `<C-b><C-s>` - save session (windows/panes/directories)
-- `<C-b><C-r>` - load saved session
-- `<C-b><C-f>` - search back TMUX buffer with FZF
 
 Custom modifications in `roles/config/files/.tmux.conf` include:
 
 - custom theme
-- session management (`<C-b><C-s>` to save session, `<C-b><C-r>` to restore)
-- ability to search back tmux buffer with FZF (`<C-b><C-f>`)
-- ability to extract text from tmux buffer with FZF (`<C-b><TAB>`)
+- session management 
+- ability to search back tmux buffer with FZF
+- ability to extract text from tmux buffer with FZF
 - enabled mouse support
 - prevent deselect+auto scroll on mouse selection copy (very annoying..)
+- seamless navigation between TMUX splits and VIM splits
 
 ### Git
 
 For smooth GIT experience there are some tools configured:
 
-- [LazyGIT](https://github.com/jesseduffield/lazygit) - great GUI terminal GIT wrapper. Command: `lazygit`. See docs for usages. Also available from LunarVIM (see Neovim/LunarVIM section)
+- [LazyGIT](https://github.com/jesseduffield/lazygit) - great GUI terminal GIT wrapper. 
 - [diff-so-fancy](https://github.com/so-fancy/diff-so-fancy) - better looking diffs.
-- [git-fuzzy](https://github.com/bigH/git-fuzzy) - GIT on FZF steroids. I use LazyGIT now instead, but maybe useful for simpler checkups. Commands:
-    - `git-fuzzy`
-    - `git-fuzzy status` (alias: `gst`)
-    - `git-fuzzy log` (alias: `glo`)
-- **truly** useful: `gco` alias for searching and checking out branch with FZF. You can also use it to checkout without searching (`gco branch_name`)
+- [git-fuzzy](https://github.com/bigH/git-fuzzy) - GIT on FZF steroids.
+- `gco` alias for searching and checking out branch with FZF. You can also use it to checkout without searching (`gco branch_name`)
 - [Gita](https://github.com/nosarthur/gita) - gather your GIT repositories in groups and execute command on them at once (either GIT command or shell commands)
-- [LS with GIT status](https://github.com/gerph/ls-with-git-status) and `k` ohmyzsh plugin - list directories/files and show their GIT status. Command:
-    - `lsg` - list directories
-    - `k` - list files
+- [LS with GIT status](https://github.com/gerph/ls-with-git-status) and `k` ohmyzsh plugin - list directories/files and show their GIT status in the terminal
 
 ### Neovim with LunarVIM
 
@@ -442,17 +441,17 @@ Additionally, I setup the plugins below:
 - [wincent/ferret](https://github.com/wincent/ferret) - Search and replace for files in your project. To be used if Spectre doesn't work as expected (see LunarVim usage docs for details)
 - [catpuccin/nvim](https://github.com/catppuccin/nvim) - Colorscheme
 
-In LunarVIM there is an automatic [LSP installer plugin - Mason](https://github.com/williamboman/mason.nvim) which will install supported language servers and use them, when you open a specific filetype. This should work out of the box in most cases, however for Puppet I setup the LSP server manually, as it doesn't work with RVM by default. Also Ansible gets linter configuration override.
+In LunarVIM there is an automatic LSP installer plugin - [Mason.nvim](https://github.com/williamboman/mason.nvim) which will install supported language servers and use them, when you open a specific filetype. This should work out of the box in most cases, however for Puppet I setup the LSP server manually, as it doesn't work with RVM by default. Also Ansible gets linter configuration override.
 
-For all configuration overrides, see `ansible/roles/dev/files/lvim-config.lua` in this repo or `~/.config/lvim/config.lua` on the filesystem.
+### Software
 
-If you have problems with plugins, try to execute `:Lazy` and run Sync or Update.
+Worth noting:
 
-For detailed usage examples, shortcuts and basic workflow videos, please see [`Usages.md`](./Usages.md)
-
-### Helm
-
-[Helm](https://github.com/helm/helm) gets installed with latest 3.x version.
+- [Docker](https://www.docker.com/) with [docker-compose](https://docs.docker.com/compose/)
+- [kubectl](https://kubernetes.io/docs/tasks/tools/#kubectl) - manage kubernetes cluster
+- [KinD](https://kind.sigs.k8s.io/) - Kubernetes in docker - create a cluster locally
+- [k9s](https://github.com/derailed/k9s) - Terminal GUI for managing kubernetes clusters
+- [Helm](https://github.com/helm/helm) - Kubernetes package manager
 
 ### Languages
 
@@ -463,6 +462,10 @@ For Ruby management, there is [Ruby Version Manager (RVM)](https://rvm.io/) inst
 **NOTE**: There are different ruby versions installed depending if you are using Ubuntu 22.04 or 20.04 - for 20.04 beside latest `3.1.x`, there is `2.4.x` and `2.7.x` installed.
 
 **NOTE 2**: There might be some issues with installing/managing Ruby versions `< 3.1.x` on Ubuntu 22.04 (that's why there is only latest 3.1 version listed for this OS).
+
+#### JAVA/groovy
+
+For multiple versions management for Java, groovy, gradle JDKs/SDKs, [SDKMAN!](https://sdkman.io/) manager is installed and some default JAVA and groovy versions.
 
 #### Node
 
@@ -487,6 +490,35 @@ To configure linter diagnostics (enable/disable some checks) in LunarVIM for Ans
 #### Rust
 
 As LunarVIM requires it, [Rust](https://www.rust-lang.org/) is installed with [Cargo](https://github.com/rust-lang/cargo/) package manager.
+
+## Troubleshooting
+
+See below known issues and solutions
+
+### VPN connectivity issues
+
+If you are using a VPN on Windows host and have WSL connectivity issues, please consider using [WSL VPNkit](https://github.com/sakai135/wsl-vpnkit).
+
+After following setup instructions to import vpnkit WSL distro, execute `wsl.exe -d wsl-vpnkit --cd /app service wsl-vpnkit start` and network should work.
+
+### Ruby GPG keys import failed
+
+If that fails, check your firewall settings if hkp:// protocol is allowed, or try to force port 80 by adding to `ansible/vars/overrides.yml`:
+
+```yaml
+rvm1_gpg_key_server: 'hkp://keys.openpgp.org:80'
+
+# The GPG alternative key servers
+rvm1_gpg_key_servers:
+  - '{{ rvm1_gpg_key_server }}'
+  - hkp://pgp.mit.edu:80
+  - hkp://keyserver.pgp.com:80
+  - hkp://keyserver.ubuntu.com:80
+```
+
+### Unable to get https endpoints
+
+If you are having problems with connecting to SSL sites (like `curl https://get.rvm.io` or `curl https://github.com`) with no Certificate Authority error, that means you are behind some proxy (corporate or ISP) and have external Certifitate Authority Chain. You would need to import this chain from Windows to WSL. See [this Github comment](https://github.com/microsoft/WSL/issues/3161#issuecomment-945384911) on how to import it.
 
 ## Author
 

@@ -5,22 +5,22 @@
   ansible.builtin.apt_repository:
     repo: ppa:git-core/ppa
 
-- name: "[Git] Update OS packages list"
+- name: "[Git] Install GIT {{ versions.git }}"
   become: true
-  package:
-    update_cache: yes
-
-- name: "[Git] Install GIT {{ versions.lazygit }}"
-  become: true
-  apt:
+  ansible.builtin.apt:
     name: "git"
-    state: "{{ versions.lazygit }}"
+    state: "{{ versions.git }}"
+    update_cache: true
 
 - name: "[Git] Get installed GIT version"
-  shell: "apt info git 2>/dev/null | grep Version | awk '{print $2}' | awk -F '~' '{print $1}'"
+  ansible.builtin.shell: |
+    set -e -o pipefail
+    apt info git 2>/dev/null | grep Version | awk '{print $2}' | awk -F '~' '{print $1}'
   register: git_version
+  args:
+    executable: /bin/bash
   changed_when: false
 
 - name: "[Git] Save used version"
-  set_fact:
+  ansible.builtin.set_fact:
     used_software_versions: "{{ used_software_versions | combine({'git': git_version.stdout}) }}"
