@@ -62,6 +62,7 @@ Please read below README carefully and go through the scripts to see whats going
   * [Neovim with LunarVIM](#neovim-with-lunarvim)
   * [Software](#software)
   * [Languages](#languages)
+    * [Python](#python)
     * [Ruby](#ruby)
     * [JAVA/groovy](#java/groovy)
     * [Node](#node)
@@ -444,6 +445,14 @@ Worth noting:
 - [Helm](https://github.com/helm/helm) - Kubernetes package manager
 
 ### Languages
+
+#### Python
+
+Python gets instaled with pretty recent version using [`pyenv`](https://github.com/pyenv/pyenv) version manager. This Python is set as default for ZSH shell and all PIP packages which get installed during ansible run are installed there.
+
+Also, there is [`pyenv-virtualenv`](https://github.com/pyenv/pyenv-virtualenv) available to easily manage Python virtual environments.
+
+For usage examples see [Usages.md](./Usages.md)
 
 #### Ruby
 

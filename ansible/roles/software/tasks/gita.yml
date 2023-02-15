@@ -6,7 +6,7 @@
 - name: "[Gita] Install Gita specific version"
   ansible.builtin.pip:
     name: "gita=={{ versions.gita }}"
-    executable: pip3
+    executable: "{{ ansible_env.HOME }}/.pyenv/shims/pip3"
   register: pip_out
   changed_when: "'Requirement already satisfied' not in pip_out.stdout"
   when: versions['gita'] != 'latest'
@@ -14,7 +14,7 @@
 - name: "[Gita] Install Gita latest version"
   ansible.builtin.pip:
     name: "gita"
-    executable: pip3
+    executable: "{{ ansible_env.HOME }}/.pyenv/shims/pip3"
     extra_args: --upgrade
   register: pip_out
   changed_when: "'Requirement already satisfied' not in pip_out.stdout"

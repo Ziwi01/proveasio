@@ -32,12 +32,23 @@
             If want to force those versions for future runs (instead of `latest`), copy above outputs to `ansible/vars/overrides.yml`.
 
             See README.md for details.
-  roles:
-    - role: software
-    - role: dev
-    - role: config
 
   tasks:
+    - name: '[Init] Check sudo password'
+      ansible.builtin.command: echo "sudo password is correct"
+      become: true
+      changed_when: false
+      tags:
+        - always
+    - name: '[Software] Include software role'
+      ansible.builtin.import_role:
+        name: software
+    - name: '[Dev] Include dev role'
+      ansible.builtin.import_role:
+        name: dev
+    - name: '[Config] Include config role'
+      ansible.builtin.import_role:
+        name: config
     - name: "[Summary] Show detailed info"
       ansible.builtin.debug:
         var: summary

@@ -6,11 +6,23 @@ This document describes all the tools and features which I find useful for every
 
 * [Table of contents](#table-of-contents)
 * [Terminal](#terminal)
-  * [Find files](#find-files)
-  * [Traverse directories](#traverse-directories)
-  * [GIT](#git)
+  * [Traverse directories with `Zoxide`](#traverse-directories-with-zoxide)
+  * [Find and open files with `fd` and `fzf`](#find-and-open-files-with-fd-and-fzf)
+  * [Browse command history](#browse-command-history)
+  * [View files with BAT](#view-files-with-bat)
+  * [Correct commands with thefuck](#correct-commands-with-thefuck)
+  * [Docker/Kubernetes](#docker/kubernetes)
+  * [Keychain ssh-agent](#keychain-ssh-agent)
+  * [Grep with ripgrep](#grep-with-ripgrep)
+  * [Git](#git)
     * [Checkout branches](#checkout-branches)
     * [Status](#status)
+    * [Clone](#clone)
+    * [Origin](#origin)
+  * [Languages](#languages)
+    * [Python](#python)
+    * [Ruby](#ruby)
+    * [Java/Gradle/Groovy](#java/gradle/groovy)
 * [Tmux](#tmux)
   * [Basic commands](#basic-commands)
   * [Manage sessions](#manage-sessions)
@@ -45,6 +57,7 @@ This document describes all the tools and features which I find useful for every
     * [Preview hunk](#preview-hunk)
     * [Git blame](#git-blame)
     * [File history](#file-history)
+    * [Reload file after checkout](#reload-file-after-checkout)
 
 ## Terminal
 
@@ -58,6 +71,14 @@ This document describes all the tools and features which I find useful for every
 
 ### View files with BAT
 
+### Correct commands with thefuck
+
+### Docker/Kubernetes
+
+### Keychain ssh-agent
+
+### Grep with ripgrep
+
 ### Git
 
 #### Checkout branches
@@ -68,13 +89,13 @@ This document describes all the tools and features which I find useful for every
 
 #### Origin
 
-### Correct commands with thefuck
+### Languages
 
-### Docker/Kubernetes
+#### Python
 
-### Keychain ssh-agent
+#### Ruby
 
-### Grep with ripgrep
+#### Java/Gradle/Groovy
 
 ## Tmux
 
