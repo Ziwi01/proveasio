@@ -44,6 +44,13 @@
   ansible.builtin.include_role:
     name: "{{ ansible_env.HOME }}/.local/opt/rvm1-ansible-{{ rvm_role_version }}"
 
+- name: "[RVM] Install default gems for rubies"
+  ansible.builtin.command: "{{ ansible_env.HOME }}/.rvm/bin/rvm {{ item.0.ruby }} do gem install '{{ item.1.keys() | list | first }}:{{ item.1.values() | list | first }}'"
+  changed_when: false
+  loop: "{{ ruby_gems | subelements('gems') }}"
+  loop_control:
+    loop_var: item
+
 - name: "[RVM] Save used version"
   ansible.builtin.set_fact:
     used_dev_versions: "{{ used_dev_versions | combine({'rvm1_ansible_role_version': rvm_role_version}) }}"

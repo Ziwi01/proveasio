@@ -33,20 +33,10 @@ In the process of making, I figured out that this can be beneficial for all the 
 
 Please read below README carefully and go through the scripts to see whats going on there before using on existing Windows/WSL.
 
-## TODO
-
-- ~feat: support both Ubuntu 20.04 and 22.04 LTS~
-- ~feat: install docker, kubectl, k9s, kind~
-- feat: add and use `pyenv`, `pipenv`, use latest Python+Ansible
-- feat: AWS cli installation/setup
-- docs: add usage descriptions with videos and images in `Usages.md`
-- feat(neovim): Install neovim-ruby-host for all rubies
-
 ## Table of contents
 
 * [TL;DR](#tl;dr)
 * [About](#about)
-* [TODO](#todo)
 * [Table of contents](#table-of-contents)
 * [Requirements](#requirements)
 * [Windows setup](#windows-setup)

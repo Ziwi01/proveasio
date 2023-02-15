@@ -20,6 +20,15 @@ puppet_rubies:
 #   - ruby-2.7.6
 #   - ruby-3.1.2
 
+# Ruby
+# Install any gem for any ruby. `all` installs for all of them
+# Specific ruby must match one from `rvm_rubies` list (see OS-specific vars file)
+# You need to set specific gem version, `latest` is not supported here
+ruby_gems:
+  - ruby: all
+    gems:
+      - neovim: 0.9.0
+
 # PDK (Puppet Development KIT)
 # Please note the module does not support package downgrades - if PDK is already installed in higher version, remove it first.
 pdk_version: latest
