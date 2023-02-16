@@ -5,8 +5,8 @@
 software_tasks_exclude: []
 
 # System manager to use. Ansible has issues detecting SysV vs. SystemD on WSL distributions
-# If you are using systemd WSL, overwrite this in `ansible/vars/overrides.yml` to `systemd`
-service_manager: sysvinit
+# If you are using SysVInit WSL (not recommended, see `README.md`), overwrite this in `ansible/vars/overrides.yml` to `sysvinit`
+service_manager: systemd
 
 # Specific versions for software (github)
 # Fixed versions should be set without `v` prefix (e.g: 1.4.3)
