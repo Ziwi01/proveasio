@@ -23,7 +23,7 @@
 - name: "[TheFuck] Get installed TheFuck version"
   ansible.builtin.shell: |
     set -e -o pipefail
-    pip3 show thefuck | grep Version | awk '{print $2}'
+    {{ ansible_env.HOME }}/.pyenv/shims/pip3 show thefuck | grep Version | awk '{print $2}'
   changed_when: false
   args:
     executable: /bin/bash

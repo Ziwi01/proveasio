@@ -43,7 +43,7 @@
   when: ansible_pip_version == 'latest'
 
 - name: "[Ansible] Get installed Ansible version from PIP"
-  ansible.builtin.shell: "set -e -o pipefail; pip3 show ansible | grep Version | awk '{print $2}'"
+  ansible.builtin.shell: "set -e -o pipefail; {{ ansible_env.HOME }}/.pyenv/shims/pip3 show ansible | grep Version | awk '{print $2}'"
   changed_when: false
   args:
     executable: /bin/bash
@@ -71,7 +71,7 @@
   when: ansible_lint_pip_version == 'latest'
 
 - name: "[Ansible] Get installed Ansible version from PIP"
-  ansible.builtin.shell: "set -e -o pipefail; pip3 show ansible-lint | grep Version | awk '{print $2}'"
+  ansible.builtin.shell: "set -e -o pipefail; {{ ansible_env.HOME }}/.pyenv/shims/pip3 show ansible-lint | grep Version | awk '{print $2}'"
   changed_when: false
   args:
     executable: /bin/bash

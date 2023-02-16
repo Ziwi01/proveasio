@@ -23,7 +23,7 @@
 - name: "[Gita] Get installed Gita version"
   ansible.builtin.shell: |
     set -e -o pipefail
-    pip3 show gita | grep Version | awk '{print $2}'
+    {{ ansible_env.HOME }}/.pyenv/shims/pip3 show gita | grep Version | awk '{print $2}'
   args:
     executable: /bin/bash
   changed_when: false
