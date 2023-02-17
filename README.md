@@ -4,9 +4,9 @@
   
 <div align="center">
 
-  <a href="">![CI build](https://github.com/Ziwi01/wsl-power-env/actions/workflows/ci.yml/badge.svg?branch=master)</a>
-  <a href="">![License](https://img.shields.io/github/license/Ziwi01/wsl-power-env)</a>
-  <a href="">![Last commit](https://img.shields.io/github/last-commit/Ziwi01/wsl-power-env)</a>
+<a href="">![CI build](https://github.com/Ziwi01/wsl-power-env/actions/workflows/ci.yml/badge.svg?branch=master)</a>
+<a href="">![License](https://img.shields.io/github/license/Ziwi01/wsl-power-env)</a>
+<a href="">![Last commit](https://img.shields.io/github/last-commit/Ziwi01/wsl-power-env)</a>
 
 </div>
 
@@ -157,6 +157,7 @@ Additionally, I setup the plugins below:
     - [mhinz/vim-signify](https://github.com/mhinz/vim-signify) - shows GIT info about modified/added/removed lines
     - [sindrets/diffview.nvim](https://github.com/sindrets/diffview.nvim) - great GIT diff plugin for comparing file tree with particular revision(s) or browse file/selection history
     - [f-person/git-blame.nvim](https://github.com/f-person/git-blame.nvim) - show Git blame in-line virtual text.
+    - [junegunn/gv](https://github.com/junegunn/gv.vim) - show git commits graph
 - [tzachar/cmp-tabnine](https://github.com/tzachar/cmp-tabnine) - AI completion mechanism
 - [rmagatti/goto-preview](https://github.com/rmagatti/goto-preview) - do not jump around the definition in new tabs/buffers - show floating preview window and edit it there, close the preview. Being on top of searched function: `gpd` (for definition).
 - [itchyny/vim-cursorword](https://github.com/itchyny/vim-cursorword) - underline all the words that the cursor is on right now. Handy for typo spotting.

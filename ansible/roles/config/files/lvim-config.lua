@@ -144,6 +144,8 @@ lvim.plugins = {
     -- Fuzzy finder
     { "junegunn/fzf" },
     { "junegunn/fzf.vim" },
+    -- Git graph
+    { 'junegunn/gv.vim' },
     -- GIT wrapper (`:G <any_git_command>`)
     { "tpope/vim-fugitive" },
     -- GIT manager in VIM. Awesome. (`:LazyGit`, or <Leader>gg)
@@ -232,6 +234,16 @@ lvim.plugins = {
     { 'nvim-pack/nvim-spectre' },
     -- Fallback search and replace (:Ack or <leader>a for search, :Acks or <leader>r to substitute)
     { "wincent/ferret" },
+    -- Improve local search and replace
+    { "roobert/search-replace.nvim",
+      config = function()
+        require("search-replace").setup({
+          -- optionally override defaults
+          -- default_replace_single_buffer_options = "gcI",
+          -- default_replace_multi_buffer_options = "egcI",
+        })
+      end,
+    },
     -- Cool colorscheme :)
     { "catppuccin/nvim", name = "catppuccin" },
 }
@@ -323,3 +335,38 @@ lvim.keys.normal_mode["<A-Left>"] = ":TmuxNavigateLeft<cr>"
 lvim.keys.normal_mode["<A-Right>"] = ":TmuxNavigateRight<cr>"
 lvim.keys.normal_mode["<A-Up>"] = ":TmuxNavigateUp<cr>"
 lvim.keys.normal_mode["<A-Down>"] = ":TmuxNavigateDown<cr>"
+
+-- Search and replace (roobert/search-replace.nvim)
+keymap = lvim.builtin.which_key.mappings
+keymap["r"] = { name = "SearchReplaceSingleBuffer" }
+keymap["r"]["s"] = { "<CMD>SearchReplaceSingleBufferSelections<CR>", "SearchReplaceSingleBuffer [s]elction list" }
+keymap["r"]["o"] = { "<CMD>SearchReplaceSingleBufferOpen<CR>", "[o]pen" }
+keymap["r"]["w"] = { "<CMD>SearchReplaceSingleBufferCWord<CR>", "[w]ord" }
+keymap["r"]["W"] = { "<CMD>SearchReplaceSingleBufferCWORD<CR>", "[W]ORD" }
+keymap["r"]["e"] = { "<CMD>SearchReplaceSingleBufferCExpr<CR>", "[e]xpr" }
+keymap["r"]["f"] = { "<CMD>SearchReplaceSingleBufferCFile<CR>", "[f]ile" }
+keymap["r"]["b"] = { name = "SearchReplaceMultiBuffer" }
+keymap["r"]["b"]["s"] = { "<CMD>SearchReplaceMultiBufferSelections<CR>","SearchReplaceMultiBuffer [s]elction list" }
+keymap["r"]["b"]["o"] = { "<CMD>SearchReplaceMultiBufferOpen<CR>", "[o]pen" }
+keymap["r"]["b"]["w"] = { "<CMD>SearchReplaceMultiBufferCWord<CR>", "[w]ord" }
+keymap["r"]["b"]["W"] = { "<CMD>SearchReplaceMultiBufferCWORD<CR>", "[W]ORD" }
+keymap["r"]["b"]["e"] = { "<CMD>SearchReplaceMultiBufferCExpr<CR>", "[e]xpr" }
+keymap["r"]["b"]["f"] = { "<CMD>SearchReplaceMultiBufferCFile<CR>", "[f]ile" }
+
+lvim.keys.visual_block_mode["<C-r>"] = [[<CMD>SearchReplaceSingleBufferVisualSelection<CR>]]
+lvim.keys.visual_block_mode["<C-s>"] = [[<CMD>SearchReplaceWithinVisualSelection<CR>]]
+lvim.keys.visual_block_mode["<C-b>"] = [[<CMD>SearchReplaceWithinVisualSelectionCWord<CR>]]
+
+-- show the effects of a search / replace in a live preview window
+vim.o.inccommand = "split"
+
+-- When opening file, place cursor where it was last edited
+vim.api.nvim_create_autocmd('BufReadPost', {
+  callback = function()
+    local mark = vim.api.nvim_buf_get_mark(0, '"')
+    local lcount = vim.api.nvim_buf_line_count(0)
+    if mark[1] > 0 and mark[1] <= lcount then
+      pcall(vim.api.nvim_win_set_cursor, 0, mark)
+    end
+  end,
+})

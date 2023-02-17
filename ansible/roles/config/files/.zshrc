@@ -157,9 +157,11 @@ export FZF_DEFAULT_OPTS='--height 100% --layout=reverse --border --ansi'
 
 # add alias for finding files with auto-preview ((b)etter find)
 alias bfind="fzf --preview '$FZF_PREVIEW_COMMAND' --bind shift-up:preview-page-up,shift-down:preview-page-down"
+# edit file found with bfind
+alias vimfind="vim \$(bfind)"
 # add alias for (b)etter tail
 btail() {
-    tail -f $1 | batcat --paging=never -l log
+    tail -f $1 | bat --paging=never -l log
 }
 # cat alias
 alias cat=bat
@@ -261,7 +263,7 @@ export NVM_DIR="$HOME/.local/opt/nvm"
 export PYENV_ROOT="$HOME/.pyenv"
 command -v pyenv >/dev/null || export PATH="$PYENV_ROOT/bin:$PATH"
 eval "$(pyenv init -)"
-eval "$(pyenv virtualenv-init -)"
+# eval "$(pyenv virtualenv-init -)" # this might slow down terminal init
 
 # RVM
 # Add RVM to PATH for scripting. Make sure this is the last PATH variable change.
