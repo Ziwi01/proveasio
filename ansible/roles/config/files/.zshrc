@@ -55,7 +55,7 @@ ZSH_THEME="powerlevel10k/powerlevel10k"
 # Uncomment the following line to display red dots whilst waiting for completion.
 # Caution: this setting can cause issues with multiline prompts (zsh 5.7.1 and newer seem to work)
 # See https://github.com/ohmyzsh/ohmyzsh/issues/5765
-# COMPLETION_WAITING_DOTS="true"
+COMPLETION_WAITING_DOTS="true"
 
 # Uncomment the following line if you want to disable marking untracked files
 # under VCS as dirty. This makes repository status check for large repositories
@@ -79,6 +79,7 @@ ZSH_THEME="powerlevel10k/powerlevel10k"
 # Example format: plugins=(rails git textmate ruby lighthouse)
 # Add wisely, as too many plugins slow down shell startup.
 plugins=(
+    zsh-lazyload
     git
     docker
     colorize
@@ -95,9 +96,14 @@ plugins=(
     you-should-use
     k
     zoxide
+    pyenv-lazy
 )
 
 source $ZSH/oh-my-zsh.sh
+
+# Load NVM, but use lazyload (save ~2s startup time)
+export NVM_DIR="$HOME/.local/opt/nvm"
+lazyload nvm -- "source '${NVM_DIR}/nvm.sh'"
 
 # export MANPATH="/usr/local/man:$MANPATH"
 
@@ -123,19 +129,12 @@ source $ZSH/oh-my-zsh.sh
 # alias zshconfig="mate ~/.zshrc"
 # alias ohmyzsh="mate ~/.oh-my-zsh"
 
-### PYTHON ENV
-# TODO: organize this
-# alias pyinit="source ~/var/vscode-python-venv/bin/activate"
-# eyamldecrypt() {
-#     eyaml decrypt --pkcs7-private-key=/etc/puppetlabs/puppet/keys/private_key.pkcs7.pem --pkcs7-public-key=/etc/puppetlabs/puppet/keys/public_key.pkcs7.pem -f $1
-# }
-
 ### Colorize
 ZSH_COLORIZE_TOOL=chroma
 
 ### The FUCK
-eval $(thefuck --alias)
-bindkey -s '\e\e' 'fuck\n'
+# eval $(thefuck --alias)
+bindkey -s '\e\e' 'thefuck !!\n'
 
 ### Fuzzy Finder
 
@@ -251,20 +250,10 @@ export ANSIBLE_TRANSFORM_INVALID_GROUP_CHARS=ignore
 # To customize prompt, run `p10k configure` or edit ~/.p10k.zsh.
 [[ ! -f ~/.p10k.zsh ]] || source ~/.p10k.zsh
 
-# Node Version Manager
-export NVM_DIR="$HOME/.local/opt/nvm"
-[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm
-[ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"  # This loads nvm bash_completion
-
-# SDKMan
-[[ -s "${HOME}/.sdkman/bin/sdkman-init.sh" ]] && source "${HOME}/.sdkman/bin/sdkman-init.sh"
-
-# Python pyenv
-export PYENV_ROOT="$HOME/.pyenv"
-command -v pyenv >/dev/null || export PATH="$PYENV_ROOT/bin:$PATH"
-eval "$(pyenv init -)"
-# eval "$(pyenv virtualenv-init -)" # this might slow down terminal init
+# CArgo
+. "$HOME/.cargo/env"
 
 # RVM
 # Add RVM to PATH for scripting. Make sure this is the last PATH variable change.
 export PATH="$PATH:$HOME/.rvm/bin"
+[[ -s "$HOME/.rvm/scripts/rvm" ]] && source "$HOME/.rvm/scripts/rvm" # Load RVM into a shell session *as a function*

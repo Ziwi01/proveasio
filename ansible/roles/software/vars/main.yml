@@ -78,6 +78,8 @@ omz_plugins:
   zsh-autosuggestions: https://github.com/zsh-users/zsh-autosuggestions
   zsh-syntax-highlighting: https://github.com/zsh-users/zsh-syntax-highlighting.git
   zsh-sdkman: https://github.com/matthieusb/zsh-sdkman.git
+  zsh-lazyload: https://github.com/qoomon/zsh-lazyload
+  pyenv-lazy: https://github.com/davidparsson/zsh-pyenv-lazy.git
 
 # TMUX Plugin Manager
 tpm_git_url: https://github.com/tmux-plugins/tpm.git
