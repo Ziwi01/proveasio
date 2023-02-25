@@ -10,13 +10,25 @@
   ansible.builtin.copy:
     src: "{{ ansible_env.HOME }}/.zshrc"
     dest: "{{ dotfiles_backup_dir }}/.zshrc-{{ lookup('pipe', 'date +%Y-%m-%d-%H-%M-%S') }}"
-    mode: '0755'
+    mode: '0644'
     remote_src: true
   when: zshrc_config.stat.exists and zshrc_backup | default(dotfiles_backup) | bool
 
+- name: "[Config][ZSH] Get exact node version"
+  ansible.builtin.shell: |
+    set -e -o pipefail
+    . {{ ansible_env.HOME }}/.local/opt/nvm/nvm.sh
+    nvm use {{ node_version | default('default') }} 2>&1 1>/dev/null
+    nvm list current | grep -Eo 'v[0-9]*\.[0-9]*\.[0-9]*'
+  args:
+    executable: /bin/bash
+  changed_when: false
+  failed_when: false
+  register: actual_node_version
+
 - name: "[Config][ZSH] Overwrite .zshrc. Overwrite flag is: {{ zshrc_overwrite | default(dotfiles_overwrite) }}"
-  ansible.builtin.copy:
-    src: .zshrc
+  ansible.builtin.template:
+    src: .zshrc.j2
     dest: "{{ ansible_env.HOME }}/.zshrc"
     mode: '0644'
   when: zshrc_overwrite | default(dotfiles_overwrite) | bool

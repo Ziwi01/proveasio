@@ -73,6 +73,11 @@ COMPLETION_WAITING_DOTS="true"
 # Would you like to use another custom folder than $ZSH/custom?
 # ZSH_CUSTOM=/path/to/new-custom-folder
 
+# Default Node version loaded quickly.
+{% if actual_node_version.stdout | regex_search('^v[0-9]*\.[0-9]*\.[0-9]*') %}
+export SNV='{{ actual_node_version.stdout }}'
+{% endif %}
+
 # Which plugins would you like to load?
 # Standard plugins can be found in $ZSH/plugins/
 # Custom plugins may be added to $ZSH_CUSTOM/plugins/
@@ -97,11 +102,15 @@ plugins=(
     k
     zoxide
     pyenv-lazy
+{% if actual_node_version.stdout | regex_search('^v[0-9]*\.[0-9]*\.[0-9]*') %}
+    zsh-snv
+{% endif %}
 )
 
 source $ZSH/oh-my-zsh.sh
 
 # Load NVM, but use lazyload (save ~2s startup time)
+# Node is preloaded by `zsh-snv` plugin in version set by `SNV` variable above.
 export NVM_DIR="$HOME/.local/opt/nvm"
 lazyload nvm -- "source '${NVM_DIR}/nvm.sh'"
 
