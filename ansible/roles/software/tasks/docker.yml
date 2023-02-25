@@ -19,7 +19,7 @@
     update_cache: true
     name: "{{ item.key }}"
     state: "{{ item.value }}"
-  loop: "{{ docker_dependencies | dict2items }}"
+  loop: "{{ docker_apt_dependencies | dict2items }}"
 
 - name: '[Docker] Add signing key'
   become: true
@@ -48,7 +48,7 @@
     update_cache: true
     name: "{{ item.key }}"
     state: "{{ item.value }}"
-  loop: "{{ docker_packages | dict2items }}"
+  loop: "{{ docker_apt_packages | dict2items }}"
 
 - name: '[Docker] Ensure docker packages are installed in particular versions'
   become: true
@@ -56,7 +56,7 @@
   ansible.builtin.apt:
     update_cache: true
     name: "{{ item.key }}={{ item.value }}"
-  loop: "{{ docker_packages | dict2items }}"
+  loop: "{{ docker_apt_packages | dict2items }}"
 
 - name: '[Docker] Start docker daemon' # noqa: args[module]
   become: true

@@ -6,11 +6,11 @@
   register: version
   changed_when: false
   ignore_errors: true
-  when: versions['tmux'] == 'latest'
+  when: github_packages['tmux'] == 'latest'
 
-- name: "[Tmux] Set version to {{ version.stdout | default(versions['tmux']) }}"
+- name: "[Tmux] Set version to {{ version.stdout | default(github_packages['tmux']) }}"
   ansible.builtin.set_fact:
-    tmux_version: "{{ version.stdout | default(versions['tmux']) }}"
+    tmux_version: "{{ version.stdout | default(github_packages['tmux']) }}"
 
 - name: "[Tmux] Set proper download URL"
   ansible.builtin.set_fact:

@@ -16,11 +16,11 @@
     executable: /bin/bash
   changed_when: false
   ignore_errors: true
-  when: versions['kubectl'] == 'latest'
+  when: github_packages['kubectl'] == 'latest'
 
-- name: "[kubectl] Set version to {{ version.stdout | default(versions['kubectl']) }}"
+- name: "[kubectl] Set version to {{ version.stdout | default(github_packages['kubectl']) }}"
   ansible.builtin.set_fact:
-    kubectl_version: "{{ version.stdout | default(versions['kubectl']) }}"
+    kubectl_version: "{{ version.stdout | default(github_packages['kubectl']) }}"
 
 - name: "[kubectl] Set proper download URL"
   ansible.builtin.set_fact:
@@ -65,11 +65,11 @@
   register: version
   changed_when: false
   ignore_errors: true
-  when: versions['kind'] == 'latest'
+  when: github_packages['kind'] == 'latest'
 
-- name: "[kind] Set version to {{ version.stdout | default(versions['kind']) }}"
+- name: "[kind] Set version to {{ version.stdout | default(github_packages['kind']) }}"
   ansible.builtin.set_fact:
-    kind_version: "{{ version.stdout | default(versions['kind']) }}"
+    kind_version: "{{ version.stdout | default(github_packages['kind']) }}"
 
 - name: "[kind] Set proper download URL"
   ansible.builtin.set_fact:
@@ -114,11 +114,11 @@
   register: version
   changed_when: false
   ignore_errors: true
-  when: versions['k9s'] == 'latest'
+  when: github_packages['k9s'] == 'latest'
 
-- name: "[k9s] Set version to {{ version.stdout | default(versions['k9s']) }}"
+- name: "[k9s] Set version to {{ version.stdout | default(github_packages['k9s']) }}"
   ansible.builtin.set_fact:
-    k9s_version: "{{ version.stdout | default(versions['k9s']) }}"
+    k9s_version: "{{ version.stdout | default(github_packages['k9s']) }}"
 
 - name: "[k9s] Set proper download URL"
   ansible.builtin.set_fact:

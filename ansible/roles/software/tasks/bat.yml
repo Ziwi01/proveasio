@@ -16,11 +16,11 @@
   register: version
   changed_when: false
   ignore_errors: true
-  when: versions['bat'] == 'latest'
+  when: github_packages['bat'] == 'latest'
 
-- name: "[BAT] Set version to {{ version.stdout | default(versions['bat']) }}"
+- name: "[BAT] Set version to {{ version.stdout | default(github_packages['bat']) }}"
   ansible.builtin.set_fact:
-    bat_version: "{{ version.stdout | default(versions['bat']) }}"
+    bat_version: "{{ version.stdout | default(github_packages['bat']) }}"
 
 - name: "[BAT] Set proper download URL"
   ansible.builtin.set_fact:

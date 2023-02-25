@@ -5,7 +5,7 @@
     update_cache: true
     name: "{{ item.key }}"
     state: "{{ item.value }}"
-  loop: "{{ packages | dict2items }}"
+  loop: "{{ default_apt_packages | dict2items }}"
 
 - name: '[Packages] Ensure useful packages are installed in particular versions'
   become: true
@@ -13,6 +13,6 @@
   ansible.builtin.apt:
     update_cache: true
     name: "{{ item.key }}={{ item.value }}"
-  loop: "{{ packages | dict2items }}"
+  loop: "{{ default_apt_packages | dict2items }}"
 
 # @TODO: get which versions got installed and add them to `used_software_versions`

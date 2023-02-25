@@ -5,11 +5,11 @@
 # Source: https://github.com/nvbn/thefuck
 - name: "[TheFuck] Install TheFuck specific version"
   ansible.builtin.pip:
-    name: "thefuck=={{ versions.thefuck }}"
+    name: "thefuck=={{ pip_packages['thefuck'] }}"
     executable: "{{ ansible_env.HOME }}/.pyenv/shims/pip3"
   register: pip_out
   changed_when: "'Requirement already satisfied' not in pip_out.stdout"
-  when: versions['thefuck'] != 'latest'
+  when: pip_packages['thefuck'] != 'latest'
 
 - name: "[TheFuck] Install TheFuck latest version"
   ansible.builtin.pip:
@@ -18,7 +18,7 @@
     extra_args: --upgrade
   register: pip_out
   changed_when: "'Requirement already satisfied' not in pip_out.stdout"
-  when: versions['thefuck'] == 'latest'
+  when: pip_packages['thefuck'] == 'latest'
 
 - name: "[TheFuck] Get installed TheFuck version"
   ansible.builtin.shell: |

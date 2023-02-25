@@ -6,11 +6,11 @@
   register: version
   changed_when: false
   ignore_errors: true
-  when: versions['fzf'] == 'latest'
+  when: github_packages['fzf'] == 'latest'
 
-- name: "[FZF] Set version to {{ version.stdout | default(versions['fzf']) }}"
+- name: "[FZF] Set version to {{ version.stdout | default(github_packages['fzf']) }}"
   ansible.builtin.set_fact:
-    fzf_version: "{{ version.stdout | default(versions['fzf']) }}"
+    fzf_version: "{{ version.stdout | default(github_packages['fzf']) }}"
 
 - name: "[FZF] Clone/update latest version"
   ansible.builtin.git:

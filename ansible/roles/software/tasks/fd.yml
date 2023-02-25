@@ -27,11 +27,11 @@
   register: version
   changed_when: false
   ignore_errors: true
-  when: versions['fd'] == 'latest'
+  when: github_packages['fd'] == 'latest'
 
-- name: "[FD] Set version to {{ version.stdout | default(versions['fd']) }}"
+- name: "[FD] Set version to {{ version.stdout | default(github_packages['fd']) }}"
   ansible.builtin.set_fact:
-    fd_version: "{{ version.stdout | default(versions['fd']) }}"
+    fd_version: "{{ version.stdout | default(github_packages['fd']) }}"
 
 - name: "[FD] Set proper download URL"
   ansible.builtin.set_fact:

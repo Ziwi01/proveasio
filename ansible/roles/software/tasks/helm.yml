@@ -9,11 +9,11 @@
   register: version
   changed_when: false
   ignore_errors: true
-  when: versions['helm'] == 'latest'
+  when: github_packages['helm'] == 'latest'
 
-- name: "[Helm] Set version to {{ version.stdout | default(versions['helm']) }}"
+- name: "[Helm] Set version to {{ version.stdout | default(github_packages['helm']) }}"
   ansible.builtin.set_fact:
-    helm_version: "{{ version.stdout | default(versions['helm']) }}"
+    helm_version: "{{ version.stdout | default(github_packages['helm']) }}"
 
 - name: "[Helm] Set proper download URL"
   ansible.builtin.set_fact:

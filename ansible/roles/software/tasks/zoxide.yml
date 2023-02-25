@@ -8,11 +8,11 @@
   register: version
   changed_when: false
   ignore_errors: true
-  when: versions['zoxide'] == 'latest'
+  when: github_packages['zoxide'] == 'latest'
 
-- name: "[Zoxide] Set version to {{ version.stdout | default(versions['zoxide']) }}"
+- name: "[Zoxide] Set version to {{ version.stdout | default(github_packages['zoxide']) }}"
   ansible.builtin.set_fact:
-    zoxide_version: "{{ version.stdout | default(versions['zoxide']) }}"
+    zoxide_version: "{{ version.stdout | default(github_packages['zoxide']) }}"
 
 - name: "[Zoxide] Set proper download URL"
   ansible.builtin.set_fact:

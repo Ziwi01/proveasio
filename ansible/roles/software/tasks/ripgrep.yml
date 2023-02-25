@@ -13,11 +13,11 @@
   register: version
   changed_when: false
   ignore_errors: true
-  when: versions['ripgrep'] == 'latest'
+  when: github_packages['ripgrep'] == 'latest'
 
-- name: "[Ripgrep] Set version to {{ version.stdout | default(versions['ripgrep']) }}"
+- name: "[Ripgrep] Set version to {{ version.stdout | default(github_packages['ripgrep']) }}"
   ansible.builtin.set_fact:
-    ripgrep_version: "{{ version.stdout | default(versions['ripgrep']) }}"
+    ripgrep_version: "{{ version.stdout | default(github_packages['ripgrep']) }}"
 
 - name: "[Ripgrep] Set proper download URL"
   ansible.builtin.set_fact:

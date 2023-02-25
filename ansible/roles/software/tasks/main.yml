@@ -13,6 +13,12 @@
   tags:
     - always
 
+# Include versions variables
+- name: "[Software] Include roles/software/vars/versions.yml"
+  ansible.builtin.include_vars: "{{ playbook_dir }}/roles/software/vars/versions.yml"
+  tags:
+    - always
+
 # Include override variables
 - name: "[Software] Include ansible/vars/overrides.yml"
   ansible.builtin.include_vars: "{{ item }}"

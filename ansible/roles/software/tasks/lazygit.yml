@@ -6,11 +6,11 @@
   register: version
   changed_when: false
   ignore_errors: true
-  when: versions['lazygit'] == 'latest'
+  when: github_packages['lazygit'] == 'latest'
 
-- name: "[LazyGIT] Set version to {{ version.stdout | default(versions['lazygit']) }}"
+- name: "[LazyGIT] Set version to {{ version.stdout | default(github_packages['lazygit']) }}"
   ansible.builtin.set_fact:
-    lazygit_version: "{{ version.stdout | default(versions['lazygit']) }}"
+    lazygit_version: "{{ version.stdout | default(github_packages['lazygit']) }}"
 
 - name: "[LazyGIT] Set proper download URL"
   ansible.builtin.set_fact:

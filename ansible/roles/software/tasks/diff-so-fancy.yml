@@ -9,11 +9,11 @@
   register: version
   changed_when: false
   ignore_errors: true
-  when: versions['diff-so-fancy'] == 'latest'
+  when: github_packages['diff-so-fancy'] == 'latest'
 
-- name: "[Diff-so-fancy] Set version to {{ version.stdout | default(versions['diff-so-fancy']) }}"
+- name: "[Diff-so-fancy] Set version to {{ version.stdout | default(github_packages['diff-so-fancy']) }}"
   ansible.builtin.set_fact:
-    dsf_version: "{{ version.stdout | default(versions['diff-so-fancy']) }}"
+    dsf_version: "{{ version.stdout | default(github_packages['diff-so-fancy']) }}"
 
 - name: "[Diff-so-fancy] Set proper download URL"
   ansible.builtin.set_fact:

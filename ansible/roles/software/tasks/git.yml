@@ -5,11 +5,11 @@
   ansible.builtin.apt_repository:
     repo: ppa:git-core/ppa
 
-- name: "[Git] Install GIT {{ versions.git }}"
+- name: "[Git] Install GIT {{ custom_apt_packages['git'] }}"
   become: true
   ansible.builtin.apt:
     name: "git"
-    state: "{{ versions.git }}"
+    state: "{{ git_apt_version }}"
     update_cache: true
 
 - name: "[Git] Get installed GIT version"

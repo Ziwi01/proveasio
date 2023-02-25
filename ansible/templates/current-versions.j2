@@ -1,7 +1,7 @@
 ---
 {% if used_software_versions is defined and used_software_versions | length -%}
 # `software` role versions
-versions:
+github_packages:
   {% for app, version in used_software_versions.items() %}
 {{ app -}}: {{ version }}
   {% endfor %}
