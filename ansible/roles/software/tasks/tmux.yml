@@ -69,7 +69,7 @@
       ansible.builtin.file:
         path: "{{ ansible_env.HOME }}/.tmux/plugins"
         state: directory
-        mode: 0755
+        mode: '0755'
         recurse: true
 
     - name: "[TMUX] Clone/update Tmux plugin manager"
@@ -78,6 +78,7 @@
         dest: "{{ tmux_plugins_dir }}/tpm"
         force: true
         update: true
+        version: "{{ tpm_version }}"
   rescue:
     - name: "[Tmux] Remove TMUX dir {{ ansible_env.HOME }}/.local/opt/tmux-{{ tmux_version }} as installation failed"
       ansible.builtin.file:

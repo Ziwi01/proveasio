@@ -13,12 +13,6 @@
   tags:
     - always
 
-# Include versions variables
-- name: "[Software] Include roles/software/vars/versions.yml"
-  ansible.builtin.include_vars: "{{ playbook_dir }}/roles/software/vars/versions.yml"
-  tags:
-    - always
-
 # Include override variables
 - name: "[Software] Include ansible/vars/overrides.yml"
   ansible.builtin.include_vars: "{{ item }}"
@@ -36,6 +30,19 @@
     cacheable: true
   tags:
     - always
+
+# Install `yq` YAML parser
+# Used for editing YAML files for versions and release purposes.
+- name: "[Software] Install yq"
+  ansible.builtin.include_tasks:
+    file: yq.yml
+    apply:
+      tags:
+        - always
+        - yq
+  tags:
+    - always
+    - yq
 
 # Common software
 - name: "[Software] Install packages"

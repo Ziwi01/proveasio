@@ -8,13 +8,65 @@ software_tasks_exclude: []
 # If you are using SysVInit WSL (not recommended, see `README.md`), overwrite this in `ansible/vars/overrides.yml` to `sysvinit`
 service_manager: systemd
 
+# Default packages to be installed first, using APT
+default_apt_packages:
+  curl: latest
+  unzip: latest
+  mlocate: latest
+  # v Required for latest Tmux install
+  libevent-dev: latest
+  tree: latest
+  htop: latest
+  jq: latest
+  gcc: latest
+  zip: latest
+  # v Required for latest Tmux install
+  universal-ctags: latest
+  # v Required for latest Tmux install
+  ncurses-dev: latest
+  dos2unix: latest
+  php: latest
+  composer: latest
+  # v Required for latest Tmux install
+  groff: latest
+  keychain: latest
+
+# Specific versions for software (github)
+# Fixed versions should be set without `v` prefix (e.g: 1.4.3)
+github_packages:
+  diff-so-fancy: latest
+  bat: latest
+  zoxide: latest
+  helm: latest
+  git: latest
+  lazygit: latest
+  fzf: latest
+  git-fuzzy: latest
+  tmux: latest
+  ripgrep: latest
+  fd: latest
+  kubectl: latest # TODO: this is not github
+  kind: latest
+  k9s: latest
+  yq: latest
+
+# Packages and their versions to install with PIP
+pip_packages:
+  thefuck: latest
+  gita: latest
+
 # FZF
 fzf_git_url: "https://github.com/junegunn/fzf.git"
 fzf_home: "{{ ansible_env.HOME }}/.fzf"
 
+# Git from custom PPA repo
+git_apt_version: latest
+
 # GIT Fuzzy
 git_fuzzy_url: "https://github.com/bigH/git-fuzzy.git"
 git_fuzzy_home: "{{ ansible_env.HOME }}/.local/opt/git-fuzzy"
+# v Can be tag, or branch name
+git_fuzzy_version: "master"
 
 # Oh-My-Zsh
 omz_home: "{{ ansible_env.HOME }}/.oh-my-zsh"
@@ -30,5 +82,19 @@ omz_plugins:
   zsh-snv: https://github.com/rpeshkov/zsh-snv
 
 # TMUX Plugin Manager
-tpm_git_url: https://github.com/tmux-plugins/tpm.git
 tmux_plugins_dir: "{{ ansible_env.HOME }}/.tmux/plugins"
+tpm_git_url: https://github.com/tmux-plugins/tpm.git
+tpm_version: master
+
+# Docker dependency packages
+docker_apt_dependencies:
+  ca-certificates: latest
+  gnupg: latest
+  lsb-release: latest
+
+# Docker main packages
+docker_apt_packages:
+  docker-ce: latest
+  docker-ce-cli: latest
+  containerd.io: latest
+  docker-compose-plugin: latest

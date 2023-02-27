@@ -1,0 +1,51 @@
+---
+# `yq` YAML parser
+# Used to update YAML files for versioning and release purposes.
+#
+# Source: https://github.com/mikefarah/yq
+- name: "[yq] Get latest version if requested"
+  ansible.builtin.shell: curl -s https://api.github.com/repos/mikefarah/yq/releases/latest | jq .tag_name -r | cut -f2 -d'v'
+  register: version
+  changed_when: false
+  ignore_errors: true
+  when: github_packages['yq'] == 'latest'
+
+- name: "[yq] Set version to {{ version.stdout | default(github_packages['yq']) }}"
+  ansible.builtin.set_fact:
+    yq_version: "{{ version.stdout | default(github_packages['yq']) }}"
+
+- name: "[yq] Set proper download URL"
+  ansible.builtin.set_fact:
+    dsf_url: "https://github.com/mikefarah/yq/releases/download/v{{ yq_version }}/yq_linux_amd64"
+
+- name: "[yq] Check if yq {{ yq_version }} is installed"
+  ansible.builtin.stat:
+    path: "{{ ansible_env.HOME }}/.local/opt/yq-{{ yq_version }}"
+  register: yq_dir
+
+- name: "Installation"
+  when: not yq_dir.stat.exists
+  block:
+
+    - name: "[yq] Create directory in {{ ansible_env.HOME }}/.local/opt"
+      ansible.builtin.file:
+        path: "{{ ansible_env.HOME }}/.local/opt/yq-{{ yq_version }}"
+        state: directory
+        mode: '0755'
+
+    - name: "[yq] Download yq {{ yq_version }}"
+      ansible.builtin.get_url:
+        url: "{{ dsf_url }}"
+        dest: "{{ ansible_env.HOME }}/.local/opt/yq-{{ yq_version }}/yq"
+        mode: '0755'
+
+- name: "[yq] Link {{ yq_version }} binary"
+  ansible.builtin.file:
+    src: "{{ ansible_env.HOME }}/.local/opt/yq-{{ yq_version }}/yq"
+    dest: "{{ ansible_env.HOME }}/.local/bin/yq"
+    state: link
+    force: true
+
+- name: "[yq] Save used version"
+  ansible.builtin.set_fact:
+    used_software_versions: "{{ used_software_versions | combine({'yq': yq_version}) }}"
