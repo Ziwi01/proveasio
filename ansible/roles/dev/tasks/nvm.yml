@@ -3,22 +3,22 @@
 # Also, some tools get installed in node (language servers etc.)
 # Source: https://github.com/nvm-sh/nvm
 ---
-- name: "[NVM] Get latest version if requested"
-  ansible.builtin.shell: curl -s https://api.github.com/repos/nvm-sh/nvm/releases/latest | jq .name -r | cut -f2 -d'v'
-  register: version
-  changed_when: false
-  ignore_errors: true
-  when: nvm_version == 'latest'
+- name: "[NVM] Get Github URL for proper version"
+  vars:
+    app: nvm
+    repo: nvm-sh/nvm
+    version_query: curl -s https://api.github.com/repos/nvm-sh/nvm/releases/latest | jq .name -r | cut -f2 -d'v'
+  ansible.builtin.import_role:
+    name: common
+    tasks_from: github_version.yml
+  tags:
+    - versions
 
-- name: "[NVM] Set version to {{ version.stdout | default(nvm_version) }}"
-  ansible.builtin.set_fact:
-    nvm_git_version: "{{ version.stdout | default(nvm_version) }}"
-
-- name: "[NVM] Clone NVM repository and checkout {{ nvm_git_version }}"
+- name: "[NVM] Clone NVM repository and checkout {{ nvm_version }}"
   ansible.builtin.git:
     repo: "https://github.com/nvm-sh/nvm.git"
     dest: "{{ ansible_env.HOME }}/.local/opt/nvm"
-    version: "v{{ nvm_git_version }}"
+    version: "v{{ nvm_version }}"
 
 # TODO: do not install if already proper version installed
 - name: "[NVM] Install NVM" # noqa no-changed-when
@@ -34,5 +34,13 @@
     executable: /bin/bash
 
 - name: "[NVM] Save used version"
-  ansible.builtin.set_fact:
-    used_dev_versions: "{{ used_dev_versions | combine({'nvm_version': nvm_git_version}) }}"
+  vars:
+    app: nvm
+    target_version:
+      nvm_version: "{{ nvm_version }}"
+    query: ".nvm_version = \"{{ nvm_version }}\""
+  nvm.builtin.import_role:
+    name: common
+    tasks_from: save_version.yml
+  tags:
+    - versions

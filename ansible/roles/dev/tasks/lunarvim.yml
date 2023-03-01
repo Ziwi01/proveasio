@@ -32,13 +32,25 @@
   when: lunarvim_version in ['master', 'rolling']
 
 - name: "[LunarVIM] Get installed version tag"
-  ansible.builtin.shell: "set -e -o pipefail; git describe --tags | head -n 1 | awk -F'-' '{ print $1 }'"
+  ansible.builtin.shell: |
+    set -e -o pipefail
+    git describe --tags | head -n 1 | awk -F'-' '{ print $1 }'
   changed_when: false
   args:
     chdir: "{{ lunarvim_home }}"
     executable: /bin/bash
   register: lunarvim_git_version
+  tags:
+    - versions
 
-- name: "[LunarVIM] Save Lunarvim tag"
-  ansible.builtin.set_fact:
-    used_dev_versions: "{{ used_dev_versions | combine({'lunarvim_version': lunarvim_git_version.stdout}) }}"
+- name: "[LunarVIM] Save used version"
+  vars:
+    app: lunarvim
+    target_version:
+      lunarvim_version: "{{ lunarvim_version.stdout }}"
+    query: ".lunarvim_version = \"{{ lunarvim_version.stdout }}\""
+  lunarvim.builtin.import_role:
+    name: common
+    tasks_from: save_version.yml
+  tags:
+    - versions

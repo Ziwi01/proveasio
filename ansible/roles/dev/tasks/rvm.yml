@@ -52,5 +52,13 @@
     loop_var: item
 
 - name: "[RVM] Save used version"
-  ansible.builtin.set_fact:
-    used_dev_versions: "{{ used_dev_versions | combine({'rvm1_ansible_role_version': rvm_role_version}) }}"
+  vars:
+    app: rvm
+    target_version:
+      rvm1_ansible_role_version: "{{ rvm_role_version }}"
+    query: ".rvm1_ansible_role_version = \"{{ rvm_role_version }}\""
+  rvm.builtin.import_role:
+    name: common
+    tasks_from: save_version.yml
+  tags:
+    - versions

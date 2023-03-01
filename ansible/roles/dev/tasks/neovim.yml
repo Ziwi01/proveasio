@@ -7,22 +7,20 @@
   ignore_errors: true
   changed_when: neovim_check_deb.rc > 1
   failed_when: neovim_check_deb.rc > 1
+  tags:
+    - versions
 
-- name: "[Neovim] Get latest version if requested"
-  ansible.builtin.shell: |
-    curl -s https://api.github.com/repos/neovim/neovim/releases/latest | grep -oP 'NVIM v([0-9]*\.[0-9]*\.[0-9])\\n' | grep -Eo '[0-9]*\.[0-9]*\.[0-9]'
-  register: version
-  changed_when: false
-  ignore_errors: true
-  when: neovim_version == 'latest'
-
-- name: "[Neovim] Set version to {{ version.stdout | default(neovim_version) }}"
-  ansible.builtin.set_fact:
-    neovim_version: "{{ version.stdout | default(neovim_version) }}"
-
-- name: "[Neovim] Set proper download URL"
-  ansible.builtin.set_fact:
-    neovim_url: "https://github.com/neovim/neovim/releases/download/v{{ neovim_version }}/nvim-linux64.deb"
+- name: "[Neovim] Get Github URL for proper version"
+  vars:
+    app: neovim
+    repo: neovim/neovim
+    version_query: curl -s https://api.github.com/repos/neovim/neovim/releases/latest | grep -oP 'NVIM v([0-9]*\.[0-9]*\.[0-9])\\n' | grep -Eo '[0-9]*\.[0-9]*\.[0-9]'
+    artifact_uri: "v{{ neovim_version }}/nvim-linux64.deb"
+  ansible.builtin.import_role:
+    name: common
+    tasks_from: github_version.yml
+  tags:
+    - versions
 
 - name: "Installation"
   when: neovim_check_deb.stdout | regex_search('[0-9]+\.[0-9]+\.[0-9]+') | default(0) != neovim_version
@@ -45,5 +43,13 @@
       become: true
 
 - name: "[Neovim] Save used version"
-  ansible.builtin.set_fact:
-    used_dev_versions: "{{ used_dev_versions | combine({'neovim_version': version.stdout}) }}"
+  vars:
+    app: neovim
+    target_version:
+      neovim_version: "{{ neovim_version }}"
+    query: ".neovim_version = \"{{ neovim_version }}\""
+  neovim.builtin.import_role:
+    name: common
+    tasks_from: save_version.yml
+  tags:
+    - versions

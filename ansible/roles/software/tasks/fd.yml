@@ -21,21 +21,20 @@
   ignore_errors: true
   changed_when: fd_check_deb.rc > 1
   failed_when: fd_check_deb.rc > 1
+  tags:
+    - versions
 
-- name: "[FD] Get latest version if requested"
-  ansible.builtin.shell: curl -s https://api.github.com/repos/sharkdp/fd/releases/latest | jq .name -r | cut -f2 -d'v'
-  register: version
-  changed_when: false
-  ignore_errors: true
-  when: github_packages['fd'] == 'latest'
-
-- name: "[FD] Set version to {{ version.stdout | default(github_packages['fd']) }}"
-  ansible.builtin.set_fact:
-    fd_version: "{{ version.stdout | default(github_packages['fd']) }}"
-
-- name: "[FD] Set proper download URL"
-  ansible.builtin.set_fact:
-    fd_url: "https://github.com/sharkdp/fd/releases/download/v{{ fd_version }}/fd_{{ fd_version }}_amd64.deb"
+- name: "[FD] Get Github URL for proper version"
+  vars:
+    app: fd
+    repo: sharkdp/fd
+    version_query: curl -s https://api.github.com/repos/sharkdp/fd/releases/latest | jq .name -r | cut -f2 -d'v'
+    artifact_uri: v{{ fd_version }}/fd_{{ fd_version }}_amd64.deb
+  ansible.builtin.import_role:
+    name: common
+    tasks_from: github_version.yml
+  tags:
+    - versions
 
 - name: "Installation"
   when: fd_check_deb.stdout | regex_search('[0-9]+\.[0-9]+\.[0-9]+') | default(0) != fd_version
@@ -57,6 +56,15 @@
         deb: "{{ ansible_env.HOME }}/.local/opt/fd-{{ fd_version }}/fd_{{ fd_version }}_amd64.deb"
       become: true
 
-- name: "[FD] Save used version"
-  ansible.builtin.set_fact:
-    used_software_versions: "{{ used_software_versions | combine({'fd': fd_version}) }}"
+- name: "[fd] Save used version"
+  vars:
+    app: fd
+    target_version:
+      github_packages:
+        fd: "{{ fd_version }}"
+    query: ".github_packages.fd = \"{{ fd_version }}\""
+  ansible.builtin.import_role:
+    name: common
+    tasks_from: save_version.yml
+  tags:
+    - versions

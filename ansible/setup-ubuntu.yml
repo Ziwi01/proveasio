@@ -1,9 +1,9 @@
-- name: WSL Ubuntu Power Environment
+- name: Start Proveasio`ning
   hosts: ubuntu
   ### Comment out roles you don't need ###
   vars:
     summary: |
-            #################################################################################
+            #############################################
 
             Thank you for using
                ___                              _
@@ -12,21 +12,39 @@
             / ___/| | | (_) \ V /  __/ (_| \__ \ | (_) |
             \/    |_|  \___/ \_/ \___|\__,_|___/_|\___/
 
-            For configuration, example usage and customization options, please see Usages.md.
+            For example usages see `Usages.md`.
 
-            #################################################################################
+            IF you like it, gimme a star! :)
+
+            #############################################
 
             This ansible run ended up with below versions installed/upgraded:
 
-            TODO: versions
 
-            All above versions are added to `./current-versions.yml`
-            If you want to use those versions for subsequent runs, put those in `./vars/overrides.yml`. See README.md for details.
+            {{ current_versions | to_nice_yaml }}
+
+            All above versions are added/updated in `{{ playbook_dir }}/../current-versions.yml`
+
+            See `README.md` for details on versioning.
   tasks:
     - name: '[Init] Check sudo password'
       ansible.builtin.command: echo "sudo password is correct"
       become: true
       changed_when: false
+      tags:
+        - always
+    # Set current versions fact
+    - name: "[Init] Reset current versions fact"
+      ansible.builtin.set_fact:
+        current_versions: {}
+        cacheable: true
+      tags:
+        - always
+    - name: "[Init] Ensure `current-versions.yml` file"
+      ansible.builtin.file:
+        path: "{{ playbook_dir }}/../current-versions.yml"
+        mode: '0644'
+        state: touch
       tags:
         - always
     - name: '[Software] Include software role'
@@ -43,9 +61,3 @@
         var: summary
       tags:
         - always
-
-    # - name: "[Summary] Save all versions in current-versions.yaml"
-    #   ansible.builtin.template:
-    #     src: 'templates/current-versions.j2'
-    #     dest: 'current-versions.yaml'
-    #     mode: '0644'

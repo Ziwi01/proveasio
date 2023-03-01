@@ -40,7 +40,6 @@
   ansible.builtin.git:
     repo: "{{ item.value }}"
     dest: "{{ omz_home }}/custom/plugins/{{ item.key }}"
-    update: true
   loop: "{{ omz_plugins | dict2items }}"
 
 - name: '[Zsh] Check for powerlevel10k theme'
@@ -52,5 +51,6 @@
   ansible.builtin.git:
     repo: https://github.com/romkatv/powerlevel10k.git
     dest: "{{ omz_home }}/custom/themes/powerlevel10k"
+    version: "{{ p10k_version }}"
     depth: 1
   when: not powerlevel10k.stat.exists

@@ -72,9 +72,17 @@
     sdk_install.rc != 0 and
     'is already installed.' not in sdk_install.stdout
 
-- name: "[SDKMan] Save installed SDKs versions"
-  ansible.builtin.set_fact:
-    used_dev_versions: "{{ used_dev_versions | combine({'sdkman_install_packages': sdkman_install_packages}) }}"
+- name: "[SDKMan] Save used version"
+  vars:
+    app: SDKMan
+    target_version:
+      sdkman_install_packages: "{{ sdkman_install_packages }}"
+    query: ".sdkman_install_packages = \"{{ sdkman_install_packages }}\""
+  rvm.builtin.import_role:
+    name: common
+    tasks_from: save_version.yml
+  tags:
+    - versions
 
 - name: "[SDKMan] Uninstall SDK candidates/versions"
   ansible.builtin.shell: >-
@@ -110,9 +118,17 @@
      selectattr('item', 'equalto', item.key) |
      first).stdout
 
-- name: "[SDKMan] Save default SDKs versions"
-  ansible.builtin.set_fact:
-    used_dev_versions: "{{ used_dev_versions | combine({'sdkman_defaults': sdkman_defaults}) }}"
+- name: "[SDKMan] Save used version"
+  vars:
+    app: SDKMan
+    target_version:
+      sdkman_defaults: "{{ sdkman_defaults }}"
+    query: ".sdkman_defaults = \"{{ sdkman_defaults }}\""
+  rvm.builtin.import_role:
+    name: common
+    tasks_from: save_version.yml
+  tags:
+    - versions
 
 - name: "[SDKMan] Flush SDK caches (after)"
   ansible.builtin.shell: . {{ sdkman_dir }}/bin/sdkman-init.sh && sdk flush {{ item }}

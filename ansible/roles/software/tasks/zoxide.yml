@@ -3,20 +3,17 @@
 #
 # Source: https://github.com/ajeetdsouza/zoxide
 ---
-- name: "[Zoxide] Get latest version if requested"
-  ansible.builtin.shell: curl -s https://api.github.com/repos/ajeetdsouza/zoxide/releases/latest | jq .name -r | cut -f2 -d'v'
-  register: version
-  changed_when: false
-  ignore_errors: true
-  when: github_packages['zoxide'] == 'latest'
-
-- name: "[Zoxide] Set version to {{ version.stdout | default(github_packages['zoxide']) }}"
-  ansible.builtin.set_fact:
-    zoxide_version: "{{ version.stdout | default(github_packages['zoxide']) }}"
-
-- name: "[Zoxide] Set proper download URL"
-  ansible.builtin.set_fact:
-    zoxide_url: "https://github.com/ajeetdsouza/zoxide/releases/download/v{{ zoxide_version }}/zoxide-{{ zoxide_version }}-x86_64-unknown-linux-musl.tar.gz"
+- name: "[Zoxide] Get Github URL for proper version"
+  vars:
+    app: zoxide
+    repo: ajeetdsouza/zoxide
+    version_query: curl -s https://api.github.com/repos/ajeetdsouza/zoxide/releases/latest | jq .name -r | cut -f2 -d'v'
+    artifact_uri: "v{{ zoxide_version }}/zoxide-{{ zoxide_version }}-x86_64-unknown-linux-musl.tar.gz"
+  ansible.builtin.import_role:
+    name: common
+    tasks_from: github_version.yml
+  tags:
+    - versions
 
 - name: "[Zoxide] Check if Zoxide {{ zoxide_version }} is installed"
   ansible.builtin.stat:
@@ -56,5 +53,14 @@
     force: true
 
 - name: "[Zoxide] Save used version"
-  ansible.builtin.set_fact:
-    used_software_versions: "{{ used_software_versions | combine({'zoxide': zoxide_version}) }}"
+  vars:
+    app: zoxide
+    target_version:
+      github_packages:
+        zoxide: "{{ zoxide_version }}"
+    query: ".github_packages.zoxide = \"{{ zoxide_version }}\""
+  ansible.builtin.import_role:
+    name: common
+    tasks_from: save_version.yml
+  tags:
+    - versions

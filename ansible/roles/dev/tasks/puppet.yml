@@ -23,6 +23,18 @@
     update: true
     version: "{{ puppet_pes_version }}"
 
+- name: "[Puppet Editor Services] Save used version"
+  vars:
+    app: puppet_pes
+    target_version:
+      puppet_pes_version: "{{ puppet_pes_version }}"
+    query: ".puppet_pes_version = \"{{ puppet_pes_version }}\""
+  nvm.builtin.import_role:
+    name: common
+    tasks_from: save_version.yml
+  tags:
+    - versions
+
 # TODO: Add changes_when/failed_when
 - name: "[Puppet] Update bundler for all rubies" # noqa no-changed-when ignore-errors
   ansible.builtin.command: "{{ ansible_env.HOME }}/.rvm/bin/rvm all-gemsets do gem update bundler"
@@ -74,7 +86,17 @@
   args:
     executable: /bin/bash
   register: pdk_apt_version
+  tags:
+    - versions
 
 - name: "[Puppet PDK] Save used version"
-  ansible.builtin.set_fact:
-    used_dev_versions: "{{ used_dev_versions | combine({'pdk_version': pdk_apt_version.stdout}) }}"
+  vars:
+    app: puppet_pdk
+    target_version:
+      pdk_version: "{{ pdk_version }}"
+    query: ".pdk_version = \"{{ pdk_version.stdout }}\""
+  nvm.builtin.import_role:
+    name: common
+    tasks_from: save_version.yml
+  tags:
+    - versions

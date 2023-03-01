@@ -10,21 +10,20 @@
   ignore_errors: true
   changed_when: bat_check_deb.rc > 1
   failed_when: bat_check_deb.rc > 1
+  tags:
+    - versions
 
-- name: "[BAT] Get latest version if requested"
-  ansible.builtin.shell: curl -s https://api.github.com/repos/sharkdp/bat/releases/latest | jq .name -r | cut -f2 -d'v'
-  register: version
-  changed_when: false
-  ignore_errors: true
-  when: github_packages['bat'] == 'latest'
-
-- name: "[BAT] Set version to {{ version.stdout | default(github_packages['bat']) }}"
-  ansible.builtin.set_fact:
-    bat_version: "{{ version.stdout | default(github_packages['bat']) }}"
-
-- name: "[BAT] Set proper download URL"
-  ansible.builtin.set_fact:
-    bat_url: "https://github.com/sharkdp/bat/releases/download/v{{ bat_version }}/bat_{{ bat_version }}_amd64.deb"
+- name: "[BAT] Get Github URL for proper version"
+  vars:
+    app: bat
+    repo: sharkdp/bat
+    version_query: curl -s https://api.github.com/repos/sharkdp/bat/releases/latest | jq .name -r | cut -f2 -d'v'
+    artifact_uri: v{{ bat_version }}/bat_{{ bat_version }}_amd64.deb
+  ansible.builtin.import_role:
+    name: common
+    tasks_from: github_version.yml
+  tags:
+    - versions
 
 - name: "Installation"
   when: bat_check_deb.stdout | regex_search('[0-9]+\.[0-9]+\.[0-9]+') | default(0) != bat_version
@@ -47,5 +46,14 @@
       become: true
 
 - name: "[BAT] Save used version"
-  ansible.builtin.set_fact:
-    used_software_versions: "{{ used_software_versions | combine({'bat': bat_version}) }}"
+  vars:
+    app: bat
+    target_version:
+      github_packages:
+        bat: "{{ bat_version }}"
+    query: ".github_packages.bat = \"{{ bat_version }}\""
+  ansible.builtin.import_role:
+    name: common
+    tasks_from: save_version.yml
+  tags:
+    - versions

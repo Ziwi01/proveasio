@@ -5,22 +5,41 @@
   ansible.builtin.apt_repository:
     repo: ppa:git-core/ppa
 
-- name: "[Git] Install GIT {{ custom_apt_packages['git'] }}"
+- name: "[Git] Install latest Git if requested"
   become: true
   ansible.builtin.apt:
     name: "git"
     state: "{{ git_apt_version }}"
     update_cache: true
+  when: git_apt_version == 'latest'
+
+- name: "[Git] Install Git version {{ git_apt_version }}"
+  become: true
+  ansible.builtin.apt:
+    name: "git={{ git_apt_version }}"
+    state: present
+    update_cache: true
+  when: git_apt_version != 'latest'
 
 - name: "[Git] Get installed GIT version"
   ansible.builtin.shell: |
     set -e -o pipefail
-    apt info git 2>/dev/null | grep Version | awk '{print $2}' | awk -F '~' '{print $1}'
+    apt info git 2>/dev/null | grep Version | awk '{print $2}'
   register: git_version
   args:
     executable: /bin/bash
   changed_when: false
+  tags:
+    - versions
 
 - name: "[Git] Save used version"
-  ansible.builtin.set_fact:
-    used_software_versions: "{{ used_software_versions | combine({'git': git_version.stdout}) }}"
+  vars:
+    app: git
+    target_version:
+      git: "{{ git_version.stdout }}"
+    query: ".git = \"{{ git_version.stdout }}\""
+  ansible.builtin.import_role:
+    name: common
+    tasks_from: save_version.yml
+  tags:
+    - versions

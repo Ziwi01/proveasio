@@ -9,46 +9,45 @@ software_tasks_exclude: []
 service_manager: systemd
 
 # Default packages to be installed first, using APT
+# There is no version here as those are Ubuntu distro defaults always
 default_apt_packages:
-  curl: latest
-  unzip: latest
-  mlocate: latest
-  # v Required for latest Tmux install
-  libevent-dev: latest
-  tree: latest
-  htop: latest
-  jq: latest
-  gcc: latest
-  zip: latest
-  # v Required for latest Tmux install
-  universal-ctags: latest
-  # v Required for latest Tmux install
-  ncurses-dev: latest
-  dos2unix: latest
-  php: latest
-  composer: latest
-  # v Required for latest Tmux install
-  groff: latest
-  keychain: latest
+  - curl
+  - unzip
+  - mlocate
+  - tree
+  - htop
+  - jq
+  - gcc
+  - zip
+  - dos2unix
+  - php
+  - composer
+  - keychain
+  - groff # Required for AWS CLI
+  - libevent-dev # v Required for latest Tmux install
+  - universal-ctags # v Required for latest Tmux install
+  - ncurses-dev # v Required for latest Tmux install
 
 # Specific versions for software (github)
 # Fixed versions should be set without `v` prefix (e.g: 1.4.3)
 github_packages:
-  diff-so-fancy: latest
+  diff_so_fancy: latest
   bat: latest
   zoxide: latest
   helm: latest
   git: latest
   lazygit: latest
   fzf: latest
-  git-fuzzy: latest
   tmux: latest
   ripgrep: latest
   fd: latest
-  kubectl: latest # TODO: this is not github
   kind: latest
   k9s: latest
   yq: latest
+  win32yank: latest
+
+# Kubectl version
+kubectl_version: latest
 
 # Packages and their versions to install with PIP
 pip_packages:
@@ -65,8 +64,7 @@ git_apt_version: latest
 # GIT Fuzzy
 git_fuzzy_url: "https://github.com/bigH/git-fuzzy.git"
 git_fuzzy_home: "{{ ansible_env.HOME }}/.local/opt/git-fuzzy"
-# v Can be tag, or branch name
-git_fuzzy_version: "master"
+git_fuzzy_version: "master" # Branch name or commit - git-fuzzy does not have releases
 
 # Oh-My-Zsh
 omz_home: "{{ ansible_env.HOME }}/.oh-my-zsh"
@@ -81,18 +79,21 @@ omz_plugins:
   pyenv-lazy: https://github.com/davidparsson/zsh-pyenv-lazy.git
   zsh-snv: https://github.com/rpeshkov/zsh-snv
 
+# P10k version
+p10k_version: master
+
 # TMUX Plugin Manager
 tmux_plugins_dir: "{{ ansible_env.HOME }}/.tmux/plugins"
 tpm_git_url: https://github.com/tmux-plugins/tpm.git
 tpm_version: master
 
-# Docker dependency packages
+# Docker system dependency packages
 docker_apt_dependencies:
-  ca-certificates: latest
-  gnupg: latest
-  lsb-release: latest
+  - ca-certificates
+  - gnupg
+  - lsb-release
 
-# Docker main packages
+# Docker main packages from APT repo
 docker_apt_packages:
   docker-ce: latest
   docker-ce-cli: latest

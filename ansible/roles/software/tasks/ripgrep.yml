@@ -7,21 +7,20 @@
   ignore_errors: true
   changed_when: ripgrep_check_deb.rc > 1
   failed_when: ripgrep_check_deb.rc > 1
+  tags:
+    - versions
 
-- name: "[Ripgrep] Get latest version if requested"
-  ansible.builtin.shell: curl -s https://api.github.com/repos/BurntSushi/ripgrep/releases/latest | jq .name -r | cut -f2 -d'v'
-  register: version
-  changed_when: false
-  ignore_errors: true
-  when: github_packages['ripgrep'] == 'latest'
-
-- name: "[Ripgrep] Set version to {{ version.stdout | default(github_packages['ripgrep']) }}"
-  ansible.builtin.set_fact:
-    ripgrep_version: "{{ version.stdout | default(github_packages['ripgrep']) }}"
-
-- name: "[Ripgrep] Set proper download URL"
-  ansible.builtin.set_fact:
-    ripgrep_url: "https://github.com/BurntSushi/ripgrep/releases/download/{{ ripgrep_version }}/ripgrep_{{ ripgrep_version }}_amd64.deb"
+- name: "[Ripgrep] Get Github URL for proper version"
+  vars:
+    app: ripgrep
+    repo: BurntSushi/ripgrep
+    version_query: curl -s https://api.github.com/repos/BurntSushi/ripgrep/releases/latest | jq .name -r | cut -f2 -d'v'
+    artifact_uri: "{{ ripgrep_version }}/ripgrep_{{ ripgrep_version }}_amd64.deb"
+  ansible.builtin.import_role:
+    name: common
+    tasks_from: github_version.yml
+  tags:
+    - versions
 
 - name: "Installation"
   when: ripgrep_check_deb.stdout | regex_search('[0-9]+\.[0-9]+\.[0-9]+') | default(0) != ripgrep_version
@@ -44,5 +43,14 @@
       become: true
 
 - name: "[Ripgrep] Save used version"
-  ansible.builtin.set_fact:
-    used_software_versions: "{{ used_software_versions | combine({'ripgrep': ripgrep_version}) }}"
+  vars:
+    app: ripgrep
+    target_version:
+      github_packages:
+        ripgrep: "{{ ripgrep_version }}"
+    query: ".github_packages.ripgrep = \"{{ ripgrep_version }}\""
+  ansible.builtin.import_role:
+    name: common
+    tasks_from: save_version.yml
+  tags:
+    - versions

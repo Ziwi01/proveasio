@@ -662,13 +662,13 @@ The recommended way is to update LunarVim using this repository.
 Update everything (all software, config files etc.):
 
 ```shell
-ansible-playbook -i inventory.yml setup-windows.yaml -k
+ansible-playbook -i inventory.yml setup-windows.yml -k
 ```
 
 Or update lunarvim only:
 
 ```shell
-ansible-playbook -i inventory.yml setup-windows.yaml -k --tags 'lunarvim'
+ansible-playbook -i inventory.yml setup-windows.yml -k --tags 'lunarvim'
 ```
 
 Manual updates can be done instead of running ansible:

@@ -28,7 +28,18 @@
   args:
     executable: /bin/bash
   register: thefuck_version
+  tags:
+    - versions
 
-- name: "[TheFuck] Save used version"
-  ansible.builtin.set_fact:
-    used_software_versions: "{{ used_software_versions | combine({'thefuck': thefuck_version.stdout}) }}"
+- name: "[Thefuck] Save used version"
+  vars:
+    app: thefuck
+    target_version:
+      pip_packages:
+        thefuck: "{{ thefuck_version.stdout }}"
+    query: ".pip_packages.thefuck = \"{{ thefuck_version.stdout }}\""
+  ansible.builtin.import_role:
+    name: common
+    tasks_from: save_version.yml
+  tags:
+    - versions

@@ -1,18 +1,9 @@
-- name: '[Packages] Ensure useful packages are installed as latest/present'
+# SOme default packages installed from APT
+---
+- name: '[Packages] Install default packages'
   become: true
-  when: item.value in ['latest', 'present']
   ansible.builtin.apt:
     update_cache: true
-    name: "{{ item.key }}"
-    state: "{{ item.value }}"
-  loop: "{{ default_apt_packages | dict2items }}"
-
-- name: '[Packages] Ensure useful packages are installed in particular versions'
-  become: true
-  when: item.value not in ['latest', 'present']
-  ansible.builtin.apt:
-    update_cache: true
-    name: "{{ item.key }}={{ item.value }}"
-  loop: "{{ default_apt_packages | dict2items }}"
-
-# @TODO: get which versions got installed and add them to `used_software_versions`
+    name: "{{ item }}"
+    state: 'present'
+  loop: "{{ default_apt_packages }}"

@@ -12,9 +12,11 @@
 
 ## TL;DR
 
-Repository containing bunch of automation scripts (mostly Ansible tasks) to install, configure and maintain Ubuntu (20.04/22.04) terminal environment focused on development and administration. This includes set of very useful dev tools and customizations to ease out and speed up terminal usage during day-to-day work and to bump up productivity.
+Provision your Ubuntu terminal dev environment with ease.
 
-Below project is supported on Ubuntu running on Windows WSL2, but they are also tested on plain Ubuntu 20.04/22.04 on Github Runner, so they are expected to work there.
+Using Ansible, it will install, configure and maintain Ubuntu (20.04/22.04) terminal environment focused on development and administration. This includes installation/configuration of very useful dev tools and customizations to ease out and speed up terminal usage during day-to-day work and to bump up productivity.
+
+Below project is supported on Ubuntu running on Windows WSL2, but it is also tested on plain Ubuntu 20.04/22.04 on Github Runner, so it is expected to work there.
 
 ## About
 
@@ -55,7 +57,7 @@ Please read below README carefully and go through the scripts to see whats going
   * [Manual](#manual)
   * [Automated](#automated)
     * [prepare-windows.ps1](#prepare-windows.ps1)
-    * [prepare-wsl.sh](#prepare-wsl.sh)
+    * [prepare-ubuntu.sh](#prepare-ubuntu.sh)
     * [setup-windows.yml](#setup-windows.yml)
 * [Installation](#Installation)
 * [Roles overview](#roles-overview)
@@ -296,13 +298,13 @@ There is a script `prepare-windows.ps1`, which will:
 
 It must be run as Administrator.
 
-#### prepare-wsl.sh
+#### prepare-ubuntu.sh
 
 After `prepare-windows.ps1` is run, login to Ubuntu WSL and clone this repository.
 
 Before running below script, ensure your WSL distro is using `systemd`. See [Requirements](#requirements)
 
-From Ubuntu, run `sudo ./prepare-wsl.sh` - this will update the system and install required ansible packages.
+From Ubuntu, run `sudo ./prepare-ubuntu.sh` - this will update the system and install required ansible packages.
 
 #### setup-windows.yml
 
@@ -319,7 +321,7 @@ You can switch off the whole sections from #2 by modifying `vars/overrides.yml`.
 After everything is prepared, you can run (from `ansible/` dir):
 
 ```shell
-ansible-playbook -i inventory.yml setup-windows.yaml -k
+ansible-playbook -i inventory.yml setup-windows.yml -k
 ```
 
 It will prompt for you Windows password. If the terminal hangs during an execution for more than couple minutes, just break it (`<C-c>`) and run again. This is because Chocolatey installations from WSL ansible can get clogged up sometimes (not sure why this happens).
@@ -334,22 +336,24 @@ Assuming all the [requirements](#requirements) are met:
 
 1. Clone this repository in Ubuntu if not yet already.
 2. Create/update file `ansible/vars/overrides.yml` - set desired GIT config name and e-mail. See `ansible/vars/README.md` for examples
-3. Run `sudo ./prepare-wsl.sh` (if not already run during windows setup) to update the system and install required ansible packages.
+3. Run `sudo ./prepare-ubuntu.sh` (if not already run during windows setup) to update the system and install required ansible packages.
 4. Run ansible (from `ansible/` dir):
 
     ```shell
-    ansible-playbook -i inventory.yml setup-wsl.yaml -K
+    ansible-playbook -i inventory.yml setup-ubuntu.yml -K
     ```
 
 ## Roles overview
 
-There are 3 roles:
+There are 3 essential roles:
 
 - software - installs various packages, tools etc.
 - dev - install development-related software (language managers etc.)
 - config - configures all that needs to be configured
 
 Each role has their main configuration in `ansible/roles/<role>/vars/main.yml`. Also, their tasks are gathered in `ansible/roles/<role>/tasks/main.yml`. It is good idea to take a peek on all the .yml files in `tasks/` directories also. For detailed description of how do those things work together, see [Usages.md](#Usages.md). To override any variable(s), please use `ansible/vars/overrides.yml`. 
+
+Also, there is `common` role, to keep internal helper tasks.
 
 ### `software` role
 
@@ -365,12 +369,13 @@ This role will install all necessary things to have the WSL pretty and useful.
 7. [BAT](https://github.com/sharkdp/bat) - (much) better CAT
 8. [Zoxide](https://github.com/ajeetdsouza/zoxide) - traverse directories with ease (also with FZF)
 9. [Helm](https://github.com/helm/helm) - Kubernetes 'package manager'
-10. [Ripgrep](https://github.com/BurntSushi/ripgrep) - `grep` on steroids. Blazing fast, easy to use. Command: `rg <query>`
-11. [fd](https://github.com/sharkdp/fd) - `find` alternative, much faster. Command: `fdfind`
+10. [Ripgrep](https://github.com/BurntSushi/ripgrep) - `grep` on steroids. Blazing fast, easy to use
+11. [fd](https://github.com/sharkdp/fd) - `find` alternative, much faster
 12. [htop](https://htop.dev/) - process viewer, prettier `top` alternative
 13. [TMUX](https://github.com/tmux/tmux) - terminal multiplexer
-14. [LazyGIT](https://github.com/jesseduffield/lazygit) - GIT wrapper for both terminal and VIM. Commands: `lazygit` (from terminal), `<Leader>gg` (from VIM)
+14. [LazyGIT](https://github.com/jesseduffield/lazygit) - GIT wrapper for both terminal and VIM
 15. [keychain](https://www.funtoo.org/Funtoo:Keychain) - ssh-agent wrapper to keep SSH keys across terminal logins
+16. [yq](https://mikefarah.gitbook.io/yq/) - awesome terminal YAML parser (also JSON, XML etc.)
 
 Also, common useful packages, like:
 
@@ -436,7 +441,7 @@ Using `master` branch comes with certain amount of danger, as most of the tools 
 
 I will try push new releases with updated (tested) software versions once in a while (even when there is no change to the automation itself), but you can set them yourself:
 
-1. After automation is run (either with `latest` or fixed versions set), it will print out all used versions and save them in `current-versions.yaml` file (this file is added to `.gitignore`)
+1. After automation is run (either with `latest` or fixed versions set), it will print out all used versions and save them in `current-versions.yml` file (this file is added to `.gitignore`)
 2. You can copy-paste those versions into `ansible/vars/overrides.yml` so they will be used for future runs.
 
 ## Configuration customizations
@@ -450,13 +455,17 @@ As described in [`config role`](#config-role) section, there are certain configu
 
 See below list of available tags:
 
-For roles overall:
+To include/exclude whole roles:
 
 - config
 - software
 - dev
 
-For functionality:
+For information:
+
+- versions
+
+For particular functionality:
 
 - ansible
 - bat
@@ -467,6 +476,9 @@ For functionality:
 - git-fuzzy
 - gita
 - helm
+- k9s
+- kind
+- kubectl
 - lazygit
 - lsg
 - lunarvim
@@ -482,16 +494,16 @@ For functionality:
 - thefuck
 - tmux
 - w32yank
+- yq
 - zoxide
 - zsh
-- kubernetes
 
 ### Excluding code
 
 You can disable whole functionalities during ansible run using `--skip-tags`, for example:
 
 ```shell
-ansible-playbook -i inventory.yml setup-wsl.yaml --skip-tags "dev,software" -K
+ansible-playbook -i inventory.yml setup-ubuntu.yml --skip-tags "dev,software" -K
 ```
 
 See [ansible tags](#ansible-tags) above for full list.
@@ -514,7 +526,7 @@ For full list of exclude options, see `ansible/roles/[dev|software|config]/tasks
 To run only particular parts of the code you can run ansible with `--tags` switch:
 
 ```shell
-ansible-playbook -i inventory.yml setup-wsl.yaml --tags "config" -K
+ansible-playbook -i inventory.yml setup-ubuntu.yml --tags "config" -K
 ```
 
 See [tags](#Tags) above for full list.

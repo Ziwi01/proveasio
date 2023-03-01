@@ -1,20 +1,17 @@
 # Install LazyGIT
 # Source: https://github.com/jesseduffield/lazygit
 ---
-- name: "[LazyGIT] Get latest version if requested"
-  ansible.builtin.shell: curl -s https://api.github.com/repos/jesseduffield/lazygit/releases/latest | grep '"tag_name":' |  sed -E 's/.*"v*([^"]+)".*/\1/'
-  register: version
-  changed_when: false
-  ignore_errors: true
-  when: github_packages['lazygit'] == 'latest'
-
-- name: "[LazyGIT] Set version to {{ version.stdout | default(github_packages['lazygit']) }}"
-  ansible.builtin.set_fact:
-    lazygit_version: "{{ version.stdout | default(github_packages['lazygit']) }}"
-
-- name: "[LazyGIT] Set proper download URL"
-  ansible.builtin.set_fact:
-    lazygit_url: "https://github.com/jesseduffield/lazygit/releases/latest/download/lazygit_{{ lazygit_version }}_Linux_x86_64.tar.gz"
+- name: "[LazyGIT] Get Github URL for proper version"
+  vars:
+    app: lazygit
+    repo: jesseduffield/lazygit
+    version_query: curl -s https://api.github.com/repos/jesseduffield/lazygit/releases/latest | grep '"tag_name":' |  sed -E 's/.*"v*([^"]+)".*/\1/'
+    artifact_uri: lazygit_{{ lazygit_version }}_Linux_x86_64.tar.gz
+  ansible.builtin.import_role:
+    name: common
+    tasks_from: github_version.yml
+  tags:
+    - versions
 
 - name: "[LazyGIT] Check if LazyGIT {{ lazygit_version }} is installed"
   ansible.builtin.stat:
@@ -54,5 +51,14 @@
     force: true
 
 - name: "[LazyGIT] Save used version"
-  ansible.builtin.set_fact:
-    used_software_versions: "{{ used_software_versions | combine({'lazygit': lazygit_version}) }}"
+  vars:
+    app: lazygit
+    target_version:
+      github_packages:
+        lazygit: "{{ lazygit_version }}"
+    query: ".github_packages.lazygit = \"{{ lazygit_version }}\""
+  ansible.builtin.import_role:
+    name: common
+    tasks_from: save_version.yml
+  tags:
+    - versions

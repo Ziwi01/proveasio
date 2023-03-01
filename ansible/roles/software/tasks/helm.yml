@@ -4,20 +4,17 @@
 #  - https://helm.sh/
 #  - https://github.com/helm/helm
 ---
-- name: "[Helm] Get latest version if requested"
-  ansible.builtin.shell: curl -s https://api.github.com/repos/helm/helm/releases/latest | jq .name -r | cut -f2 -d'v' | grep -Po '\d+\.\d+\.\d+\.?\d?'
-  register: version
-  changed_when: false
-  ignore_errors: true
-  when: github_packages['helm'] == 'latest'
-
-- name: "[Helm] Set version to {{ version.stdout | default(github_packages['helm']) }}"
-  ansible.builtin.set_fact:
-    helm_version: "{{ version.stdout | default(github_packages['helm']) }}"
-
-- name: "[Helm] Set proper download URL"
-  ansible.builtin.set_fact:
-    helm_url: "https://get.helm.sh/helm-v{{ helm_version }}-linux-amd64.tar.gz"
+- name: "[Helm] Get Github URL for proper version"
+  vars:
+    app: helm
+    repo: helm/helm
+    version_query: curl -s https://api.github.com/repos/helm/helm/releases/latest | jq .name -r | cut -f2 -d'v' | grep -Po '\d+\.\d+\.\d+\.?\d?'
+    artifact_uri: v{{ helm_version }}/helm-v{{ helm_version }}-linux-amd64.tar.gz
+  ansible.builtin.import_role:
+    name: common
+    tasks_from: github_version.yml
+  tags:
+    - versions
 
 - name: "[Helm] Check if Helm {{ helm_version }} is installed"
   ansible.builtin.stat:
@@ -44,18 +41,27 @@
         src: "/tmp/helm-{{ helm_version }}.tar.gz"
         dest: "{{ ansible_env.HOME }}/.local/opt/helm-{{ helm_version }}"
 
-    - name: "[Helm] Link {{ helm_version }} binary"
-      ansible.builtin.file:
-        src: "{{ ansible_env.HOME }}/.local/opt/helm-{{ helm_version }}/linux-amd64/helm"
-        dest: "{{ ansible_env.HOME }}/.local/bin/helm"
-        state: link
-        force: true
-
     - name: "[Helm] Cleanup tar.gz file"
       ansible.builtin.file:
         path: "/tmp/helm-{{ helm_version }}.tar.gz"
         state: absent
 
-- name: "[Helm] Save used version"
-  ansible.builtin.set_fact:
-    used_software_versions: "{{ used_software_versions | combine({'helm': helm_version}) }}"
+- name: "[Helm] Link {{ helm_version }} binary"
+  ansible.builtin.file:
+    src: "{{ ansible_env.HOME }}/.local/opt/helm-{{ helm_version }}/linux-amd64/helm"
+    dest: "{{ ansible_env.HOME }}/.local/bin/helm"
+    state: link
+    force: true
+
+- name: "[helm] Save used version"
+  vars:
+    app: helm
+    target_version:
+      github_packages:
+        helm: "{{ helm_version }}"
+    query: ".github_packages.helm = \"{{ helm_version }}\""
+  ansible.builtin.import_role:
+    name: common
+    tasks_from: save_version.yml
+  tags:
+    - versions

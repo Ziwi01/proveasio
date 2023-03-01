@@ -3,7 +3,7 @@
 #
 # Source: https://github.com/bigH/git-fuzzy.git
 ---
-- name: "[Git-fuzzy] Clone/update latest version"
+- name: "[Git-fuzzy] Clone/checkout version from: {{ git_fuzzy_version }}"
   ansible.builtin.git:
     repo: "{{ git_fuzzy_url }}"
     dest: "{{ git_fuzzy_home }}"

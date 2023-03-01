@@ -3,20 +3,17 @@
 # Used to update YAML files for versioning and release purposes.
 #
 # Source: https://github.com/mikefarah/yq
-- name: "[yq] Get latest version if requested"
-  ansible.builtin.shell: curl -s https://api.github.com/repos/mikefarah/yq/releases/latest | jq .tag_name -r | cut -f2 -d'v'
-  register: version
-  changed_when: false
-  ignore_errors: true
-  when: github_packages['yq'] == 'latest'
-
-- name: "[yq] Set version to {{ version.stdout | default(github_packages['yq']) }}"
-  ansible.builtin.set_fact:
-    yq_version: "{{ version.stdout | default(github_packages['yq']) }}"
-
-- name: "[yq] Set proper download URL"
-  ansible.builtin.set_fact:
-    dsf_url: "https://github.com/mikefarah/yq/releases/download/v{{ yq_version }}/yq_linux_amd64"
+- name: "[yq] Get Github URL for proper version"
+  vars:
+    app: yq
+    repo: mikefarah/yq
+    version_query: curl -s https://api.github.com/repos/mikefarah/yq/releases/latest | jq .tag_name -r | cut -f2 -d'v'
+    artifact_uri: v{{ yq_version }}/yq_linux_amd64
+  ansible.builtin.import_role:
+    name: common
+    tasks_from: github_version.yml
+  tags:
+    - versions
 
 - name: "[yq] Check if yq {{ yq_version }} is installed"
   ansible.builtin.stat:
@@ -35,7 +32,7 @@
 
     - name: "[yq] Download yq {{ yq_version }}"
       ansible.builtin.get_url:
-        url: "{{ dsf_url }}"
+        url: "{{ yq_url }}"
         dest: "{{ ansible_env.HOME }}/.local/opt/yq-{{ yq_version }}/yq"
         mode: '0755'
 
@@ -47,5 +44,14 @@
     force: true
 
 - name: "[yq] Save used version"
-  ansible.builtin.set_fact:
-    used_software_versions: "{{ used_software_versions | combine({'yq': yq_version}) }}"
+  vars:
+    app: yq
+    target_version:
+      github_packages:
+        yq: "{{ yq_version }}"
+    query: ".github_packages.yq = \"{{ yq_version }}\""
+  ansible.builtin.import_role:
+    name: common
+    tasks_from: save_version.yml
+  tags:
+    - versions
