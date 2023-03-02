@@ -57,7 +57,7 @@
     target_version:
       kubectl_version: "{{ kubectl_version }}"
     query: ".kubectl_version = \"{{ kubectl_version }}\""
-  ansible.builtin.import_role:
+  ansible.builtin.include_role:
     name: common
     tasks_from: save_version.yml
   tags:

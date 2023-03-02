@@ -9,8 +9,8 @@
     app: helm
     repo: helm/helm
     version_query: curl -s https://api.github.com/repos/helm/helm/releases/latest | jq .name -r | cut -f2 -d'v' | grep -Po '\d+\.\d+\.\d+\.?\d?'
-    artifact_uri: v{{ helm_version }}/helm-v{{ helm_version }}-linux-amd64.tar.gz
-  ansible.builtin.import_role:
+    artifact_url: https://get.helm.sh/helm-v{{ helm_version }}-linux-amd64.tar.gz
+  ansible.builtin.include_role:
     name: common
     tasks_from: github_version.yml
   tags:
@@ -60,7 +60,7 @@
       github_packages:
         helm: "{{ helm_version }}"
     query: ".github_packages.helm = \"{{ helm_version }}\""
-  ansible.builtin.import_role:
+  ansible.builtin.include_role:
     name: common
     tasks_from: save_version.yml
   tags:

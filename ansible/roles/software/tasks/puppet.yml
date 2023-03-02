@@ -12,6 +12,30 @@
   loop: "{{ puppet_rubies }}"
   when: "'all' not in puppet_rubies and puppet_rubies | length > 0"
 
+- name: "[Puppet] Save used version"
+  vars:
+    app: puppet
+    target_version:
+      puppet_version: "{{ puppet_version }}"
+    query: ".puppet_version = \"{{ puppet_version }}\""
+  ansible.builtin.include_role:
+    name: common
+    tasks_from: save_version.yml
+  tags:
+    - versions
+
+- name: "[Puppet lint] Save used version"
+  vars:
+    app: puppet-lint
+    target_version:
+      puppet_lint_version: "{{ puppet_lint_version }}"
+    query: ".puppet_lint_version = \"{{ puppet_lint_version }}\""
+  ansible.builtin.include_role:
+    name: common
+    tasks_from: save_version.yml
+  tags:
+    - versions
+
 #
 # Puppet Editor Services (Language server protocol instance)
 # Source: https://github.com/puppetlabs/puppet-editor-services
@@ -29,7 +53,7 @@
     target_version:
       puppet_pes_version: "{{ puppet_pes_version }}"
     query: ".puppet_pes_version = \"{{ puppet_pes_version }}\""
-  nvm.builtin.import_role:
+  ansible.builtin.include_role:
     name: common
     tasks_from: save_version.yml
   tags:
@@ -95,7 +119,7 @@
     target_version:
       pdk_version: "{{ pdk_version }}"
     query: ".pdk_version = \"{{ pdk_version.stdout }}\""
-  nvm.builtin.import_role:
+  ansible.builtin.include_role:
     name: common
     tasks_from: save_version.yml
   tags:

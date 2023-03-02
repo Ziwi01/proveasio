@@ -38,7 +38,7 @@
       pip_packages:
         gita: "{{ gita_version.stdout }}"
     query: ".pip_packages.gita = \"{{ gita_version.stdout }}\""
-  ansible.builtin.import_role:
+  ansible.builtin.include_role:
     name: common
     tasks_from: save_version.yml
   tags:

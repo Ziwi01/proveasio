@@ -62,7 +62,6 @@ Please read below README carefully and go through the scripts to see whats going
 * [Installation](#Installation)
 * [Roles overview](#roles-overview)
   * [`software` role](#software-role)
-  * [`dev` role](#dev-role)
   * [`config` role](#config-role)
 * [Releases](#releases)
 * [Configuration customizations](#configuration-customizations)
@@ -78,9 +77,9 @@ Please read below README carefully and go through the scripts to see whats going
 
 ## Features
 
-Below you can find brief summary of included tools and features. For more details for each tool, see the [software](#software-role) and [dev](#dev-role) roles section and take a look at the links there.
+Below you can find brief summary of included tools and features. For more details for each tool, see the [software role](#software-role) section and take a look at the links there.
 
-For comprehensive description and scenarios with examples, see [Usages.md](./Usages.md).
+For usage scenarios with examples (screenshots, videos), see [Usages.md](./Usages.md).
 
 ### Terminal
 
@@ -336,7 +335,7 @@ Assuming all the [requirements](#requirements) are met:
 
 1. Clone this repository in Ubuntu if not yet already.
 2. Create/update file `ansible/vars/overrides.yml` - set desired GIT config name and e-mail. See `ansible/vars/README.md` for examples
-3. Run `sudo ./prepare-ubuntu.sh` (if not already run during windows setup) to update the system and install required ansible packages.
+3. Run `sudo ./prepare-ubuntu.sh` (if not already run during windows setup) to update the system and install required ansible/python packages.
 4. Run ansible (from `ansible/` dir):
 
     ```shell
@@ -345,19 +344,20 @@ Assuming all the [requirements](#requirements) are met:
 
 ## Roles overview
 
-There are 3 essential roles:
+There are 2 essential roles:
 
-- software - installs various packages, tools etc.
-- dev - install development-related software (language managers etc.)
-- config - configures all that needs to be configured
+- software - installs everything that needs to be installed
+- config - configures everything that needs to be configured
 
 Each role has their main configuration in `ansible/roles/<role>/vars/main.yml`. Also, their tasks are gathered in `ansible/roles/<role>/tasks/main.yml`. It is good idea to take a peek on all the .yml files in `tasks/` directories also. For detailed description of how do those things work together, see [Usages.md](#Usages.md). To override any variable(s), please use `ansible/vars/overrides.yml`. 
 
-Also, there is `common` role, to keep internal helper tasks.
+There is also `common` role, to keep internal helper tasks.
 
 ### `software` role
 
-This role will install all necessary things to have the WSL pretty and useful.
+This role will install all necessary things to have the terminal pretty and useful.
+
+Various tools:
 
 1. ZSH shell based on [Oh-my-ZSH](https://github.com/ohmyzsh/ohmyzsh) framework, with [powerlevel10k](https://github.com/romkatv/powerlevel10k) theme, and some custom plugins.
 2. [LS with GIT status](https://github.com/gerph/ls-with-git-status) - list files/directories with GIT info
@@ -377,41 +377,26 @@ This role will install all necessary things to have the WSL pretty and useful.
 15. [keychain](https://www.funtoo.org/Funtoo:Keychain) - ssh-agent wrapper to keep SSH keys across terminal logins
 16. [yq](https://mikefarah.gitbook.io/yq/) - awesome terminal YAML parser (also JSON, XML etc.)
 
+Development-related software:
+
+1. [Neovim](https://github.com/neovim/neovim) - more handsome VIM brother
+2. [LunarVIM](https://github.com/LunarVim/LunarVim) - Neovim IDE-like extension with awesome plugins/configurations included out of the box
+3. [RVM](https://rvm.io/) (Ruby enVironment Manager, installed using [rvm1-ansible-role](https://github.com/rvm/rvm1-ansible)), along with Ruby `3.1.3`
+4. [PDK](https://puppet.com/try-puppet/puppet-development-kit/) (Puppet Development Kit)
+5. [NVM](https://github.com/nvm-sh/nvm) (Node Version Manager) with latest LTS Node version (by default). Among all - dependency for LunarVIM installation
+6. [SDKMAN](https://sdkman.io/) - Manage multiple versions of groovy/java and other JDKs/SDKs.
+7. [pyenv](https://github.com/pyenv/pyenv) - Python version manager not to mess system python
+8. [pyenv-virtualenv](https://github.com/pyenv/pyenv-virtualenv) - Python virtual environment manager to have separate environments with different packages for projects using same Python version
+
 Also, common useful packages, like:
 
 - mlocate (file search)
 - tree (directory tree)
 - jq (JSON/YAML parser)
 
-More useful packages will be installed in `dev` role.
+In `ansible/roles/software/vars/main.yml` file, you can find everything that can be configured in terms of software
 
-In `ansible/roles/software/vars/main.yml` file, you can find configuration for:
-
-- particular versions of software - they are set to `latest` in `master` branch, so that they will get updated when re-running the `setup-wsl.yml` playbook. Use release for stability
-- list of packages that will get installed from apt repository (like git, tree, htop etc.)
-- Oh-My-ZSH plugin list
-
-To override anything, set the variables you want in `ansible/vars/overrides.yml`
-
-### `dev` role
-
-This role installs programming-related tools which I currently use in my work.
-
-Essential:
-
-- [Neovim](https://github.com/neovim/neovim) - more handsome VIM brother
-- [LunarVIM](https://github.com/LunarVim/LunarVim) - Neovim IDE-like extension with awesome plugins/configurations included out of the box
-
-Programming:
-
-- [RVM](https://rvm.io/) (Ruby enVironment Manager, installed using [rvm1-ansible-role](https://github.com/rvm/rvm1-ansible)), along with Ruby `3.1.3`
-- [PDK](https://puppet.com/try-puppet/puppet-development-kit/) (Puppet Development Kit)
-- [NVM](https://github.com/nvm-sh/nvm) (Node Version Manager) with latest LTS Node version (by default). Among all - dependency for LunarVIM installation
-- [SDKMAN](https://sdkman.io/) - Manage multiple versions of groovy/java and other JDKs/SDKs.
-- [pyenv](https://github.com/pyenv/pyenv) - Python version manager not to mess system python
-- [pyenv-virtualenv](https://github.com/pyenv/pyenv-virtualenv) - Python virtual environment manager to have separate environments with different packages for projects using same Python version
-
-In `ansible/vars/overrides.yml` you can specify Neovim/LunarVIM and RVM/PDK/NVM versions (see `ansible/roles/dev/vars/main.yml` for key reference).
+To override anything, you can set the variables you want in `ansible/vars/overrides.yml`. For details see [Configuration customizations](#configuration-customizations)
 
 ### `config` role
 
@@ -428,7 +413,7 @@ If you already have any of those files, you can either turn off overwrites, or b
 
 You can also granulize this on per-component basis - see `ansible/roles/config/vars/main.yml` for reference.
 
-Additionally, configs for below apps will be updated (disable overwrite in `ansible/vars/overrides.yml` if needed)
+Additionally, configs for below apps will be updated:
 
 - thefuck (`~/.config/thefuck/settings.py`)
 - LazyGIT (`~/.config/lazygit/config.yml`)
@@ -446,6 +431,16 @@ I will try push new releases with updated (tested) software versions once in a w
 
 ## Configuration customizations
 
+### Overriding variables
+
+TODO: fill up
+
+### Versions management
+
+TODO: fill up
+
+### Own config files
+
 As described in [`config role`](#config-role) section, there are certain configuration files which are part of this automation. In order to keep your personal configuration in those files, there are two options:
 
 1. (not recommended) Disable particular config file(s) management in `ansible/vars/overrides.yml` using variables like `dotfiles_overwrite: false` or similar. This will prevent any updates of those config files in the future. For list of possible variables, see respective `ansible/roles/<role>/vars/main.yml`.
@@ -459,7 +454,6 @@ To include/exclude whole roles:
 
 - config
 - software
-- dev
 
 For information:
 
@@ -503,7 +497,7 @@ For particular functionality:
 You can disable whole functionalities during ansible run using `--skip-tags`, for example:
 
 ```shell
-ansible-playbook -i inventory.yml setup-ubuntu.yml --skip-tags "dev,software" -K
+ansible-playbook -i inventory.yml setup-ubuntu.yml --skip-tags "software" -K
 ```
 
 See [ansible tags](#ansible-tags) above for full list.
@@ -512,14 +506,13 @@ To exclude certain parts of ansible code for subsequent runs, you can add to you
 
 ```yaml
 software_tasks_exclude:
-  - bat # do not install BAT
-dev_tasks_exclude:
+  - bat    # do not install Bat
   - puppet # do not install Puppet
 config_tasks_exclude:
   - zsh # do not configure ZSH
 ```
 
-For full list of exclude options, see `ansible/roles/[dev|software|config]/tasks/main.yml`
+For full list of exclude options, see `ansible/roles/[software|config]/tasks/main.yml`
 
 ### Run particular code
 

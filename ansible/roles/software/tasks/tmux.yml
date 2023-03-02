@@ -6,8 +6,8 @@
     app: tmux
     repo: tmux/tmux
     version_query: curl -s https://api.github.com/repos/tmux/tmux/releases/latest | jq .name -r | cut -f2 -d'v' | awk '{ print $2 }'
-    artifact_uri: "{{ tmux_version }}/tmux-{{ tmux_version }}.tar.gz"
-  ansible.builtin.import_role:
+    github_uri: "{{ tmux_version }}/tmux-{{ tmux_version }}.tar.gz"
+  ansible.builtin.include_role:
     name: common
     tasks_from: github_version.yml
   tags:
@@ -95,7 +95,7 @@
       github_packages:
         tmux: "{{ tmux_version }}"
     query: ".github_packages.tmux = \"{{ tmux_version }}\""
-  ansible.builtin.import_role:
+  ansible.builtin.include_role:
     name: common
     tasks_from: save_version.yml
   tags:

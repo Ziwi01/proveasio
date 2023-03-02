@@ -29,8 +29,8 @@
     app: fd
     repo: sharkdp/fd
     version_query: curl -s https://api.github.com/repos/sharkdp/fd/releases/latest | jq .name -r | cut -f2 -d'v'
-    artifact_uri: v{{ fd_version }}/fd_{{ fd_version }}_amd64.deb
-  ansible.builtin.import_role:
+    github_uri: v{{ fd_version }}/fd_{{ fd_version }}_amd64.deb
+  ansible.builtin.include_role:
     name: common
     tasks_from: github_version.yml
   tags:
@@ -63,7 +63,7 @@
       github_packages:
         fd: "{{ fd_version }}"
     query: ".github_packages.fd = \"{{ fd_version }}\""
-  ansible.builtin.import_role:
+  ansible.builtin.include_role:
     name: common
     tasks_from: save_version.yml
   tags:

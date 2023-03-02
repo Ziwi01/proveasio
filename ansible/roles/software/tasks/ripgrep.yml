@@ -15,8 +15,8 @@
     app: ripgrep
     repo: BurntSushi/ripgrep
     version_query: curl -s https://api.github.com/repos/BurntSushi/ripgrep/releases/latest | jq .name -r | cut -f2 -d'v'
-    artifact_uri: "{{ ripgrep_version }}/ripgrep_{{ ripgrep_version }}_amd64.deb"
-  ansible.builtin.import_role:
+    github_uri: "{{ ripgrep_version }}/ripgrep_{{ ripgrep_version }}_amd64.deb"
+  ansible.builtin.include_role:
     name: common
     tasks_from: github_version.yml
   tags:
@@ -49,7 +49,7 @@
       github_packages:
         ripgrep: "{{ ripgrep_version }}"
     query: ".github_packages.ripgrep = \"{{ ripgrep_version }}\""
-  ansible.builtin.import_role:
+  ansible.builtin.include_role:
     name: common
     tasks_from: save_version.yml
   tags:

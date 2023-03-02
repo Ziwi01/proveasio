@@ -57,7 +57,7 @@
     target_version:
       rvm1_ansible_role_version: "{{ rvm_role_version }}"
     query: ".rvm1_ansible_role_version = \"{{ rvm_role_version }}\""
-  rvm.builtin.import_role:
+  ansible.builtin.include_role:
     name: common
     tasks_from: save_version.yml
   tags:

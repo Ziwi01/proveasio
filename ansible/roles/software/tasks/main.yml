@@ -13,6 +13,12 @@
   tags:
     - always
 
+# Import vars for Ubuntu 20.04 / 22.04
+- name: '[Software] Include OS-specific vars files'
+  ansible.builtin.include_vars: "Ubuntu-{{ ansible_lsb.release }}.yml"
+  tags:
+    - always
+
 # Include override variables
 - name: "[Software] Include ansible/vars/overrides.yml"
   ansible.builtin.include_vars: "{{ item }}"
@@ -326,3 +332,110 @@
     - software
     - versions
     - k9s
+
+
+# Ruby Version Manager
+- name: "[Software] Install Ruby Version Manager"
+  ansible.builtin.include_tasks:
+    file: rvm.yml
+    apply:
+      tags:
+        - software
+        - rvm
+  when: "'rvm' not in software_tasks_exclude"
+  tags:
+    - software
+    - rvm
+
+# SDKMan!
+- name: "[Software] Install SDKMAN!"
+  ansible.builtin.include_tasks:
+    file: sdkman.yml
+    apply:
+      tags:
+        - software
+        - sdkman
+  when: "'sdkman' not in software_tasks_exclude"
+  tags:
+    - software
+    - sdkman
+
+# Node Version Manager
+- name: "[Software] Install Node Version Manager"
+  ansible.builtin.include_tasks:
+    file: nvm.yml # Dependency for lvim.yml
+    apply:
+      tags:
+        - software
+        - nvm
+  when: "'nvm' not in software_tasks_exclude"
+  tags:
+    - software
+    - nvm
+
+# Rust
+- name: "[Software] Install Rust language with Cargo"
+  ansible.builtin.include_tasks:
+    file: rust.yml # Dependency for lvim.yml
+    apply:
+      tags:
+        - software
+        - rust
+  when: "'rust' not in software_tasks_exclude"
+  tags:
+    - software
+    - rust
+
+# Ansible PIP
+- name: "[Software] Install Ansible"
+  ansible.builtin.include_tasks:
+    file: ansible.yml
+    apply:
+      tags:
+        - software
+        - ansible
+  when: "'ansible' not in software_tasks_exclude"
+  tags:
+    - software
+    - ansible
+
+# Neovim
+- name: "[Software] Install Neovim"
+  ansible.builtin.include_tasks:
+    file: neovim.yml
+    apply:
+      tags:
+        - software
+        - neovim
+        - lunarvim
+  when: "'neovim' not in software_tasks_exclude"
+  tags:
+    - software
+    - neovim
+    - lunarvim
+
+# LunarVIM
+- name: "[Software] Install LunarVIM"
+  ansible.builtin.include_tasks:
+    file: lunarvim.yml
+    apply:
+      tags:
+        - software
+        - lunarvim
+  when: "'lunarvim' not in software_tasks_exclude"
+  tags:
+    - software
+    - lunarvim
+
+# Puppet
+- name: "[Software] Install Puppet"
+  ansible.builtin.include_tasks:
+    file: puppet.yml
+    apply:
+      tags:
+        - software
+        - puppet
+  when: "'puppet' not in software_tasks_exclude"
+  tags:
+    - software
+    - puppet

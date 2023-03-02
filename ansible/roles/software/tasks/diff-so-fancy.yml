@@ -8,8 +8,8 @@
     app: diff_so_fancy
     repo: so-fancy/diff-so-fancy
     version_query: curl -s https://api.github.com/repos/so-fancy/diff-so-fancy/releases/latest | jq .name -r | cut -f2 -d'v'
-    artifact_uri: v{{ diff_so_fancy_version }}/diff-so-fancy
-  ansible.builtin.import_role:
+    github_uri: v{{ diff_so_fancy_version }}/diff-so-fancy
+  ansible.builtin.include_role:
     name: common
     tasks_from: github_version.yml
   tags:
@@ -17,11 +17,11 @@
 
 - name: "[Diff so fancy] Check if Diff-so-fancy {{ diff_so_fancy_version }} is installed"
   ansible.builtin.stat:
-    path: "{{ ansible_env.HOME }}/.local/opt/diff-so-fancy-{{ diff_so_fancy_version }}"
-  register: dsf_dir
+    path: "{{ ansible_env.HOME }}/.local/opt/diff-so-fancy-{{ diff_so_fancy_version }}/diff-so-fancy"
+  register: dsf_bin
 
 - name: "Installation"
-  when: not dsf_dir.stat.exists
+  when: not dsf_bin.stat.exists
   block:
 
     - name: "[Diff so fancy] Create directory in {{ ansible_env.HOME }}/.local/opt"
@@ -32,7 +32,7 @@
 
     - name: "[Diff so fancy] Download Diff-so-fancy {{ diff_so_fancy_version }}"
       ansible.builtin.get_url:
-        url: "{{ dsf_url }}"
+        url: "{{ diff_so_fancy_url }}"
         dest: "{{ ansible_env.HOME }}/.local/opt/diff-so-fancy-{{ diff_so_fancy_version }}/diff-so-fancy"
         mode: '0755'
 
@@ -49,8 +49,8 @@
     target_version:
       github_packages:
         diff_so_fancy: "{{ diff_so_fancy_version }}"
-    query: ".github_packages.diff-so-fancy = \"{{ diff_so_fancy_version }}\""
-  ansible.builtin.import_role:
+    query: ".github_packages.diff_so_fancy = \"{{ diff_so_fancy_version }}\""
+  ansible.builtin.include_role:
     name: common
     tasks_from: save_version.yml
   tags:

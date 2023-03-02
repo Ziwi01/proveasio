@@ -9,9 +9,9 @@
   vars:
     app: kind
     repo: kubernetes-sigs/kind
-    version_query: curl -s https://api.github.com/repos/kubernetes-sigs/kind/releases/latest | jq .name -r | cut -f2 -d'v'
-    artifact_uri: v{{ kind_version }}/kind-linux-amd64
-  ansible.builtin.import_role:
+    version_query: curl -s https://api.github.com/repos/kubernetes-sigs/kind/releases/latest | jq .name -r | cut -f1 -d' ' | cut -f2 -d'v'
+    github_uri: v{{ kind_version }}/kind-linux-amd64
+  ansible.builtin.include_role:
     name: common
     tasks_from: github_version.yml
   tags:
@@ -51,7 +51,7 @@
       github_packages:
         kind: "{{ kind_version }}"
     query: ".github_packages.kind = \"{{ kind_version }}\""
-  ansible.builtin.import_role:
+  ansible.builtin.include_role:
     name: common
     tasks_from: save_version.yml
   tags:

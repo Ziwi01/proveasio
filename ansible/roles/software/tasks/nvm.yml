@@ -8,7 +8,7 @@
     app: nvm
     repo: nvm-sh/nvm
     version_query: curl -s https://api.github.com/repos/nvm-sh/nvm/releases/latest | jq .name -r | cut -f2 -d'v'
-  ansible.builtin.import_role:
+  ansible.builtin.include_role:
     name: common
     tasks_from: github_version.yml
   tags:
@@ -39,7 +39,7 @@
     target_version:
       nvm_version: "{{ nvm_version }}"
     query: ".nvm_version = \"{{ nvm_version }}\""
-  nvm.builtin.import_role:
+  ansible.builtin.include_role:
     name: common
     tasks_from: save_version.yml
   tags:

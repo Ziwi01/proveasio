@@ -8,8 +8,8 @@
     app: yq
     repo: mikefarah/yq
     version_query: curl -s https://api.github.com/repos/mikefarah/yq/releases/latest | jq .tag_name -r | cut -f2 -d'v'
-    artifact_uri: v{{ yq_version }}/yq_linux_amd64
-  ansible.builtin.import_role:
+    github_uri: v{{ yq_version }}/yq_linux_amd64
+  ansible.builtin.include_role:
     name: common
     tasks_from: github_version.yml
   tags:
@@ -50,7 +50,7 @@
       github_packages:
         yq: "{{ yq_version }}"
     query: ".github_packages.yq = \"{{ yq_version }}\""
-  ansible.builtin.import_role:
+  ansible.builtin.include_role:
     name: common
     tasks_from: save_version.yml
   tags:

@@ -8,8 +8,8 @@
     app: zoxide
     repo: ajeetdsouza/zoxide
     version_query: curl -s https://api.github.com/repos/ajeetdsouza/zoxide/releases/latest | jq .name -r | cut -f2 -d'v'
-    artifact_uri: "v{{ zoxide_version }}/zoxide-{{ zoxide_version }}-x86_64-unknown-linux-musl.tar.gz"
-  ansible.builtin.import_role:
+    github_uri: "v{{ zoxide_version }}/zoxide-{{ zoxide_version }}-x86_64-unknown-linux-musl.tar.gz"
+  ansible.builtin.include_role:
     name: common
     tasks_from: github_version.yml
   tags:
@@ -59,7 +59,7 @@
       github_packages:
         zoxide: "{{ zoxide_version }}"
     query: ".github_packages.zoxide = \"{{ zoxide_version }}\""
-  ansible.builtin.import_role:
+  ansible.builtin.include_role:
     name: common
     tasks_from: save_version.yml
   tags:

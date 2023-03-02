@@ -37,6 +37,9 @@ echo "Install Python ${PYTHON_VERSION}"
 pyenv install ${PYTHON_VERSION}
 pyenv global ${PYTHON_VERSION}
 
+echo "Upgrade PIP"
+pip install --upgrade pip
+
 echo "Install ansible with PIP"
 pip install --user ansible
 

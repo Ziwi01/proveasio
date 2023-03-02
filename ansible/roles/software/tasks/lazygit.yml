@@ -6,8 +6,8 @@
     app: lazygit
     repo: jesseduffield/lazygit
     version_query: curl -s https://api.github.com/repos/jesseduffield/lazygit/releases/latest | grep '"tag_name":' |  sed -E 's/.*"v*([^"]+)".*/\1/'
-    artifact_uri: lazygit_{{ lazygit_version }}_Linux_x86_64.tar.gz
-  ansible.builtin.import_role:
+    github_uri: lazygit_{{ lazygit_version }}_Linux_x86_64.tar.gz
+  ansible.builtin.include_role:
     name: common
     tasks_from: github_version.yml
   tags:
@@ -57,7 +57,7 @@
       github_packages:
         lazygit: "{{ lazygit_version }}"
     query: ".github_packages.lazygit = \"{{ lazygit_version }}\""
-  ansible.builtin.import_role:
+  ansible.builtin.include_role:
     name: common
     tasks_from: save_version.yml
   tags:

@@ -5,13 +5,13 @@
 #
 # k9s
 #
-- name: "[Helm] Get Github URL for proper version"
+- name: "[k9s] Get Github URL for proper version"
   vars:
     app: k9s
     repo: derailed/k9s
     version_query: curl -s https://api.github.com/repos/derailed/k9s/releases/latest | jq .name -r | cut -f2 -d'v'
-    artifact_uri: v{{ k9s_version }}/k9s_Linux_amd64.tar.gz
-  ansible.builtin.import_role:
+    github_uri: v{{ k9s_version }}/k9s_Linux_amd64.tar.gz
+  ansible.builtin.include_role:
     name: common
     tasks_from: github_version.yml
   tags:
@@ -61,7 +61,7 @@
       github_packages:
         k9s: "{{ k9s_version }}"
     query: ".github_packages.k9s = \"{{ k9s_version }}\""
-  ansible.builtin.import_role:
+  ansible.builtin.include_role:
     name: common
     tasks_from: save_version.yml
   tags:

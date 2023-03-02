@@ -78,7 +78,7 @@
     target_version:
       sdkman_install_packages: "{{ sdkman_install_packages }}"
     query: ".sdkman_install_packages = \"{{ sdkman_install_packages }}\""
-  rvm.builtin.import_role:
+  ansible.builtin.include_role:
     name: common
     tasks_from: save_version.yml
   tags:
@@ -124,7 +124,7 @@
     target_version:
       sdkman_defaults: "{{ sdkman_defaults }}"
     query: ".sdkman_defaults = \"{{ sdkman_defaults }}\""
-  rvm.builtin.import_role:
+  ansible.builtin.include_role:
     name: common
     tasks_from: save_version.yml
   tags:

@@ -48,13 +48,10 @@
       tags:
         - always
     - name: '[Software] Include software role'
-      ansible.builtin.import_role:
+      ansible.builtin.include_role:
         name: software
-    - name: '[Dev] Include dev role'
-      ansible.builtin.import_role:
-        name: dev
     - name: '[Config] Include config role'
-      ansible.builtin.import_role:
+      ansible.builtin.include_role:
         name: config
     - name: "[Summary] Show detailed info"
       ansible.builtin.debug:

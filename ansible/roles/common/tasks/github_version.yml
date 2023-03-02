@@ -20,5 +20,5 @@
 
 - name: "[{{ app }}] Set proper download URL"
   ansible.builtin.set_fact:
-    "{{ app }}_url": "https://github.com/{{ repo }}/releases/download/{{ artifact_uri }}"
-  when: artifact_uri
+    "{{ app }}_url": "{{ artifact_url | default('https://github.com/' ~ repo | default(omit) ~ '/releases/download/' ~ github_uri | default(omit)) }}"
+  when: artifact_url | default(omit) or (github_uri and repo)

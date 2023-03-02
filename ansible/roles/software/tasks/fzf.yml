@@ -6,7 +6,7 @@
     app: fzf
     repo: junegunn
     version_query: curl -s https://api.github.com/repos/junegunn/fzf/releases/latest | jq .name -r | cut -f2 -d'v'
-  ansible.builtin.import_role:
+  ansible.builtin.include_role:
     name: common
     tasks_from: github_version.yml
   tags:
@@ -27,7 +27,7 @@
       github_packages:
         fzf: "{{ fzf_version }}"
     query: ".github_packages.fzf = \"{{ fzf_version }}\""
-  ansible.builtin.import_role:
+  ansible.builtin.include_role:
     name: common
     tasks_from: save_version.yml
   tags:
