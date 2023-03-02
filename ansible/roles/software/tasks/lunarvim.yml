@@ -47,8 +47,8 @@
   vars:
     app: lunarvim
     target_version:
-      lunarvim_version: "{{ lunarvim_version.stdout }}"
-    query: ".lunarvim_version = \"{{ lunarvim_version.stdout }}\""
+      lunarvim_version: "{{ lunarvim_git_version.stdout }}"
+    query: ".lunarvim_version = \"{{ lunarvim_git_version.stdout }}\""
   ansible.builtin.include_role:
     name: common
     tasks_from: save_version.yml

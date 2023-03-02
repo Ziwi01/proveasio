@@ -345,6 +345,7 @@
   when: "'rvm' not in software_tasks_exclude"
   tags:
     - software
+    - versions
     - rvm
 
 # SDKMan!
@@ -358,6 +359,7 @@
   when: "'sdkman' not in software_tasks_exclude"
   tags:
     - software
+    - versions
     - sdkman
 
 # Node Version Manager
@@ -371,6 +373,7 @@
   when: "'nvm' not in software_tasks_exclude"
   tags:
     - software
+    - versions
     - nvm
 
 # Rust
@@ -384,6 +387,7 @@
   when: "'rust' not in software_tasks_exclude"
   tags:
     - software
+    - versions
     - rust
 
 # Ansible PIP
@@ -397,6 +401,7 @@
   when: "'ansible' not in software_tasks_exclude"
   tags:
     - software
+    - versions
     - ansible
 
 # Neovim
@@ -411,6 +416,7 @@
   when: "'neovim' not in software_tasks_exclude"
   tags:
     - software
+    - versions
     - neovim
     - lunarvim
 
@@ -425,6 +431,7 @@
   when: "'lunarvim' not in software_tasks_exclude"
   tags:
     - software
+    - versions
     - lunarvim
 
 # Puppet
@@ -438,4 +445,5 @@
   when: "'puppet' not in software_tasks_exclude"
   tags:
     - software
+    - versions
     - puppet

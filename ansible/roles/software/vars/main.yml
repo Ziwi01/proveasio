@@ -129,7 +129,7 @@ ruby_gems:
 
 # PDK (Puppet Development KIT)
 # Please note the module does not support package downgrades - if PDK is already installed in higher version, remove it first.
-pdk_version: latest
+puppet_pdk_version: latest
 
 # NVM (Node Version Manager)
 nvm_version: latest
