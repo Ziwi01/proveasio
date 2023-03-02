@@ -72,11 +72,9 @@
 
 - name: "[Docker] Save used version"
   vars:
-    app: "{{ item.item.key }}"
-    target_version:
-      docker_apt_packages:
-        "{{ item.item.key }}": "{{ item.stdout }}"
-    query: ".docker_apt_packages.\"{{ item.item.key }}\" = \"{{ item.stdout }}\""
+    app: "{{ package.item.key }}"
+    target_version: "{{ {'docker_apt_packages': {package.item.key: package.stdout}} }}"
+    query: ".docker_apt_packages.\"{{ package.item.key }}\" = \"{{ package.stdout }}\""
   ansible.builtin.include_role:
     name: common
     tasks_from: save_version.yml
@@ -84,6 +82,8 @@
       tags:
         - versions
   loop: "{{ docker_versions.results }}"
+  loop_control:
+    loop_var: package
   tags:
     - versions
 

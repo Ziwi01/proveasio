@@ -1,8 +1,10 @@
 # Configure ansible-related stuff
 ---
-- name: "[Config][Ansible] Overwrite .ansible-lint. Overwrite flag is: {{ ansible_lint_overwrite }}"
-  ansible.builtin.copy:
-    src: .ansible-lint
-    dest: "{{ ansible_env.HOME }}/.ansible-lint"
-    mode: '0644'
-  when: ansible_lint_overwrite | bool
+- name: "[Config][Ansible] Configure .ansible-lint"
+  vars:
+    app: ansible-lint
+    source_file: ansible-lint
+    target_file: "{{ ansible_env.HOME }}/.ansible-lint"
+  ansible.builtin.include_role:
+    name: common
+    tasks_from: config_file.yml

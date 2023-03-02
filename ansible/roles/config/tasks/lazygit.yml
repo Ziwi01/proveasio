@@ -1,14 +1,16 @@
 # Configure LazyGIT
 # Source: https://github.com/jesseduffield/lazygit
-- name: "[Config][LazyGIT] Ensure lazygit config directory"
+- name: "[Config][Lazygit] Ensure lazygit config directory"
   ansible.builtin.file:
     path: "{{ ansible_env.HOME }}/.config/lazygit"
     state: directory
     mode: '0755'
 
-- name: "[Config][LazyGIT] Copy config"
-  ansible.builtin.copy:
-    src: "lazygit.yml"
-    dest: "{{ ansible_env.HOME }}/.config/lazygit/config.yml"
-    mode: '0644'
-  when: lazygit_config_overwrite | bool
+- name: "[Config][Lazygit] Configure config.yml"
+  vars:
+    app: lazygit
+    source_file: lazygit.yml
+    target_file: "{{ ansible_env.HOME }}/.config/lazygit/config.yml"
+  ansible.builtin.include_role:
+    name: common
+    tasks_from: config_file.yml

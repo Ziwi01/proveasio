@@ -1,19 +1,6 @@
 # Configure .zshrc
 # Set backup/overwrite flags in `vars/main.yml`
 ---
-- name: "[Config][ZSH] Check for .zshrc"
-  ansible.builtin.stat:
-    path: "{{ ansible_env.HOME }}/.zshrc"
-  register: zshrc_config
-
-- name: "[Config][ZSH] Backup .zshrc. Backup flag is: {{ zshrc_backup | default(dotfiles_backup) }}"
-  ansible.builtin.copy:
-    src: "{{ ansible_env.HOME }}/.zshrc"
-    dest: "{{ dotfiles_backup_dir }}/.zshrc-{{ lookup('pipe', 'date +%Y-%m-%d-%H-%M-%S') }}"
-    mode: '0644'
-    remote_src: true
-  when: zshrc_config.stat.exists and zshrc_backup | default(dotfiles_backup) | bool
-
 - name: "[Config][ZSH] Get exact node version"
   ansible.builtin.shell: |
     set -e -o pipefail
@@ -26,9 +13,11 @@
   failed_when: false
   register: actual_node_version
 
-- name: "[Config][ZSH] Overwrite .zshrc. Overwrite flag is: {{ zshrc_overwrite | default(dotfiles_overwrite) }}"
-  ansible.builtin.template:
-    src: .zshrc.j2
-    dest: "{{ ansible_env.HOME }}/.zshrc"
-    mode: '0644'
-  when: zshrc_overwrite | default(dotfiles_overwrite) | bool
+- name: "[Config][ZSH] Configure .zshrc"
+  vars:
+    app: ZSH
+    source_template: zshrc.j2
+    target_file: "{{ ansible_env.HOME }}/.zshrc"
+  ansible.builtin.include_role:
+    name: common
+    tasks_from: config_file.yml

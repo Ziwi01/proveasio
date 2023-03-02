@@ -1,23 +1,12 @@
 ---
-- name: "[Config][Tmux] Check for .tmux.conf"
-  ansible.builtin.stat:
-    path: "{{ ansible_env.HOME }}/.tmux.conf"
-  register: tmux_config
-
-- name: "[Config][Tmux] Backup .tmux.conf. Backup flag is: {{ tmuxconf_backup | default(dotfiles_backup) }}"
-  ansible.builtin.copy:
-    src: "{{ ansible_env.HOME }}/.tmux.conf"
-    dest: "{{ dotfiles_backup_dir }}/.tmux.conf-{{ lookup('pipe', 'date +%Y-%m-%d-%H-%M-%S') }}"
-    mode: '0644'
-    remote_src: true
-  when: tmux_config.stat.exists and tmuxconf_backup | default(dotfiles_backup) | bool
-
-- name: "[Config][Tmux] Overwrite .tmux.conf. Overwrite flag is: {{ tmuxconf_overwrite | default(dotfiles_overwrite) }}"
-  ansible.builtin.copy:
-    src: .tmux.conf
-    dest: "{{ ansible_env.HOME }}/.tmux.conf"
-    mode: '0644'
-  when: tmuxconf_overwrite | default(dotfiles_overwrite) | bool
+- name: "[Config][Tmux] Configure .tmux.conf"
+  vars:
+    app: Tmux
+    source_file: tmux.conf
+    target_file: "{{ ansible_env.HOME }}/.tmux.conf"
+  ansible.builtin.include_role:
+    name: common
+    tasks_from: config_file.yml
 
 # TODO: Add changed_when/failed_when
 - name: "[Config][Tmux] Install plugins" # noqa no-changed-when

@@ -178,7 +178,7 @@ Use:
 
     eval `keychain --eval --agents ssh <key1> <keyN>`
 
-If you only have `id_rsa`, you can ommit passing key(s). Keychain will prompt you for all the passwords for those keys and will persist them across logins (you still need to run above command on new terminal, but it won't prompt you for password)
+If you only have `id_rsa`, you can ommit passing key(s). Keychain will prompt you for all the passwords for those keys and will persist them across logins (you still need to run above command on new terminal, but it won't prompt you for password). To always call it, add it to `~/.zshrc`
 
 ### Grep with ripgrep
 

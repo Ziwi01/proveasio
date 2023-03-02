@@ -1,7 +1,7 @@
 <div align="center">
   <img width=400 height=400 src="./resources/wpe-logo.png">
 </div>
-  
+
 <div align="center">
 
 <a href="">![CI build](https://github.com/Ziwi01/wsl-power-env/actions/workflows/ci.yml/badge.svg?branch=master)</a>
@@ -59,19 +59,24 @@ Please read below README carefully and go through the scripts to see whats going
     * [prepare-windows.ps1](#prepare-windows.ps1)
     * [prepare-ubuntu.sh](#prepare-ubuntu.sh)
     * [setup-windows.yml](#setup-windows.yml)
-* [Installation](#Installation)
+* [Installation](#installation)
 * [Roles overview](#roles-overview)
   * [`software` role](#software-role)
   * [`config` role](#config-role)
-* [Releases](#releases)
 * [Configuration customizations](#configuration-customizations)
-  * [Ansible tags](#tags)
+  * [Overriding variables](#overriding-variables)
+  * [Versions management](#versions-management)
+  * [Own config files](#own-config-files)
   * [Excluding code](#excluding-code)
   * [Run particular code](#run-particular-code)
+  * [Ansible tags](#ansible-tags)
+* [Releases](#releases)
 * [Troubleshooting](#troubleshooting)
+  * [Github tasks issues](#github-tasks-issues)
   * [VPN connectivity issues](#vpn-connectivity-issues)
   * [Ruby GPG keys import failed](#ruby-gpg-keys-import-failed)
   * [Unable to get https endpoints](#unable-to-get-https-endpoints)
+* [Contributing](#contributing)
 * [Author](#author)
 * [Mentions](#mentions)
 
@@ -93,7 +98,7 @@ Terminal is ZSH-based, configured with [Oh-my-ZSH](https://github.com/ohmyzsh/oh
 </details>
 </br>
 
-There are couple of useful plugins installed there (you can find them in `ansible/roles/config/files/.zshrc`), which provide for example:
+There are couple of useful plugins installed there (you can find them in `ansible/roles/config/files/zshrc`), which provide for example:
 
 - syntax highlighting
 - commands autocompletion (based on history and/or completion scripts)
@@ -114,10 +119,10 @@ There are couple of useful plugins installed there (you can find them in `ansibl
 
 ### Tmux
 
-Custom modifications in `roles/config/files/.tmux.conf` include:
+Custom modifications in `roles/config/files/tmux.conf` include:
 
 - custom theme
-- session management 
+- session management
 - ability to search back tmux buffer with FZF
 - ability to extract text from tmux buffer with FZF
 - enabled mouse support
@@ -128,7 +133,7 @@ Custom modifications in `roles/config/files/.tmux.conf` include:
 
 For smooth GIT experience there are some tools configured:
 
-- [LazyGIT](https://github.com/jesseduffield/lazygit) - great GUI terminal GIT wrapper. 
+- [LazyGIT](https://github.com/jesseduffield/lazygit) - great GUI terminal GIT wrapper.
 - [diff-so-fancy](https://github.com/so-fancy/diff-so-fancy) - better looking diffs.
 - [git-fuzzy](https://github.com/bigH/git-fuzzy) - GIT on FZF steroids.
 - `gco` alias for searching and checking out branch with FZF. You can also use it to checkout without searching (`gco branch_name`)
@@ -349,7 +354,7 @@ There are 2 essential roles:
 - software - installs everything that needs to be installed
 - config - configures everything that needs to be configured
 
-Each role has their main configuration in `ansible/roles/<role>/vars/main.yml`. Also, their tasks are gathered in `ansible/roles/<role>/tasks/main.yml`. It is good idea to take a peek on all the .yml files in `tasks/` directories also. For detailed description of how do those things work together, see [Usages.md](#Usages.md). To override any variable(s), please use `ansible/vars/overrides.yml`. 
+Each role has their main configuration in `ansible/roles/<role>/vars/main.yml`. Also, their tasks are gathered in `ansible/roles/<role>/tasks/main.yml`. It is good idea to take a peek on all the .yml files in `tasks/` directories also. For detailed description of how do those things work together, see [Usages.md](#Usages.md). To override any variable(s), please use `ansible/vars/overrides.yml`.
 
 There is also `common` role, to keep internal helper tasks.
 
@@ -394,57 +399,161 @@ Also, common useful packages, like:
 - tree (directory tree)
 - jq (JSON/YAML parser)
 
-In `ansible/roles/software/vars/main.yml` file, you can find everything that can be configured in terms of software
+In `ansible/roles/software/vars/main.yml` file, you can find everything that can be configured in terms of software. See [Configuration customizations](#configuration-customizations) for details.
 
-To override anything, you can set the variables you want in `ansible/vars/overrides.yml`. For details see [Configuration customizations](#configuration-customizations)
+To disable installation of anything, you can add and array in your overrides, for example:
+
+```
+software_tasks_exclude:
+  - bat
+  - keychain
+```
+
+Available software excludes:
+
+- packages (default apt packages installation, including **dependencies**)
+- git
+- ripgrep
+- fd
+- lsg
+- fzf
+- diff-so-fancy
+- git-fuzzy
+- lazygit
+- gita
+- thefuck
+- bat
+- zoxide
+- helm
+- zsh
+- w32yank
+- tmux
+- docker
+- kubectl
+- kind
+- k9s
+- rvm
+- sdkman
+- nvm
+- rust
+- ansible
+- neovim
+- lunarvim
+- puppet
+
+**PLEASE NOTE**: Do not disable `yq` installation, or ensure you have it installed and available in your path, as it is used to modify yaml files during ansible run.
 
 ### `config` role
 
 This role is mostly configs management. It will apply configuration for:
 
-- ZSH/powerlevel10k theme (`.zshrc` / `.p10k.zsh`)
-- Tmux (`.tmux.conf`)
-- GIT config (`.gitconfig`)
-
-If you already have any of those files, you can either turn off overwrites, or back them up before overwriting, by setting appropriate option in `ansible/vars/overrides.yml`:
-
-- `dotfiles_overwrite` (default: true)
-- `dotfiles_backup` (default: false)
-
-You can also granulize this on per-component basis - see `ansible/roles/config/vars/main.yml` for reference.
-
-Additionally, configs for below apps will be updated:
-
+- ZSH/powerlevel10k theme (`~/.zshrc` / `~/.p10k.zsh`)
+- Tmux (`~/.tmux.conf`)
+- GIT config (`~/.gitconfig`)
 - thefuck (`~/.config/thefuck/settings.py`)
 - LazyGIT (`~/.config/lazygit/config.yml`)
 - ansible-lint (`~/.ansible-lint`)
 - lunarvim (`~/.config/lvim/config.lua`)
+- SDKMAN (~/.sdkman/etc/config)
 
-## Releases
+If you want to exclude particular component configuration, you can add an array of sections, for example:
 
-Using `master` branch comes with certain amount of danger, as most of the tools used are set to `latest` version. This can cause issues, when those underlying tools introduce a breaking change. Moreover, as I personally try very hard not to make any breaking changes, it can always happen. If you want more stability, please checkout to a release tag before applying the changes - it will have fixed versions of (almost) all used tools.
+```yaml
+config_tasks_exclude:
+  - ansible-lint
+  - tmux
+```
 
-I will try push new releases with updated (tested) software versions once in a while (even when there is no change to the automation itself), but you can set them yourself:
+Available configs excludes:
 
-1. After automation is run (either with `latest` or fixed versions set), it will print out all used versions and save them in `current-versions.yml` file (this file is added to `.gitignore`)
-2. You can copy-paste those versions into `ansible/vars/overrides.yml` so they will be used for future runs.
+- zsh
+- p10k
+- tmux
+- sdkman
+- git
+- lazygit
+- lunarvim
+- thefuck
+- ansible
+
+By default, all configuration files are backed up in `~/.configs_backup` on every ansible run, in form of `<filename>-<date>`.
+
+To disable taking backups, set:
+
+`config_files_backup: false`
+
+See below for details on overriding variables.
 
 ## Configuration customizations
 
 ### Overriding variables
 
-TODO: fill up
+To override anything, you can set any variable you want in `ansible/vars/overrides.yml`.
+
+Above file is added to .gitignore, so it won't be versioned.
+
+See possible variables in:
+
+- `ansible/roles/software/vars/main.yml`
+- `ansible/roles/software/vars/Ubuntu-22.04.yml`
+- `ansible/roles/software/vars/Ubuntu-20.04.yml`
+- `ansible/roles/config/vars/main.yml`
 
 ### Versions management
 
-TODO: fill up
+After every ansible run, it prints all the versions which were installed/updated.
+
+Also, it saves/updates them in `./current-versions.yml`. This file is added to .gitignore, so it is not versioned.
+
+<details>
+  <summary><b>Example:</b> Versions printed after run</summary>
+  <div align="center">
+    <img src="./resources/versions.gif">
+  </div>
+</details>
+
+
+If you use `master` branch (which has all the versions set to `latest`), and you want stability for particular component, you can copy any of those outputs and add them to your `ansible/vars/overrides.yml` so this version will be used for any subsequent runs.
 
 ### Own config files
 
 As described in [`config role`](#config-role) section, there are certain configuration files which are part of this automation. In order to keep your personal configuration in those files, there are two options:
 
-1. (not recommended) Disable particular config file(s) management in `ansible/vars/overrides.yml` using variables like `dotfiles_overwrite: false` or similar. This will prevent any updates of those config files in the future. For list of possible variables, see respective `ansible/roles/<role>/vars/main.yml`.
-2. (**recommended**) I personally suggest to checkout a local branch, modify any configuration file(s) there and commit them. When updating, just merge upstream changes from release tag (or `master`) to your branch when needed. That way, you can have both your own modifications to the file, and possible upcoming improvements/features which will come with those files. In case of confilcts, you can either choose your own piece of config, or the incoming one.
+1. (not recommended) Disable particular config file(s) management sections in `ansible/vars/overrides.yml` using `config_tasks_exclude: []`. This will prevent running config for it. For list of sections, see respective `ansible/roles/config/tasks/main.yml`.
+2. (**recommended**) I personally suggest to checkout a local branch in this repository, modify any configuration file(s) in `ansible/roles/config/files` and/or `ansible/roles/config/templates` and commit them. When you want to update changes, just merge release tag (or `master`) to your branch when needed. That way, you can have both your own modifications to the file, and possible upcoming improvements/features which will come with those files. In case of confilcts, you can either choose your own piece of config, or the incoming one, or both.
+
+
+### Excluding code
+
+You can disable whole functionalities during ansible run using `--skip-tags`, for example:
+
+```shell
+ansible-playbook -i inventory.yml setup-ubuntu.yml --skip-tags "software" -K
+```
+
+See [ansible tags](#ansible-tags) below for full list.
+
+To exclude certain parts of ansible code for subsequent runs, you can add to your `ansible/vars/overrides.yml` which sections you want to exclude:
+
+```yaml
+software_tasks_exclude:
+  - bat    # do not install Bat
+  - puppet # do not install Puppet
+config_tasks_exclude:
+  - zsh # do not configure ZSH
+```
+
+For full list of exclude options, see [software](#software-role) or [config](#config-role) role description.
+
+### Run particular code
+
+To run only particular parts of the code you can run ansible with `--tags` switch:
+
+```shell
+ansible-playbook -i inventory.yml setup-ubuntu.yml --tags "config" -K
+```
+
+See [tags](#ansible-Tags) below for full list.
 
 ### Ansible tags
 
@@ -492,41 +601,15 @@ For particular functionality:
 - zoxide
 - zsh
 
-### Excluding code
+## Releases
 
-You can disable whole functionalities during ansible run using `--skip-tags`, for example:
+Using `master` branch comes with certain amount of danger, as most of the tools used are set to `latest` version. This can cause issues, when those underlying tools introduce a breaking change. Moreover, as I personally try very hard not to make any breaking changes, it can always happen. If you want more stability, please checkout to a release tag before applying the changes - it will have fixed versions of (almost) all used tools.
 
-```shell
-ansible-playbook -i inventory.yml setup-ubuntu.yml --skip-tags "software" -K
-```
-
-See [ansible tags](#ansible-tags) above for full list.
-
-To exclude certain parts of ansible code for subsequent runs, you can add to your `ansible/vars/overrides.yml` which sections you want to exclude:
-
-```yaml
-software_tasks_exclude:
-  - bat    # do not install Bat
-  - puppet # do not install Puppet
-config_tasks_exclude:
-  - zsh # do not configure ZSH
-```
-
-For full list of exclude options, see `ansible/roles/[software|config]/tasks/main.yml`
-
-### Run particular code
-
-To run only particular parts of the code you can run ansible with `--tags` switch:
-
-```shell
-ansible-playbook -i inventory.yml setup-ubuntu.yml --tags "config" -K
-```
-
-See [tags](#Tags) above for full list.
+I will try push new releases with updated (tested) software versions once in a while (even when there is no change to the automation itself), but you can set them yourself - see [Versions management](#versions-management)
 
 ## Troubleshooting
 
-See below known issues and solutions
+See below known issues and solutions.
 
 ### Github tasks issues
 
@@ -558,6 +641,12 @@ rvm1_gpg_key_servers:
 ### Unable to get https endpoints
 
 If you are having problems with connecting to SSL sites (like `curl https://get.rvm.io` or `curl https://github.com`) with no Certificate Authority error, that means you are behind some proxy (corporate or ISP) and have external Certifitate Authority Chain. You would need to import this chain from Windows to WSL. See [this Github comment](https://github.com/microsoft/WSL/issues/3161#issuecomment-945384911) on how to import it.
+
+## Contributing
+
+If you want to help with this piece of software: fork it, create a branch, make changes, test it (preferably including Github workflow for Ubuntu 20.04/22.04) and open a Pull Request.
+
+Thanks in advance!
 
 ## Author
 

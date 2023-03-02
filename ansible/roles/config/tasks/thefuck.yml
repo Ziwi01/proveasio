@@ -8,9 +8,11 @@
     state: directory
     mode: '0755'
 
-- name: "[Config][TheFuck] Copy config"
-  ansible.builtin.copy:
-    src: "thefuck-settings.py"
-    dest: "{{ ansible_env.HOME }}/.config/thefuck/settings.py"
-    mode: '0644'
-  when: thefuck_config_overwrite | bool
+- name: "[Config][TheFuck] Configure settings.py"
+  vars:
+    app: TheFuck
+    source_file: thefuck-settings.py
+    target_file: "{{ ansible_env.HOME }}/.config/thefuck/settings.py"
+  ansible.builtin.include_role:
+    name: common
+    tasks_from: config_file.yml
