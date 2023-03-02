@@ -6,7 +6,7 @@
     app: lazygit
     repo: jesseduffield/lazygit
     version_query: curl -s https://api.github.com/repos/jesseduffield/lazygit/releases/latest | grep '"tag_name":' |  sed -E 's/.*"v*([^"]+)".*/\1/'
-    github_uri: lazygit_{{ lazygit_version }}_Linux_x86_64.tar.gz
+    github_uri: v{{ lazygit_version }}/lazygit_{{ lazygit_version }}_Linux_x86_64.tar.gz
   ansible.builtin.include_role:
     name: common
     tasks_from: github_version.yml
