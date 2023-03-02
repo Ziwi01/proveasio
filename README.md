@@ -1,20 +1,20 @@
 <div align="center">
-  <img width=400 height=400 src="./resources/wpe-logo.png">
+  <img width=300 height=300 src="./resources/proveasio-logo.png">
 </div>
 
 <div align="center">
 
-<a href="">![CI build](https://github.com/Ziwi01/wsl-power-env/actions/workflows/ci.yml/badge.svg?branch=master)</a>
-<a href="">![License](https://img.shields.io/github/license/Ziwi01/wsl-power-env)</a>
-<a href="">![Last commit](https://img.shields.io/github/last-commit/Ziwi01/wsl-power-env)</a>
+<a href="">![CI build](https://github.com/Ziwi01/proveasio/actions/workflows/ci.yml/badge.svg?branch=master)</a>
+<a href="">![License](https://img.shields.io/github/license/Ziwi01/proveasio)</a>
+<a href="">![Last commit](https://img.shields.io/github/last-commit/Ziwi01/proveasio)</a>
 
 </div>
 
 ## TL;DR
 
-Provision your Ubuntu terminal dev environment with ease.
+Prepare your Ubuntu terminal dev environment with one command (well, sort of).
 
-Using Ansible, it will install, configure and maintain Ubuntu (20.04/22.04) terminal environment focused on development and administration. This includes installation/configuration of very useful dev tools and customizations to ease out and speed up terminal usage during day-to-day work and to bump up productivity.
+Using Ansible - install, configure and maintain Ubuntu (20.04/22.04) terminal environment focused on development and administration. This includes installation/configuration of very useful dev tools and customizations to ease out and speed up terminal usage during day-to-day work and to bump up productivity.
 
 Below project is supported on Ubuntu running on Windows WSL2, but it is also tested on plain Ubuntu 20.04/22.04 on Github Runner, so it is expected to work there.
 
