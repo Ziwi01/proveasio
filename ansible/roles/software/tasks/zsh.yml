@@ -62,5 +62,5 @@
   ansible.builtin.git:
     repo: https://github.com/romkatv/powerlevel10k.git
     dest: "{{ omz_home }}/custom/themes/powerlevel10k"
-    version: "{{ p10k_version }}"
+    version: "v{{ p10k_version }}"
     depth: 1
