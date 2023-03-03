@@ -36,10 +36,13 @@
   vars:
     app: git
     target_version:
-      git: "{{ git_version.stdout }}"
-    query: ".git = \"{{ git_version.stdout }}\""
+      git_apt_version: "{{ git_version.stdout }}"
+    query: ".git_apt_version = \"{{ git_version.stdout }}\""
   ansible.builtin.include_role:
     name: common
     tasks_from: save_version.yml
+    apply:
+      tags:
+        - versions
   tags:
     - versions

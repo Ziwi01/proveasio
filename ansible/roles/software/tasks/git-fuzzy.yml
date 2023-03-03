@@ -3,7 +3,21 @@
 #
 # Source: https://github.com/bigH/git-fuzzy.git
 ---
-- name: "[Git-fuzzy] Clone/checkout version from: {{ git_fuzzy_version }}"
+- name: "[Git-fuzzy] Get Github URL for proper version"
+  vars:
+    app: git_fuzzy
+    repo: bigH/git-fuzzy
+    version_query: curl -s https://api.github.com/repos/bigH/git-fuzzy/commits/main | jq -r '.sha'
+  ansible.builtin.include_role:
+    name: common
+    tasks_from: github_version.yml
+    apply:
+      tags:
+        - versions
+  tags:
+    - versions
+
+- name: "[Git-fuzzy] Clone/checkout version {{ git_fuzzy_version }}"
   ansible.builtin.git:
     repo: "{{ git_fuzzy_url }}"
     dest: "{{ git_fuzzy_home }}"

@@ -62,6 +62,9 @@
   ansible.builtin.include_role:
     name: common
     tasks_from: save_version.yml
+    apply:
+      tags:
+        - versions
   tags:
     - versions
 
@@ -88,6 +91,8 @@
   args:
     executable: /bin/bash
   register: ansible_lint_version
+  tags:
+    - versions
 
 - name: "[ansible-lint] Save used version"
   vars:
@@ -98,5 +103,8 @@
   ansible.builtin.include_role:
     name: common
     tasks_from: save_version.yml
+    apply:
+      tags:
+        - versions
   tags:
     - versions

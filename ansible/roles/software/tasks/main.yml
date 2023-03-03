@@ -13,12 +13,6 @@
   tags:
     - always
 
-# Import vars for Ubuntu 20.04 / 22.04
-- name: '[Software] Include OS-specific vars files'
-  ansible.builtin.include_vars: "Ubuntu-{{ ansible_lsb.release }}.yml"
-  tags:
-    - always
-
 # Include override variables
 - name: "[Software] Include ansible/vars/overrides.yml"
   ansible.builtin.include_vars: "{{ item }}"

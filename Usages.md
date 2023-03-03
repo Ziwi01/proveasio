@@ -47,6 +47,7 @@ This document describes all the tools and features which I find useful for every
     * [Locally](#locally)
     * [Spectre](#spectre)
     * [Ferret](#ferret)
+      * [Regex replace](#regex-replace)
   * [Open recent file](#open-recent-file)
   * [Find text](#find-text)
   * [Find files](#find-files)
@@ -545,7 +546,7 @@ In the example below, there is a search for 'lazygit' with replacement for `Work
 
 Uses: [Ferret](https://github.com/wincent/ferret)
 
-This is another search and replace tool. It is easier to use. I use it as a fallback replace engine when Spectre fails (happens sometimes) or when I need to replace occurences in currently opened buffers. See Ferret README for more usages.
+This is another search and replace tool. It is easier to use. I use it as a fallback replace engine when Spectre fails (happens sometimes) or does not support it (see [Multiline replace](#multiline-replace)) or when I need to replace occurences in currently opened buffers. See Ferret README for more usages.
 
 Basic flow should be to first search for occurences with `<Space>a`. This will fill up a quickfix window (with preview) of all findings. You can delete any occurence you don't want to replace with `dd`.
 
@@ -560,6 +561,30 @@ Unlike Spectre, there is no preview of how the replacement wil look like.
   </div>
 </details>
 </br>
+
+##### Multiline replace
+
+Spectre does not support it, but with Ferret you can replace a string with multiline string using `\r` in the substition part.
+
+For example to replace:
+
+```yaml
+text:
+  replace: under 
+```
+
+to:
+
+```yaml
+text:
+  replace: under
+  newkey:
+    newkey2: value
+```
+
+1. Search for string: `<Space>a`, search for `(.*)(replace:\ under)`. Brackets here are already regex groups. Space must be escaped.
+2. Above will show you serach results. Evalute them (you can remove entries with `dd`)
+3. Replace: `<Space>r`, inster replacement string: `\1\2\r\1newkey:\r\1  newkey2: value`. Here `\1` is whitespace before the key (first regex group), `\2` is for old key. `\r` is newline.
 
 ### Open recent file
 

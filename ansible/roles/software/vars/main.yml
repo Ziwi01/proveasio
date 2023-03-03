@@ -32,11 +32,11 @@ default_apt_packages:
 # Fixed versions should be set without `v` prefix (e.g: 1.4.3)
 github_packages:
   neovim: latest
+  lunarvim: latest # Gets latest tag. You can set it to `master` to be more latest :)
   diff_so_fancy: latest
   bat: latest
   zoxide: latest
   helm: latest
-  git: latest
   lazygit: latest
   fzf: latest
   tmux: latest
@@ -46,7 +46,12 @@ github_packages:
   k9s: latest
   yq: latest
   win32yank: latest
-  nvm: latest
+  git_fuzzy: latest # Does not have releases, latest (for latest commit) or specific commit
+  nvm: latest # Node Version Manater
+  tpm: latest # Tmux plugin manager. Does not have releases, gets latest tag instead
+  pes: latest # Puppet Editor Services. They don't release anymore, so latest means latest commit
+  p10k: latest
+  rvm1_ansible: 2.2.0 # Version of https://github.com/rvm/rvm1-ansible
 
 # Kubectl version
 kubectl_version: latest
@@ -66,7 +71,6 @@ git_apt_version: latest
 # GIT Fuzzy
 git_fuzzy_url: "https://github.com/bigH/git-fuzzy.git"
 git_fuzzy_home: "{{ ansible_env.HOME }}/.local/opt/git-fuzzy"
-git_fuzzy_version: "master" # Branch name or commit - git-fuzzy does not have releases
 
 # Oh-My-Zsh
 omz_home: "{{ ansible_env.HOME }}/.oh-my-zsh"
@@ -81,13 +85,9 @@ omz_plugins:
   pyenv-lazy: https://github.com/davidparsson/zsh-pyenv-lazy.git
   zsh-snv: https://github.com/rpeshkov/zsh-snv
 
-# P10k version
-p10k_version: master
-
 # TMUX Plugin Manager
 tmux_plugins_dir: "{{ ansible_env.HOME }}/.tmux/plugins"
 tpm_git_url: https://github.com/tmux-plugins/tpm.git
-tpm_version: master
 
 # Docker system dependency packages
 docker_apt_dependencies:
@@ -103,23 +103,13 @@ docker_apt_packages:
   docker-compose-plugin: latest
 
 # RVM / Ruby
-rvm1_ansible_role_version: 2.2.0 # Version of https://github.com/rvm/rvm1-ansible
-# rvm1_rubies: # Moved to OS-specific vars file
-#   - ruby-3.1.3
+rvm1_rubies:
+  - ruby-3.1.3
 rvm1_user: "{{ ansible_user_id }}"
-
-# Puppet
-# puppet_version: 7.21.0 # Moved to OS-specific vars file
-# puppet_lint_version: 3.0.1 # Moved to OS-specific vars file
-puppet_rubies:
-  - all # to install only for specific rubies, list their names (must match `rvm1_rubies` - see OS-specific vars files)
-# Example:
-# puppet_rubies:
-#   - ruby-2.7.6
-#   - ruby-3.1.2
 
 # Ruby
 # Install any gem for any ruby. `all` installs for all of them
+# Note that if Puppet is installed, it will install puppet/puppet-lint gems, so no need to add here.
 # Specific ruby must match one from `rvm_rubies` list (see OS-specific vars file)
 # You need to set specific gem version, `latest` is not supported here
 ruby_gems:
@@ -127,29 +117,33 @@ ruby_gems:
     gems:
       - neovim: 0.9.0
 
+# Puppet
+puppet_version: 7.21.0
+puppet_lint_version: 3.0.1
+puppet_rubies:
+  - all # to install only for specific rubies, list their names (must match `rvm1_rubies`)
+# Example:
+# puppet_rubies:
+#   - ruby-2.7.6
+#   - ruby-3.1.2
+
 # PDK (Puppet Development KIT)
 # Please note the module does not support package downgrades - if PDK is already installed in higher version, remove it first.
 puppet_pdk_version: latest
 
-# NVM (Node Version Manager)
-nvm_version: latest
+# Node
 node_version: 'lts/gallium'
 
 # Ansible
 ansible_pip_version: latest
 ansible_lint_pip_version: latest
 
-# Neovim
-neovim_version: latest
-
 # LunarVIM
 lunarvim_url: https://github.com/lunarvim/lunarvim.git
 lunarvim_home: "{{ ansible_env.HOME }}/.local/opt/lunarvim"
-lunarvim_version: master # `master` is latest release, `rolling` is latest snapshot. Otherwise, set to explicit tag (see Github page)
 
 # Puppet
 puppet_pes_url: https://github.com/puppetlabs/puppet-editor-services.git
-puppet_pes_version: main
 
 # SDK Man
 sdkman_update: true

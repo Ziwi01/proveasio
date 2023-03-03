@@ -19,6 +19,9 @@
   ansible.builtin.include_role:
     name: common
     tasks_from: github_version.yml
+    apply:
+      tags:
+        - versions
   tags:
     - versions
 
@@ -46,10 +49,14 @@
   vars:
     app: neovim
     target_version:
-      neovim_version: "{{ neovim_version }}"
-    query: ".neovim_version = \"{{ neovim_version }}\""
+      github_packages:
+        neovim: "{{ neovim_version }}"
+    query: ".github_packages.neovim = \"{{ neovim_version }}\""
   ansible.builtin.include_role:
     name: common
     tasks_from: save_version.yml
+    apply:
+      tags:
+        - versions
   tags:
     - versions

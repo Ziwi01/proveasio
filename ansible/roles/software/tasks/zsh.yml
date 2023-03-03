@@ -25,6 +25,7 @@
   become: true
   become_user: root
   ansible.builtin.command: chsh -s /bin/zsh {{ ansible_user_id }}
+  changed_when: user_shell.stdout != '/bin/zsh'
   when: user_shell.stdout != '/bin/zsh'
 
 - name: '[Zsh] Check for Oh-My-Zsh'
@@ -34,6 +35,7 @@
 
 - name: '[Zsh] Install Oh-My-Zsh'
   ansible.builtin.shell: sh -c "$(curl -fsSL https://raw.github.com/robbyrussell/oh-my-zsh/master/tools/install.sh)" "" --unattended
+  changed_when: not ohmyzsh.stat.exists
   when: not ohmyzsh.stat.exists
 
 - name: "[Zsh] Plugins install/update"
@@ -42,15 +44,23 @@
     dest: "{{ omz_home }}/custom/plugins/{{ item.key }}"
   loop: "{{ omz_plugins | dict2items }}"
 
-- name: '[Zsh] Check for powerlevel10k theme'
-  ansible.builtin.stat:
-    path: "{{ omz_home }}/custom/themes/powerlevel10k"
-  register: powerlevel10k
+- name: "[Zsh][P10k] Get Github URL for proper version"
+  vars:
+    app: p10k
+    repo: romkatv/powerlevel10k
+    version_query: curl -s https://api.github.com/repos/romkatv/powerlevel10k/releases/latest  | jq .name -r | cut -f2 -d'v'
+  ansible.builtin.include_role:
+    name: common
+    tasks_from: github_version.yml
+    apply:
+      tags:
+        - versions
+  tags:
+    - versions
 
-- name: '[Zsh] Clone powerlevel10k'
+- name: '[Zsh][P10k] Clone powerlevel10k'
   ansible.builtin.git:
     repo: https://github.com/romkatv/powerlevel10k.git
     dest: "{{ omz_home }}/custom/themes/powerlevel10k"
     version: "{{ p10k_version }}"
     depth: 1
-  when: not powerlevel10k.stat.exists

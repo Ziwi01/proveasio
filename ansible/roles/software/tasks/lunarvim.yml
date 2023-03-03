@@ -1,7 +1,21 @@
 # Install LunarVIM overlay/bundle for Neovim
 # Source: https://github.com/LunarVim/LunarVim
 ---
-- name: "[LunarVIM] Clone/update latest version"
+- name: "[LunarVIM] Get Github URL for proper version"
+  vars:
+    app: lunarvim
+    repo: lunarvim/lunarvim
+    version_query: curl -s https://api.github.com/repos/lunarvim/lunarvim/releases/latest | jq .name -r | cut -f2 -d'v'
+  ansible.builtin.include_role:
+    name: common
+    tasks_from: github_version.yml
+    apply:
+      tags:
+        - versions
+  tags:
+    - versions
+
+- name: "[LunarVIM] Clone/update version {{ lunarvim_version }}"
   ansible.builtin.git:
     repo: "{{ lunarvim_url }}"
     dest: "{{ lunarvim_home }}"
@@ -31,10 +45,8 @@
     PATH: "{{ ansible_env.HOME }}/.local/bin/:{{ ansible_env.PATH }}"
   when: lunarvim_version in ['master', 'rolling']
 
-- name: "[LunarVIM] Get installed version tag"
-  ansible.builtin.shell: |
-    set -e -o pipefail
-    git describe --tags | head -n 1 | awk -F'-' '{ print $1 }'
+- name: "[LunarVIM] Get version commit if version is master or rolling"
+  ansible.builtin.shell: git rev-parse --short HEAD
   changed_when: false
   args:
     chdir: "{{ lunarvim_home }}"
@@ -42,15 +54,20 @@
   register: lunarvim_git_version
   tags:
     - versions
+  when: lunarvim_version in ['master', 'rolling']
 
 - name: "[LunarVIM] Save used version"
   vars:
     app: lunarvim
     target_version:
-      lunarvim_version: "{{ lunarvim_git_version.stdout }}"
-    query: ".lunarvim_version = \"{{ lunarvim_git_version.stdout }}\""
+      github_packages:
+        lunarvim: "{{ lunarvim_git_version.stdout | default(lunarvim_version) }}"
+    query: ".github_packages.lunarvim = \"{{ lunarvim_git_version.stdout | default(lunarvim_version) }}\""
   ansible.builtin.include_role:
     name: common
     tasks_from: save_version.yml
+    apply:
+      tags:
+        - versions
   tags:
     - versions

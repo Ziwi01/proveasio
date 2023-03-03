@@ -41,5 +41,8 @@
   ansible.builtin.include_role:
     name: common
     tasks_from: save_version.yml
+    apply:
+      tags:
+        - versions
   tags:
     - versions

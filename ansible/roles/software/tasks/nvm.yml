@@ -11,6 +11,9 @@
   ansible.builtin.include_role:
     name: common
     tasks_from: github_version.yml
+    apply:
+      tags:
+        - versions
   tags:
     - versions
 
@@ -33,14 +36,33 @@
   args:
     executable: /bin/bash
 
-- name: "[NVM] Save used version"
+- name: "[NVM] Save used NVM version"
   vars:
     app: nvm
     target_version:
-      nvm_version: "{{ nvm_version }}"
-    query: ".nvm_version = \"{{ nvm_version }}\""
+      github_packages:
+        nvm: "{{ nvm_version }}"
+    query: ".github_packages.nvm = \"{{ nvm_version }}\""
   ansible.builtin.include_role:
     name: common
     tasks_from: save_version.yml
+    apply:
+      tags:
+        - versions
+  tags:
+    - versions
+
+- name: "[NVM] Save used Node version"
+  vars:
+    app: node
+    target_version:
+      node_version: "{{ node_version }}"
+    query: ".node_version = \"{{ node_version }}\""
+  ansible.builtin.include_role:
+    name: common
+    tasks_from: save_version.yml
+    apply:
+      tags:
+        - versions
   tags:
     - versions

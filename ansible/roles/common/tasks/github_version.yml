@@ -13,9 +13,9 @@
   ansible.builtin.set_fact:
     "{{ app }}_version": "{{ version.stdout | default(github_packages[app]) }}"
 
-- name: "[{{ app }}] Check if version is not null"
+- name: "[{{ app }}] Fail if version is not null"
   ansible.builtin.fail:
-    msg: 'Target version is null. This is probably because Github API call limit was exceeded. Try again later.'
+    msg: 'Target version is `null`. This is probably because Github API call limit was exceeded (run `curl -s https://api.github.com/` to verify). Try again later.'
   when: vars[app ~ '_version'] in [ '', 'null'] or vars[app ~ '_version'] | length == 0
 
 - name: "[{{ app }}] Set proper download URL"

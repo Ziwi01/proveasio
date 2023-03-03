@@ -21,6 +21,9 @@
   ansible.builtin.include_role:
     name: common
     tasks_from: save_version.yml
+    apply:
+      tags:
+        - versions
   tags:
     - versions
 
@@ -33,6 +36,9 @@
   ansible.builtin.include_role:
     name: common
     tasks_from: save_version.yml
+    apply:
+      tags:
+        - versions
   tags:
     - versions
 
@@ -40,24 +46,40 @@
 # Puppet Editor Services (Language server protocol instance)
 # Source: https://github.com/puppetlabs/puppet-editor-services
 #
-- name: "[Puppet Editor Services] Clone/update latest version"
+- name: "[Puppet Editor Services] Get Github URL for proper version"
+  vars:
+    app: pes
+    repo: puppetlabs/puppet-editor-services
+    version_query: curl -s https://api.github.com/repos/puppetlabs/puppet-editor-services/commits/main | jq -r '.sha'
+  ansible.builtin.include_role:
+    name: common
+    tasks_from: github_version.yml
+    apply:
+      tags:
+        - versions
+  tags:
+    - versions
+
+- name: "[Puppet Editor Services] Clone repository"
   ansible.builtin.git:
     repo: "{{ puppet_pes_url }}"
     dest: "{{ ansible_env.HOME }}/.lsp/puppet-editor-services"
     update: true
-    version: "{{ puppet_pes_version }}"
-
-# TODO: Get PES GIT version from filesystem
+    version: "{{ pes_version }}"
 
 - name: "[Puppet Editor Services] Save used version"
   vars:
-    app: puppet_pes
+    app: pes
     target_version:
-      puppet_pes_version: "{{ puppet_pes_version }}"
-    query: ".puppet_pes_version = \"{{ puppet_pes_version }}\""
+      github_packages:
+        pes: "{{ pes_version }}"
+    query: ".github_packages.pes = \"{{ pes_version }}\""
   ansible.builtin.include_role:
     name: common
     tasks_from: save_version.yml
+    apply:
+      tags:
+        - versions
   tags:
     - versions
 
@@ -67,14 +89,14 @@
   ignore_errors: true
 
 # TODO: Add changes_when/failed_when
-- name: "[Puppet Editor Services] Run bundle install" # noqa no-changed-when ignore-errors
+- name: "[Puppet] Run bundle install" # noqa no-changed-when ignore-errors
   ansible.builtin.command: "{{ ansible_env.HOME }}/.rvm/bin/rvm all-gemsets do bundle install"
   ignore_errors: true
   args:
     chdir: "{{ ansible_env.HOME }}/.lsp/puppet-editor-services"
 
 # TODO: Add changes_when/failed_when
-- name: "[Puppet Editor Services] Run bundle exec rake gem_revendor" # noqa no-changed-when ignore-errors
+- name: "[Puppet] Run bundle exec rake gem_revendor" # noqa no-changed-when ignore-errors
   ansible.builtin.command: "{{ ansible_env.HOME }}/.rvm/bin/rvm all-gemsets do bundle exec rake gem_revendor"
   ignore_errors: true
   args:
@@ -124,5 +146,8 @@
   ansible.builtin.include_role:
     name: common
     tasks_from: save_version.yml
+    apply:
+      tags:
+        - versions
   tags:
     - versions

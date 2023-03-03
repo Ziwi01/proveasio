@@ -10,6 +10,23 @@
   ansible.builtin.include_role:
     name: common
     tasks_from: github_version.yml
+    apply:
+      tags:
+        - versions
+  tags:
+    - versions
+
+- name: "[Tmux][TPM] Get Github URL for proper version"
+  vars:
+    app: tpm
+    repo: tmux-plugins/tpm
+    version_query: curl -s https://api.github.com/repos/tmux-plugins/tpm/commits/master | jq -r '.sha'
+  ansible.builtin.include_role:
+    name: common
+    tasks_from: github_version.yml
+    apply:
+      tags:
+        - versions
   tags:
     - versions
 
@@ -88,7 +105,7 @@
         msg: '[Tmux] There was an error during Tmux installation, failing build... See output above for more details.'
       when: tmux_failed | bool
 
-- name: "[tmux] Save used version"
+- name: "[Tmux] Save used version"
   vars:
     app: tmux
     target_version:
@@ -98,5 +115,24 @@
   ansible.builtin.include_role:
     name: common
     tasks_from: save_version.yml
+    apply:
+      tags:
+        - versions
+  tags:
+    - versions
+
+- name: "[Tmux] Save used version for plugin manager"
+  vars:
+    app: tpm
+    target_version:
+      github_packages:
+        tpm: "{{ tpm_version }}"
+    query: ".github_packages.tpm = \"{{ tpm_version }}\""
+  ansible.builtin.include_role:
+    name: common
+    tasks_from: save_version.yml
+    apply:
+      tags:
+        - versions
   tags:
     - versions

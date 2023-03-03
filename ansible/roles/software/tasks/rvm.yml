@@ -1,48 +1,48 @@
 # Use official ansible role for RVM installation
 # Source: https://github.com/rvm/rvm1-ansible
 ---
-- name: "[RVM] Get latest version if requested"
-  ansible.builtin.shell: curl -s https://api.github.com/repos/rvm/rvm1-ansible/releases/latest | jq .name -r | cut -f2 -d'v'
-  register: version
-  changed_when: false
-  ignore_errors: true
-  when: rvm1_ansible_role_version == 'latest'
+- name: "[RVM] Get Github URL for proper version"
+  vars:
+    app: rvm1_ansible
+    repo: rvm/rvm1-ansible
+    version_query: curl -s https://api.github.com/repos/rvm/rvm1-ansible/releases/latest | jq .name -r | cut -f2 -d'v'
+    artifact_url: "https://github.com/rvm/rvm1-ansible/archive/refs/tags/v{{ rvm1_ansible_version }}.tar.gz"
+  ansible.builtin.include_role:
+    name: common
+    tasks_from: github_version.yml
+    apply:
+      tags:
+        - versions
+  tags:
+    - versions
 
-- name: "[RVM] Set version to {{ version.stdout | default(rvm1_ansible_role_version) }}"
-  ansible.builtin.set_fact:
-    rvm_role_version: "{{ version.stdout | default(rvm1_ansible_role_version) }}"
-
-- name: "[RVM] Set proper download URL"
-  ansible.builtin.set_fact:
-    rvm_role_url: "https://github.com/rvm/rvm1-ansible/archive/refs/tags/v{{ rvm_role_version }}.tar.gz"
-
-- name: "[RVM] Check if we have RVM ansible role {{ rvm_role_version }} source"
+- name: "[RVM] Check if we have RVM ansible role {{ rvm1_ansible_version }} source"
   ansible.builtin.stat:
-    path: "{{ ansible_env.HOME }}/.local/opt/rvm1-ansible-{{ rvm_role_version }}"
+    path: "{{ ansible_env.HOME }}/.local/opt/rvm1-ansible-{{ rvm1_ansible_version }}"
   register: rvm1_ansible_dir
 
 - name: "Get RVM ansible role"
   when: not rvm1_ansible_dir.stat.exists
   block:
-    - name: "[RVM] Download RVM ansible role {{ rvm_role_version }}"
+    - name: "[RVM] Download RVM ansible role {{ rvm1_ansible_version }}"
       ansible.builtin.get_url:
         url: "{{ rvm_role_url }}"
-        dest: "/tmp/rvm1-ansible-{{ rvm_role_version }}.tar.gz"
+        dest: "/tmp/rvm1-ansible-{{ rvm1_ansible_version }}.tar.gz"
         mode: '0755'
 
     - name: "[RVM] Untar archive"
       ansible.builtin.unarchive:
-        src: "/tmp/rvm1-ansible-{{ rvm_role_version }}.tar.gz"
+        src: "/tmp/rvm1-ansible-{{ rvm1_ansible_version }}.tar.gz"
         dest: "{{ ansible_env.HOME }}/.local/opt"
 
     - name: "[RVM] Cleanup tar.gz file"
       ansible.builtin.file:
-        path: "/tmp/rvm1-ansible-{{ rvm_role_version }}.tar.gz"
+        path: "/tmp/rvm1-ansible-{{ rvm1_ansible_version }}.tar.gz"
         state: absent
 
 - name: "[RVM] Install RVM and rubies" # noqa role-name[path]
   ansible.builtin.include_role:
-    name: "{{ ansible_env.HOME }}/.local/opt/rvm1-ansible-{{ rvm_role_version }}"
+    name: "{{ ansible_env.HOME }}/.local/opt/rvm1-ansible-{{ rvm1_ansible_version }}"
 
 - name: "[RVM] Install default gems for rubies"
   ansible.builtin.command: "{{ ansible_env.HOME }}/.rvm/bin/rvm {{ item.0.ruby }} do gem install '{{ item.1.keys() | list | first }}:{{ item.1.values() | list | first }}'"
@@ -53,12 +53,16 @@
 
 - name: "[RVM] Save used version"
   vars:
-    app: rvm
+    app: RVM
     target_version:
-      rvm1_ansible_role_version: "{{ rvm_role_version }}"
-    query: ".rvm1_ansible_role_version = \"{{ rvm_role_version }}\""
+      github_packages:
+      rvm1_ansible: "{{ rvm1_ansible_version }}"
+    query: ".github_packages.rvm1_ansible = \"{{ rvm1_ansible_version }}\""
   ansible.builtin.include_role:
     name: common
     tasks_from: save_version.yml
+    apply:
+      tags:
+        - versions
   tags:
     - versions

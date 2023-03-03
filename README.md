@@ -204,11 +204,9 @@ For usage examples see [Usages.md](./Usages.md)
 
 #### Ruby
 
-For Ruby management, there is [Ruby Version Manager (RVM)](https://rvm.io/) installed. See available Ruby's with `rvm list`, use particular with `rvm use <ruby_version>`. There are some gems alredy preinstalled on Rubys available here (mostly for Puppet support).
+For Ruby management, there is [Ruby Version Manager (RVM)](https://rvm.io/) installed. See available Ruby's with `rvm list`, use particular with `rvm use <ruby_version>`. There are some gems already preinstalled on Rubys available here (like `neovim` gem, or if Puppet is being installed, it installs `puppet` and `puppet-lint` gems).
 
-**NOTE**: There are different ruby versions installed depending if you are using Ubuntu 22.04 or 20.04 - for 20.04 beside latest `3.1.x`, there is `2.4.x` and `2.7.x` installed.
-
-**NOTE 2**: There might be some issues with installing/managing Ruby versions `< 3.1.x` on Ubuntu 22.04 (that's why there is only latest 3.1 version listed for this OS).
+**NOTE**: There might be some issues with installing/managing Ruby versions `< 3.1.x` on Ubuntu 22.04, but that might have been a random issue (to be confirmed)
 
 #### JAVA/groovy
 
@@ -224,7 +222,7 @@ For Node, there is [NVM](https://github.com/nvm-sh/nvm) installed. See NPM versi
 
 There is Puppet LSP (language server protocol) called [Puppet Editor Services](https://github.com/puppetlabs/puppet-editor-services) installed in `~/.lsp/puppet-editor-services`.
 
-**NOTE:** For Ubuntu-20.04, by default, Puppet gets installed in version 5.5.22 **for all rubies**. If you choose to install latest puppet, there might be some dependencies errors for lower ruby versions (for example 2.4.10, which is included by default). If you don't want to install Puppet for all rubies, set `puppet_rubies` in `vars/overrides.yml` to an array with rubies names. Alternatively, you can override (`vars/overrides.yml`) ruby versions to list only 3.1.x Ruby (`rvm1_rubies` key) - that way you can use latest Puppet/puppet-lint gems - `puppet_version`/`puppet_lint_version`
+**NOTE:** By default, Puppet gets installed **for all rubies**. If you choose to install latest puppet **AND** older rubies (like 2.4.x), there might be some dependencies errors. If you don't want to install Puppet for all rubies, set `puppet_rubies` in `vars/overrides.yml` to an array with rubies names. With latest 3.x.x ruby there shouldn't be a problem
 
 #### Ansible
 
