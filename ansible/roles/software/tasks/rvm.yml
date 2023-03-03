@@ -26,7 +26,7 @@
   block:
     - name: "[RVM] Download RVM ansible role {{ rvm1_ansible_version }}"
       ansible.builtin.get_url:
-        url: "{{ rvm_role_url }}"
+        url: "{{ rvm1_ansible_url }}"
         dest: "/tmp/rvm1-ansible-{{ rvm1_ansible_version }}.tar.gz"
         mode: '0755'
 
