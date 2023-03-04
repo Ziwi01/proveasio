@@ -15,10 +15,14 @@
   changed_when: false
   ignore_errors: true
   when: kubectl_version == 'latest'
+  tags:
+    - versions
 
 - name: "[kubectl] Set version to {{ version.stdout | default(kubectl_version) }}"
   ansible.builtin.set_fact:
     kubectl_version: "{{ version.stdout | default(kubectl_version) }}"
+  tags:
+    - versions
 
 - name: "[kubectl] Set proper download URL"
   ansible.builtin.set_fact:

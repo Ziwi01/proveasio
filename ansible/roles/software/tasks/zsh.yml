@@ -58,6 +58,22 @@
   tags:
     - versions
 
+- name: "[p10k] Save used version"
+  vars:
+    app: p10k
+    target_version:
+      github_packages:
+        p10k: "{{ p10k_version }}"
+    query: ".github_packages.p10k = \"{{ p10k_version }}\""
+  ansible.builtin.include_role:
+    name: common
+    tasks_from: save_version.yml
+    apply:
+      tags:
+        - versions
+  tags:
+    - versions
+
 - name: '[Zsh][P10k] Clone powerlevel10k'
   ansible.builtin.git:
     repo: https://github.com/romkatv/powerlevel10k.git
