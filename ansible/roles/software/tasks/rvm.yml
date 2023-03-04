@@ -56,7 +56,7 @@
     app: RVM
     target_version:
       github_packages:
-      rvm1_ansible: "{{ rvm1_ansible_version }}"
+        rvm1_ansible: "{{ rvm1_ansible_version }}"
     query: ".github_packages.rvm1_ansible = \"{{ rvm1_ansible_version }}\""
   ansible.builtin.include_role:
     name: common
