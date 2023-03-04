@@ -1,0 +1,12 @@
+---
+- name: "[{{ app }}] Save version to `current-versions.yml`"
+  ansible.builtin.shell: |
+    set -e -o pipefail
+    yq -i '{{ query }}' {{ playbook_dir }}/../current-versions.yml
+  args:
+    executable: /bin/bash
+  changed_when: false
+
+- name: "[{{ app }}] Save version to ansible fact"
+  ansible.builtin.set_fact:
+    current_versions: "{{ current_versions | combine(target_version, list_merge='append', recursive=true) }}"

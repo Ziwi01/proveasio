@@ -1,0 +1,68 @@
+# Install Node Version Manager
+# Please note this is a requirement for LunarVIM plugin which is being installed later.
+# Also, some tools get installed in node (language servers etc.)
+# Source: https://github.com/nvm-sh/nvm
+---
+- name: "[NVM] Get Github URL for proper version"
+  vars:
+    app: nvm
+    repo: nvm-sh/nvm
+    version_query: curl -s https://api.github.com/repos/nvm-sh/nvm/releases/latest | jq .name -r | cut -f2 -d'v'
+  ansible.builtin.include_role:
+    name: common
+    tasks_from: github_version.yml
+    apply:
+      tags:
+        - versions
+  tags:
+    - versions
+
+- name: "[NVM] Clone NVM repository and checkout {{ nvm_version }}"
+  ansible.builtin.git:
+    repo: "https://github.com/nvm-sh/nvm.git"
+    dest: "{{ ansible_env.HOME }}/.local/opt/nvm"
+    version: "v{{ nvm_version }}"
+
+# TODO: do not install if already proper version installed
+- name: "[NVM] Install NVM" # noqa no-changed-when
+  ansible.builtin.shell: "./install.sh"
+  args:
+    chdir: "{{ ansible_env.HOME }}/.local/opt/nvm"
+    executable: /bin/bash
+
+# TODO: Check if this version is already there for this user
+- name: "[NVM] Install Node {{ node_version }}" # noqa no-changed-when
+  ansible.builtin.shell: ". {{ ansible_env.HOME }}/.local/opt/nvm/nvm.sh; nvm install {{ node_version }}"
+  args:
+    executable: /bin/bash
+
+- name: "[NVM] Save used NVM version"
+  vars:
+    app: nvm
+    target_version:
+      github_packages:
+        nvm: "{{ nvm_version }}"
+    query: ".github_packages.nvm = \"{{ nvm_version }}\""
+  ansible.builtin.include_role:
+    name: common
+    tasks_from: save_version.yml
+    apply:
+      tags:
+        - versions
+  tags:
+    - versions
+
+- name: "[NVM] Save used Node version"
+  vars:
+    app: node
+    target_version:
+      node_version: "{{ node_version }}"
+    query: ".node_version = \"{{ node_version }}\""
+  ansible.builtin.include_role:
+    name: common
+    tasks_from: save_version.yml
+    apply:
+      tags:
+        - versions
+  tags:
+    - versions

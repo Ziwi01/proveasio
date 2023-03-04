@@ -1,0 +1,74 @@
+# k9s installation
+#
+# https://k9scli.io/
+---
+#
+# k9s
+#
+- name: "[k9s] Get Github URL for proper version"
+  vars:
+    app: k9s
+    repo: derailed/k9s
+    version_query: curl -s https://api.github.com/repos/derailed/k9s/releases/latest | jq .name -r | cut -f2 -d'v'
+    github_uri: v{{ k9s_version }}/k9s_Linux_amd64.tar.gz
+  ansible.builtin.include_role:
+    name: common
+    tasks_from: github_version.yml
+    apply:
+      tags:
+        - versions
+  tags:
+    - versions
+
+- name: "[k9s] Check if k9s {{ k9s_version }} is installed"
+  ansible.builtin.stat:
+    path: "{{ ansible_env.HOME }}/.local/opt/k9s-{{ k9s_version }}"
+  register: k9s_dir
+
+- name: "Installation"
+  when: not k9s_dir.stat.exists
+  block:
+    - name: "[k9s] Create directory in {{ ansible_env.HOME }}/.local/opt"
+      ansible.builtin.file:
+        path: "{{ ansible_env.HOME }}/.local/opt/k9s-{{ k9s_version }}"
+        state: directory
+        mode: '0755'
+
+    - name: "[k9s] Download k9s {{ k9s_version }}"
+      ansible.builtin.get_url:
+        url: "{{ k9s_url }}"
+        dest: "/tmp/k9s-{{ k9s_version }}.tar.gz"
+        mode: '0755'
+
+    - name: "[k9s] Untar archive"
+      ansible.builtin.unarchive:
+        src: "/tmp/k9s-{{ k9s_version }}.tar.gz"
+        dest: "{{ ansible_env.HOME }}/.local/opt/k9s-{{ k9s_version }}"
+
+    - name: "[k9s] Cleanup tar.gz file"
+      ansible.builtin.file:
+        path: "/tmp/k9s-{{ k9s_version }}.tar.gz"
+        state: absent
+
+- name: "[k9s] Link {{ k9s_version }} binary"
+  ansible.builtin.file:
+    src: "{{ ansible_env.HOME }}/.local/opt/k9s-{{ k9s_version }}/k9s"
+    dest: "{{ ansible_env.HOME }}/.local/bin/k9s"
+    state: link
+    force: true
+
+- name: "[k9s] Save used version"
+  vars:
+    app: k9s
+    target_version:
+      github_packages:
+        k9s: "{{ k9s_version }}"
+    query: ".github_packages.k9s = \"{{ k9s_version }}\""
+  ansible.builtin.include_role:
+    name: common
+    tasks_from: save_version.yml
+    apply:
+      tags:
+        - versions
+  tags:
+    - versions

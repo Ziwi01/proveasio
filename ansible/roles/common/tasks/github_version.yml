@@ -1,0 +1,24 @@
+---
+- name: "[{{ app }}] Get latest version if requested"
+  ansible.builtin.shell: |
+    set -e -o pipefail
+    {{ version_query }}
+  args:
+    executable: /bin/bash
+  register: version
+  changed_when: false
+  when: github_packages[app] == 'latest'
+
+- name: "[{{ app }}] Set version to {{ version.stdout | default(github_packages[app]) }}"
+  ansible.builtin.set_fact:
+    "{{ app }}_version": "{{ version.stdout | default(github_packages[app]) }}"
+
+- name: "[{{ app }}] Fail if version is not null"
+  ansible.builtin.fail:
+    msg: 'Target version is `null`. This is probably because Github API call limit was exceeded (run `curl -s https://api.github.com/` to verify). Try again later.'
+  when: vars[app ~ '_version'] in [ '', 'null'] or vars[app ~ '_version'] | length == 0
+
+- name: "[{{ app }}] Set proper download URL"
+  ansible.builtin.set_fact:
+    "{{ app }}_url": "{{ artifact_url | default('https://github.com/' ~ repo | default(omit) ~ '/releases/download/' ~ github_uri | default(omit)) }}"
+  when: artifact_url is defined or (github_uri is defined and repo is defined)

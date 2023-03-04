@@ -1,20 +1,34 @@
 # TMUX plugin manager
 # Source: https://github.com/tmux-plugins/tpm
 ---
-- name: "[Tmux] Get latest version if requested"
-  ansible.builtin.shell: curl -s https://api.github.com/repos/tmux/tmux/releases/latest | jq .name -r | cut -f2 -d'v' | awk '{ print $2 }'
-  register: version
-  changed_when: false
-  ignore_errors: true
-  when: versions['tmux'] == 'latest'
+- name: "[Tmux] Get Github URL for proper version"
+  vars:
+    app: tmux
+    repo: tmux/tmux
+    version_query: curl -s https://api.github.com/repos/tmux/tmux/releases/latest | jq .name -r | cut -f2 -d'v' | awk '{ print $2 }'
+    github_uri: "{{ tmux_version }}/tmux-{{ tmux_version }}.tar.gz"
+  ansible.builtin.include_role:
+    name: common
+    tasks_from: github_version.yml
+    apply:
+      tags:
+        - versions
+  tags:
+    - versions
 
-- name: "[Tmux] Set version to {{ version.stdout | default(versions['tmux']) }}"
-  ansible.builtin.set_fact:
-    tmux_version: "{{ version.stdout | default(versions['tmux']) }}"
-
-- name: "[Tmux] Set proper download URL"
-  ansible.builtin.set_fact:
-    tmux_url: "https://github.com/tmux/tmux/releases/download/{{ tmux_version }}/tmux-{{ tmux_version }}.tar.gz"
+- name: "[Tmux][TPM] Get Github URL for proper version"
+  vars:
+    app: tpm
+    repo: tmux-plugins/tpm
+    version_query: curl -s https://api.github.com/repos/tmux-plugins/tpm/commits/master | jq -r '.sha'
+  ansible.builtin.include_role:
+    name: common
+    tasks_from: github_version.yml
+    apply:
+      tags:
+        - versions
+  tags:
+    - versions
 
 - name: "[Tmux] Check if Tmux {{ tmux_version }} is installed"
   ansible.builtin.stat:
@@ -69,7 +83,7 @@
       ansible.builtin.file:
         path: "{{ ansible_env.HOME }}/.tmux/plugins"
         state: directory
-        mode: 0755
+        mode: '0755'
         recurse: true
 
     - name: "[TMUX] Clone/update Tmux plugin manager"
@@ -78,6 +92,7 @@
         dest: "{{ tmux_plugins_dir }}/tpm"
         force: true
         update: true
+        version: "{{ tpm_version }}"
   rescue:
     - name: "[Tmux] Remove TMUX dir {{ ansible_env.HOME }}/.local/opt/tmux-{{ tmux_version }} as installation failed"
       ansible.builtin.file:
@@ -91,5 +106,33 @@
       when: tmux_failed | bool
 
 - name: "[Tmux] Save used version"
-  ansible.builtin.set_fact:
-    used_software_versions: "{{ used_software_versions | combine({'tmux': tmux_version}) }}"
+  vars:
+    app: tmux
+    target_version:
+      github_packages:
+        tmux: "{{ tmux_version }}"
+    query: ".github_packages.tmux = \"{{ tmux_version }}\""
+  ansible.builtin.include_role:
+    name: common
+    tasks_from: save_version.yml
+    apply:
+      tags:
+        - versions
+  tags:
+    - versions
+
+- name: "[Tmux] Save used version for plugin manager"
+  vars:
+    app: tpm
+    target_version:
+      github_packages:
+        tpm: "{{ tpm_version }}"
+    query: ".github_packages.tpm = \"{{ tpm_version }}\""
+  ansible.builtin.include_role:
+    name: common
+    tasks_from: save_version.yml
+    apply:
+      tags:
+        - versions
+  tags:
+    - versions

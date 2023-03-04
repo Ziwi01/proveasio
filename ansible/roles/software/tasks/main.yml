@@ -23,13 +23,19 @@
   tags:
     - always
 
-# Set software versions fact, will be updated in the tasks above, then printed at the end of play
-- name: "[Software] Reset software versions fact"
-  ansible.builtin.set_fact:
-    used_software_versions: {}
-    cacheable: true
+# Install `yq` YAML parser
+# Used for editing YAML files for versions and release purposes.
+- name: "[Software] Install yq"
+  ansible.builtin.include_tasks:
+    file: yq.yml
+    apply:
+      tags:
+        - software
+        - yq
   tags:
-    - always
+    - software
+    - versions
+    - yq
 
 # Common software
 - name: "[Software] Install packages"
@@ -42,6 +48,7 @@
   when: "'packages' not in software_tasks_exclude"
   tags:
     - software
+    - versions
     - software_packages
 
 # Latest GIT
@@ -55,6 +62,7 @@
   when: "'git' not in software_tasks_exclude"
   tags:
     - software
+    - versions
     - git
 
 # ripgrep
@@ -68,6 +76,7 @@
   when: "'ripgrep' not in software_tasks_exclude"
   tags:
     - software
+    - versions
     - ripgrep
 
 # FD
@@ -81,6 +90,7 @@
   when: "'fd' not in software_tasks_exclude"
   tags:
     - software
+    - versions
     - fd
 
 # ls-with-git-status
@@ -94,6 +104,7 @@
   when: "'lsg' not in software_tasks_exclude"
   tags:
     - software
+    - versions
     - lsg
 
 # FZF (fuzzy-finder)
@@ -107,6 +118,7 @@
   when: "'fzf' not in software_tasks_exclude"
   tags:
     - software
+    - versions
     - fzf
 
 # Diff-so-fancy
@@ -120,6 +132,7 @@
   when: "'diff-so-fancy' not in software_tasks_exclude"
   tags:
     - software
+    - versions
     - diff-so-fancy
 
 # Git-fuzzy
@@ -133,6 +146,7 @@
   when: "'git-fuzzy' not in software_tasks_exclude"
   tags:
     - software
+    - versions
     - git-fuzzy
 
 # LazyGIT
@@ -146,6 +160,7 @@
   when: "'lazygit' not in software_tasks_exclude"
   tags:
     - software
+    - versions
     - lazygit
 
 # Gita
@@ -159,6 +174,7 @@
   when: "'gita' not in software_tasks_exclude"
   tags:
     - software
+    - versions
     - gita
 
 # thefuck
@@ -172,6 +188,7 @@
   when: "'thefuck' not in software_tasks_exclude"
   tags:
     - software
+    - versions
     - thefuck
 
 # BAT
@@ -185,6 +202,7 @@
   when: "'bat' not in software_tasks_exclude"
   tags:
     - software
+    - versions
     - bat
 
 # Zoxide
@@ -198,6 +216,7 @@
   when: "'zoxide' not in software_tasks_exclude"
   tags:
     - software
+    - versions
     - zoxide
 
 # Helm
@@ -211,6 +230,7 @@
   when: "'helm' not in software_tasks_exclude"
   tags:
     - software
+    - versions
     - helm
 
 # ZSH
@@ -224,6 +244,7 @@
   when: "'zsh' not in software_tasks_exclude"
   tags:
     - software
+    - versions
     - zsh
 
 # Win32yank (windows clipboard support for Neovim)
@@ -237,6 +258,7 @@
   when: "'w32yank' not in software_tasks_exclude"
   tags:
     - software
+    - versions
     - w32yank
 
 # TMUX Plugins
@@ -250,6 +272,7 @@
   when: "'tmux' not in software_tasks_exclude"
   tags:
     - software
+    - versions
     - tmux
 
 - name: "[Software] Docker"
@@ -262,16 +285,159 @@
   when: "'docker' not in software_tasks_exclude"
   tags:
     - software
+    - versions
     - docker
 
-- name: "[Software] Kubernetes"
+- name: "[Software] kubectl"
   ansible.builtin.include_tasks:
-    file: kubernetes.yml
+    file: kubectl.yml
     apply:
       tags:
         - software
-        - kubernetes
-  when: "'kubernetes' not in software_tasks_exclude"
+        - kubectl
+  when: "'kubectl' not in software_tasks_exclude"
   tags:
     - software
-    - kubernetes
+    - versions
+    - kubectl
+
+- name: "[Software] KinD"
+  ansible.builtin.include_tasks:
+    file: kind.yml
+    apply:
+      tags:
+        - software
+        - kind
+  when: "'kind' not in software_tasks_exclude"
+  tags:
+    - software
+    - versions
+    - kind
+
+- name: "[Software] k9s"
+  ansible.builtin.include_tasks:
+    file: k9s.yml
+    apply:
+      tags:
+        - software
+        - k9s
+  when: "'k9s' not in software_tasks_exclude"
+  tags:
+    - software
+    - versions
+    - k9s
+
+
+# Ruby Version Manager
+- name: "[Software] Install Ruby Version Manager"
+  ansible.builtin.include_tasks:
+    file: rvm.yml
+    apply:
+      tags:
+        - software
+        - rvm
+  when: "'rvm' not in software_tasks_exclude"
+  tags:
+    - software
+    - versions
+    - rvm
+
+# SDKMan!
+- name: "[Software] Install SDKMAN!"
+  ansible.builtin.include_tasks:
+    file: sdkman.yml
+    apply:
+      tags:
+        - software
+        - sdkman
+  when: "'sdkman' not in software_tasks_exclude"
+  tags:
+    - software
+    - versions
+    - sdkman
+
+# Node Version Manager
+- name: "[Software] Install Node Version Manager"
+  ansible.builtin.include_tasks:
+    file: nvm.yml # Dependency for lvim.yml
+    apply:
+      tags:
+        - software
+        - nvm
+  when: "'nvm' not in software_tasks_exclude"
+  tags:
+    - software
+    - versions
+    - nvm
+
+# Rust
+- name: "[Software] Install Rust language with Cargo"
+  ansible.builtin.include_tasks:
+    file: rust.yml # Dependency for lvim.yml
+    apply:
+      tags:
+        - software
+        - rust
+  when: "'rust' not in software_tasks_exclude"
+  tags:
+    - software
+    - versions
+    - rust
+
+# Ansible PIP
+- name: "[Software] Install Ansible"
+  ansible.builtin.include_tasks:
+    file: ansible.yml
+    apply:
+      tags:
+        - software
+        - ansible
+  when: "'ansible' not in software_tasks_exclude"
+  tags:
+    - software
+    - versions
+    - ansible
+
+# Neovim
+- name: "[Software] Install Neovim"
+  ansible.builtin.include_tasks:
+    file: neovim.yml
+    apply:
+      tags:
+        - software
+        - neovim
+        - lunarvim
+  when: "'neovim' not in software_tasks_exclude"
+  tags:
+    - software
+    - versions
+    - neovim
+    - lunarvim
+
+# LunarVIM
+- name: "[Software] Install LunarVIM"
+  ansible.builtin.include_tasks:
+    file: lunarvim.yml
+    apply:
+      tags:
+        - software
+        - lunarvim
+  when: "'lunarvim' not in software_tasks_exclude"
+  tags:
+    - software
+    - versions
+    - lunarvim
+
+# Puppet
+- name: "[Software] Install Puppet"
+  ansible.builtin.include_tasks:
+    file: puppet.yml
+    apply:
+      tags:
+        - software
+        - puppet
+  when: "'puppet' not in software_tasks_exclude"
+  tags:
+    - software
+    - versions
+    - puppet

@@ -1,9 +1,9 @@
 # Configure necessary software (mostly dotfiles)
 # For setting backup/overwrite options see `vars/main.yml`
 ---
-- name: "[Config] Create backup dir {{ dotfiles_backup_dir }}"
+- name: "[Config] Create config backup dir {{ config_backup_dir }}"
   ansible.builtin.file:
-    path: "{{ dotfiles_backup_dir }}"
+    path: "{{ config_backup_dir }}"
     state: directory
     mode: '0755'
   tags:

@@ -1,34 +1,48 @@
 ---
-# Gita installation
+# gita installation
 # For usage see README.md
 #
 # Source: https://github.com/nosarthur/gita
-- name: "[Gita] Install Gita specific version"
+- name: "[gita] Install Gita specific version"
   ansible.builtin.pip:
-    name: "gita=={{ versions.gita }}"
-    executable: pip3
+    name: "gita=={{ pip_packages['gita'] }}"
+    executable: "{{ ansible_env.HOME }}/.pyenv/shims/pip3"
   register: pip_out
   changed_when: "'Requirement already satisfied' not in pip_out.stdout"
-  when: versions['gita'] != 'latest'
+  when: pip_packages['gita'] != 'latest'
 
-- name: "[Gita] Install Gita latest version"
+- name: "[gita] Install Gita latest version"
   ansible.builtin.pip:
     name: "gita"
-    executable: pip3
+    executable: "{{ ansible_env.HOME }}/.pyenv/shims/pip3"
     extra_args: --upgrade
   register: pip_out
   changed_when: "'Requirement already satisfied' not in pip_out.stdout"
-  when: versions['gita'] == 'latest'
+  when: pip_packages['gita'] == 'latest'
 
-- name: "[Gita] Get installed Gita version"
+- name: "[gita] Get installed Gita version"
   ansible.builtin.shell: |
     set -e -o pipefail
-    pip3 show gita | grep Version | awk '{print $2}'
+    {{ ansible_env.HOME }}/.pyenv/shims/pip3 show gita | grep Version | awk '{print $2}'
   args:
     executable: /bin/bash
   changed_when: false
   register: gita_version
+  tags:
+    - versions
 
-- name: "[Gita] Save used version"
-  ansible.builtin.set_fact:
-    used_software_versions: "{{ used_software_versions | combine({'gita': gita_version.stdout}) }}"
+- name: "[gita] Save used version"
+  vars:
+    app: gita
+    target_version:
+      pip_packages:
+        gita: "{{ gita_version.stdout }}"
+    query: ".pip_packages.gita = \"{{ gita_version.stdout }}\""
+  ansible.builtin.include_role:
+    name: common
+    tasks_from: save_version.yml
+    apply:
+      tags:
+        - versions
+  tags:
+    - versions

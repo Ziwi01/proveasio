@@ -1,0 +1,4 @@
+use_default_rules: true
+skip_list:
+  - name[template]
+  - command-instead-of-module

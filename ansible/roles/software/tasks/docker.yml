@@ -17,9 +17,9 @@
   become: true
   ansible.builtin.apt:
     update_cache: true
-    name: "{{ item.key }}"
-    state: "{{ item.value }}"
-  loop: "{{ docker_dependencies | dict2items }}"
+    name: "{{ item }}"
+    state: 'present'
+  loop: "{{ docker_apt_dependencies }}"
 
 - name: '[Docker] Add signing key'
   become: true
@@ -48,7 +48,7 @@
     update_cache: true
     name: "{{ item.key }}"
     state: "{{ item.value }}"
-  loop: "{{ docker_packages | dict2items }}"
+  loop: "{{ docker_apt_packages | dict2items }}"
 
 - name: '[Docker] Ensure docker packages are installed in particular versions'
   become: true
@@ -56,7 +56,36 @@
   ansible.builtin.apt:
     update_cache: true
     name: "{{ item.key }}={{ item.value }}"
-  loop: "{{ docker_packages | dict2items }}"
+  loop: "{{ docker_apt_packages | dict2items }}"
+
+- name: '[Docker] Get installed packages versions'
+  ansible.builtin.shell: |
+    set -e -o pipefail
+    apt-cache policy {{ item.key }} | grep Installed | awk '{ print $2 }'
+  register: docker_versions
+  changed_when: false
+  args:
+    executable: /bin/bash
+  loop: "{{ docker_apt_packages | dict2items }}"
+  tags:
+    - versions
+
+- name: "[Docker] Save used version"
+  vars:
+    app: "{{ package.item.key }}"
+    target_version: "{{ {'docker_apt_packages': {package.item.key: package.stdout}} }}"
+    query: ".docker_apt_packages.\"{{ package.item.key }}\" = \"{{ package.stdout }}\""
+  ansible.builtin.include_role:
+    name: common
+    tasks_from: save_version.yml
+    apply:
+      tags:
+        - versions
+  loop: "{{ docker_versions.results }}"
+  loop_control:
+    loop_var: package
+  tags:
+    - versions
 
 - name: '[Docker] Start docker daemon' # noqa: args[module]
   become: true

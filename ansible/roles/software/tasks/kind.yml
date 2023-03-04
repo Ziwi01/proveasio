@@ -1,0 +1,64 @@
+# kind installation
+#
+# https://kind.sigs.k8s.io/
+---
+#
+# KiND
+#
+- name: "[kind] Get Github URL for proper version"
+  vars:
+    app: kind
+    repo: kubernetes-sigs/kind
+    version_query: curl -s https://api.github.com/repos/kubernetes-sigs/kind/releases/latest | jq .name -r | cut -f1 -d' ' | cut -f2 -d'v'
+    github_uri: v{{ kind_version }}/kind-linux-amd64
+  ansible.builtin.include_role:
+    name: common
+    tasks_from: github_version.yml
+    apply:
+      tags:
+        - versions
+  tags:
+    - versions
+
+- name: "[kind] Check if kind {{ kind_version }} is installed"
+  ansible.builtin.stat:
+    path: "{{ ansible_env.HOME }}/.local/opt/kind-{{ kind_version }}"
+  register: kind_dir
+
+- name: "Installation"
+  when: not kind_dir.stat.exists
+  block:
+    - name: "[kind] Create directory in {{ ansible_env.HOME }}/.local/opt"
+      ansible.builtin.file:
+        path: "{{ ansible_env.HOME }}/.local/opt/kind-{{ kind_version }}"
+        state: directory
+        mode: '0755'
+
+    - name: "[kind] Download kind {{ kind_version }}"
+      ansible.builtin.get_url:
+        url: "{{ kind_url }}"
+        dest: "{{ ansible_env.HOME }}/.local/opt/kind-{{ kind_version }}/kind"
+        mode: '0755'
+
+    - name: "[kind] Link {{ kind_version }} binary"
+      ansible.builtin.file:
+        src: "{{ ansible_env.HOME }}/.local/opt/kind-{{ kind_version }}/kind"
+        dest: "{{ ansible_env.HOME }}/.local/bin/kind"
+        state: link
+        force: true
+
+- name: "[kind] Save used version"
+  vars:
+    app: kind
+    target_version:
+      github_packages:
+        kind: "{{ kind_version }}"
+    query: ".github_packages.kind = \"{{ kind_version }}\""
+  ansible.builtin.include_role:
+    name: common
+    tasks_from: save_version.yml
+    apply:
+      tags:
+        - versions
+  tags:
+    - versions

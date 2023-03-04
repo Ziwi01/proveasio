@@ -2,3 +2,36 @@
 # FZF
 - name: "[FZF] Run install script"
   ansible.builtin.shell: "{{ fzf_home }}/install"
+
+# LunarVIM
+- name: "[LunarVIM] Get NPM version string"
+  ansible.builtin.shell: |
+    set -e -o pipefail
+    . {{ ansible_env.HOME }}/.local/opt/nvm/nvm.sh
+    nvm use {{ node_version }} 2>&1 1>/dev/null
+    nvm list current | grep -E 'v[0-9]*\.[0-9]*\.[0-9]*' -o
+  changed_when: false
+  args:
+    executable: /bin/bash
+  register: npm_version
+
+- name: "[LunarVIM] Install LunarVIM"
+  ansible.builtin.shell: |
+    . {{ ansible_env.HOME }}/.cargo/env
+    . {{ ansible_env.HOME }}/.local/opt/nvm/nvm.sh
+    dos2unix {{ lunarvim_home }}/utils/installer/install.sh
+    {{ lunarvim_home }}/utils/installer/install.sh -y
+  register: lunarvim_install
+  environment:
+    PATH: "{{ ansible_env.HOME }}/.local/opt/nvm/versions/node/{{ npm_version.stdout }}/bin:{{ ansible_env.HOME }}/.local/bin/:{{ ansible_env.PATH }}"
+  notify: "[LunarVIM] Show LunarVIM install info"
+
+- name: "[LunarVIM] Show LunarVIM install info"
+  ansible.builtin.debug:
+    msg: "{{ lunarvim_install.stdout | default('No output was passed from LunarVIM install command') }}"
+
+# SDKMan
+- name: "[SDKMan] Cleanup SDKMAN script"
+  ansible.builtin.file:
+    path: '{{ sdkman_tmp_dir }}/sdkman_script'
+    state: absent

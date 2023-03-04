@@ -1,9 +1,7 @@
-name: WSL/Ubuntu build
+name: Ubuntu build
 
 on:
   push:
-    branches: [ master ]
-  pull_request:
     branches: [ master ]
 
   workflow_dispatch:
@@ -14,12 +12,16 @@ jobs:
     steps:
       - uses: actions/checkout@v3
 
+      - name: Fix grub-efi-amd64 error
+        run: |
+          sudo apt remove shim-signed grub-efi-amd64-bin -y --allow-remove-essential
+
       - name: Prepare for setup
-        run: sudo sh prepare-wsl.sh
+        run: sudo sh prepare-ubuntu.sh
 
       - name: Setup environment
         working-directory: ./ansible
-        run: ansible-playbook -i inventory.yml setup-wsl.yaml
+        run: ansible-playbook -i inventory.yml setup-ubuntu.yml
 
   ubuntu-20:
     runs-on: ubuntu-20.04
@@ -28,8 +30,8 @@ jobs:
       - uses: actions/checkout@v3
 
       - name: Prepare for setup
-        run: sudo sh prepare-wsl.sh
+        run: sudo sh prepare-ubuntu.sh
 
       - name: Setup environment
         working-directory: ./ansible
-        run: ansible-playbook -i inventory.yml setup-wsl.yaml
+        run: ansible-playbook -i inventory.yml setup-ubuntu.yml

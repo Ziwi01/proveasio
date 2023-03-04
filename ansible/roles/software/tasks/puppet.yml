@@ -1,0 +1,153 @@
+# Install Puppet related tools
+---
+# Ruby gems
+- name: "[Puppet] Install Puppet/puppet-lint ruby gems for ALL rubies"
+  ansible.builtin.command: "{{ ansible_env.HOME }}/.rvm/bin/rvm all do gem install 'puppet:{{ puppet_version }}' 'puppet-lint:{{ puppet_lint_version }}'"
+  changed_when: false
+  when: "'all' in puppet_rubies"
+
+- name: "[Puppet] Install Puppet/puppet-lint ruby gems for subset of rubies"
+  ansible.builtin.command: "{{ ansible_env.HOME }}/.rvm/bin/rvm {{ item }} do gem install 'puppet:{{ puppet_version }}' 'puppet-lint:{{ puppet_lint_version }}'"
+  changed_when: false
+  loop: "{{ puppet_rubies }}"
+  when: "'all' not in puppet_rubies and puppet_rubies | length > 0"
+
+- name: "[Puppet] Save used version"
+  vars:
+    app: puppet
+    target_version:
+      puppet_version: "{{ puppet_version }}"
+    query: ".puppet_version = \"{{ puppet_version }}\""
+  ansible.builtin.include_role:
+    name: common
+    tasks_from: save_version.yml
+    apply:
+      tags:
+        - versions
+  tags:
+    - versions
+
+- name: "[Puppet lint] Save used version"
+  vars:
+    app: puppet-lint
+    target_version:
+      puppet_lint_version: "{{ puppet_lint_version }}"
+    query: ".puppet_lint_version = \"{{ puppet_lint_version }}\""
+  ansible.builtin.include_role:
+    name: common
+    tasks_from: save_version.yml
+    apply:
+      tags:
+        - versions
+  tags:
+    - versions
+
+#
+# Puppet Editor Services (Language server protocol instance)
+# Source: https://github.com/puppetlabs/puppet-editor-services
+#
+- name: "[Puppet Editor Services] Get Github URL for proper version"
+  vars:
+    app: pes
+    repo: puppetlabs/puppet-editor-services
+    version_query: curl -s https://api.github.com/repos/puppetlabs/puppet-editor-services/commits/main | jq -r '.sha'
+  ansible.builtin.include_role:
+    name: common
+    tasks_from: github_version.yml
+    apply:
+      tags:
+        - versions
+  tags:
+    - versions
+
+- name: "[Puppet Editor Services] Clone repository"
+  ansible.builtin.git:
+    repo: "{{ puppet_pes_url }}"
+    dest: "{{ ansible_env.HOME }}/.lsp/puppet-editor-services"
+    update: true
+    version: "{{ pes_version }}"
+
+- name: "[Puppet Editor Services] Save used version"
+  vars:
+    app: pes
+    target_version:
+      github_packages:
+        pes: "{{ pes_version }}"
+    query: ".github_packages.pes = \"{{ pes_version }}\""
+  ansible.builtin.include_role:
+    name: common
+    tasks_from: save_version.yml
+    apply:
+      tags:
+        - versions
+  tags:
+    - versions
+
+# TODO: Add changes_when/failed_when
+- name: "[Puppet] Update bundler for all rubies" # noqa no-changed-when ignore-errors
+  ansible.builtin.command: "{{ ansible_env.HOME }}/.rvm/bin/rvm all-gemsets do gem update bundler"
+  ignore_errors: true
+
+# TODO: Add changes_when/failed_when
+- name: "[Puppet] Run bundle install" # noqa no-changed-when ignore-errors
+  ansible.builtin.command: "{{ ansible_env.HOME }}/.rvm/bin/rvm all-gemsets do bundle install"
+  ignore_errors: true
+  args:
+    chdir: "{{ ansible_env.HOME }}/.lsp/puppet-editor-services"
+
+# TODO: Add changes_when/failed_when
+- name: "[Puppet] Run bundle exec rake gem_revendor" # noqa no-changed-when ignore-errors
+  ansible.builtin.command: "{{ ansible_env.HOME }}/.rvm/bin/rvm all-gemsets do bundle exec rake gem_revendor"
+  ignore_errors: true
+  args:
+    chdir: "{{ ansible_env.HOME }}/.lsp/puppet-editor-services"
+
+#
+# PDK (Puppet Development Kit)
+#   - https://github.com/puppetlabs/pdk
+#   - https://puppet.com/docs/pdk/2.x/pdk.html
+#
+- name: "[Puppet PDK] Install PDK repository sources"
+  ansible.builtin.apt:
+    deb: https://apt.puppet.com/puppet-tools-release-focal.deb
+  become: true
+
+- name: "[Puppet PDK] Install latest PDK"
+  ansible.builtin.apt:
+    name: pdk
+    state: "{{ puppet_pdk_version }}"
+    update_cache: true
+  become: true
+  when: puppet_pdk_version == 'latest'
+
+- name: "[Puppet PDK] Install PDK specific version"
+  ansible.builtin.apt:
+    name: "pdk={{ puppet_pdk_version }}"
+    state: present
+    update_cache: true
+  become: true
+  when: puppet_pdk_version != 'latest'
+
+- name: "[Puppet PDK] Get installed Puppet PDK version from APT"
+  ansible.builtin.shell: "set -e -o pipefail; apt info pdk 2>/dev/null | grep Version | awk '{print $2}'"
+  changed_when: false
+  args:
+    executable: /bin/bash
+  register: pdk_apt_version
+  tags:
+    - versions
+
+- name: "[Puppet PDK] Save used version"
+  vars:
+    app: puppet_pdk
+    target_version:
+      puppet_pdk_version: "{{ pdk_apt_version.stdout }}"
+    query: ".puppet_pdk_version = \"{{ pdk_apt_version.stdout }}\""
+  ansible.builtin.include_role:
+    name: common
+    tasks_from: save_version.yml
+    apply:
+      tags:
+        - versions
+  tags:
+    - versions

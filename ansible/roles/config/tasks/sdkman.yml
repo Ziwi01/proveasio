@@ -1,9 +1,10 @@
 # Configure SDKMan
 ---
-- name: "[Config][SDKMAN] Update SDKMan config file"
-  ansible.builtin.copy:
-    src: sdkman.config
-    dest: '{{ sdkman_dir }}/etc/config'
-    owner: '{{ sdkman_user }}'
-    group: '{{ sdkman_group }}'
-    mode: '0644'
+- name: "[Config][SDKMAN] Configure sdkman.config"
+  vars:
+    app: SDKMAN
+    source_file: sdkman.config
+    target_file: "{{ sdkman_dir }}/etc/config"
+  ansible.builtin.include_role:
+    name: common
+    tasks_from: config_file.yml

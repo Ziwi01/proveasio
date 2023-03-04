@@ -1,0 +1,28 @@
+# Replace config backup, optionally do a backup
+---
+- name: "[Config][{{ app }}] Check for {{ target_file }}"
+  ansible.builtin.stat:
+    path: "{{ target_file }}"
+  register: config_file
+
+- name: "[Config][{{ app }}] Backup {{ target_file }}. Backup flag is: {{ config_files_backup }}"
+  ansible.builtin.copy:
+    src: "{{ target_file }}"
+    dest: "{{ config_backup_dir }}/{{ app }}-{{ target_file | basename }}-{{ lookup('pipe', 'date +%Y-%m-%d-%H-%M-%S') }}"
+    mode: '0644'
+    remote_src: true
+  when: config_file.stat.exists and config_files_backup | bool
+
+- name: "[Config][{{ app }}] Overwrite {{ target_file }} with template. Overwrite flag is: {{ config_files_overwrite }}"
+  ansible.builtin.template:
+    src: "{{ source_template }}"
+    dest: "{{ target_file }}"
+    mode: '0644'
+  when: config_files_overwrite | bool and source_template is defined
+
+- name: "[Config][{{ app }}] Overwrite {{ target_file }} with file. Overwrite flag is: {{ config_files_overwrite }}"
+  ansible.builtin.copy:
+    src: "{{ source_file }}"
+    dest: "{{ target_file }}"
+    mode: '0644'
+  when: config_files_overwrite | bool and source_file is defined

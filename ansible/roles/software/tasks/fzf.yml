@@ -1,18 +1,21 @@
 # Fuzzy finder
 # Source: https://github.com/junegunn/fzf
 ---
-- name: "[FZF] Get latest version if requested"
-  ansible.builtin.shell: curl -s https://api.github.com/repos/junegunn/fzf/releases/latest | jq .name -r | cut -f2 -d'v'
-  register: version
-  changed_when: false
-  ignore_errors: true
-  when: versions['fzf'] == 'latest'
+- name: "[fzf] Get Github URL for proper version"
+  vars:
+    app: fzf
+    repo: junegunn
+    version_query: curl -s https://api.github.com/repos/junegunn/fzf/releases/latest | jq .name -r | cut -f2 -d'v'
+  ansible.builtin.include_role:
+    name: common
+    tasks_from: github_version.yml
+    apply:
+      tags:
+        - versions
+  tags:
+    - versions
 
-- name: "[FZF] Set version to {{ version.stdout | default(versions['fzf']) }}"
-  ansible.builtin.set_fact:
-    fzf_version: "{{ version.stdout | default(versions['fzf']) }}"
-
-- name: "[FZF] Clone/update latest version"
+- name: "[fzf] Clone/checkout version {{ fzf_version }}"
   ansible.builtin.git:
     repo: "{{ fzf_git_url }}"
     dest: "{{ fzf_home }}"
@@ -20,9 +23,21 @@
     version: "{{ fzf_version }}"
   notify: "[FZF] Run install script"
 
-- name: "[FZF] Save used version"
-  ansible.builtin.set_fact:
-    used_software_versions: "{{ used_software_versions | combine({'fzf': fzf_version}) }}"
+- name: "[fzf] Save used version"
+  vars:
+    app: fzf
+    target_version:
+      github_packages:
+        fzf: "{{ fzf_version }}"
+    query: ".github_packages.fzf = \"{{ fzf_version }}\""
+  ansible.builtin.include_role:
+    name: common
+    tasks_from: save_version.yml
+    apply:
+      tags:
+        - versions
+  tags:
+    - versions
 
 - name: Flush handlers
   ansible.builtin.meta: flush_handlers

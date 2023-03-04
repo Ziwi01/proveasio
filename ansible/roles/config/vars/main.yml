@@ -1,40 +1,19 @@
 ---
 # Overwrite below in `ansible/vars/overrides.yml` for your own info
 git: # .gitconfig info
-  name: James
-  mail: james.doe@hell.no
+  name: Proveasio
+  mail: Proveasio@hell.no
 
 # Add this variable to your ansible/vars/overrides.yml if needed
 # This is array of tasks to exclude from config role.
 # For list of tasks see: config/tasks/main.yml or see README.md
 config_tasks_exclude: []
 
-# ALTERNATIVELY to adding particular exclude tasks above, you can switch off all dotfiles overwrites
-# or granulize for specific file.
-# For included dotfiles see below comments
-dotfiles_overwrite: true
-dotfiles_backup: true
-dotfiles_backup_dir: "{{ ansible_env.HOME }}/.dotfiles_backup"
+# Path where to save configuration files
+config_backup_dir: "{{ ansible_env.HOME }}/.configs_backup"
 
-### Uncomment below to override `dotfiles_overwrite`` / `dotfiles_backup`` setting(s) for specific thing
-# zshrc_overwrite: true # overwrite ~/.zshrc
-# zshrc_backup: true
-# p10k_overwrite: true # overwrite ~/.p10k.zsh
-# p10k_backup: true
-# tmuxconf_overwrite: true # overwrite ~/.tmux.conf
-# tmuxconf_backup: false
-# gitconfig_overwrite: true # overwrite ~/.gitconfig
-# gitconfig_backup: true
+# Switch all config overwrites on/off
+config_files_overwrite: true
 
-### Other config overwrites; This won't be backed up
-# TheFuck
-thefuck_config_overwrite: true # overwrite ~/.config/thefuck/settings.py
-
-# LazyGIT
-lazygit_config_overwrite: true # overwrite ~/.config/lazygit/config.yml
-
-# Ansible
-ansible_lint_overwrite: true # overwrite ~/.ansible-lint dotfile
-
-# LunarVIM
-lunarvim_config_overwrite: true # overwrite ~/.config/lvim/config.lua
+# Backup config files on every
+config_files_backup: true

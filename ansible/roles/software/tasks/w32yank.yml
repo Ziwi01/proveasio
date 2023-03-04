@@ -3,15 +3,24 @@
 #  - https://github.com/equalsraf/win32yank
 #  - https://github.com/neovim/neovim/wiki/FAQ#how-to-use-the-windows-clipboard-from-wsl
 ---
-- name: "[Win32Yank] Get latest version"
-  ansible.builtin.shell: curl -s https://api.github.com/repos/equalsraf/win32yank/releases/latest | jq .name -r | cut -f2 -d'v'
-  register: version
-  changed_when: false
-  ignore_errors: true
+- name: "[win32yank] Get Github URL for proper version"
+  vars:
+    app: win32yank
+    repo: equalsraf/win32yank
+    version_query: curl -s https://api.github.com/repos/equalsraf/win32yank/releases/latest | jq .name -r | cut -f2 -d'v'
+    github_uri: "v{{ win32yank_version }}/win32yank-x64.zip"
+  ansible.builtin.include_role:
+    name: common
+    tasks_from: github_version.yml
+    apply:
+      tags:
+        - versions
+  tags:
+    - versions
 
 - name: "[Win32Yank] Download archive"
   ansible.builtin.get_url:
-    url: "https://github.com/equalsraf/win32yank/releases/download/v{{ version.stdout }}/win32yank-x64.zip"
+    url: "{{ win32yank_url }}"
     dest: "/tmp/win32yank-x64.zip"
     mode: '0644'
 
@@ -21,3 +30,19 @@
     dest: "{{ ansible_env.HOME }}/.local/bin/"
     creates: "{{ ansible_env.HOME }}/.local/bin/win32yank.exe"
     mode: '0755'
+
+- name: "[win32yank] Save used version"
+  vars:
+    app: win32yank
+    target_version:
+      github_packages:
+        win32yank: "{{ win32yank_version }}"
+    query: ".github_packages.win32yank = \"{{ win32yank_version }}\""
+  ansible.builtin.include_role:
+    name: common
+    tasks_from: save_version.yml
+    apply:
+      tags:
+        - versions
+  tags:
+    - versions

@@ -1,0 +1,67 @@
+# kubectl installation
+#
+# https://kubernetes.io/docs/tasks/tools/install-kubectl-linux/
+---
+#
+# kubectl
+#
+- name: "[kubectl] Get latest version if requested"
+  ansible.builtin.shell: |
+    set -e -o pipefail
+    curl -L -s https://dl.k8s.io/release/stable.txt | cut -f2 -d'v'
+  register: version
+  args:
+    executable: /bin/bash
+  changed_when: false
+  ignore_errors: true
+  when: kubectl_version == 'latest'
+
+- name: "[kubectl] Set version to {{ version.stdout | default(kubectl_version) }}"
+  ansible.builtin.set_fact:
+    kubectl_version: "{{ version.stdout | default(kubectl_version) }}"
+
+- name: "[kubectl] Set proper download URL"
+  ansible.builtin.set_fact:
+    kubectl_url: "https://dl.k8s.io/release/v{{ kubectl_version }}/bin/linux/amd64/kubectl"
+
+- name: "[kubectl] Check if kubectl {{ kubectl_version }} is installed"
+  ansible.builtin.stat:
+    path: "{{ ansible_env.HOME }}/.local/opt/kubectl-{{ kubectl_version }}"
+  register: kubectl_dir
+
+- name: "Installation"
+  when: not kubectl_dir.stat.exists
+  block:
+    - name: "[kubectl] Create directory in {{ ansible_env.HOME }}/.local/opt"
+      ansible.builtin.file:
+        path: "{{ ansible_env.HOME }}/.local/opt/kubectl-{{ kubectl_version }}"
+        state: directory
+        mode: '0755'
+
+    - name: "[kubectl] Download kubectl {{ kubectl_version }}"
+      ansible.builtin.get_url:
+        url: "{{ kubectl_url }}"
+        dest: "{{ ansible_env.HOME }}/.local/opt/kubectl-{{ kubectl_version }}/kubectl"
+        mode: '0755'
+
+- name: "[kubectl] Link {{ kubectl_version }} binary"
+  ansible.builtin.file:
+    src: "{{ ansible_env.HOME }}/.local/opt/kubectl-{{ kubectl_version }}/kubectl"
+    dest: "{{ ansible_env.HOME }}/.local/bin/kubectl"
+    state: link
+    force: true
+
+- name: "[kubectl] Save used version"
+  vars:
+    app: kubectl
+    target_version:
+      kubectl_version: "{{ kubectl_version }}"
+    query: ".kubectl_version = \"{{ kubectl_version }}\""
+  ansible.builtin.include_role:
+    name: common
+    tasks_from: save_version.yml
+    apply:
+      tags:
+        - versions
+  tags:
+    - versions

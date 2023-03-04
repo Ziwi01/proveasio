@@ -1,8 +1,8 @@
 all:
   children:
-    ubuntu:
+    linux:
       hosts:
-        wsl
-    win:
+        ubuntu
+    windows:
       hosts:
-        windows
+        win
