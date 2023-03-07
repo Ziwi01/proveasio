@@ -73,6 +73,9 @@ COMPLETION_WAITING_DOTS="true"
 # Would you like to use another custom folder than $ZSH/custom?
 # ZSH_CUSTOM=/path/to/new-custom-folder
 
+# NVM directory
+export NVM_DIR="$HOME/.local/opt/nvm"
+
 # Default Node version loaded quickly.
 {% if actual_node_version.stdout | regex_search('^v[0-9]*\.[0-9]*\.[0-9]*') %}
 export SNV='{{ actual_node_version.stdout }}'
@@ -111,7 +114,6 @@ source $ZSH/oh-my-zsh.sh
 
 # Load NVM, but use lazyload (save ~2s startup time)
 # Node is preloaded by `zsh-snv` plugin in version set by `SNV` variable above.
-export NVM_DIR="$HOME/.local/opt/nvm"
 lazyload nvm -- "source '${NVM_DIR}/nvm.sh'"
 
 # export MANPATH="/usr/local/man:$MANPATH"
@@ -142,8 +144,8 @@ lazyload nvm -- "source '${NVM_DIR}/nvm.sh'"
 ZSH_COLORIZE_TOOL=chroma
 
 ### The FUCK
-# eval $(thefuck --alias)
-bindkey -s '\e\e' 'thefuck !!\n'
+lazyload fuck -- "eval $(thefuck --alias)"
+bindkey -s '\e\e' 'fuck\n'
 
 ### Fuzzy Finder
 
