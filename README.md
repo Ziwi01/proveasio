@@ -14,9 +14,9 @@
 
 Prepare your Ubuntu terminal dev environment with one command (well, sort of).
 
-Using Ansible - install, configure and maintain Ubuntu (20.04/22.04) terminal environment focused on development and administration. This includes installation/configuration of very useful dev tools and customizations to ease out and speed up terminal usage during day-to-day work and to bump up productivity.
+Using Ansible - install, configure and maintain Ubuntu 22.04 terminal environment focused on development and administration. This includes installation/configuration of very useful dev tools and customizations to ease out and speed up terminal usage during day-to-day work and to bump up productivity.
 
-Below project is supported on Ubuntu running on Windows WSL2, but it is also tested on plain Ubuntu 20.04/22.04 on Github Runner, so it is expected to work there.
+Below project is supported on Ubuntu running on Windows WSL2, but it is also tested on plain Ubuntu 22.04 on Github Runner, so it is expected to work there.
 
 ## About
 
@@ -246,7 +246,7 @@ If using Windows with WSL2 Ubuntu also ensure:
 
 - Windows 10 version 2004 and higher (Build 19041 and higher) or Windows 11
 - WSL2 installed/enabled (version 0.67.6 and above)
-- Ubuntu 20.04 or 22.04 installed
+- Ubuntu 22.04 installed
 - `systemd` enabled for installed Ubuntu distribution
 
 Verify you have correct Windows setup by going through [Windows manual setup](#manual) below
@@ -259,7 +259,7 @@ Windows setup should be done manually, however there is an experimental automati
 
 0. If you don't have WSL installed, you need to install it with: `wsl --install` executed from administrative `cmd` or `powershell` terminal. See [windows docs](https://learn.microsoft.com/en-us/windows/wsl/install#install-wsl-command)
 
-1. Install Ubuntu 20.04/22.04, execute from Powershell (Administrator):
+1. Install Ubuntu 22.04, execute from Powershell (Administrator):
 
    ```shell
    wsl.exe --install -d 'Ubuntu-22.04'
@@ -493,8 +493,6 @@ Above file is added to .gitignore, so it won't be versioned.
 See possible variables in:
 
 - `ansible/roles/software/vars/main.yml`
-- `ansible/roles/software/vars/Ubuntu-22.04.yml`
-- `ansible/roles/software/vars/Ubuntu-20.04.yml`
 - `ansible/roles/config/vars/main.yml`
 
 ### Versions management
@@ -642,7 +640,7 @@ If you are having problems with connecting to SSL sites (like `curl https://get.
 
 ## Contributing
 
-If you want to help with this piece of software: fork it, create a branch, make changes, test it (preferably including Github workflow for Ubuntu 20.04/22.04) and open a Pull Request.
+If you want to help with this piece of software: fork it, create a branch, make changes, test it (preferably including Github workflow for Ubuntu 22.04) and open a Pull Request. You can see [TODO](./TODO.md) for ideas :)
 
 Thanks in advance!
 

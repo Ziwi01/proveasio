@@ -22,16 +22,3 @@ jobs:
       - name: Setup environment
         working-directory: ./ansible
         run: ansible-playbook -i inventory.yml setup-ubuntu.yml
-
-  ubuntu-20:
-    runs-on: ubuntu-20.04
-
-    steps:
-      - uses: actions/checkout@v3
-
-      - name: Prepare for setup
-        run: sudo sh prepare-ubuntu.sh
-
-      - name: Setup environment
-        working-directory: ./ansible
-        run: ansible-playbook -i inventory.yml setup-ubuntu.yml
