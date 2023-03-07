@@ -45,11 +45,13 @@
   when: ansible_pip_version == 'latest'
 
 - name: "[Ansible] Get installed Ansible version from PIP"
-  ansible.builtin.shell: "set -e -o pipefail; {{ ansible_env.HOME }}/.pyenv/shims/pip3 show ansible | grep Version | awk '{print $2}'"
+  ansible.builtin.shell: |
+    set -e -o pipefail
+    {{ ansible_env.HOME }}/.pyenv/shims/pip3 show ansible | grep Version | awk '{print $2}'
   changed_when: false
   args:
     executable: /bin/bash
-  register: ansible_version
+  register: ansible_version_pip
   tags:
     - versions
 
@@ -57,8 +59,8 @@
   vars:
     app: ansible
     target_version:
-      ansible_pip_version: "{{ ansible_version.full }}"
-    query: ".ansible_pip_version = \"{{ ansible_version.full }}\""
+      ansible_pip_version: "{{ ansible_version_pip.stdout }}"
+    query: ".ansible_pip_version = \"{{ ansible_version_pip.stdout }}\""
   ansible.builtin.include_role:
     name: common
     tasks_from: save_version.yml
