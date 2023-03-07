@@ -18,14 +18,14 @@ Also, you can manipulate which tasks from each role does not get executed, putti
 ```yaml
 software_tasks_exclude:
   - bat # do not install BAT
-dev_tasks_exclude:
-  - puppet # do not install Puppet
+config_tasks_exclude:
+  - zsh # do not configure Puppet
 ```
 
-If you are using `systemd` on your WSL distro, set below (default is `sysvinit``):
+If you are NOT using `systemd` on your WSL distro (see [README.md](./README.md) for details), set below:
 
 ```yaml
-service_manager: systemd
+service_manager: sysvinit
 ```
 
 For all possibilities, see each role vars file (`ansible/<role>/vars/main.yml`)

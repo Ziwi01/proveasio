@@ -11,12 +11,18 @@ echo "Updating apt..."
 apt-get update
 echo "Upgrading system..."
 apt-get upgrade -y
-echo "Installing ansible, python3 and required PIP modules..."
-apt-get install -y libkrb5-dev
-apt-get install -y ansible aptitude python3-dev python3-pip python3-setuptools python3-venv
 
 echo "Installing pyenv requirements..."
-apt-get install -y make build-essential libssl-dev zlib1g-dev libbz2-dev libreadline-dev libsqlite3-dev wget curl llvm libncursesw5-dev xz-utils tk-dev libxml2-dev libxmlsec1-dev libffi-dev liblzma-dev
+apt-get install -y make build-essential libkrb5-dev libssl-dev zlib1g-dev libbz2-dev libreadline-dev libsqlite3-dev wget curl llvm libncursesw5-dev xz-utils tk-dev libxml2-dev libxmlsec1-dev libffi-dev liblzma-dev
+
+SCRIPT_DIR=$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )
+ANSIBLE_VERSION=$(yq '.ansible_pip_version' ${SCRIPT_DIR}/ansible/roles/software/vars/main.yml)
+
+if [ ${ANSIBLE_VERSION} != 'latest' ]; then
+  ANSIBLE_PIP_INSTALL="ansible==${ANSIBLE_VERSION}"
+else
+  ANSIBLE_PIP_INSTALL='ansible'
+fi
 
 sudo -u ${SUDO_USER} bash <<_
 echo "Install pyenv"
@@ -41,7 +47,7 @@ echo "Upgrade PIP"
 pip install --upgrade pip
 
 echo "Install ansible with PIP"
-pip install --user ansible
+pip install --user ${ANSIBLE_PIP_INSTALL}
 
 echo "Install pywinrm with PIP for potential Windows support"
 pip install --user "pywinrm>=0.3.0"
