@@ -64,6 +64,7 @@ This document describes all the tools and features which I find useful for every
   * [Git](#git)
     * [Diff current changes](#diff-current-changes)
     * [Diff another branch](#diff-another-branch)
+    * [Diff current file with different file on another branch]
     * [Checkout branch](#checkout-branch)
     * [Git blame](#git-blame)
     * [File history](#file-history)
@@ -763,6 +764,20 @@ To get changes only for this file, compared to another branch, you can use `:Gvd
   </div>
 </details>
 
+#### Diff current file with different file on another branch
+
+Sometimes you need to diff a file you're working on, with different branch, but on different branch the file has either different name, or is located elsewhere.
+
+To do this, run:
+
+`:Gvdiff <branch_name>:<relative_file_path>`
+
+#### Conflicts resolve
+
+If you get any conflicts after the merge, you can run `:DiffviewOpen`, which will show conflicts at the top, and it will use a 3-way diff (3 windows split: with current branch changes, final output and with incoming branch changes).
+
+For simple conflict resolve you can also use Lazygit (see Lazygit section)
+
 #### Checkout branch
 
 Quickly checkout any branch with `<Space>gb`. Checkout to specific commit with `<Space>gc`. Checkout specific commit for current file with `<Space>gC`
@@ -841,9 +856,9 @@ Basic usage:
 - (branches view) `p` to pull, `P` to push, `f` on particular branch to fetch it.
 - (files view) `a` to stage all, `<Space>` to stage selected, `c` to commit, `A` to ammend previous commit
 
-Lazygit supports conflicts resolving: when there is a conflict, you can browse through conflicted hunks, `<Enter>` them and select which version you want with up/down arrow keys.
+Lazygit supports conflicts resolving: when there is a conflict, you can browse through conflicted hunks, `<Enter>` them and select which version you want with up/down arrow keys. Then `<Space>` to select either hunk.
 
-I really suggest to go through Lazygit docs/[tutorial video](https://youtu.be/VDXvbHZYeKY) to get to know this tool. This is basically the only thing I use for git management.
+I really suggest to go through Lazygit docs/[tutorial video](https://youtu.be/VDXvbHZYeKY) to get to know this tool.
 
 If there is something Lazygit can't do, you can invoke custom command by hitting `:` and running anything (like `git pull <remote> <branch> --no-ff --no-commit` or anything else)
 
