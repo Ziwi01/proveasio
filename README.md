@@ -1,5 +1,5 @@
 <div align="center">
-  <img width=300 height=300 src="./resources/proveasio-logo.png">
+  <img width=400 height=300 src="./resources/proveasio-logo.png">
 </div>
 
 <div align="center">
@@ -27,11 +27,11 @@ The idea is to:
 - be easily extendable and configurable to suit personal needs.
 - have all the features and usages described so they are easily assimilated for someone new to this, or for someone who wants to improve their workflow and need some ideas.
 
-In the process of making, I figured out that this can be beneficial for all the people who want to learn how to use Linux as their development base. By documenting the tools and usage scenarios, this repository can be used by tech-savvy wannabies to get a grip of some advanced workflows and tools, with a little less effort than figuring it out themselves from scratch.
+In the process of making, I figured out that this can be beneficial for all the people who want to learn how to use Linux as their development base. By documenting the tools and [usage scenarios](./Usages.md), this repository can be used by tech-savvy wannabies to get a grip of some advanced workflows and tools, with a little less effort than figuring it out themselves from scratch.
 
-**NOTE**: Below project is an opinionated set of tools which I use for my everyday work, but I hope someone will find it useful after tailoring it to ones needs. All the tools I use will be listed, described and if there are any custom modifications, they will be shown. If you have some new ideas/functionalities/fixes, feel free to create a Pull Request, it will be very much appreciated!
+**NOTE**: Below project is an opinionated set of tools which I use for my everyday work, but I hope someone will find it useful after tailoring it to ones needs. All the tools I use will be listed, described and if there are any custom modifications, they will be shown. If you have some new ideas/functionalities/fixes, feel free to create a Pull Request, it will be very much appreciated! See [Contributing](#contributing).
 
-Please read below README carefully and go through the scripts to see whats going on there before using.
+Please read below README carefully and go through the scripts to see whats going on there before using on existing system.
 
 ## Table of contents
 
@@ -43,7 +43,7 @@ Please read below README carefully and go through the scripts to see whats going
   * [Tmux](#tmux)
   * [Git](#git)
   * [Neovim with LunarVIM](#neovim-with-lunarvim)
-  * [Software](#software)
+  * [Other software](#other-software)
   * [Languages](#languages)
     * [Python](#python)
     * [Ruby](#ruby)
@@ -102,20 +102,13 @@ There are couple of useful plugins installed there (you can find them in `ansibl
 
 - syntax highlighting
 - commands autocompletion (based on history and/or completion scripts)
-- [`FZF`](https://github.com/junegunn/fzf) integration
+- [FZF](https://github.com/junegunn/fzf) integration (command history search, directory search, integration with `fd`)
 - fuzzy search/go to directory
-- traversing directories back and forth (and parent/child)
 - aliases autosuggestions - tells you that you have an alias for particular commands
-- easily traversing through **visited** directories (using [`zoxide`](https://github.com/ajeetdsouza/zoxide))
-- correct your commands automatically
-- finding files with FZF using custom
-- [fd](https://github.com/sharkdp/fd) command as faster `find` command
-- prettier cat (with [`bat`](https://github.com/sharkdp/bat)) with syntax highlight, line numbers etc.
-- blazingly faster grep with [ripgrep](https://github.com/BurntSushi/ripgrep) - also used from within VIM to grep for text.
+- easily traversing through **visited** directories (using [zoxide](https://github.com/ajeetdsouza/zoxide))
+- correct your commands automatically with [thefuck](https://github.com/nvbn/thefuck)
+- finding files with FZF
 - Windows clipboard support - also works from VIM (copying in VIM makes it available in Windows clipboard)
-- `tree` - show directory structure recursively
-- `htop` - better top
-- `jq` - JSON parser
 
 ### Tmux
 
@@ -154,6 +147,7 @@ Additionally, I setup the plugins below:
 - [nanotee/zoxide.vim](https://github.com/nanotee/zoxide.vim) - Zoxide inside VIM: `:Zi` or `:Z <query>`.For Zoxide descrption see above for Zoxide descprition
 - [will133/vim-dirdiff](https://github.com/will133/vim-dirdiff) - Diff directories. (`:DirDiff <dir1> <dir2>`)
 - [plasticboy/vim-markdown](https://github.com/preservim/vim-markdown) - Markdown support
+- [Sid0fc/mkdx](https://github.com/SidOfc/mkdx) - Markdown support #2
 - [iamcco/markdown-preview.nvim](https://github.com/iamcco/markdown-preview.nvim) - Preview your markdown files in the browser (with dynamic scroll and refresh)
 - [godlygeek/tabular](https://github.com/godlygeek/tabular) - easily line up text (like align with equal sign etc.)
 - [junegunn/fzf](https://github.com/junegunn/fzf) and [junegunn/fzf.vim](https://github.com/junegunn/fzf.vim) - FZF integration in VIM
@@ -182,10 +176,14 @@ Additionally, I setup the plugins below:
 
 In LunarVIM there is an automatic LSP installer plugin - [Mason.nvim](https://github.com/williamboman/mason.nvim) which will install supported language servers and use them, when you open a specific filetype. This should work out of the box in most cases, however for Puppet I setup the LSP server manually, as it doesn't work with RVM by default. Also Ansible gets linter configuration override.
 
-### Software
+### Other software
 
-Worth noting:
-
+- [ripgrep](https://github.com/BurntSushi/ripgrep) - much faster grep. Also used from within VIM to grep for text.
+- [fd](https://github.com/sharkdp/fd) - faster `find` command
+- [bat](https://github.com/sharkdp/bat) - prettier cat with syntax highlight, line numbers etc.
+- [yq](https://mikefarah.gitbook.io/yq/) - YAML parser
+- [htop](https://github.com/htop-dev/htop) - better top
+- [jq](https://stedolan.github.io/jq/) - JSON parser
 - [Docker](https://www.docker.com/) with [docker-compose](https://docs.docker.com/compose/)
 - [kubectl](https://kubernetes.io/docs/tasks/tools/#kubectl) - manage kubernetes cluster
 - [KinD](https://kind.sigs.k8s.io/) - Kubernetes in docker - create a cluster locally
@@ -226,7 +224,7 @@ There is Puppet LSP (language server protocol) called [Puppet Editor Services](h
 
 #### Ansible
 
-Ansible gets installed using both APT (during first step in `setup-wsl.sh`, for further installation) and then the playbooks install PIP3 Ansible in latest available version, along with ansible-lint.
+Ansible gets installed using PIP in designated `pyenv` Python environment. Also ansible-lint gets installed.
 
 Also, there is an [Ansible Language Server](https://github.com/ansible/ansible-language-server) installed globally using default NPM, but LunarVIM uses it's own, auto-installed language server.
 
@@ -330,15 +328,18 @@ It will prompt for you Windows password. If the terminal hangs during an executi
 
 ## Installation
 
-Now for the main part :).
-
-You might want to go through [roles overview](#roles-overview) and before running the installation on your existing distribution. Most of the software packages are installed directly from Github repositories and are placed in `${HOME}/.local/` directory, however others are installed either from Pythons PIP, direct links or other things.
-
 Assuming all the [requirements](#requirements) are met:
 
 1. Clone this repository in Ubuntu if not yet already.
-2. Create/update file `ansible/vars/overrides.yml` - set desired GIT config name and e-mail. See `ansible/vars/README.md` for examples
-3. Run `sudo ./prepare-ubuntu.sh` (if not already run during windows setup) to update the system and install required ansible/python packages.
+2. Create/update file `ansible/vars/overrides.yml` - set desired GIT config name and e-mail. See `ansible/vars/README.md` for more examples
+
+   ```yaml
+   git:
+     name: James
+     mail: james.doe@hell.no
+   ```
+
+3. Run `sudo ./prepare-ubuntu.sh` (if not already run during windows setup) to update the system and install required python packages and install ansible.
 4. Run ansible (from `ansible/` dir):
 
     ```shell
@@ -352,7 +353,7 @@ There are 2 essential roles:
 - software - installs everything that needs to be installed
 - config - configures everything that needs to be configured
 
-Each role has their main configuration in `ansible/roles/<role>/vars/main.yml`. Also, their tasks are gathered in `ansible/roles/<role>/tasks/main.yml`. It is good idea to take a peek on all the .yml files in `tasks/` directories also. For detailed description of how do those things work together, see [Usages.md](#Usages.md). To override any variable(s), please use `ansible/vars/overrides.yml`.
+Each role has their main configuration in `ansible/roles/<role>/vars/main.yml`. Also, their tasks are gathered in `ansible/roles/<role>/tasks/main.yml`. It is good idea to take a peek on all the .yml files in `tasks/` directories also. For detailed description of how do those things work together, see [Usages.md](./Usages.md). To override any variable(s), please use `ansible/vars/overrides.yml`.
 
 There is also `common` role, to keep internal helper tasks.
 

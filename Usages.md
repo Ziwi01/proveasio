@@ -16,7 +16,7 @@ This document describes all the tools and features which I find useful for every
   * [Keychain ssh-agent](#keychain-ssh-agent)
   * [Grep with ripgrep](#grep-with-ripgrep)
   * [List directories/files with git status](#list-directories/files-with-git-status)
-  * [Git](#git)
+  * [Git related](#git-related)
     * [Checkout branches](#checkout-branches)
     * [Status](#status)
     * [Log](#log)
@@ -47,27 +47,28 @@ This document describes all the tools and features which I find useful for every
     * [Locally](#locally)
     * [Spectre](#spectre)
     * [Ferret](#ferret)
-      * [Regex replace](#regex-replace)
+      * [Multiline replace](#multiline-replace)
   * [Open recent file](#open-recent-file)
   * [Find text](#find-text)
   * [Find files](#find-files)
   * [Markdown](#markdown)
     * [Preview](#preview)
     * [Navigation](#navigation)
-    * [Table of Contents](#table-of-contents)
+    * [Editing](#editing)
+    * [ToC](#toc)
   * [Resize/pick splits](#resize/pick-splits)
   * [Align text](#align-text)
   * [Commands with Vimux](#commands-with-vimux)
   * [Plugin management](#plugin-management)
   * [Updates](#updates)
-  * [GIT](#git)
+  * [Git](#git)
     * [Diff current changes](#diff-current-changes)
     * [Diff another branch](#diff-another-branch)
     * [Checkout branch](#checkout-branch)
     * [Git blame](#git-blame)
     * [File history](#file-history)
     * [Reload file after checkout](#reload-file-after-checkout)
-    * [Lazygit](#lazygit)
+    * [Lazygit from vim](#lazygit-from-vim)
 
 ## Terminal
 
@@ -212,7 +213,7 @@ There are two commands to use for this:
   </div>
 </details>
 
-### Git
+### Git related
 
 Git used from terminal has some tweaks, including aliases, new commands/functions for branch checkout and git status.
 
@@ -611,17 +612,18 @@ To find files in a particular directory, open NvimTree (`<Space>e`), select dire
 Uses:
  - [markdown-preview](https://github.com/iamcco/markdown-preview.nvim)
  - [vim-markdown](https://github.com/preservim/vim-markdown)
-
-*TODO*: Add better markdown support (LSP, snippets etc.)
+ - [SidOfc/mkdx](https://github.com/SidOfc/mkdx) 
 
 #### Preview
 
-This can run a preview in your browser with auto-scroll, synamic refresh and all. See above link for details.
+This can run a preview in your browser with auto-scroll, dynamic refresh and all. See above link for details.
 
 Start preview with `:MarkdownPreview`. Stop with `:MarkdownStop`.
 
 #### Navigation
 
+- `gd` (over a link): go to definition (list where the link was used)
+- `<Space>j` (over a link): jump to header. Go back with with double backtick ``` `` ```.
 - `]]`: go to next header. `<Plug>Markdown_MoveToNextHeader`
 - `[[`: go to previous header. Contrast with `]h`. `<Plug>Markdown_MoveToPreviousHeader`
 - `][`: go to next sibling header if any. `<Plug>Markdown_MoveToNextSiblingHeader`
@@ -629,9 +631,16 @@ Start preview with `:MarkdownPreview`. Stop with `:MarkdownStop`.
 - `]h`: go to Current header. `<Plug>Markdown_MoveToCurHeader`
 - `]u`: go to parent header (Up). `<Plug>Markdown_MoveToParentHeader`
 
-#### Table of Contents
+#### Editing
 
-To navigate a markdown file base on table of contents, run `:Toc` to open vertical split. I prefer `:Toch` to open horizontal split. Close the window with `<Space>q` when active. (reminder: navigate between windows with `<Alt><arrows>`)
+- `<Space>ln` (over a word): make it a link
+- `<Space>=` (over a checkbox (`[ ]`)): Next tick ( `[-]` then `[x]`)
+- `<Space>-` (over a checkbox (`[ ]`)): Previous tick
+- `` <Space>` ``: toggle quote
+
+#### ToC
+
+To navigate a markdown file base on table of contents, run `:Toc` to open vertical split. `:Toch` to open horizontal split instead. Close the window with `<Space>q` when active. (reminder: navigate between windows with `<Alt><arrows>`)
 
 To automatically generate Toc based on the headers, run `:InsertToc` (bulleted list), or `:InsertNToc` (numbered list). An optional argument can be used to specify how many levels of headers to display in the table of content, e.g., to display up to and including h3, use `:InsertToc 3`
 
@@ -815,7 +824,7 @@ Sometimes when you have a file opened in a buffer and you checkout to another br
 
 To reload checked out changes, type `:e`.
 
-#### Lazygit
+#### Lazygit from Vim
 
 Uses: [Lazygit](https://github.com/jesseduffield/lazygit)
 

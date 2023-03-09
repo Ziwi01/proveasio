@@ -38,6 +38,11 @@ lvim.builtin.treesitter.ensure_installed = {
 lvim.builtin.treesitter.ignore_install = { "haskell" }
 lvim.builtin.treesitter.highlight.enabled = true
 
+-- Debug LSP servers
+
+-- vim.lsp.set_log_level 'debug'
+-- require('vim.lsp.log').set_format_func(vim.inspect)
+
 -- generic LSP settings
 
 -- ---@usage disable automatic installation of servers
@@ -45,7 +50,7 @@ lvim.builtin.treesitter.highlight.enabled = true
 
 -- ---configure a server manually. !!Requires `:LvimCacheReset` to take effect!!
 -- ---see the full default list `:lua print(vim.inspect(lvim.lsp.automatic_configuration.skipped_servers))`
-vim.list_extend(lvim.lsp.automatic_configuration.skipped_servers, { "ansiblels", "puppet" }, 1, 1) -- Manually configure Ansible/Puppet Language Servers
+vim.list_extend(lvim.lsp.automatic_configuration.skipped_servers, { "ansiblels", "puppet", "marksman" }, 1, 1) -- Manually configure Ansible/Puppet Language Servers
 local puppet_opts = {
   cmd = {
     vim.env.HOME .. "/.rvm/rubies/default/bin/ruby",
@@ -61,8 +66,10 @@ local ansible_opts = {
     }
   }
 }
+local marksman_opts = {}
 require("lvim.lsp.manager").setup("puppet", puppet_opts)
 require("lvim.lsp.manager").setup("ansiblels", ansible_opts)
+require("lvim.lsp.manager").setup("marksman", marksman_opts)
 
 -- ---remove a server from the skipped list, e.g. eslint, or emmet_ls. !!Requires `:LvimCacheReset` to take effect!!
 -- ---`:LvimInfo` lists which server(s) are skiipped for the current filetype
@@ -135,6 +142,8 @@ lvim.plugins = {
     { "will133/vim-dirdiff" },
     -- Markdown support
     { "plasticboy/vim-markdown" },
+    -- Markdown support #2
+    { "SidOfc/mkdx" },
     -- Markdown dynamic preview (`:markdownPreview`)
     { "iamcco/markdown-preview.nvim",
       build = function() vim.fn["mkdp#util#install"]() end
@@ -279,6 +288,8 @@ vim.opt.clipboard = "unnamedplus"
 
 -- Do not fold Markdown files
 vim.g.vim_markdown_folding_disabled = 1
+-- `ge` to follow anchor links
+vim.g.vim_markdown_follow_anchor = 1
 
 -- Enable transparency
 -- lvim.transparent_window = true
