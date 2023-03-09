@@ -1,10 +1,14 @@
 ---
-- name: "Copy DejaVuSans fonts"
+- name: "Copy FiraCode fonts"
   ansible.windows.win_copy:
     src: "fonts/{{ item }}"
     dest: "%SYSTEMROOT%\\fonts\\{{ item }}"
   loop:
-    - 'DejaVu Sans Mono Nerd Font Complete.ttf'
+    - 'Fira Code Bold Nerd Font Complete Windows Compatible.ttf'
+    - 'Fira Code Light Nerd Font Complete Windows Compatible.ttf'
+    - 'Fira Code Medium Nerd Font Complete Windows Compatible.ttf'
+    - 'Fira Code Regular Nerd Font Complete Windows Compatible.ttf'
+    - 'Fira Code SemiBold Nerd Font Complete Windows Compatible.ttf'
 
 - name: "Create registry entries"
   ansible.windows.win_regedit:
@@ -12,7 +16,11 @@
     name: "{{ item }}"
     data: "{{ item }}"
   loop:
-    - 'DejaVu Sans Mono Nerd Font Complete.ttf'
+    - 'Fira Code Bold Nerd Font Complete Windows Compatible.ttf'
+    - 'Fira Code Light Nerd Font Complete Windows Compatible.ttf'
+    - 'Fira Code Medium Nerd Font Complete Windows Compatible.ttf'
+    - 'Fira Code Regular Nerd Font Complete Windows Compatible.ttf'
+    - 'Fira Code SemiBold Nerd Font Complete Windows Compatible.ttf'
 
 ## Windows Terminal Options
 - name: Copy Windows Terminal settings.json

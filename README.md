@@ -275,10 +275,10 @@ Windows setup should be done manually, however there is an experimental automati
 
    Then restart WSL from Windows `cmd`: `wsl --shutdown`. After next login it should have systemd configured. For more information see (windows docs for systemd)[https://devblogs.microsoft.com/commandline/systemd-support-is-now-available-in-wsl/]
 
-3. (optionally) Install DejaVuSans fonts (it can be found in this repo in `ansible/roles/windows/files/fonts`)
-4. (optionally) Install [Microsoft Terminal](https://github.com/microsoft/terminal) and configure this Terminals Ubuntu profile with DejaVuSans font (Settings -> Ubuntu-22.04 -> Appearance -> Font Face). You can check `ansible/roles/windows/templates/settings.json.j2` for settings reference with useful overrides.
+3. (optionally) Install FiraCode nerd fonts (the ones I use are in `ansible/roles/windows/files/fonts`, if you need, download [all FiraCode Nerd fonts](https://github.com/ryanoasis/nerd-fonts/releases/download/v2.3.3/FiraCode.zip) and use whichever you want) 
+4. (optionally) Install [Microsoft Terminal](https://github.com/microsoft/terminal) and configure this Terminals Ubuntu profile with `FiraCode NF` nerd font (Settings -> Ubuntu-22.04 -> Appearance -> Font Face). You can check `ansible/roles/windows/templates/settings.json.j2` for settings reference with useful overrides.
 
-In points #3 and #4 specific font+terminal duo is just a suggestion (I use them personally) - you can use any terminal of your choice and any font supporting iconic fonts (like [Nerd Fonts](https://www.nerdfonts.com/) - please note that not all fonts have the same amount of glyphs/icons. DejaVu has lots of them. Remember to configure you terminal to use your font!
+In points #3 and #4 specific font+terminal duo is just a suggestion (I use them personally) - you can use any terminal of your choice and any font supporting iconic fonts (like [Nerd Fonts](https://www.nerdfonts.com/) - please note that not all fonts have the same amount of glyphs/icons. FiraCode has lots of them. Remember to configure you terminal to use your font!
 
 Thats it, you can move to [Installation](#Installation)
 
@@ -313,7 +313,7 @@ From Ubuntu, run `sudo ./prepare-ubuntu.sh` - this will update the system and in
     1. `common.yml` will install common software packages, like 7Zip, Firefox, BitWarden etc.
     2. `dev.yml` will install GIT, Windows Terminal, IntelliJ, VSCode, Docker Desktop, Postman
     3. `context_menu.yml` will clean up context menu from things added by some of the packages above
-    4. `terminal.yml` will install DejaVu font and apply custom settings for Windows Terminal
+    4. `terminal.yml` will install FiraCode font and apply custom settings for Windows Terminal
     5. `entertainment.yml` will install additional software, like Spotify, VLC, Discord etc.
 
 You can switch off the whole sections from #2 by modifying `vars/overrides.yml`. For customization, just edit the yaml files.
