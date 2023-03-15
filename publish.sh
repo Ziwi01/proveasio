@@ -10,19 +10,32 @@
 
 SCRIPT_DIR=$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )
 
+echo "Replace software/vars/main.yml versions with .current-versions.yml"
 yq -i eval-all '. as $item ireduce ({}; . * $item)' ${SCRIPT_DIR}/ansible/roles/software/vars/main.yml ${SCRIPT_DIR}/current-versions.yml
 
+echo 'git add'
 git add .
-git commit -a -m 'release: Publish changes to master'
+echo 'git commit'
+git commit -a -m 'release: Update versions'
+echo 'git push'
 git push
+echo 'git checkout master'
 git checkout master
+echo 'git pull'
 git pull
+echo 'git merge develop'
 git merge develop
+echo 'git push'
 git push
+echo 'git checkout develop'
 git checkout develop
 
-yq -i eval-all '. as $item ireduce ({}; . * $item)' ${SCRIPT_DIR}/.latest-versions.yml ${SCRIPT_DIR}/ansible/roles/software/vars/main.yml
+echo 'Replace software/vars/main.yml with .latest-versions.yml'
+yq -i eval-all '. as $item ireduce ({}; . * $item)' ${SCRIPT_DIR}/ansible/roles/software/vars/main.yml ${SCRIPT_DIR}/.latest-versions.yml
 
+echo 'git add'
 git add .
-git commit -a -m 'release: Set latest version for development'
+echo 'git commit'
+git commit -a -m 'release: Set latest versions for development'
+echo 'git push'
 git push
