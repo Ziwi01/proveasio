@@ -26,9 +26,6 @@
             All above versions are added/updated in `{{ playbook_dir }}/../current-versions.yml`
 
             See `README.md` for details on versioning.
-
-            Release:
-            yq eval-all '. as $item ireduce ({}; . * $item)' ansible/roles/software/vars/main.yml current-versions.yml
   tasks:
     - name: '[Init] Check sudo password'
       ansible.builtin.command: echo "sudo password is correct"

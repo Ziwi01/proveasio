@@ -1,0 +1,35 @@
+---
+github_packages:
+  neovim: latest
+  lunarvim: master
+  diff_so_fancy: latest
+  bat: latest
+  zoxide: latest
+  helm: latest
+  lazygit: latest
+  fzf: latest
+  tmux: latest
+  ripgrep: latest
+  fd: latest
+  kind: latest
+  k9s: latest
+  yq: latest
+  win32yank: latest
+  git_fuzzy: latest
+  nvm: latest
+  tpm: latest
+  pes: latest
+  p10k: latest
+git_apt_version: latest
+pip_packages:
+  gita: latest
+  thefuck: latest
+docker_apt_packages:
+  docker-ce: latest
+  docker-ce-cli: latest
+  containerd.io: latest
+  docker-compose-plugin: latest
+kubectl_version: latest
+ansible_pip_version: latest
+ansible_lint_pip_version: latest
+puppet_pdk_version: latest

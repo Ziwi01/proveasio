@@ -52,6 +52,7 @@ Please read below README carefully and go through the scripts to see whats going
     * [Puppet](#puppet)
     * [Ansible](#ansible)
     * [Rust](#rust)
+* [Releases](#releases)
 * [Requirements](#requirements)
 * [Windows setup](#windows-setup)
   * [Manual](#manual)
@@ -70,7 +71,6 @@ Please read below README carefully and go through the scripts to see whats going
   * [Excluding code](#excluding-code)
   * [Run particular code](#run-particular-code)
   * [Ansible tags](#ansible-tags)
-* [Releases](#releases)
 * [Troubleshooting](#troubleshooting)
   * [Github tasks issues](#github-tasks-issues)
   * [VPN connectivity issues](#vpn-connectivity-issues)
@@ -233,6 +233,14 @@ To configure linter diagnostics (enable/disable some checks) in LunarVIM for Ans
 #### Rust
 
 As LunarVIM requires it, [Rust](https://www.rust-lang.org/) is installed with [Cargo](https://github.com/rust-lang/cargo/) package manager.
+
+## Releases
+
+- `develop` branch - most of the software/plugins are set to `latest`. It contains all recent changes/features **and** sometimes in-progress testing features. Also documentation updates and so on.
+- `master` branch contains rather stable updates from develop (documentation, new tested plugins, fixes), but all of the software versions are fixed.
+- tagged releases are done from time to time whenever some useful functionality comes up (or critical fixes).
+
+I recommend using `master` branch, with some of the software versions overwritten in `ansible/vars/overrides.yml` to be set to `latest`. See `.latest-versions.yml` to see what is set on `develop`.
 
 ## Requirements
 
@@ -597,12 +605,6 @@ For particular functionality:
 - yq
 - zoxide
 - zsh
-
-## Releases
-
-Using `master` branch comes with certain amount of danger, as most of the tools used are set to `latest` version. This can cause issues, when those underlying tools introduce a breaking change. Moreover, as I personally try very hard not to make any breaking changes, it can always happen. If you want more stability, please checkout to a release tag before applying the changes - it will have fixed versions of (almost) all used tools.
-
-I will try push new releases with updated (tested) software versions once in a while (even when there is no change to the automation itself), but you can set them yourself - see [Versions management](#versions-management)
 
 ## Troubleshooting
 
