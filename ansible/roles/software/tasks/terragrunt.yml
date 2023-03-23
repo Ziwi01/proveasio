@@ -1,0 +1,64 @@
+---
+#
+# Terragrunt
+# Sources:
+#   - https://github.com/gruntwork-io/terragrunt
+#   - https://terragrunt.gruntwork.io/
+#
+- name: "[terragrunt] Get Github URL for proper version"
+  vars:
+    app: terragrunt
+    repo: gruntwork-io/terragrunt
+    version_query: curl -s https://api.github.com/repos/gruntwork-io/terragrunt/releases/latest | jq .name -r | cut -f2 -d'v'
+    github_uri: "v{{ terragrunt_version }}/terragrunt_linux_amd64"
+  ansible.builtin.include_role:
+    name: common
+    tasks_from: github_version.yml
+    apply:
+      tags:
+        - versions
+  tags:
+    - versions
+
+- name: "[terragrunt] Check if terragrunt {{ terragrunt_version }} is installed"
+  ansible.builtin.stat:
+    path: "{{ ansible_env.HOME }}/.local/opt/terragrunt-{{ terragrunt_version }}"
+  register: terragrunt_dir
+
+- name: "Installation"
+  when: not terragrunt_dir.stat.exists
+  block:
+    - name: "[terragrunt] Create directory in {{ ansible_env.HOME }}/.local/opt"
+      ansible.builtin.file:
+        path: "{{ ansible_env.HOME }}/.local/opt/terragrunt-{{ terragrunt_version }}"
+        state: directory
+        mode: '0755'
+
+    - name: "[terragrunt] Download terragrunt {{ terragrunt_version }}"
+      ansible.builtin.get_url:
+        url: "{{ terragrunt_url }}"
+        dest: "{{ ansible_env.HOME }}/.local/opt/terragrunt-{{ terragrunt_version }}/terragrunt"
+        mode: '0755'
+
+- name: "[terragrunt] Link {{ terragrunt_version }} binary"
+  ansible.builtin.file:
+    src: "{{ ansible_env.HOME }}/.local/opt/terragrunt-{{ terragrunt_version }}/terragrunt"
+    dest: "{{ ansible_env.HOME }}/.local/bin/terragrunt"
+    state: link
+    force: true
+
+- name: "[terragrunt] Save used version"
+  vars:
+    app: terragrunt
+    target_version:
+      github_packages:
+        terragrunt: "{{ terragrunt_version }}"
+    query: ".github_packages.terragrunt = \"{{ terragrunt_version }}\""
+  ansible.builtin.include_role:
+    name: common
+    tasks_from: save_version.yml
+    apply:
+      tags:
+        - versions
+  tags:
+    - versions

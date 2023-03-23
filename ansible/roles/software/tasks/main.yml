@@ -441,3 +441,29 @@
     - software
     - versions
     - puppet
+
+- name: "[Software] Terraform"
+  ansible.builtin.include_tasks:
+    file: terraform.yml
+    apply:
+      tags:
+        - software
+        - terraform
+  when: "'terraform' not in software_tasks_exclude"
+  tags:
+    - software
+    - versions
+    - terraform
+
+- name: "[Software] Terragrunt"
+  ansible.builtin.include_tasks:
+    file: terragrunt.yml
+    apply:
+      tags:
+        - software
+        - terragrunt
+  when: "'terragrunt' not in software_tasks_exclude"
+  tags:
+    - software
+    - versions
+    - terragrunt

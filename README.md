@@ -42,6 +42,7 @@ Please read below README carefully and go through the scripts to see whats going
   * [Terminal](#terminal)
   * [Tmux](#tmux)
   * [Git](#git)
+  * [DevOps](#devops)
   * [Neovim with LunarVIM](#neovim-with-lunarvim)
   * [Other software](#other-software)
   * [Languages](#languages)
@@ -133,6 +134,18 @@ For smooth GIT experience there are some tools configured:
 - [Gita](https://github.com/nosarthur/gita) - gather your GIT repositories in groups and execute command on them at once (either GIT command or shell commands)
 - [LS with GIT status](https://github.com/gerph/ls-with-git-status) and `k` ohmyzsh plugin - list directories/files and show their GIT status in the terminal
 
+### DevOps
+
+Strictly DevOps-related software
+
+- [Docker](https://www.docker.com/) with [docker-compose](https://docs.docker.com/compose/)
+- [kubectl](https://kubernetes.io/docs/tasks/tools/#kubectl) - manage kubernetes cluster
+- [KinD](https://kind.sigs.k8s.io/) - Kubernetes in docker - create a cluster locally
+- [k9s](https://github.com/derailed/k9s) - Terminal GUI for managing kubernetes clusters
+- [Helm](https://github.com/helm/helm) - Kubernetes package manager
+- [Terraform](https://github.com/hashicorp/terraform) - infrastructure as code tool
+- [Terragrunt](https://github.com/gruntwork-io/terragrunt) - wrapper for Terraform to deal with multiple environments
+
 ### Neovim with LunarVIM
 
 [LunarVIM](https://github.com/LunarVim/LunarVim) is set as default `EDITOR`, also aliased as `vim` (you can change it `~/.zshrc`).
@@ -184,11 +197,6 @@ In LunarVIM there is an automatic LSP installer plugin - [Mason.nvim](https://gi
 - [yq](https://mikefarah.gitbook.io/yq/) - YAML parser
 - [htop](https://github.com/htop-dev/htop) - better top
 - [jq](https://stedolan.github.io/jq/) - JSON parser
-- [Docker](https://www.docker.com/) with [docker-compose](https://docs.docker.com/compose/)
-- [kubectl](https://kubernetes.io/docs/tasks/tools/#kubectl) - manage kubernetes cluster
-- [KinD](https://kind.sigs.k8s.io/) - Kubernetes in docker - create a cluster locally
-- [k9s](https://github.com/derailed/k9s) - Terminal GUI for managing kubernetes clusters
-- [Helm](https://github.com/helm/helm) - Kubernetes package manager
 
 ### Languages
 

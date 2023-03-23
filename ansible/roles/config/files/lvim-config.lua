@@ -33,6 +33,12 @@ lvim.builtin.treesitter.ensure_installed = {
   "java",
   "yaml",
   "ruby",
+  "terraform",
+  "hcl",
+  "dockerfile",
+  "go",
+  "markdown",
+  "markdown_inline"
 }
 
 lvim.builtin.treesitter.ignore_install = { "haskell" }
@@ -50,7 +56,8 @@ lvim.builtin.treesitter.highlight.enabled = true
 
 -- ---configure a server manually. !!Requires `:LvimCacheReset` to take effect!!
 -- ---see the full default list `:lua print(vim.inspect(lvim.lsp.automatic_configuration.skipped_servers))`
-vim.list_extend(lvim.lsp.automatic_configuration.skipped_servers, { "ansiblels", "puppet", "marksman" }, 1, 1) -- Manually configure Ansible/Puppet Language Servers
+vim.list_extend(lvim.lsp.automatic_configuration.skipped_servers, { "ansiblels", "puppet", "marksman", "tflint", "terraformls" }, 1, 1) -- Manually configure some servers
+
 local puppet_opts = {
   cmd = {
     vim.env.HOME .. "/.rvm/rubies/default/bin/ruby",
@@ -67,9 +74,14 @@ local ansible_opts = {
   }
 }
 local marksman_opts = {}
+local tflint_opts = {}
+local terraformls_opts = {}
+
 require("lvim.lsp.manager").setup("puppet", puppet_opts)
 require("lvim.lsp.manager").setup("ansiblels", ansible_opts)
 require("lvim.lsp.manager").setup("marksman", marksman_opts)
+require("lvim.lsp.manager").setup("tflint", tflint_opts)
+require("lvim.lsp.manager").setup("terraformls", terraformls_opts)
 
 -- ---remove a server from the skipped list, e.g. eslint, or emmet_ls. !!Requires `:LvimCacheReset` to take effect!!
 -- ---`:LvimInfo` lists which server(s) are skiipped for the current filetype
@@ -148,6 +160,8 @@ lvim.plugins = {
     { "iamcco/markdown-preview.nvim",
       build = function() vim.fn["mkdp#util#install"]() end
     },
+    -- Terraform support
+    { "hashivim/vim-terraform" },
     -- Tabularize
     { "godlygeek/tabular" },
     -- Fuzzy finder

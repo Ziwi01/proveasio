@@ -43,6 +43,8 @@ github_packages:
   k9s: latest
   yq: latest
   win32yank: latest
+  terraform: latest
+  terragrunt: latest
   git_fuzzy: latest # Does not have releases, latest (for latest commit) or specific commit
   nvm: latest # Node Version Manater
   tpm: latest # Tmux plugin manager. Does not have releases, gets latest tag instead
