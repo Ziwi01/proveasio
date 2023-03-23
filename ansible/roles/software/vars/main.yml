@@ -22,9 +22,13 @@ default_apt_packages:
   - composer
   - keychain
   - groff # Required for AWS CLI
-  - libevent-dev # v Required for latest Tmux install
-  - universal-ctags # v Required for latest Tmux install
-  - ncurses-dev # v Required for latest Tmux install
+  - libevent-dev # Required for latest Tmux install
+  - universal-ctags # Required for latest Tmux install
+  - ncurses-dev # Required for latest Tmux install
+  - ca-certificates # Required for Azure CLI
+  - apt-transport-https # Required for Azure CLI
+  - lsb-release # Required for Azure CLI
+  - gnupg # Required for Azure CLI
 # Specific versions for software (github)
 # Fixed versions should be set without `v` prefix (e.g: 1.4.3)
 github_packages:
@@ -125,6 +129,8 @@ ansible_lint_pip_version: latest
 # LunarVIM
 lunarvim_url: https://github.com/lunarvim/lunarvim.git
 lunarvim_home: "{{ ansible_env.HOME }}/.local/opt/lunarvim"
+# Azure CLI
+azurecli_apt_version: latest
 # Puppet
 puppet_pes_url: https://github.com/puppetlabs/puppet-editor-services.git
 # SDK Man

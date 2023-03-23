@@ -145,6 +145,7 @@ Strictly DevOps-related software
 - [Helm](https://github.com/helm/helm) - Kubernetes package manager
 - [Terraform](https://github.com/hashicorp/terraform) - infrastructure as code tool
 - [Terragrunt](https://github.com/gruntwork-io/terragrunt) - wrapper for Terraform to deal with multiple environments
+- [Azure CLI](https://learn.microsoft.com/en-us/cli/azure/) - CLI interface for Azure management
 
 ### Neovim with LunarVIM
 

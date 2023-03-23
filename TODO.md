@@ -2,6 +2,7 @@
 
 - [ ] fix(playbooks): Analyze shell commands and add missing changed_when/failed_when directives 
 - [ ] fix(puppet): Go to definition sometimes does not load
+- [ ] feat(go): Install GVM (Go Version Manager) and default GO.
 - [ ] feat(neovim): Add Vimux keymaps (Telescope?), document usage.
 - [ ] feat(neovim): Integrate DirDiff with Nvim Tree, introduce simple shortcuts/marks for diffing two directories.
 - [ ] feat(AWS): AWS cli installation/setup

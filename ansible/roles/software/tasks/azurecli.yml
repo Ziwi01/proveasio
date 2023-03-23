@@ -1,0 +1,68 @@
+# Azure CLI interface
+# Source: https://learn.microsoft.com/en-us/cli/azure/
+---
+- name: '[AzureCLI] Add Microsoft signing key'
+  ansible.builtin.shell: |
+    set -eo pipefail
+    curl -sLS https://packages.microsoft.com/keys/microsoft.asc |
+        gpg --dearmor |
+        sudo tee /etc/apt/keyrings/microsoft.gpg > /dev/null
+    sudo chmod go+r /etc/apt/keyrings/microsoft.gpg
+  args:
+    executable: /bin/bash
+    creates: /etc/apt/keyrings/microsoft.gpg
+
+- name: '[AzureCLI] Add repository into sources list'
+  become: true
+  ansible.builtin.apt_repository:
+    repo: "deb [arch=amd64 signed-by=/etc/apt/keyrings/microsoft.gpg] https://packages.microsoft.com/repos/azure-cli/ {{ ansible_distribution_release }} main"
+    state: present
+    filename: azurecli
+
+- name: '[AzureCLI] Update apt cache'
+  become: true
+  ansible.builtin.apt:
+    update_cache: true
+    force_apt_get: true
+    cache_valid_time: 3600
+
+- name: '[AzureCLI] Ensure Azure CLI package is installed as latest/present'
+  become: true
+  when: azurecli_apt_version in ['latest', 'present']
+  ansible.builtin.apt:
+    update_cache: true
+    name: "azure-cli"
+    state: "{{ azurecli_apt_version }}"
+
+- name: '[AzureCLI] Ensure Azure CLI package is installed in particular version'
+  become: true
+  when: azurecli_apt_version not in ['latest', 'present', 'absent']
+  ansible.builtin.apt:
+    update_cache: true
+    name: "azure-cli={{ azurecli_apt_version }}"
+
+- name: '[AzureCLI] Get installed package version'
+  ansible.builtin.shell: |
+    set -e -o pipefail
+    apt-cache policy azure-cli | grep Installed | awk '{ print $2 }'
+  register: azurecli_version
+  changed_when: false
+  args:
+    executable: /bin/bash
+  tags:
+    - versions
+
+- name: "[AzureCLI] Save used version"
+  vars:
+    app: azure-cli
+    target_version:
+      azurecli_apt_version: "{{ azurecli_version.stdout }}"
+    query: ".azurecli_apt_version = \"{{ azurecli_version.stdout }}\""
+  ansible.builtin.include_role:
+    name: common
+    tasks_from: save_version.yml
+    apply:
+      tags:
+        - versions
+  tags:
+    - versions

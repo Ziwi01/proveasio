@@ -467,3 +467,16 @@
     - software
     - versions
     - terragrunt
+
+- name: "[Software] Azure CLI"
+  ansible.builtin.include_tasks:
+    file: azurecli.yml
+    apply:
+      tags:
+        - software
+        - azurecli
+  when: "'azurecli' not in software_tasks_exclude"
+  tags:
+    - software
+    - versions
+    - azurecli
