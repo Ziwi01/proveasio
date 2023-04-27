@@ -339,9 +339,11 @@ To restore it, run `<C-b><C-r>`. Vim instances are persistent only until system 
 
 ### Copy mode
 
-You can enter a copy mode from Tmux buffer using `<C-b><C-]>` - move around with arrow keys. In copy mode you can select text with `<Space>` and copy selected text with `<Enter>`. It will be copied to your clipboard, so you can paste it normally with `<C-v>` or directly from Tmux buffer using `<C-b><C-]>` (that way you can copy something else to the actual clipboard instead).
+You can enter a copy mode from Tmux buffer using `<C-b><C-]>` - move around with arrow keys.
 
-To select a block of text (vertical selection), before (or after) selecting text with `<Space>` just hit `v`.
+In copy mode you can select text with `v` (or `<Space>`) and copy selected text with `y` (or `<Enter>`). It will be copied to your clipboard, so you can paste it normally with `<C-v>` or directly from Tmux buffer using `<C-b><C-]>` (that way you can copy something else to the actual clipboard instead).
+
+To select a block of text (vertical selection), before (or after) selecting text with `<v>` just hit `<Alt>v`.
 
 ### Search back buffer
 
