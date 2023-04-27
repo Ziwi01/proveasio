@@ -152,7 +152,7 @@ sdkman_install_packages:
   - candidate: groovy
     version: 4.0.4
   - candidate: maven
-    version: 3.9.0
+    version: 3.9.1
 sdkman_uninstall_packages: []
 # sdkman_uninstall_packages:
 #   - { candidate: java, version: 6u45 }
