@@ -1,7 +1,7 @@
 ---
 github_packages:
   neovim: latest
-  lunarvim: master
+  lunarvim: latest
   diff_so_fancy: latest
   bat: latest
   zoxide: latest
