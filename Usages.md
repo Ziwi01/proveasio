@@ -51,6 +51,7 @@ This document describes all the tools and features which I find useful for every
   * [Open recent file](#open-recent-file)
   * [Find text](#find-text)
   * [Find files](#find-files)
+  * [Jumping](#jumping)
   * [Markdown](#markdown)
     * [Preview](#preview)
     * [Navigation](#navigation)
@@ -609,6 +610,18 @@ To search for text in particular directory only, open NvimTree (`<Space>e`), sel
 To dynamically find files in a project, run `<Space>sf`. This will open a fuzzy search window
 
 To find files in a particular directory, open NvimTree (`<Space>e`), select directory and hit `gtf`
+
+### Jumping
+
+Uses: [leap.nvim](https://github.com/ggandor/leap.nvim)
+
+To jump around your buffer you can use `s` (leap forward) or `S` (leap backward).
+
+After S is pressed you need to provide two characters, for where you want jump, and then a character highlighted by `leap`
+
+For example: to jump to `Preview` link below, from this place, press `s` followed by `Pr` and the third character which will be highlighted there.
+
+See plugin docs for details.
 
 ### Markdown
 

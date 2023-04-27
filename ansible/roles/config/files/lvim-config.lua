@@ -269,6 +269,14 @@ lvim.plugins = {
     },
     -- Cool colorscheme :)
     { "catppuccin/nvim", name = "catppuccin" },
+    -- Motions on steroids
+    {
+      "ggandor/leap.nvim",
+      name = "leap",
+      config = function()
+        require("leap").add_default_mappings()
+      end,
+    },
 }
 
 -- Autocommands (https://neovim.io/doc/user/autocmd.html)
@@ -279,11 +287,11 @@ vim.api.nvim_create_autocmd("FileType", {
     require("nvim-treesitter.highlight").attach(0, "bash")
   end,
 })
--- vim.api.nvim_create_autocmd("BufRead", {
---   -- Force `yaml.ansible` filetype in ansible projects directory.
---   pattern = { vim.env.HOME .. "/projects/ansible/*.yml", vim.env.HOME .. "/projects/ansible/*.yaml" },
---   command = "set ft=yaml.ansible",
--- })
+vim.api.nvim_create_autocmd("BufRead", {
+  -- Force `Jenkinsfile` to groovy filetype.
+  pattern = { "Jenkinsfile" },
+  command = "set ft=groovy",
+})
 
 -- Do not show Git Blame inline for NvimTree
 vim.api.nvim_create_autocmd("BufEnter", {

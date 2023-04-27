@@ -186,7 +186,9 @@ Additionally, I setup the plugins below:
 - [kevinhwang91/nvim-bqf](https://github.com/kevinhwang91/nvim-bqf) - much better quickfix window
 - [nvim-pack/nvim-spectre](https://github.com/nvim-pack/nvim-spectre) - Search and replace like on other IDEs
 - [wincent/ferret](https://github.com/wincent/ferret) - Search and replace for files in your project. To be used if Spectre doesn't work as expected (see LunarVim usage docs for details)
+- [roobert/search-replace.nvim](https://github.com/roobert/search-replace.nvim) - Better local search and replace
 - [catpuccin/nvim](https://github.com/catppuccin/nvim) - Colorscheme
+- [ggandor/leap.nvim](https://github.com/ggandor/leap.nvim) - Jump around the buffer like crazy
 
 In LunarVIM there is an automatic LSP installer plugin - [Mason.nvim](https://github.com/williamboman/mason.nvim) which will install supported language servers and use them, when you open a specific filetype. This should work out of the box in most cases, however for Puppet I setup the LSP server manually, as it doesn't work with RVM by default. Also Ansible gets linter configuration override.
 
