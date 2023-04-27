@@ -24,7 +24,7 @@
         - versions
   tags:
     - versions
-  when: github_packages['neovim'] == 'latest'
+  when: github_packages['neovim'] != 'nightly'
 
 - name: "[Neovim] Get Neovim nightly version"
   ansible.builtin.shell: |
