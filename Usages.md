@@ -621,6 +621,8 @@ After S is pressed you need to provide two characters, for where you want jump, 
 
 For example: to jump to `Preview` link below, from this place, press `s` followed by `Pr` and the third character which will be highlighted there.
 
+You can also jump from insert mode! Press `<Ctrl>+O` while in insert mode, then `s` or `S`, following the pattern (like above) and you are where you wanna be. 
+
 See plugin docs for details.
 
 ### Markdown
