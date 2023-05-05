@@ -33,8 +33,8 @@ default_apt_packages:
 # Specific versions for software (github)
 # Fixed versions should be set without `v` prefix (e.g: 1.4.3)
 github_packages:
-  neovim: latest
-  lunarvim: latest # Gets latest tag. You can set it to `master` to be more latest :)
+  neovim: latest # Gets latest tag. Set to `nightly` for latest nightly
+  lunarvim: latest # Gets latest tag. Set to `master` to be more latest :)
   diff_so_fancy: latest
   bat: latest
   zoxide: latest
@@ -48,8 +48,8 @@ github_packages:
   k9s: latest
   yq: latest
   win32yank: latest
-  terraform: 1.2.9
-  terragrunt: 0.43.2
+  terraform: latest
+  terragrunt: latest
   git_fuzzy: latest # Does not have releases, latest (for latest commit) or specific commit
   nvm: latest # Node Version Manater
   tpm: latest # Tmux plugin manager. Does not have releases, gets latest tag instead
@@ -62,6 +62,7 @@ kubectl_version: latest
 pip_packages:
   thefuck: "latest"
   gita: latest
+  tmuxp: latest
 # FZF
 fzf_git_url: "https://github.com/junegunn/fzf.git"
 fzf_home: "{{ ansible_env.HOME }}/.fzf"

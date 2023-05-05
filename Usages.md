@@ -332,11 +332,24 @@ TMUX prefix is set to `<C-b>` (ctrl+b) - everything after that is a tmux shortcu
 
 ### Manage sessions
 
-Uses: [tmux-resurrect](https://github.com/tmux-plugins/tmux-resurrect)
+Uses: 
+- [tmuxp](https://github.com/tmux-python/tmuxp)
+- [tmux-resurrect](https://github.com/tmux-plugins/tmux-resurrect)
 
-You can easily save your whole TMUX session (opened windows, splits, Vim instances) using `<C-b><C-s>`.
+There are two ways to manage you session(s):
 
-To restore it, run `<C-b><C-r>`. Vim instances are persistent only until system restart (or WSL shutdown).
+- simple save/restore session
+- user-defined multiple sessions with own layouts, commands, etc.
+
+For the first option - you can simply save your current session (opened windows, splits, Vim instances) using `<C-b><C-s>`. To restore it, run `<C-b><C-r>`. Vim instances are persistent only until system restart (or WSL shutdown).
+
+You can also have multiple sessions, configured in YAML format, where you define open windows, panes, commands etc. You can define one for each project and easily switch/attach to them.
+
+Sessions are stored in `${HOME}/.tmuxp` directory in a `*.yaml` file. See [`tmuxp`](https://github.com/tmux-python/tmuxp) how to define session.
+
+After you define you session(s), you can run `lp` from shell, which will invoke a picker for your sessions. You can either attach it to our current session or create a new one.
+
+To jump between sessions, use `<C-b>s`.
 
 ### Copy mode
 

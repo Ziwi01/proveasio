@@ -116,7 +116,7 @@ There are couple of useful plugins installed there (you can find them in `ansibl
 Custom modifications in `roles/config/files/tmux.conf` include:
 
 - custom theme
-- session management
+- declarative sessions (alternatively: save/restore session)
 - ability to search back tmux buffer with FZF
 - ability to extract text from tmux buffer with FZF
 - enabled mouse support
@@ -158,7 +158,7 @@ Additionally, I setup the plugins below:
 - [folke/trouble.nvim](https://github.com/folke/trouble.nvim) - Toggle diagnostic windows and browse through them (`<Space>t` will list options to open)
 - [rodjek/vim-puppet](https://github.com/rodjek/vim-puppet) - Puppet syntax support
 - [pearofducks/ansible-vim](https://github.com/pearofducks/ansible-vim) - Ansible support
-- [nanotee/zoxide.vim](https://github.com/nanotee/zoxide.vim) - Zoxide inside VIM: `:Zi` or `:Z <query>`.For Zoxide descrption see above for Zoxide descprition
+- [nanotee/zoxide.vim](https://github.com/nanotee/zoxide.vim) - Zoxide inside VIM: `:Zi` or `:Z <query>`.For Zoxide descrption see above for Zoxide description
 - [will133/vim-dirdiff](https://github.com/will133/vim-dirdiff) - Diff directories. (`:DirDiff <dir1> <dir2>`)
 - [plasticboy/vim-markdown](https://github.com/preservim/vim-markdown) - Markdown support
 - [Sid0fc/mkdx](https://github.com/SidOfc/mkdx) - Markdown support #2

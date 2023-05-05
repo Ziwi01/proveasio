@@ -105,7 +105,58 @@
         msg: '[Tmux] There was an error during Tmux installation, failing build... See output above for more details.'
       when: tmux_failed | bool
 
-- name: "[Tmux] Save used version"
+- name: "[TMUX] Install tmuxp session manager"
+  ansible.builtin.pip:
+    name: "tmuxp"
+    executable: "{{ ansible_env.HOME }}/.pyenv/shims/pip3"
+  register: pip_out
+  changed_when: "'Requirement already satisfied' not in pip_out.stdout"
+
+- name: "[Tmux] Install tmuxp session manager specific version"
+  ansible.builtin.pip:
+    name: "tmuxp=={{ pip_packages['tmuxp'] }}"
+    executable: "{{ ansible_env.HOME }}/.pyenv/shims/pip3"
+  register: pip_out
+  changed_when: "'Requirement already satisfied' not in pip_out.stdout"
+  when: pip_packages['tmuxp'] != 'latest'
+
+- name: "[Tmux] Install tmuxp latest version"
+  ansible.builtin.pip:
+    name: "tmuxp"
+    executable: "{{ ansible_env.HOME }}/.pyenv/shims/pip3"
+    extra_args: --upgrade
+  register: pip_out
+  changed_when: "'Requirement already satisfied' not in pip_out.stdout"
+  when: pip_packages['tmuxp'] == 'latest'
+
+- name: "[tmux] Get installed tmuxp version"
+  ansible.builtin.shell: |
+    set -e -o pipefail
+    {{ ansible_env.HOME }}/.pyenv/shims/pip3 show tmuxp | grep Version | awk '{print $2}'
+  args:
+    executable: /bin/bash
+  changed_when: false
+  register: tmuxp_version
+  tags:
+    - versions
+
+- name: "[Tmux] Save used tmuxp version"
+  vars:
+    app: tmuxp
+    target_version:
+      pip_packages:
+        tmuxp: "{{ tmuxp_version.stdout }}"
+    query: ".pip_packages.tmuxp = \"{{ tmuxp_version.stdout }}\""
+  ansible.builtin.include_role:
+    name: common
+    tasks_from: save_version.yml
+    apply:
+      tags:
+        - versions
+  tags:
+    - versions
+
+- name: "[Tmux] Save used tmux version"
   vars:
     app: tmux
     target_version:
