@@ -494,3 +494,16 @@
     - software
     - versions
     - azurecli
+
+- name: "[Software] AWS CLI"
+  ansible.builtin.include_tasks:
+    file: awscli.yml
+    apply:
+      tags:
+        - software
+        - awscli
+  when: "'awscli' not in software_tasks_exclude"
+  tags:
+    - software
+    - versions
+    - awscli

@@ -147,6 +147,7 @@ Strictly DevOps-related software
 - [Terraform](https://github.com/hashicorp/terraform) - infrastructure as code tool
 - [Terragrunt](https://github.com/gruntwork-io/terragrunt) - wrapper for Terraform to deal with multiple environments
 - [Azure CLI](https://learn.microsoft.com/en-us/cli/azure/) - CLI interface for Azure management
+- [AWS CLI](https://github.com/aws/aws-cli) - CLI interface to interact with AWS
 
 ### Neovim with LunarVIM
 
@@ -621,6 +622,11 @@ For particular functionality:
 - yq
 - zoxide
 - zsh
+- gvm
+- terraform
+- terragrunt
+- azurecli
+- awscli
 
 ## Troubleshooting
 

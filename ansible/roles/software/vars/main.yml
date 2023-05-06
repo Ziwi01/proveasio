@@ -139,6 +139,8 @@ lunarvim_url: https://github.com/lunarvim/lunarvim.git
 lunarvim_home: "{{ ansible_env.HOME }}/.local/opt/lunarvim"
 # Azure CLI
 azurecli_apt_version: 2.48.1-1~jammy
+# AWS CLI
+awscli_url: https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip
 # Puppet
 puppet_pes_url: https://github.com/puppetlabs/puppet-editor-services.git
 # SDK Man
