@@ -23,20 +23,6 @@
   tags:
     - always
 
-# Install `yq` YAML parser
-# Used for editing YAML files for versions and release purposes.
-- name: "[Software] Install yq"
-  ansible.builtin.include_tasks:
-    file: yq.yml
-    apply:
-      tags:
-        - software
-        - yq
-  tags:
-    - software
-    - versions
-    - yq
-
 # Common software
 - name: "[Software] Install packages"
   ansible.builtin.include_tasks:
@@ -50,6 +36,20 @@
     - software
     - versions
     - software_packages
+
+# Install `yq` YAML parser
+# Used for editing YAML files for versions and release purposes.
+- name: "[Software] Install yq"
+  ansible.builtin.include_tasks:
+    file: yq.yml
+    apply:
+      tags:
+        - software
+        - yq
+  tags:
+    - software
+    - versions
+    - yq
 
 # Latest GIT
 - name: "[Software] Install git"
