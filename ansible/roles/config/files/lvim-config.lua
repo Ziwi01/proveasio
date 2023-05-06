@@ -56,7 +56,7 @@ lvim.builtin.treesitter.highlight.enabled = true
 
 -- ---configure a server manually. !!Requires `:LvimCacheReset` to take effect!!
 -- ---see the full default list `:lua print(vim.inspect(lvim.lsp.automatic_configuration.skipped_servers))`
-vim.list_extend(lvim.lsp.automatic_configuration.skipped_servers, { "ansiblels", "puppet", "marksman", "tflint", "terraformls" }, 1, 1) -- Manually configure some servers
+lvim.lsp.installer.setup.ensure_installed = { "pyright", "jsonls", "yamlls", "bashls", "puppet", "ansiblels", "marksman", "tflint", "terraformls", "azure_pipelines_ls", "dockerls" }
 
 local puppet_opts = {
   cmd = {
