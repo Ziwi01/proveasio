@@ -1,0 +1,28 @@
+# Install GVM (Go Version Manager)
+# Source: https://github.com/moovweb/gvm
+---
+- name: "[GVM] Install/update GVM"
+  ansible.builtin.shell: |
+    set -e -o pipefail
+    bash < <(curl -s -S -L https://raw.githubusercontent.com/moovweb/gvm/master/binscripts/gvm-installer)
+  register: gvm_install
+  args:
+    creates: "{{ ansible_env.HOME }}/.gvm"
+    executable: /bin/bash
+
+- name: "[GVM] Show GVM install/update info"
+  ansible.builtin.debug:
+    msg: "{{ gvm_install.stdout | default('No output was passed from GVM install command') }}"
+
+- name: "[Go] Install Go versions"
+  ansible.builtin.command: "gvm install {{ goversion }} -B"
+  args:
+    creates: "{{ ansible_env.HOME}}/.gvm/environments/{{ goversion }}"
+  loop: "{{ go_versions }}"
+  loop_control:
+    loop_var: goversion
+
+- name: "[Go] Set default to {{ go_default }}"
+  ansible.builtin.shell: ". {{ ansible_env.HOME }}/.gvm/scripts/gvm; gvm use {{ go_default }} --default"
+  args:
+    executable: /bin/bash

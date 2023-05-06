@@ -17,6 +17,8 @@ github_packages:
   win32yank: latest
   git_fuzzy: latest
   nvm: latest
+  terraform: latest
+  terragrunt: latest
   tpm: latest
   pes: latest
   p10k: latest

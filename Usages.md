@@ -25,6 +25,7 @@ This document describes all the tools and features which I find useful for every
     * [LazyGit](#lazygit)
   * [Languages](#languages)
     * [Python](#python)
+    * [Go](#go)
     * [Ruby](#ruby)
     * [Java/Gradle/Groovy](#java/gradle/groovy)
 * [Tmux](#tmux)
@@ -283,6 +284,27 @@ To change running version:
 - for current shell session: `pyenv shell <version>`
 - to change default: `pyenv global <version>`
 - to change version whenever you are in current directory, use `pyenv local <version>`
+
+#### Go
+
+Automatic installation of Go is done using [`GVM`](https://github.com/moovweb/gvm) - Go Version Manager. By default `go1.20.4` gets installed (at the time of writing).
+
+You can install more Go versions either manually (`gvm install <version>`) or you can add/set your prefered version(s) in `ansible/vars/overrides.yml` (and run the automation):
+
+```yaml
+go_versions:
+  - go1.20.4
+go_default: go1.20.4
+```
+
+Note that `go_default` value must be in `go_versions` :)
+
+- list installed Go versions: `gvm list`
+- list all available Go versions: `gvm listall`
+- install: `gvm install <version>`
+- uninstall: `gvm uninstall <version>`
+- switch to different version: `gvm use <version>`
+- switch and set default: `gvm use <version> --default`
 
 #### Ruby
 

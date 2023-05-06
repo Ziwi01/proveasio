@@ -384,6 +384,20 @@
     - versions
     - rust
 
+# GVM
+- name: "[Software] Install Go Version Manager"
+  ansible.builtin.include_tasks:
+    file: gvm.yml
+    apply:
+      tags:
+        - software
+        - gvm
+  when: "'gvm' not in software_tasks_exclude"
+  tags:
+    - software
+    - versions
+    - gvm
+
 # Ansible PIP
 - name: "[Software] Install Ansible"
   ansible.builtin.include_tasks:

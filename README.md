@@ -47,6 +47,7 @@ Please read below README carefully and go through the scripts to see whats going
   * [Other software](#other-software)
   * [Languages](#languages)
     * [Python](#python)
+    * [Go](#go)
     * [Ruby](#ruby)
     * [JAVA/groovy](#java/groovy)
     * [Node](#node)
@@ -210,6 +211,10 @@ Python gets instaled with pretty recent version using [`pyenv`](https://github.c
 Also, there is [`pyenv-virtualenv`](https://github.com/pyenv/pyenv-virtualenv) available to easily manage Python virtual environments.
 
 For usage examples see [Usages.md](./Usages.md)
+
+### Go
+
+Automatic installation of Go is done using [`GVM`](https://github.com/moovweb/gvm) - Go Version Manager. By default `go1.20.4` gets installed (at the time of writing). See [`Usages.md`](./Usages.md) for details.
 
 #### Ruby
 
