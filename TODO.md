@@ -1,5 +1,6 @@
 # TODO
 
+- [ ] fix(neovim): Mason errors when opening VIM for the first time after new installation.
 - [ ] fix(playbooks): Analyze shell commands and add missing changed_when/failed_when directives 
 - [ ] feat(neovim): Add Vimux keymaps (Telescope?), document usage.
 - [ ] feat(neovim): Integrate DirDiff with Nvim Tree, introduce simple shortcuts/marks for diffing two directories.

@@ -192,7 +192,7 @@ Additionally, I setup the plugins below:
 - [catpuccin/nvim](https://github.com/catppuccin/nvim) - Colorscheme
 - [ggandor/leap.nvim](https://github.com/ggandor/leap.nvim) - Jump around the buffer like crazy
 
-In LunarVIM there is an automatic LSP installer plugin - [Mason.nvim](https://github.com/williamboman/mason.nvim) which will install supported language servers and use them, when you open a specific filetype. This should work out of the box in most cases, however for Puppet I setup the LSP server manually, as it doesn't work with RVM by default. Also Ansible gets linter configuration override.
+**NOTE**: In LunarVIM there is an automatic LSP installer plugin - [Mason.nvim](https://github.com/williamboman/mason.nvim) which will install supported language servers and use them, when you open a specific filetype. Unfortunately, Mason will perform an installation when opening any file, so after first provisioning, opening plain VIM (without specifying a file) will produce LSP errors. After opening any file, it will install required LSP servers and after VIM restart, it should work fine from now on.
 
 ### Other software
 
