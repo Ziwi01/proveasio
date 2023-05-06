@@ -355,8 +355,15 @@ It will prompt for you Windows password. If the terminal hangs during an executi
 
 Assuming all the [requirements](#requirements) are met:
 
-1. Clone this repository in Ubuntu if not yet already.
-2. Create/update file `ansible/vars/overrides.yml` - set desired GIT config name and e-mail. See `ansible/vars/README.md` for more examples
+0. Launch Ubuntu terminal (if using WSL - ensure it is running with `systemd`, see manual setup description above)
+1. Clone this repository if not yet already
+
+    ```
+    git clone https://github.com/Ziwi01/proveasio.git ~/proveasio
+    ```
+
+2. Go to cloned directory: `cd ~/proveasio`
+3. Create file `ansible/vars/overrides.yml` - set desired GIT config name and e-mail. See `ansible/vars/README.md` for more examples
 
    ```yaml
    git:
@@ -364,11 +371,12 @@ Assuming all the [requirements](#requirements) are met:
      mail: james.doe@hell.no
    ```
 
-3. Run `sudo ./prepare-ubuntu.sh` (if not already run during windows setup) to update the system and install required python packages and install ansible.
-4. Run ansible (from `ansible/` dir):
+4. (from repo root) Run `sudo ./prepare-ubuntu.sh` (if not already run during windows setup) to update the system and install required python packages and install ansible.
+5. Reload your terminal (close and open again)
+6. (from repo root) Run ansible:
 
     ```shell
-    ansible-playbook -i inventory.yml setup-ubuntu.yml -K
+    ansible-playbook -i ansible/inventory.yml ansible/setup-ubuntu.yml -K
     ```
 
 ## Roles overview
