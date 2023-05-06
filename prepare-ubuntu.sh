@@ -15,6 +15,9 @@ apt-get upgrade -y
 echo "Installing pyenv requirements..."
 apt-get install -y make build-essential libkrb5-dev libssl-dev zlib1g-dev libbz2-dev libreadline-dev libsqlite3-dev wget curl llvm libncursesw5-dev xz-utils tk-dev libxml2-dev libxmlsec1-dev libffi-dev liblzma-dev
 
+echo "Install yq requirement"
+wget https://github.com/mikefarah/yq/releases/latest/download/yq_linux_amd64 -O /usr/bin/yq && chmod +x /usr/bin/yq
+
 SCRIPT_DIR=$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )
 ANSIBLE_VERSION=$(yq '.ansible_pip_version' ${SCRIPT_DIR}/ansible/roles/software/vars/main.yml)
 

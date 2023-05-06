@@ -15,14 +15,15 @@
     msg: "{{ gvm_install.stdout | default('No output was passed from GVM install command') }}"
 
 - name: "[Go] Install Go versions"
-  ansible.builtin.command: "gvm install {{ goversion }} -B"
+  ansible.builtin.shell: ". {{ ansible_env.HOME }}/.gvm/scripts/gvm && gvm install {{ goversion }} -B"
   args:
     creates: "{{ ansible_env.HOME}}/.gvm/environments/{{ goversion }}"
+    executable: /bin/bash
   loop: "{{ go_versions }}"
   loop_control:
     loop_var: goversion
 
 - name: "[Go] Set default to {{ go_default }}"
-  ansible.builtin.shell: ". {{ ansible_env.HOME }}/.gvm/scripts/gvm; gvm use {{ go_default }} --default"
+  ansible.builtin.shell: ". {{ ansible_env.HOME }}/.gvm/scripts/gvm && gvm use {{ go_default }} --default"
   args:
     executable: /bin/bash
