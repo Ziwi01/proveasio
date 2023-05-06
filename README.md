@@ -346,7 +346,7 @@ You can switch off the whole sections from #2 by modifying `vars/overrides.yml`.
 After everything is prepared, you can run (from `ansible/` dir):
 
 ```shell
-ansible-playbook -i inventory.yml setup-windows.yml -k
+ANSIBLE_STDOUT_CALLBACK=yaml ansible-playbook -i inventory.yml setup-windows.yml -k
 ```
 
 It will prompt for you Windows password. If the terminal hangs during an execution for more than couple minutes, just break it (`<C-c>`) and run again. This is because Chocolatey installations from WSL ansible can get clogged up sometimes (not sure why this happens).
@@ -373,10 +373,10 @@ Assuming all the [requirements](#requirements) are met:
 
 4. (from repo root) Run `sudo ./prepare-ubuntu.sh` (if not already run during windows setup) to update the system and install required python packages and install ansible.
 5. Reload your terminal (close and open again)
-6. (from repo root) Run ansible:
+6. (from repo root) Run ansible (yaml callback for prettier output):
 
     ```shell
-    ansible-playbook -i ansible/inventory.yml ansible/setup-ubuntu.yml -K
+    ANSIBLE_STDOUT_CALLBACK=yaml ansible-playbook -i ansible/inventory.yml ansible/setup-ubuntu.yml -K
     ```
 
 ## Roles overview
