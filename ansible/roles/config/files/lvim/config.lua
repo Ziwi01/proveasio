@@ -311,54 +311,12 @@ vim.api.nvim_create_autocmd('BufReadPost', {
   end,
 })
 
-
 -- Debug LSP servers
 
 -- vim.lsp.set_log_level 'debug'
 -- require('vim.lsp.log').set_format_func(vim.inspect)
 
--- generic LSP settings
-
--- ---@usage disable automatic installation of servers
--- lvim.lsp.automatic_servers_installation = false
-
-lvim.lsp.installer.setup.ensure_installed = { "pyright", "jsonls", "yamlls", "bashls", "puppet", "ansiblels", "marksman", "tflint", "terraformls", "azure_pipelines_ls", "dockerls" }
-
-local puppet_opts = {
-  cmd = {
-    vim.env.HOME .. "/.rvm/rubies/default/bin/ruby",
-    vim.env.HOME .. "/.lsp/puppet-editor-services/puppet-languageserver",
-    "--stdio",
-    "--puppet-settings=--modulepath," .. vim.env.HOME .. "/projects/puppet", -- set this to the director(y/ies) you keep puppet modules
-  }
-}
-local ansible_opts = {
-  settings = {
-    ansibleLint = {
-      arguments = 'ansible-lint -c ~/.ansible-lint'
-    }
-  }
-}
-local marksman_opts = {}
-local tflint_opts = {}
-local terraformls_opts = {}
-
-require("lvim.lsp.manager").setup("puppet", puppet_opts)
-require("lvim.lsp.manager").setup("ansiblels", ansible_opts)
-require("lvim.lsp.manager").setup("marksman", marksman_opts)
-require("lvim.lsp.manager").setup("tflint", tflint_opts)
-require("lvim.lsp.manager").setup("terraformls", terraformls_opts)
-
--- ---configure a server manually. !!Requires `:LvimCacheReset` to take effect!!
--- ---see the full default list `:lua print(vim.inspect(lvim.lsp.automatic_configuration.skipped_servers))`
-
--- ---remove a server from the skipped list, e.g. eslint, or emmet_ls. !!Requires `:LvimCacheReset` to take effect!!
--- ---`:LvimInfo` lists which server(s) are skiipped for the current filetype
--- vim.tbl_map(function(server)
---   return server ~= "emmet_ls"
--- end, lvim.lsp.automatic_configuration.skipped_servers)
-
--- -- set a formatter, this will override the language server formatting capabilities (if it exists)
+-- set a formatter, this will override the language server formatting capabilities (if it exists)
 local formatters = require "lvim.lsp.null-ls.formatters"
 formatters.setup {
   { command = "black", filetypes = { "python" } },
@@ -367,18 +325,9 @@ formatters.setup {
     extra_args = { "--fix", "--no-autoloader_layout-check" },
     filetypes = { "puppet" },
   },
-  -- {
-  --   -- each formatter accepts a list of options identical to https://github.com/jose-elias-alvarez/null-ls.nvim/blob/main/doc/BUILTINS.md#Configuration
-  --   command = "prettier",
-  --   ---@usage arguments to pass to the formatter
-  --   -- these cannot contain whitespaces, options such as `--line-width 80` become either `{'--line-width', '80'}` or `{'--line-width=80'}`
-  --   extra_args = { "--print-with", "100" },
-  --   ---@usage specify which filetypes to enable. By default a providers will attach to all the filetypes it supports.
-  --   filetypes = { "typescript", "typescriptreact" },
-  -- },
 }
 
--- -- set additional linters
+-- set additional linters
 -- local linters = require "lvim.lsp.null-ls.linters"
 -- linters.setup {
 --   { command = "flake8", filetypes = { "python" } },

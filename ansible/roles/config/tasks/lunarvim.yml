@@ -4,8 +4,18 @@
 - name: "[Config][LunarVIM] Configure config.lua"
   vars:
     app: lunarvim
-    source_file: lvim-config.lua
+    source_file: lvim/config.lua
     target_file: "{{ ansible_env.HOME }}/.config/lvim/config.lua"
   ansible.builtin.include_role:
     name: common
     tasks_from: config_file.yml
+
+- name: "[Config][LunarVIM] Configure filetype plugins"
+  vars:
+    app: lunarvim
+    source_file: "{{ item }}"
+    target_file: "{{ ansible_env.HOME }}/.local/share/lunarvim/site/after/ftplugin/{{ item | basename }}"
+  ansible.builtin.include_role:
+    name: common
+    tasks_from: config_file.yml
+  loop: "{{ lookup('fileglob', 'lvim/ftplugin/*', wantlist=True) }}"
