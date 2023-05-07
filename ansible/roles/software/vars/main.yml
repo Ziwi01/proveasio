@@ -83,6 +83,7 @@ git_fuzzy_home: "{{ ansible_env.HOME }}/.local/opt/git-fuzzy"
 omz_home: "{{ ansible_env.HOME }}/.oh-my-zsh"
 omz_plugins:
   fzf-tab: https://github.com/Aloxaf/fzf-tab
+  fzf-tab-source: https://github.com/Freed-Wu/fzf-tab-source.git
   k: https://github.com/supercrabtree/k
   you-should-use: https://github.com/MichaelAquilina/zsh-you-should-use.git
   zsh-autosuggestions: https://github.com/zsh-users/zsh-autosuggestions
