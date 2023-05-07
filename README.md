@@ -192,7 +192,7 @@ Additionally, I setup the plugins below:
 - [catpuccin/nvim](https://github.com/catppuccin/nvim) - Colorscheme
 - [ggandor/leap.nvim](https://github.com/ggandor/leap.nvim) - Jump around the buffer like crazy
 
-**NOTE**: In LunarVIM there is an automatic LSP installer plugin - [Mason.nvim](https://github.com/williamboman/mason.nvim) which will install supported language servers and use them, when you open a specific filetype. Unfortunately, Mason will perform an installation when opening any file, so after first provisioning, opening plain VIM (without specifying a file) will produce LSP errors. After opening any file, it will install required LSP servers and after VIM restart, it should work fine from now on.
+**NOTE**: In LunarVIM there is an automatic LSP installer plugin - [Mason.nvim](https://github.com/williamboman/mason.nvim) which will install supported language servers and use them, when you open a specific filetype. However, this doesn't work 100% of the time. I add custom configurations for terraform, ansible, markdown and puppet. If you have issues with automatic LSP config/attachment, you can add your own configurations for filetypes in `ansible/roles/config/files/lvim/ftplugin/<filetype>.lua` - all of the files from there will be copied over to LunarVim config. See: [LunarVIM docs](https://www.lunarvim.org/docs/configuration/language-features/language-servers) for details. I will be adding more LSP configs in the future.
 
 ### Other software
 
