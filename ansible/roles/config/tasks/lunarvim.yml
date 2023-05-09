@@ -10,6 +10,28 @@
     name: common
     tasks_from: config_file.yml
 
+- name: "[Config][LunarVIM] Create lua dir in {{ ansible_env.HOME }}/.config/lvim"
+  ansible.builtin.file:
+    path: "{{ ansible_env.HOME }}/.config/lvim/lua"
+    state: directory
+    mode: '0755'
+
+- name: "[Config][LunarVIM] Create used dir in {{ ansible_env.HOME }}/.config/lvim/lua"
+  ansible.builtin.file:
+    path: "{{ ansible_env.HOME }}/.config/lvim/lua/user"
+    state: directory
+    mode: '0755'
+
+- name: "[Config][LunarVIM] Configure Lua user modules"
+  vars:
+    app: lunarvim
+    source_file: "{{ item }}"
+    target_file: "{{ ansible_env.HOME }}/.config/lvim/lua/user/{{ item | basename }}"
+  ansible.builtin.include_role:
+    name: common
+    tasks_from: config_file.yml
+  loop: "{{ lookup('fileglob', 'lvim/lua/user/*', wantlist=True) }}"
+
 - name: "[Config][LunarVIM] Configure filetype plugins"
   vars:
     app: lunarvim

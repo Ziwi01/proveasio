@@ -66,7 +66,7 @@ This document describes all the tools and features which I find useful for every
   * [Git](#git)
     * [Diff current changes](#diff-current-changes)
     * [Diff another branch](#diff-another-branch)
-    * [Diff current file with different file on another branch]
+    * [Diff current file with different file on another branch](#diff-current-file-with-different-file-on-another-branch)
     * [Checkout branch](#checkout-branch)
     * [Git blame](#git-blame)
     * [File history](#file-history)
