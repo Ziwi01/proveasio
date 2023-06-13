@@ -28,7 +28,6 @@ pip_packages:
   thefuck: latest
 docker_apt_packages:
   docker-ce: latest
-  docker-ce-cli: latest
   containerd.io: latest
   docker-compose-plugin: latest
 kubectl_version: latest

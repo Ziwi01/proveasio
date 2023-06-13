@@ -103,7 +103,6 @@ docker_apt_dependencies:
 # Docker main packages from APT repo
 docker_apt_packages:
   docker-ce: latest
-  docker-ce-cli: latest
   containerd.io: latest
   docker-compose-plugin: latest
 # RVM / Ruby
@@ -141,7 +140,7 @@ ansible_lint_pip_version: latest
 lunarvim_url: https://github.com/lunarvim/lunarvim.git
 lunarvim_home: "{{ ansible_env.HOME }}/.local/opt/lunarvim"
 # Azure CLI
-azurecli_apt_version: 2.48.1-1~jammy
+azurecli_apt_version: latest
 # AWS CLI
 awscli_url: https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip
 # Puppet
