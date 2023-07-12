@@ -104,7 +104,6 @@ docker_apt_dependencies:
 docker_apt_packages:
   docker-ce: latest
   containerd.io: latest
-  docker-compose-plugin: latest
 # RVM / Ruby
 rvm1_rubies:
   - ruby-3.1.3
