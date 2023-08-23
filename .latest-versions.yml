@@ -34,3 +34,4 @@ kubectl_version: latest
 ansible_pip_version: latest
 ansible_lint_pip_version: latest
 puppet_pdk_version: latest
+azurecli_apt_version: latest

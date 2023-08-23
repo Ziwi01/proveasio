@@ -69,7 +69,7 @@ kubectl_version: latest
 pip_packages:
   thefuck: "latest"
   gita: latest
-  tmuxp: 1.27.1
+  tmuxp: latest
   awscli: 1.27.97
 # FZF
 fzf_git_url: "https://github.com/junegunn/fzf.git"
@@ -140,7 +140,7 @@ ansible_lint_pip_version: latest
 lunarvim_url: https://github.com/lunarvim/lunarvim.git
 lunarvim_home: "{{ ansible_env.HOME }}/.local/opt/lunarvim"
 # Azure CLI
-azurecli_apt_version: 2.49.0-1~jammy
+azurecli_apt_version: latest
 # AWS CLI
 awscli_url: https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip
 # Puppet
