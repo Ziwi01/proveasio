@@ -31,3 +31,21 @@ linters.setup {
     filetypes = { "javascript", "python" },
   },
 }
+
+-- Attach LSP for Azure Pipelines for YAML files in .azuredevops directory
+vim.api.nvim_create_autocmd("BufRead", {
+  pattern = "*/.azuredevops/*.yaml",
+  callback = function()
+    require("lspconfig").azure_pipelines_ls.setup {
+      settings = {
+          yaml = {
+              schemas = {
+                  ["https://raw.githubusercontent.com/microsoft/azure-pipelines-vscode/master/service-schema.json"] = {
+                      "*/.azuredevops/**/*.y*ml",
+                  },
+              },
+          },
+      },
+    }
+  end,
+})
