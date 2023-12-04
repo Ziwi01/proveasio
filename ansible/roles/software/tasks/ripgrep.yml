@@ -15,7 +15,7 @@
     app: ripgrep
     repo: BurntSushi/ripgrep
     version_query: curl -s https://api.github.com/repos/BurntSushi/ripgrep/releases/latest | jq .name -r | cut -f2 -d'v'
-    github_uri: "{{ ripgrep_version }}/ripgrep_{{ ripgrep_version }}_amd64.deb"
+    github_uri: "{{ ripgrep_version }}/ripgrep_{{ ripgrep_version }}-1_amd64.deb"
   ansible.builtin.include_role:
     name: common
     tasks_from: github_version.yml
@@ -42,7 +42,7 @@
 
     - name: "[Ripgrep] Install {{ ripgrep_version }} .deb package"
       ansible.builtin.apt:
-        deb: "{{ ansible_env.HOME }}/.local/opt/ripgrep-{{ ripgrep_version }}/ripgrep_{{ ripgrep_version }}_amd64.deb"
+        deb: "{{ ansible_env.HOME }}/.local/opt/ripgrep-{{ ripgrep_version }}/ripgrep_{{ ripgrep_version }}-1_amd64.deb"
       become: true
 
 - name: "[Ripgrep] Save used version"

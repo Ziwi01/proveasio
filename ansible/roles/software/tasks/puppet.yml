@@ -65,6 +65,7 @@
     repo: "{{ puppet_pes_url }}"
     dest: "{{ ansible_env.HOME }}/.lsp/puppet-editor-services"
     update: true
+    force: true
     version: "{{ pes_version }}"
 
 - name: "[Puppet Editor Services] Save used version"
