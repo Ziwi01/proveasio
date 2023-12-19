@@ -103,7 +103,6 @@ docker_apt_dependencies:
 # Docker main packages from APT repo
 docker_apt_packages:
   docker-ce: latest
-  containerd.io: latest
   docker-compose-plugin: latest
 # RVM / Ruby
 rvm1_rubies:
