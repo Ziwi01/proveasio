@@ -104,7 +104,7 @@ docker_apt_dependencies:
 docker_apt_packages:
   docker-ce: latest
   docker-compose-plugin: latest
-  docker-ce-cli: 5:24.0.2-1~ubuntu.22.04~jammy
+  docker-ce-cli: latest
   containerd.io: latest
 # RVM / Ruby
 rvm1_rubies:
