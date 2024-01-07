@@ -1,0 +1,7 @@
+position: 7
+label: 'Customizations'
+collapsible: true
+className: red
+link:
+  type: generated-index
+  title: Customization overview
