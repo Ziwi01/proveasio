@@ -104,7 +104,6 @@ docker_apt_dependencies:
 docker_apt_packages:
   docker-ce: latest
   docker-compose-plugin: latest
-  docker-ce-cli: 5:24.0.7-1~ubuntu.22.04~jammy
   containerd.io: latest
 # RVM / Ruby
 rvm1_rubies:
@@ -118,7 +117,7 @@ rvm1_user: "{{ ansible_user_id }}"
 ruby_gems:
   - ruby: all
     gems:
-      - neovim: 0.9.0
+      - neovim: 0.9.1
 # Puppet
 puppet_version: 7.21.0
 puppet_lint_version: 3.0.1
@@ -133,7 +132,7 @@ puppet_rubies:
 # Please note the module does not support package downgrades - if PDK is already installed in higher version, remove it first.
 puppet_pdk_version: latest
 # Node
-node_version: 'lts/gallium'
+node_version: 'lts/iron'
 # Ansible
 ansible_pip_version: latest
 ansible_lint_pip_version: latest
