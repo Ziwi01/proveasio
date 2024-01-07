@@ -15,7 +15,7 @@ To go back to `/home/user/projects/ansible`, use something like `z ansible` or `
 <details>
   <summary><b>Example:</b> Zoxide fuzzy find</summary>
   <div align="center">
-    <img src="./resources/zoxide-ff.gif" />
+    <img src="https://ziwi01.github.io/proveasio/assets/zoxide-ff.gif" />
   </div>
 </details>
 
@@ -33,7 +33,7 @@ Easily find files with preview using `bfind` alias (uses `fzf`):
 <details>
   <summary><b>Example:</b> Search file with `bfind`</summary>
   <div align="center">
-    <img src="./resources/bfind.png" />
+    <img src="https://ziwi01.github.io/proveasio/assets/bfind.png" />
   </div>
 </details>
 <br />
@@ -67,7 +67,7 @@ There is an alias `btail <file>`, which will use BAT as tail command. This gives
 <details>
   <summary><b>Example:</b> Tail with `btail`</summary>
   <div align="center">
-    <img src="./resources/btail.png" />
+    <img src="https://ziwi01.github.io/proveasio/assets/btail.png" />
   </div>
 </details>
 
@@ -82,7 +82,7 @@ Misspelling a command is a real pain in the ass. Here comes the solution. When y
 <details>
   <summary><b>Example:</b> Correct new branch push with `thefuck`</summary>
   <div align="center">
-    <img src="./resources/thefuck.png" />
+    <img src="https://ziwi01.github.io/proveasio/assets/thefuck.png" />
   </div>
 </details>
 
@@ -127,7 +127,7 @@ There are two commands to use for this:
 <details>
   <summary><b>Example:</b> List files with `k`</summary>
   <div align="center">
-    <img src="./resources/terminal-k.png" />
+    <img src="https://ziwi01.github.io/proveasio/assets/terminal-k.png" />
   </div>
 </details>
 <br />
@@ -137,7 +137,7 @@ There are two commands to use for this:
 <details>
   <summary><b>Example:</b> List files with `lsg`</summary>
   <div align="center">
-    <img src="./resources/terminal-lsg.png" />
+    <img src="https://ziwi01.github.io/proveasio/assets/terminal-lsg.png" />
   </div>
 </details>
 
@@ -156,7 +156,7 @@ Aliases below are just helpers in case something needs to be done from terminal 
 <details>
   <summary><b>Example:</b> Checkout new branch</summary>
   <div align="center">
-    <img src="./resources/git-checkout.png" />
+    <img src="https://ziwi01.github.io/proveasio/assets/git-checkout.png" />
   </div>
 </details>
 
@@ -167,7 +167,7 @@ Aliases below are just helpers in case something needs to be done from terminal 
 <details>
   <summary><b>Example:</b> Checking git status</summary>
   <div align="center">
-    <img src="./resources/git-status.png" />
+    <img src="https://ziwi01.github.io/proveasio/assets/git-status.png" />
   </div>
 </details>
 
@@ -192,7 +192,7 @@ All above commands and aliases can be run through [`lazygit`](https://github.com
 <details>
   <summary><b>Example:</b> Lazy Git interface</summary>
   <div align="center">
-    <img src="./resources/lazygit.png" />
+    <img src="https://ziwi01.github.io/proveasio/assets/lazygit.png" />
   </div>
 </details>
 

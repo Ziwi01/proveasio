@@ -5,7 +5,7 @@
 <details>
   <summary><b>Example:</b> TMUX splits</summary>
   <div align="center">
-    <img src="/tmux-overview.png" />
+    <img src="https://ziwi01.github.io/proveasio/assets/tmux-overview.png" />
   </div>
 </details>
 

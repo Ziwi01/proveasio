@@ -93,7 +93,7 @@ This will open a directory diff window
 <details>
   <summary><b>Example:</b> Diff directories</summary>
   <div align="center">
-    <img src="./resources/vim-dirdiff.png" />
+    <img src="https://ziwi01.github.io/proveasio/assets/vim-dirdiff.png" />
   </div>
 </details>
 <br />
@@ -160,7 +160,7 @@ In the example below, there is a search for 'lazygit' with replacement for `Work
 <details>
   <summary><b>Example:</b> Spectre search</summary>
   <div align="center">
-    <img src="./resources/vim-spectre.png" />
+    <img src="https://ziwi01.github.io/proveasio/assets/vim-spectre.png" />
   </div>
 </details>
 
@@ -179,7 +179,7 @@ Unlike Spectre, there is no preview of how the replacement wil look like.
 <details>
   <summary><b>Example:</b> Ferret search</summary>
   <div align="center">
-    <img src="./resources/vim-ferret.png" />
+    <img src="https://ziwi01.github.io/proveasio/assets/vim-ferret.png" />
   </div>
 </details>
 <br />
@@ -296,7 +296,7 @@ Simply select the text (probably visually with `<Shift>v`), and run `:Tabularize
 <details>
   <summary><b>Example:</b> Tabular align</summary>
   <div align="center">
-    <img src="./resources/vim-tabular.png" />
+    <img src="https://ziwi01.github.io/proveasio/assets/vim-tabular.png" />
   </div>
 </details>
 
@@ -396,7 +396,7 @@ To get changes only for this file, compared to another branch, you can use `:Gvd
 <details>
   <summary><b>Example:</b> Diffview another branch</summary>
   <div align="center">
-    <img src="./resources/vim-diffview.png" />
+    <img src="https://ziwi01.github.io/proveasio/assets/vim-diffview.png" />
   </div>
 </details>
 
@@ -458,14 +458,14 @@ Alternatively, you can use `:GV` to browse all commits (`<Enter>` to preview thi
 <details>
   <summary><b>Example:</b> File history with Diffview</summary>
   <div align="center">
-    <img src="./resources/vim-diffview-history.png" />
+    <img src="https://ziwi01.github.io/proveasio/assets/vim-diffview-history.png" />
   </div>
 </details>
 <br />
 <details>
   <summary><b>Example:</b> File history with GV</summary>
   <div align="center">
-    <img src="./resources/vim-gv.png" />
+    <img src="https://ziwi01.github.io/proveasio/assets/vim-gv.png" />
   </div>
 </details>
 

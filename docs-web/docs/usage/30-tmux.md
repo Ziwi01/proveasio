@@ -21,7 +21,7 @@ TMUX prefix is set to `<C-b>` (ctrl+b) - everything after that is a tmux shortcu
 <details>
   <summary><b>Example:</b> Tmux window</summary>
   <div align="center">
-    <img src="./resources/tmux-overview.png" />
+    <img src="https://ziwi01.github.io/proveasio/assets/tmux-overview.png" />
   </div>
 </details>
 

@@ -7,7 +7,7 @@ Also, it saves/updates them in `./current-versions.yml`. This file is added to `
 <details>
   <summary><b>Example:</b> Versions output</summary>
   <div align="center">
-    <img src="/versions.png" />
+    <img src="https://ziwi01.github.io/proveasio/assets/versions.png" />
   </div>
 </details>
 <br />

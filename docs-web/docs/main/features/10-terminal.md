@@ -5,7 +5,7 @@ Terminal is ZSH-based, configured with [Oh-my-ZSH](https://github.com/ohmyzsh/oh
 <details>
   <summary><b>Example:</b> Terminal commandline</summary>
   <div align="center">
-    <img src="/terminal_preview.png" />
+    <img src="https://ziwi01.github.io/proveasio/assets/terminal_preview.png" />
   </div>
 </details>
 <br />
