@@ -15,18 +15,31 @@ yq -i eval-all '. as $item ireduce ({}; . * $item)' ${SCRIPT_DIR}/ansible/roles/
 
 echo 'git add'
 git add .
-echo 'git commit'
+
+echo 'git commit updated versions'
 git commit -a -m 'release: Update versions'
+
+echo 'Update docs'
+rsync -avrE ${SCRIPT_DIR}/docs-web/docs/ ${SCRIPT_DIR}/docs-web/versioned_docs/version-stable/
+
+echo 'git commit updated docs'
+git commit -a -m 'release: Update docs'
+
 echo 'git push'
 git push
+
 echo 'git checkout master'
 git checkout master
+
 echo 'git pull'
 git pull
+
 echo 'git merge develop'
 git merge develop
+
 echo 'git push'
 git push
+
 echo 'git checkout develop'
 git checkout develop
 
@@ -35,7 +48,9 @@ yq -i eval-all '. as $item ireduce ({}; . * $item)' ${SCRIPT_DIR}/ansible/roles/
 
 echo 'git add'
 git add .
+
 echo 'git commit'
 git commit -a -m 'release: Set latest versions for development'
+
 echo 'git push'
 git push
