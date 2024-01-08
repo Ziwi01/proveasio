@@ -15,6 +15,8 @@ jobs:
 
     steps:
       - uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
 
       - name: Fix grub-efi-amd64 error
         run: |
@@ -23,9 +25,16 @@ jobs:
       - name: Prepare for setup
         run: sudo sh prepare-ubuntu.sh
 
-      - name: Setup environment
+      - name: Build Proveasio'ned environment
         working-directory: ./ansible
         run: ansible-playbook -i inventory.yml setup-ubuntu.yml
+
+      - name: Push latest tag
+        run: |
+          git config user.name "GitHub Actions"
+          git config user.email "github-actions@users.noreply.github.com"
+          git tag latest -f
+          git push origin latest -f
 
       - name: Get previous tag
         id: previousTag
@@ -34,7 +43,7 @@ jobs:
           echo "previousTag: $name"
           echo "previousTag=$name" >> $GITHUB_ENV
 
-      - name: Update CHANGELOG
+      - name: Generate CHANGELOG
         id: changelog
         uses: requarks/changelog-action@v1
         with:
@@ -57,13 +66,6 @@ jobs:
       - name: Commit CHANGELOG.md
         uses: stefanzweifel/git-auto-commit-action@v4
         with:
-          branch: main
+          branch: ${{ github.ref_name }}
           commit_message: 'docs: update CHANGELOG.md for ${{ github.ref_name }}'
           file_pattern: CHANGELOG.md
-
-      # - uses: "marvinpinto/action-automatic-releases@latest"
-      #   with:
-      #     repo_token: "${{ secrets.GITHUB_TOKEN }}"
-      #     automatic_release_tag: "latest"
-      #     prerelease: true
-      #     title: "Pre-release Build"
