@@ -1,4 +1,4 @@
-name: Deploy Docusaurus site to Pages
+name: Deploy docs Pages
 
 on:
   push:
@@ -40,7 +40,7 @@ jobs:
           path: docs-web/build
 
   # Deployment job
-  deploy:
+  deploy-docs:
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}

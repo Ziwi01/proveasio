@@ -17,13 +17,13 @@ echo 'git add'
 git add .
 
 echo 'git commit updated versions'
-git commit -a -m 'release: Update versions'
+git commit -a -m 'build: Release updated versions'
 
 echo 'Update docs'
 rsync -avrE ${SCRIPT_DIR}/docs-web/docs/ ${SCRIPT_DIR}/docs-web/versioned_docs/version-stable/
 
 echo 'git commit updated docs'
-git commit -a -m 'release: Update docs'
+git commit -a -m 'build: Release updated docs'
 
 echo 'git push'
 git push
@@ -50,7 +50,7 @@ echo 'git add'
 git add .
 
 echo 'git commit'
-git commit -a -m 'release: Set latest versions for development'
+git commit -a -m 'build: Set latest versions for development'
 
 echo 'git push'
 git push
