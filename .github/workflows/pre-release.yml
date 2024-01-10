@@ -1,4 +1,4 @@
-name: "pre-release"
+name: "Pre-release"
 
 on:
   push:
@@ -10,7 +10,7 @@ on:
 
 jobs:
   pre-release:
-    name: "Pre Release"
+    name: "Pre-release"
     runs-on: ubuntu-22.04
 
     steps:
