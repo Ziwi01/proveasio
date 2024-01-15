@@ -41,7 +41,7 @@ default_apt_packages:
 # Fixed versions should be set without `v` prefix (e.g: 1.4.3)
 github_packages:
   neovim: nightly # Gets latest tag. Set to `nightly` for latest nightly
-  lunarvim: "b124e8c3" # Gets latest tag. Set to `master` to be more latest :)
+  lunarvim: "e85637c2" # Gets latest tag. Set to `master` to be more latest :)
   diff_so_fancy: 1.4.4
   bat: 0.24.0
   zoxide: 0.9.2
@@ -52,11 +52,11 @@ github_packages:
   ripgrep: 14.1.0
   fd: 9.0.0
   kind: 0.20.0
-  k9s: 0.30.8
+  k9s: 0.31.5
   yq: 4.40.5
   win32yank: 0.1.1
   terraform: 1.6.6
-  terragrunt: 0.54.12
+  terragrunt: 0.54.17
   git_fuzzy: latest # Does not have releases, latest (for latest commit) or specific commit
   nvm: 0.39.7 # Node Version Manater
   tpm: 99469c4a9b1ccf77fade25842dc7bafbc8ce9946 # Tmux plugin manager. Does not have releases, gets latest tag instead
@@ -141,7 +141,7 @@ ansible_lint_pip_version: 6.22.1
 lunarvim_url: https://github.com/lunarvim/lunarvim.git
 lunarvim_home: "{{ ansible_env.HOME }}/.local/opt/lunarvim"
 # Azure CLI
-azurecli_apt_version: 2.55.0-1~jammy
+azurecli_apt_version: 2.56.0-1~jammy
 # AWS CLI
 awscli_url: https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip
 # Puppet
