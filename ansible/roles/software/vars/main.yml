@@ -120,8 +120,8 @@ ruby_gems:
     gems:
       - neovim: 0.9.1
 # Puppet
-puppet_version: 7.21.0
-puppet_lint_version: 3.0.1
+puppet_version: 8.4.0
+puppet_lint_version: 4.2.3
 puppet_rubies:
   - all # to install only for specific rubies, list their names (must match `rvm1_rubies`)
 # Example:
