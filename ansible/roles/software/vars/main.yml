@@ -183,5 +183,5 @@ sdkman_flush_caches_after: []
 sdkman_update_alternatives: []
 # Go versions installed with GVM
 go_versions:
-  - go1.20.4
-go_default: go1.20.4
+  - go1.21.6
+go_default: go1.21.6
