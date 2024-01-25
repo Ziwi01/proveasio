@@ -133,7 +133,7 @@ puppet_rubies:
 # Please note the module does not support package downgrades - if PDK is already installed in higher version, remove it first.
 puppet_pdk_version: latest
 # Node
-node_version: 'lts/gallium'
+node_version: 'lts/iron'
 # Ansible
 ansible_pip_version: latest
 ansible_lint_pip_version: latest
