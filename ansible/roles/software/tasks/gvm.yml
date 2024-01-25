@@ -17,7 +17,7 @@
 - name: "[Go] Install Go versions"
   ansible.builtin.shell: ". {{ ansible_env.HOME }}/.gvm/scripts/gvm && gvm install {{ goversion }} -B"
   args:
-    creates: "{{ ansible_env.HOME}}/.gvm/environments/{{ goversion }}"
+    creates: "{{ ansible_env.HOME }}/.gvm/environments/{{ goversion }}"
     executable: /bin/bash
   loop: "{{ go_versions }}"
   loop_control:
