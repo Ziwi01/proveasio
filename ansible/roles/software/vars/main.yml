@@ -69,8 +69,7 @@ kubectl_version: latest
 pip_packages:
   thefuck: "latest"
   gita: latest
-  tmuxp: 1.29.0
-  awscli: 1.27.97
+  tmuxp: latest
 # FZF
 fzf_git_url: "https://github.com/junegunn/fzf.git"
 fzf_home: "{{ ansible_env.HOME }}/.fzf"
@@ -105,7 +104,6 @@ docker_apt_packages:
   docker-ce: latest
   docker-compose-plugin: latest
   containerd.io: latest
-  docker-ce-cli: 5:24.0.7-1~ubuntu.22.04~jammy
 # RVM / Ruby
 rvm1_rubies:
   - ruby-3.3.0
