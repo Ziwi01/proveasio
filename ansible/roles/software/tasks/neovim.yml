@@ -14,7 +14,7 @@
   vars:
     app: neovim
     repo: neovim/neovim
-    version_query: curl -s https://api.github.com/repos/neovim/neovim/releases/latest | grep -oP 'NVIM v([0-9]*\.[0-9]*\.[0-9])\\n' | grep -Eo '[0-9]*\.[0-9]*\.[0-9]'
+    version_query: curl -s https://api.github.com/repos/neovim/neovim/releases/latest | jq .tag_name | tr -d '"' | tr -d 'v'
     github_uri: "v{{ neovim_version }}/nvim.appimage"
   ansible.builtin.include_role:
     name: common
