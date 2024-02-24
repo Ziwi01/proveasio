@@ -5,7 +5,7 @@
   vars:
     app: git
     source_template: gitconfig.j2
-    target_file: "{{ ansible_env.HOME }}/.gitconfig.j2"
+    target_file: "{{ ansible_env.HOME }}/.gitconfig"
   ansible.builtin.include_role:
     name: common
     tasks_from: config_file.yml
