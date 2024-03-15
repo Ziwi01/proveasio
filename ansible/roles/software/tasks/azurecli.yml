@@ -39,6 +39,7 @@
   when: azurecli_apt_version not in ['latest', 'present', 'absent']
   ansible.builtin.apt:
     update_cache: true
+    allow_downgrade: true
     name: "azure-cli={{ azurecli_apt_version }}"
 
 - name: '[AzureCLI] Get installed package version'
