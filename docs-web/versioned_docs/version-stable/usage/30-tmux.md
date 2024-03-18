@@ -40,7 +40,9 @@ For the first option - you can simply save your current session (opened windows,
 
 You can also have multiple sessions, configured in YAML format, where you define open windows, panes, commands etc. You can define one for each project and easily switch/attach to them.
 
-Sessions are stored in `${HOME}/.tmuxp` directory in a `*.yaml` file. See [`tmuxp`](https://github.com/tmux-python/tmuxp) how to define session.
+Sessions are stored in `${HOME}/.tmuxp` directory in a `*.yaml` file. There is a default session file created when running Proveasio (for example purposes). To remove creating that file add `tmuxp_default_session: false` in your `overrides.yml` file. See overriding variables in main documentation.
+
+See [`tmuxp`](https://github.com/tmux-python/tmuxp) for details on how to define sessions with multiple windows, panes etc.
 
 After you define you session(s), you can run `lp` from shell, which will invoke a picker for your sessions. You can either attach it to our current session or create a new one.
 
