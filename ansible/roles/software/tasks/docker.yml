@@ -55,6 +55,7 @@
   when: item.value not in ['latest', 'present', 'absent']
   ansible.builtin.apt:
     update_cache: true
+    allow_downgrade: true
     name: "{{ item.key }}={{ item.value }}"
   loop: "{{ docker_apt_packages | dict2items }}"
 

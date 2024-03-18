@@ -1,0 +1,6 @@
+session_name: Default session
+start_directory: /home
+windows:
+  - window_name: home
+    panes:
+      - echo Welcome to proveasio. To update windows/panes for this session edit ~/.tmuxp/default.yaml. Create new sessions by adding yaml files. See Proveasio usage docs for details.
