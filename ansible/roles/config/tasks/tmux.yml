@@ -15,3 +15,18 @@
 # TODO: Add changed_when/failed_when
 - name: "[Config][Tmux] Update plugins" # noqa no-changed-when
   ansible.builtin.command: "{{ ansible_env.HOME }}/.tmux/plugins/tpm/bin/update_plugins all"
+
+- name: "[Config][Tmuxp] Create directory in {{ ansible_env.HOME }}/.tmuxp"
+  ansible.builtin.file:
+    path: "{{ ansible_env.HOME }}/.tmuxp"
+    state: directory
+    mode: '0755'
+
+- name: "[Config][Tmuxp] Add default session file"
+  vars:
+    app: Tmuxp
+    source_file: tmuxp-default.yaml
+    target_file: "{{ ansible_env.HOME }}/.tmuxp/default_session.yaml"
+  ansible.builtin.include_role:
+    name: common
+    tasks_from: config_file.yml
