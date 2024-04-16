@@ -91,6 +91,7 @@ omz_plugins:
   zsh-lazyload: https://github.com/qoomon/zsh-lazyload
   pyenv-lazy: https://github.com/davidparsson/zsh-pyenv-lazy.git
   zsh-snv: https://github.com/rpeshkov/zsh-snv
+  jq: https://github.com/reegnz/jq-zsh-plugin.git
 # TMUX Plugin Manager
 tmux_plugins_dir: "{{ ansible_env.HOME }}/.tmux/plugins"
 tpm_git_url: https://github.com/tmux-plugins/tpm.git
