@@ -36,54 +36,54 @@ Below you can find brief summary of included tools and features. For more detail
 
 - GIT improvements and integrations:
 
-    - [LazyGIT](https://github.com/jesseduffield/lazygit) GUI
-    - pretty diff formatting
-    - `ls` with GIT status
-    - new git commands and aliases
-    - grouping GIT repos and bulk executing commands on them
+  - [LazyGIT](https://github.com/jesseduffield/lazygit) GUI
+  - pretty diff formatting
+  - `ls` with GIT status
+  - new git commands and aliases
+  - grouping GIT repos and bulk executing commands on them
 
 - DevOps tools:
 
-    - [Docker](https://www.docker.com/) with [docker-compose](https://docs.docker.com/compose/)
-    - [kubectl](https://kubernetes.io/docs/tasks/tools/#kubectl) - manage kubernetes cluster
-    - [KinD](https://kind.sigs.k8s.io/) - Kubernetes in docker - create a cluster locally
-    - [k9s](https://github.com/derailed/k9s) - Terminal GUI for managing kubernetes clusters
-    - [Helm](https://github.com/helm/helm) - Kubernetes package manager
-    - [Terraform](https://github.com/hashicorp/terraform) - infrastructure as code tool
-    - [Terragrunt](https://github.com/gruntwork-io/terragrunt) - wrapper for Terraform to deal with multiple environments
-    - [Azure CLI](https://learn.microsoft.com/en-us/cli/azure/) - CLI interface for Azure management
-    - [AWS CLI](https://github.com/aws/aws-cli) - CLI interface to interact with AWS
+  - [Docker](https://www.docker.com/) with [docker-compose](https://docs.docker.com/compose/)
+  - [kubectl](https://kubernetes.io/docs/tasks/tools/#kubectl) - manage kubernetes cluster
+  - [KinD](https://kind.sigs.k8s.io/) - Kubernetes in docker - create a cluster locally
+  - [k9s](https://github.com/derailed/k9s) - Terminal GUI for managing kubernetes clusters
+  - [Helm](https://github.com/helm/helm) - Kubernetes package manager
+  - [Terraform](https://github.com/hashicorp/terraform) - infrastructure as code tool
+  - [Terragrunt](https://github.com/gruntwork-io/terragrunt) - wrapper for Terraform to deal with multiple environments
+  - [Azure CLI](https://learn.microsoft.com/en-us/cli/azure/) - CLI interface for Azure management
+  - [AWS CLI](https://github.com/aws/aws-cli) - CLI interface to interact with AWS
 
 - Neovim replaces VIM. Uses LunarVim IDE for Neovim, which makes VIM fully functional, feature-rich IDE
 
 - Useful software:
 
-    - [ripgrep](https://github.com/BurntSushi/ripgrep) - much faster grep. Also used from within VIM to grep for text.
-    - [fd](https://github.com/sharkdp/fd) - faster `find` command
-    - [bat](https://github.com/sharkdp/bat) - prettier cat with syntax highlight, line numbers etc.
-    - [yq](https://mikefarah.gitbook.io/yq/) - YAML parser
-    - [htop](https://github.com/htop-dev/htop) - better top
-    - [jq](https://stedolan.github.io/jq/) - JSON parser
+  - [ripgrep](https://github.com/BurntSushi/ripgrep) - much faster grep. Also used from within VIM to grep for text.
+  - [fd](https://github.com/sharkdp/fd) - faster `find` command
+  - [bat](https://github.com/sharkdp/bat) - prettier cat with syntax highlight, line numbers etc.
+  - [yq](https://mikefarah.gitbook.io/yq/) - YAML parser
+  - [htop](https://github.com/htop-dev/htop) - better top
+  - [jq](https://stedolan.github.io/jq/) - JSON parser
 
 - Languages support (with version management):
 
-    - Python
-    - Go
-    - Ruby
-    - JAVA
-    - Groovy
-    - NodeJS
-    - Puppet
-    - Ansible
-    - Rust
+  - Python
+  - Go
+  - Ruby
+  - JAVA
+  - Groovy
+  - NodeJS
+  - Puppet
+  - Ansible
+  - Rust
 
 ## Installation and usage
 
-For detailed instructions see [documentation](https://ziwi01.github.io/proveasio) 
+For detailed instructions see [documentation](https://ziwi01.github.io/proveasio)
 
 ## Troubleshooting
 
-See [Troubleshooting](https://ziwi01.github.io/proveasio/main/troubleshooting) 
+See [Troubleshooting](https://ziwi01.github.io/proveasio/main/troubleshooting)
 
 ## Contributing
 

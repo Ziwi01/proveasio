@@ -1,8 +1,11 @@
 # TODO
 
+- [ ] Migrate to AstroNvim / uninstall LunarVim / use Neovim release
+- install fswatch, ruby neovim-ruby-host, treesitter-cli, NPM neovim, gdu, bottom, NPM vscode-langservers-extracted
+
+
 - [ ] fix(playbooks): Analyze shell commands and add missing changed_when/failed_when directives 
 - [ ] feat(neovim): Add Vimux keymaps (Telescope?), document usage.
-- [ ] feat(neovim): Integrate DirDiff with Nvim Tree, introduce simple shortcuts/marks for diffing two directories.
 - [ ] docs(gita): Describe `gita` usage and example
 - [x] fix(neovim): Mason errors when opening VIM for the first time after new installation.
 - [x] feat(go): Install GVM (Go Version Manager) and default GO.
