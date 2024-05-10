@@ -5,7 +5,7 @@
   ansible.builtin.file:
     path: "{{ config_backup_dir }}"
     state: directory
-    mode: '0755'
+    mode: "0755"
   tags:
     - always
 
@@ -92,18 +92,6 @@
   tags:
     - config
     - lazygit
-
-- name: "[Config] Configure lunarvim"
-  ansible.builtin.include_tasks:
-    file: lunarvim.yml
-    apply:
-      tags:
-        - config
-        - lunarvim
-  when: "'lunarvim' not in config_tasks_exclude"
-  tags:
-    - config
-    - lunarvim
 
 - name: "[Config] Configure thefuck"
   ansible.builtin.include_tasks:

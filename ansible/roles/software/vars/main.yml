@@ -37,11 +37,13 @@ default_apt_packages:
   - bison # Required for GVM
   - build-essential # Required for GVM
   - mercurial # Required for GVM
+  - fswatch
+  - gdu
+
 # Specific versions for software (github)
 # Fixed versions should be set without `v` prefix (e.g: 1.4.3)
 github_packages:
-  neovim: latest # Gets latest tag. Set to `nightly` for latest nightly
-  lunarvim: "latest" # Gets latest tag. Set to `master` to be more latest :)
+  neovim: latest # Gets latest tag. Set to `nightly` for latest nightly (not recommended)
   diff_so_fancy: latest
   bat: latest
   zoxide: latest
@@ -57,6 +59,7 @@ github_packages:
   win32yank: latest
   terraform: latest
   terragrunt: latest
+  bottom: latest
   git_fuzzy: latest # Does not have releases, latest (for latest commit) or specific commit
   nvm: latest # Node Version Manater
   tpm: latest # Tmux plugin manager. Does not have releases, gets latest tag instead
@@ -132,13 +135,20 @@ puppet_rubies:
 # Please note the module does not support package downgrades - if PDK is already installed in higher version, remove it first.
 puppet_pdk_version: latest
 # Node
-node_version: 'lts/iron'
+node_version: "lts/iron"
+npm_default_packages:
+  - tree-sitter-cli
+  - neovim
+  - vscode-langservers-extracted
 # Ansible
 ansible_pip_version: latest
 ansible_lint_pip_version: latest
 # LunarVIM
-lunarvim_url: https://github.com/lunarvim/lunarvim.git
-lunarvim_home: "{{ ansible_env.HOME }}/.local/opt/lunarvim"
+lunarvim_remove: true
+# AstroNvim
+astronvim_config_url: https://github.com/Ziwi01/astronvim.git
+astronvim_config_version: main
+astronvim_config_path: "{{ ansible_env.HOME }}/.config/astronvim"
 # Azure CLI
 azurecli_apt_version: latest
 # AWS CLI
@@ -169,10 +179,10 @@ sdkman_uninstall_packages: []
 #   - { candidate: java, version: 6u45 }
 # Configure default candidate versions
 sdkman_defaults:
-  java: '21.0.2-open'
-  gradle: '8.5'
-  groovy: '4.0.18'
-  maven: '3.9.6'
+  java: "21.0.2-open"
+  gradle: "8.5"
+  groovy: "4.0.18"
+  maven: "3.9.6"
 # Flush caches before/after installing SDK packages
 # Reference: http://sdkman.io/usage (Flush section)
 sdkman_flush_caches_before: []

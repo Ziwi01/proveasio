@@ -1,0 +1,64 @@
+---
+# BOTTOM Graphical process/system monitor
+#
+# Source: https://github.com/ClementTsang/bottom
+
+- name: "[BOTTOM] Check installed BOTTOM version"
+  ansible.builtin.command: dpkg-query -W bottom
+  register: bottom_check_deb
+  ignore_errors: true
+  changed_when: bottom_check_deb.rc > 1
+  failed_when: bottom_check_deb.rc > 1
+  tags:
+    - versions
+
+- name: "[BOTTOM] Get Github URL for proper version"
+  vars:
+    app: bottom
+    repo: ClementTsang/bottom
+    version_query: curl -s https://api.github.com/repos/ClementTsang/bottom/releases/latest | jq .name -r | cut -f2 -d'v' | awk '{print $1}'
+    github_uri: "{{ bottom_version }}/bottom_{{ bottom_version }}_amd64.deb"
+  ansible.builtin.include_role:
+    name: common
+    tasks_from: github_version.yml
+    apply:
+      tags:
+        - versions
+  tags:
+    - versions
+
+- name: "Installation"
+  when: bottom_check_deb.stdout | regex_search('[0-9]+\.[0-9]+\.[0-9]+') | default(0) != bottom_version
+  block:
+    - name: "[BOTTOM] Create directory in {{ ansible_env.HOME }}/.local/opt"
+      ansible.builtin.file:
+        path: "{{ ansible_env.HOME }}/.local/opt/bottom-{{ bottom_version }}"
+        state: directory
+        mode: "0755"
+
+    - name: "[BOTTOM] Download BOTTOM {{ bottom_version }}"
+      ansible.builtin.get_url:
+        url: "{{ bottom_url }}"
+        dest: "{{ ansible_env.HOME }}/.local/opt/bottom-{{ bottom_version }}"
+        mode: "0755"
+
+    - name: "[BOTTOM] Install {{ bottom_version }} .deb package"
+      ansible.builtin.apt:
+        deb: "{{ ansible_env.HOME }}/.local/opt/bottom-{{ bottom_version }}/bottom_{{ bottom_version }}_amd64.deb"
+      become: true
+
+- name: "[BOTTOM] Save used version"
+  vars:
+    app: bottom
+    target_version:
+      github_packages:
+        bottom: "{{ bottom_version }}"
+    query: '.github_packages.bottom = "{{ bottom_version }}"'
+  ansible.builtin.include_role:
+    name: common
+    tasks_from: save_version.yml
+    apply:
+      tags:
+        - versions
+  tags:
+    - versions

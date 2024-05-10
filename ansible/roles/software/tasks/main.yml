@@ -4,7 +4,7 @@
   ansible.builtin.file:
     path: "{{ ansible_env.HOME }}/{{ item }}"
     state: directory
-    mode: '0755'
+    mode: "0755"
   loop:
     - .local/bin
     - .local/opt
@@ -205,6 +205,19 @@
     - versions
     - bat
 
+- name: "[Software] Install bottom"
+  ansible.builtin.include_tasks:
+    file: bottom.yml
+    apply:
+      tags:
+        - software
+        - bottom
+  when: "'bottom' not in software_tasks_exclude"
+  tags:
+    - software
+    - versions
+    - bottom
+
 # Zoxide
 - name: "[Software] Install zoxide"
   ansible.builtin.include_tasks:
@@ -327,7 +340,6 @@
     - versions
     - k9s
 
-
 # Ruby Version Manager
 - name: "[Software] Install Ruby Version Manager"
   ansible.builtin.include_tasks:
@@ -359,7 +371,7 @@
 # Node Version Manager
 - name: "[Software] Install Node Version Manager"
   ansible.builtin.include_tasks:
-    file: nvm.yml # Dependency for lvim.yml
+    file: nvm.yml
     apply:
       tags:
         - software
@@ -373,7 +385,7 @@
 # Rust
 - name: "[Software] Install Rust language with Cargo"
   ansible.builtin.include_tasks:
-    file: rust.yml # Dependency for lvim.yml
+    file: rust.yml
     apply:
       tags:
         - software
@@ -420,27 +432,25 @@
       tags:
         - software
         - neovim
-        - lunarvim
   when: "'neovim' not in software_tasks_exclude"
   tags:
     - software
     - versions
     - neovim
-    - lunarvim
 
-# LunarVIM
-- name: "[Software] Install LunarVIM"
+# AstroNvim
+- name: "[Software] Install AstroNvim config"
   ansible.builtin.include_tasks:
-    file: lunarvim.yml
+    file: astronvim.yml
     apply:
       tags:
         - software
-        - lunarvim
-  when: "'lunarvim' not in software_tasks_exclude"
+        - astronvim
+  when: "'astronvim' not in software_tasks_exclude"
   tags:
     - software
     - versions
-    - lunarvim
+    - astronvim
 
 # Puppet
 - name: "[Software] Install Puppet"
