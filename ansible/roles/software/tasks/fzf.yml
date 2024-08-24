@@ -5,7 +5,7 @@
   vars:
     app: fzf
     repo: junegunn
-    version_query: curl -s https://api.github.com/repos/junegunn/fzf/releases/latest | jq .name -r | cut -f2 -d'v'
+    version_query: curl -s https://api.github.com/repos/junegunn/fzf/releases/latest | jq .name -r
   ansible.builtin.include_role:
     name: common
     tasks_from: github_version.yml
@@ -20,7 +20,7 @@
     repo: "{{ fzf_git_url }}"
     dest: "{{ fzf_home }}"
     update: true
-    version: "{{ fzf_version }}"
+    version: "v{{ fzf_version }}"
   notify: "[FZF] Run install script"
 
 - name: "[fzf] Save used version"
@@ -28,8 +28,8 @@
     app: fzf
     target_version:
       github_packages:
-        fzf: "{{ fzf_version }}"
-    query: ".github_packages.fzf = \"{{ fzf_version }}\""
+        fzf: "v{{ fzf_version }}"
+    query: '.github_packages.fzf = "v{{ fzf_version }}"'
   ansible.builtin.include_role:
     name: common
     tasks_from: save_version.yml
