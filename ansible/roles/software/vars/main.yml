@@ -37,44 +37,47 @@ default_apt_packages:
   - bison # Required for GVM
   - build-essential # Required for GVM
   - mercurial # Required for GVM
+  - fswatch
+  - gdu
 # Specific versions for software (github)
 # Fixed versions should be set without `v` prefix (e.g: 1.4.3)
 github_packages:
-  neovim: nightly # Gets latest tag. Set to `nightly` for latest nightly
-  lunarvim: "9ee3b7b8" # Gets latest tag. Set to `master` to be more latest :)
+  neovim: 0.10.1 # Gets latest tag. Set to `nightly` for latest nightly (not recommended)
   diff_so_fancy: 1.4.4
   bat: 0.24.0
   zoxide: 0.9.4
-  helm: 3.14.3
-  lazygit: 0.40.2
-  fzf: 0.48.1
+  helm: 3.15.4
+  lazygit: 0.43.1
+  fzf: v0.54.3
   tmux: "3.4"
   ripgrep: 14.1.0
-  fd: 9.0.0
-  kind: 0.22.0
-  k9s: 0.32.3
-  yq: 4.42.1
+  fd: 10.2.0
+  kind: 0.24.0
+  k9s: 0.32.5
+  yq: 4.44.3
   win32yank: 0.1.1
-  terraform: 1.5.2
-  terragrunt: 0.48.0
+  terraform: 1.9.5
+  terragrunt: 0.66.9
+  bottom: 0.10.2
   git_fuzzy: latest # Does not have releases, latest (for latest commit) or specific commit
-  nvm: 0.39.7 # Node Version Manater
+  nvm: 0.40.0 # Node Version Manater
   tpm: 99469c4a9b1ccf77fade25842dc7bafbc8ce9946 # Tmux plugin manager. Does not have releases, gets latest tag instead
-  pes: ad6f043b35db9dfc9eff6f46d5029ec13cb8ee76 # Puppet Editor Services. They don't release anymore, so latest means latest commit
+  pes: c6a4d5f5e65e0efb082a7250bcafde187570b03b # Puppet Editor Services. They don't release anymore, so latest means latest commit
   p10k: 1.20.0
   rvm1_ansible: 2.2.0 # Version of https://github.com/rvm/rvm1-ansible
+  lunarvim: 9ee3b7b8
 # Kubectl version
-kubectl_version: 1.29.3
+kubectl_version: 1.31.0
 # Packages and their versions to install with PIP
 pip_packages:
   thefuck: "3.32"
-  gita: 0.16.6.6
+  gita: 0.16.7.2
   tmuxp: 1.34.0
 # FZF
 fzf_git_url: "https://github.com/junegunn/fzf.git"
 fzf_home: "{{ ansible_env.HOME }}/.fzf"
 # Git from custom PPA repo
-git_apt_version: 1:2.43.2-0ppa1~ubuntu22.04.1
+git_apt_version: 1:2.46.0-0ppa1~ubuntu22.04.1
 # GIT Fuzzy
 git_fuzzy_url: "https://github.com/bigH/git-fuzzy.git"
 git_fuzzy_home: "{{ ansible_env.HOME }}/.local/opt/git-fuzzy"
@@ -91,6 +94,7 @@ omz_plugins:
   zsh-lazyload: https://github.com/qoomon/zsh-lazyload
   pyenv-lazy: https://github.com/davidparsson/zsh-pyenv-lazy.git
   zsh-snv: https://github.com/rpeshkov/zsh-snv
+  jq: https://github.com/reegnz/jq-zsh-plugin.git
 # TMUX Plugin Manager
 tmux_plugins_dir: "{{ ansible_env.HOME }}/.tmux/plugins"
 tpm_git_url: https://github.com/tmux-plugins/tpm.git
@@ -101,9 +105,9 @@ docker_apt_dependencies:
   - lsb-release
 # Docker main packages from APT repo
 docker_apt_packages:
-  docker-ce: 5:25.0.4-1~ubuntu.22.04~jammy
-  docker-compose-plugin: 2.24.7-1~ubuntu.22.04~jammy
-  containerd.io: 1.6.28-1
+  docker-ce: 5:27.1.2-1~ubuntu.22.04~jammy
+  docker-compose-plugin: 2.29.1-1~ubuntu.22.04~jammy
+  containerd.io: 1.7.20-1
 # RVM / Ruby
 rvm1_rubies:
   - ruby-3.3.0
@@ -129,17 +133,24 @@ puppet_rubies:
 
 # PDK (Puppet Development KIT)
 # Please note the module does not support package downgrades - if PDK is already installed in higher version, remove it first.
-puppet_pdk_version: 3.0.1.3-1focal
+puppet_pdk_version: 3.2.0.1-1focal
 # Node
-node_version: 'lts/iron'
+node_version: "lts/iron"
+npm_default_packages:
+  - tree-sitter-cli
+  - neovim
+  - vscode-langservers-extracted
 # Ansible
-ansible_pip_version: 9.3.0
-ansible_lint_pip_version: 24.2.1
+ansible_pip_version: 10.3.0
+ansible_lint_pip_version: 24.7.0
 # LunarVIM
-lunarvim_url: https://github.com/lunarvim/lunarvim.git
-lunarvim_home: "{{ ansible_env.HOME }}/.local/opt/lunarvim"
+lunarvim_remove: true
+# AstroNvim
+astronvim_config_url: https://github.com/Ziwi01/astronvim.git
+astronvim_config_version: main
+astronvim_config_path: "{{ ansible_env.HOME }}/.config/astronvim"
 # Azure CLI
-azurecli_apt_version: 2.58.0-1~jammy
+azurecli_apt_version: 2.63.0-1~jammy
 # AWS CLI
 awscli_url: https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip
 # Puppet
@@ -168,10 +179,10 @@ sdkman_uninstall_packages: []
 #   - { candidate: java, version: 6u45 }
 # Configure default candidate versions
 sdkman_defaults:
-  java: '21.0.2-open'
-  gradle: '8.5'
-  groovy: '4.0.18'
-  maven: '3.9.6'
+  java: "21.0.2-open"
+  gradle: "8.5"
+  groovy: "4.0.18"
+  maven: "3.9.6"
 # Flush caches before/after installing SDK packages
 # Reference: http://sdkman.io/usage (Flush section)
 sdkman_flush_caches_before: []

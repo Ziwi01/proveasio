@@ -36,13 +36,19 @@
   args:
     executable: /bin/bash
 
+- name: "[NVM] Install Node default packages" # noqa no-changed-when
+  ansible.builtin.shell: ". {{ ansible_env.HOME }}/.local/opt/nvm/nvm.sh; npm install -g {{ item }}"
+  args:
+    executable: /bin/bash
+  loop: "{{ npm_default_packages }}"
+
 - name: "[NVM] Save used NVM version"
   vars:
     app: nvm
     target_version:
       github_packages:
         nvm: "{{ nvm_version }}"
-    query: ".github_packages.nvm = \"{{ nvm_version }}\""
+    query: '.github_packages.nvm = "{{ nvm_version }}"'
   ansible.builtin.include_role:
     name: common
     tasks_from: save_version.yml
@@ -57,7 +63,7 @@
     app: node
     target_version:
       node_version: "{{ node_version }}"
-    query: ".node_version = \"{{ node_version }}\""
+    query: '.node_version = "{{ node_version }}"'
   ansible.builtin.include_role:
     name: common
     tasks_from: save_version.yml

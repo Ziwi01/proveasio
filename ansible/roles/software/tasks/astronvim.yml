@@ -1,0 +1,31 @@
+# Install AstroNvim distribution with own config
+# Source: https://github.com/AstroNvim/AstroNvim
+# Config: See astronvim_config_url in vars/main.yml
+---
+- name: "[AstroNvim] Clone/update config version {{ astronvim_config_version }}"
+  ansible.builtin.git:
+    repo: "{{ astronvim_config_url }}"
+    dest: "{{ astronvim_config_path }}"
+    update: true
+    version: "{{ astronvim_config_version }}"
+
+- name: "[AstroNvim] Update AstroNvim"
+  ansible.builtin.command: "nvim --headless +q"
+  environment:
+    PATH: "{{ ansible_env.HOME }}/.local/bin/:{{ ansible_env.PATH }}"
+    NVIM_APPNAME: astronvim
+
+- name: "[AstroNvim] Save used version"
+  vars:
+    app: astronvim
+    target_version:
+      astronvim_config_version: "{{ astronvim_config_version }}"
+    query: '.astronvim_config_version = "{{ astronvim_config_version }}"'
+  ansible.builtin.include_role:
+    name: common
+    tasks_from: save_version.yml
+    apply:
+      tags:
+        - versions
+  tags:
+    - versions
