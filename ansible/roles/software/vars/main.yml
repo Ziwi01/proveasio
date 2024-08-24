@@ -42,42 +42,42 @@ default_apt_packages:
 # Specific versions for software (github)
 # Fixed versions should be set without `v` prefix (e.g: 1.4.3)
 github_packages:
-  neovim: 0.10.1 # Gets latest tag. Set to `nightly` for latest nightly (not recommended)
-  diff_so_fancy: 1.4.4
-  bat: 0.24.0
-  zoxide: 0.9.4
-  helm: 3.15.4
-  lazygit: 0.43.1
-  fzf: v0.54.3
-  tmux: "3.4"
-  ripgrep: 14.1.0
-  fd: 10.2.0
-  kind: 0.24.0
-  k9s: 0.32.5
-  yq: 4.44.3
-  win32yank: 0.1.1
-  terraform: 1.9.5
-  terragrunt: 0.66.9
+  neovim: latest # Gets latest tag. Set to `nightly` for latest nightly (not recommended)
+  diff_so_fancy: latest
+  bat: latest
+  zoxide: latest
+  helm: latest
+  lazygit: latest
+  fzf: latest
+  tmux: "latest"
+  ripgrep: latest
+  fd: latest
+  kind: latest
+  k9s: latest
+  yq: latest
+  win32yank: latest
+  terraform: latest
+  terragrunt: latest
   bottom: 0.10.2
   git_fuzzy: latest # Does not have releases, latest (for latest commit) or specific commit
-  nvm: 0.40.0 # Node Version Manater
-  tpm: 99469c4a9b1ccf77fade25842dc7bafbc8ce9946 # Tmux plugin manager. Does not have releases, gets latest tag instead
-  pes: c6a4d5f5e65e0efb082a7250bcafde187570b03b # Puppet Editor Services. They don't release anymore, so latest means latest commit
-  p10k: 1.20.0
+  nvm: latest # Node Version Manater
+  tpm: latest # Tmux plugin manager. Does not have releases, gets latest tag instead
+  pes: latest # Puppet Editor Services. They don't release anymore, so latest means latest commit
+  p10k: latest
   rvm1_ansible: 2.2.0 # Version of https://github.com/rvm/rvm1-ansible
-  lunarvim: 9ee3b7b8
+  lunarvim: latest
 # Kubectl version
-kubectl_version: 1.31.0
+kubectl_version: latest
 # Packages and their versions to install with PIP
 pip_packages:
-  thefuck: "3.32"
-  gita: 0.16.7.2
+  thefuck: "latest"
+  gita: latest
   tmuxp: 1.34.0
 # FZF
 fzf_git_url: "https://github.com/junegunn/fzf.git"
 fzf_home: "{{ ansible_env.HOME }}/.fzf"
 # Git from custom PPA repo
-git_apt_version: 1:2.46.0-0ppa1~ubuntu22.04.1
+git_apt_version: latest
 # GIT Fuzzy
 git_fuzzy_url: "https://github.com/bigH/git-fuzzy.git"
 git_fuzzy_home: "{{ ansible_env.HOME }}/.local/opt/git-fuzzy"
@@ -105,9 +105,9 @@ docker_apt_dependencies:
   - lsb-release
 # Docker main packages from APT repo
 docker_apt_packages:
-  docker-ce: 5:27.1.2-1~ubuntu.22.04~jammy
-  docker-compose-plugin: 2.29.1-1~ubuntu.22.04~jammy
-  containerd.io: 1.7.20-1
+  docker-ce: latest
+  docker-compose-plugin: latest
+  containerd.io: latest
 # RVM / Ruby
 rvm1_rubies:
   - ruby-3.3.0
@@ -133,7 +133,7 @@ puppet_rubies:
 
 # PDK (Puppet Development KIT)
 # Please note the module does not support package downgrades - if PDK is already installed in higher version, remove it first.
-puppet_pdk_version: 3.2.0.1-1focal
+puppet_pdk_version: latest
 # Node
 node_version: "lts/iron"
 npm_default_packages:
@@ -141,8 +141,8 @@ npm_default_packages:
   - neovim
   - vscode-langservers-extracted
 # Ansible
-ansible_pip_version: 10.3.0
-ansible_lint_pip_version: 24.7.0
+ansible_pip_version: latest
+ansible_lint_pip_version: latest
 # LunarVIM
 lunarvim_remove: true
 # AstroNvim
@@ -150,7 +150,7 @@ astronvim_config_url: https://github.com/Ziwi01/astronvim.git
 astronvim_config_version: main
 astronvim_config_path: "{{ ansible_env.HOME }}/.config/astronvim"
 # Azure CLI
-azurecli_apt_version: 2.63.0-1~jammy
+azurecli_apt_version: latest
 # AWS CLI
 awscli_url: https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip
 # Puppet
