@@ -48,7 +48,7 @@ github_packages:
   zoxide: 0.9.4
   helm: 3.15.4
   lazygit: 0.43.1
-  fzf: v0.54.3
+  fzf: 0.54.3
   tmux: "3.4"
   ripgrep: 14.1.0
   fd: 10.2.0

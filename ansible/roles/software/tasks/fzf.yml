@@ -28,8 +28,8 @@
     app: fzf
     target_version:
       github_packages:
-        fzf: "v{{ fzf_version }}"
-    query: '.github_packages.fzf = "v{{ fzf_version }}"'
+        fzf: "{{ fzf_version }}"
+    query: '.github_packages.fzf = "{{ fzf_version }}"'
   ansible.builtin.include_role:
     name: common
     tasks_from: save_version.yml
