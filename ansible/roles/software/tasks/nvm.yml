@@ -17,18 +17,24 @@
   tags:
     - versions
 
-      # - name: "[NVM] Clone NVM repository and checkout {{ nvm_version }}"
-      #   ansible.builtin.git:
-      #     repo: "https://github.com/nvm-sh/nvm.git"
-      #     dest: "{{ ansible_env.HOME }}/.local/opt/nvm"
-      #     version: "v{{ nvm_version }}"
+- name: "[NVM] Create ~/.local/opt/nvm"
+  ansible.builtin.file:
+    state: directory
+    path: "{{ ansible_env.HOME }}/.local/opt/nvm"
 
 # TODO: do not install if already proper version installed
 - name: "[NVM] Install NVM" # noqa no-changed-when
-  ansible.builtin.shell: "curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v{{ nvm_version }}/install.sh | bash | NVM_DIR=\"{{ ansible_env.HOME }}/.local/opt/nvm\""
+  ansible.builtin.shell: |
+    export NVM_DIR="/home/ziwi/.local/opt/nvm"
+    wget -qO- https://raw.githubusercontent.com/nvm-sh/nvm/v{{ nvm_version }}/install.sh | bash
   args:
-    chdir: "{{ ansible_env.HOME }}/.local/opt/nvm"
-    executable: /bin/bash
+    creates: "{{ ansible_env.HOME }}/.local/opt/nvm/nvm.sh"
+  register: nvm_result
+  changed_when: "'already installed' not in nvm_result.stdout"
+
+- name: "[NVM] Show NVM install" # noqa no-changed-when
+  debug:
+    var: nvm_result.stdout
 
 # TODO: Check if this version is already there for this user
 - name: "[NVM] Install Node {{ node_version }}" # noqa no-changed-when
