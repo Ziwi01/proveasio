@@ -1,9 +1,9 @@
 #!/bin/bash
 
-PYTHON_VERSION='3.11.2'
+PYTHON_VERSION='3.12.5'
 
-if [ "$EUID" -ne 0 ]
-  then echo "Please run this script using 'sudo'"
+if [ "$EUID" -ne 0 ]; then
+  echo "Please run this script using 'sudo'"
   exit
 fi
 
@@ -18,7 +18,7 @@ apt-get install -y make build-essential libkrb5-dev libssl-dev zlib1g-dev libbz2
 echo "Install yq requirement"
 wget https://github.com/mikefarah/yq/releases/latest/download/yq_linux_amd64 -O /usr/bin/yq && chmod +x /usr/bin/yq
 
-SCRIPT_DIR=$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )
+SCRIPT_DIR=$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" &>/dev/null && pwd)
 ANSIBLE_VERSION=$(yq '.ansible_pip_version' ${SCRIPT_DIR}/ansible/roles/software/vars/main.yml)
 
 if [ ${ANSIBLE_VERSION} != 'latest' ]; then
@@ -51,6 +51,9 @@ pip install --upgrade pip
 
 echo "Install ansible with PIP"
 pip install --user ${ANSIBLE_PIP_INSTALL}
+
+echo "Install setuptools"
+pip install --user setuptools
 
 echo "Install pywinrm with PIP for potential Windows support"
 pip install --user "pywinrm>=0.3.0"
