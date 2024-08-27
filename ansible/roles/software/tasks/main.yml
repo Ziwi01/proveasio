@@ -177,19 +177,19 @@
     - versions
     - gita
 
-# thefuck
-- name: "[Software] Install thefuck"
-  ansible.builtin.include_tasks:
-    file: thefuck.yml
-    apply:
-      tags:
-        - software
-        - thefuck
-  when: "'thefuck' not in software_tasks_exclude"
-  tags:
-    - software
-    - versions
-    - thefuck
+# # thefuck
+# - name: "[Software] Install thefuck"
+#   ansible.builtin.include_tasks:
+#     file: thefuck.yml
+#     apply:
+#       tags:
+#         - software
+#         - thefuck
+#   when: "'thefuck' not in software_tasks_exclude"
+#   tags:
+#     - software
+#     - versions
+#     - thefuck
 
 - name: "[Software] Install bottom"
   ansible.builtin.include_tasks:
