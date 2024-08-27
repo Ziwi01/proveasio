@@ -191,20 +191,6 @@
     - versions
     - thefuck
 
-# BAT
-- name: "[Software] Install bat"
-  ansible.builtin.include_tasks:
-    file: bat.yml
-    apply:
-      tags:
-        - software
-        - bat
-  when: "'bat' not in software_tasks_exclude"
-  tags:
-    - software
-    - versions
-    - bat
-
 - name: "[Software] Install bottom"
   ansible.builtin.include_tasks:
     file: bottom.yml
