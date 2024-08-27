@@ -38,6 +38,12 @@
   changed_when: not ohmyzsh.stat.exists
   when: not ohmyzsh.stat.exists
 
+- name: '[Zsh] Esnure ~/.loca/bin is added to PATH'
+  ansible.builtin.lineinfile:
+    path: "{{ ansible_env.HOME }}/.zshrc" 
+    regexp: '^.*\.local/bin.*$'
+    line: 'export PATH=$PATH:$HOME/.local/bin:$HOME/bin:/usr/local/bin' 
+
 - name: "[Zsh] Plugins install/update"
   ansible.builtin.git:
     repo: "{{ item.value }}"
