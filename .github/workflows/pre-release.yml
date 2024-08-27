@@ -5,13 +5,13 @@ on:
     branches:
       - "master"
   schedule:
-    - cron: '0 6 * * 5'
+    - cron: "0 6 * * 5"
   workflow_dispatch:
 
 jobs:
   pre-release:
     name: "Pre-release"
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-24.04
 
     steps:
       - uses: actions/checkout@v3
@@ -67,5 +67,5 @@ jobs:
         uses: stefanzweifel/git-auto-commit-action@v4
         with:
           branch: ${{ github.ref_name }}
-          commit_message: 'docs: update CHANGELOG.md for ${{ github.ref_name }}'
+          commit_message: "docs: update CHANGELOG.md for ${{ github.ref_name }}"
           file_pattern: CHANGELOG.md
