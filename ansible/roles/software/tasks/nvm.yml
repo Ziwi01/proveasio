@@ -21,11 +21,12 @@
   ansible.builtin.file:
     state: directory
     path: "{{ ansible_env.HOME }}/.local/opt/nvm"
+    mode: "0755"
 
-# TODO: do not install if already proper version installed
 - name: "[NVM] Install NVM" # noqa no-changed-when
   ansible.builtin.shell: |
-    export NVM_DIR="/home/ziwi/.local/opt/nvm"
+    set -e -o pipefail
+    export NVM_DIR="{{ ansible_env.HOME }}/.local/opt/nvm"
     wget -qO- https://raw.githubusercontent.com/nvm-sh/nvm/v{{ nvm_version }}/install.sh | bash
   args:
     creates: "{{ ansible_env.HOME }}/.local/opt/nvm/nvm.sh"
@@ -33,7 +34,7 @@
   changed_when: "'already installed' not in nvm_result.stdout"
 
 - name: "[NVM] Show NVM install" # noqa no-changed-when
-  debug:
+  ansible.builtin.debug:
     var: nvm_result.stdout
 
 # TODO: Check if this version is already there for this user
