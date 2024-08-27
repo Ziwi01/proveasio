@@ -17,7 +17,7 @@ Also, you can manipulate which tasks from each role does not get executed, putti
 
 ```yaml
 software_tasks_exclude:
-  - bat # do not install BAT
+  - thefuck # do not install thefuck
 config_tasks_exclude:
   - zsh # do not configure Puppet
 ```
