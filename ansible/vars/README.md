@@ -17,9 +17,9 @@ Also, you can manipulate which tasks from each role does not get executed, putti
 
 ```yaml
 software_tasks_exclude:
-  - thefuck # do not install thefuck
+  - azurecli # do not install azurecli
 config_tasks_exclude:
-  - zsh # do not configure Puppet
+  - zsh # do not configure zsh
 ```
 
 If you are NOT using `systemd` on your WSL distro (see [README.md](./README.md) for details), set below:
