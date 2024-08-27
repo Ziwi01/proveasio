@@ -17,15 +17,15 @@
   tags:
     - versions
 
-- name: "[NVM] Clone NVM repository and checkout {{ nvm_version }}"
-  ansible.builtin.git:
-    repo: "https://github.com/nvm-sh/nvm.git"
-    dest: "{{ ansible_env.HOME }}/.local/opt/nvm"
-    version: "v{{ nvm_version }}"
+      # - name: "[NVM] Clone NVM repository and checkout {{ nvm_version }}"
+      #   ansible.builtin.git:
+      #     repo: "https://github.com/nvm-sh/nvm.git"
+      #     dest: "{{ ansible_env.HOME }}/.local/opt/nvm"
+      #     version: "v{{ nvm_version }}"
 
 # TODO: do not install if already proper version installed
 - name: "[NVM] Install NVM" # noqa no-changed-when
-  ansible.builtin.shell: "./install.sh"
+  ansible.builtin.shell: "curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v{{ nvm_version }}/install.sh | bash | NVM_DIR=\"{{ ansible_env.HOME }}/.local/opt/nvm\""
   args:
     chdir: "{{ ansible_env.HOME }}/.local/opt/nvm"
     executable: /bin/bash
