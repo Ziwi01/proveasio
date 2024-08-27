@@ -10,17 +10,17 @@ Various tools:
 4. [Diff-so-fancy](https://github.com/so-fancy/diff-so-fancy) - alternate GIT DIFF presentation
 5. [Git fuzzy](https://github.com/bigH/git-fuzzy.git) - managing GIT commands using FZF
 6. [Gita](https://github.com/nosarthur/gita) - managing multiple GIT repositories at once (add groups, execute git or shell commands for those groups etc.)
-6. [TheFuck](https://github.com/nvbn/thefuck) - corrects errors in previous console commands
-7. [BAT](https://github.com/sharkdp/bat) - (much) better CAT
-8. [Zoxide](https://github.com/ajeetdsouza/zoxide) - traverse directories with ease (also with FZF)
-9. [Helm](https://github.com/helm/helm) - Kubernetes 'package manager'
-10. [Ripgrep](https://github.com/BurntSushi/ripgrep) - `grep` on steroids. Blazing fast, easy to use
-11. [fd](https://github.com/sharkdp/fd) - `find` alternative, much faster
-12. [htop](https://htop.dev/) - process viewer, prettier `top` alternative
-13. [TMUX](https://github.com/tmux/tmux) - terminal multiplexer
-14. [LazyGIT](https://github.com/jesseduffield/lazygit) - GIT wrapper for both terminal and VIM
-15. [keychain](https://www.funtoo.org/Funtoo:Keychain) - ssh-agent wrapper to keep SSH keys across terminal logins
-16. [yq](https://mikefarah.gitbook.io/yq/) - awesome terminal YAML parser (also JSON, XML etc.)
+7. ~[TheFuck](https://github.com/nvbn/thefuck) - corrects errors in previous console commands~
+8. [BAT](https://github.com/sharkdp/bat) - (much) better CAT
+9. [Zoxide](https://github.com/ajeetdsouza/zoxide) - traverse directories with ease (also with FZF)
+10. [Helm](https://github.com/helm/helm) - Kubernetes 'package manager'
+11. [Ripgrep](https://github.com/BurntSushi/ripgrep) - `grep` on steroids. Blazing fast, easy to use
+12. [fd](https://github.com/sharkdp/fd) - `find` alternative, much faster
+13. [htop](https://htop.dev/) - process viewer, prettier `top` alternative
+14. [TMUX](https://github.com/tmux/tmux) - terminal multiplexer
+15. [LazyGIT](https://github.com/jesseduffield/lazygit) - GIT wrapper for both terminal and VIM
+16. [keychain](https://www.funtoo.org/Funtoo:Keychain) - ssh-agent wrapper to keep SSH keys across terminal logins
+17. [yq](https://mikefarah.gitbook.io/yq/) - awesome terminal YAML parser (also JSON, XML etc.)
 
 Development-related software:
 
@@ -33,11 +33,7 @@ Development-related software:
 7. [pyenv](https://github.com/pyenv/pyenv) - Python version manager not to mess system python
 8. [pyenv-virtualenv](https://github.com/pyenv/pyenv-virtualenv) - Python virtual environment manager to have separate environments with different packages for projects using same Python version
 
-Also, common useful packages, like:
-
-- mlocate (file search)
-- tree (directory tree)
-- jq (JSON/YAML parser)
+Also, common useful packages, like `tree` (directory tree), `jq`/`yq` (JSON/YAML parser) and many others.
 
 In `ansible/roles/software/vars/main.yml` file, you can find everything that can be configured in terms of software. See [Configuration customizations](../../category/customizations) for details.
 
@@ -52,10 +48,6 @@ software_tasks_exclude:
 See [excluding code](../customization/excludes) for details.
 
 Available software excludes:
-
-:::warning
-Do not disable `yq` installation, or ensure you have it installed and available in your path, as it is used to modify yaml files during ansible run.
-:::
 
 - packages (default apt packages installation, including **dependencies**)
 - git
@@ -86,4 +78,3 @@ Do not disable `yq` installation, or ensure you have it installed and available 
 - neovim
 - lunarvim
 - puppet
-

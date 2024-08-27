@@ -1,14 +1,50 @@
-# Neovim/LunarVim
-
-Uses: [LunarVim](https://www.lunarvim.org/)
-
-Main config file can be found in this repo (`ansible/roles/dev/files/lvim-config.lua`) or `~/.config/lvim/config.lua` on the filesystem.
-
-If you need/want to introduce changes to that file, see [own config files section](../main/customization/config-files)
-
-`vim` is an alias for `lvim` in the terminal.
+# Neovim
 
 Inside Vim, the main key (leader key) is `<Space>` - most of the shortucts start with that.
+
+:::warning
+This documentation needs to be updated with new AstroNvim approach
+:::
+
+## Plugins
+
+:::warning
+**TODO**: Update below list
+:::
+
+- [folke/trouble.nvim](https://github.com/folke/trouble.nvim) - Toggle diagnostic windows and browse through them (`<Space>t` will list options to open)
+- [rodjek/vim-puppet](https://github.com/rodjek/vim-puppet) - Puppet syntax support
+- [pearofducks/ansible-vim](https://github.com/pearofducks/ansible-vim) - Ansible support
+- [nanotee/zoxide.vim](https://github.com/nanotee/zoxide.vim) - Zoxide inside VIM: `:Zi` or `:Z <query>`.For Zoxide descrption see above for Zoxide description
+- [will133/vim-dirdiff](https://github.com/will133/vim-dirdiff) - Diff directories. (`:DirDiff <dir1> <dir2>`)
+- [plasticboy/vim-markdown](https://github.com/preservim/vim-markdown) - Markdown support
+- [Sid0fc/mkdx](https://github.com/SidOfc/mkdx) - Markdown support #2
+- [iamcco/markdown-preview.nvim](https://github.com/iamcco/markdown-preview.nvim) - Preview your markdown files in the browser (with dynamic scroll and refresh)
+- [godlygeek/tabular](https://github.com/godlygeek/tabular) - easily line up text (like align with equal sign etc.)
+- [junegunn/fzf](https://github.com/junegunn/fzf) and [junegunn/fzf.vim](https://github.com/junegunn/fzf.vim) - FZF integration in VIM
+- GIT integration plugins:
+  - [tpope/fugitive](https://github.com/tpope/vim-fugitive) - Git wrapper, execute any Git command from VIM
+  - [kdheepak/lazygit.nvim](https://github.com/kdheepak/lazygit.nvim) - Neovim integration with awesome GIT wrapper (LazyGIT). See `software` role description for details.
+  - [mhinz/vim-signify](https://github.com/mhinz/vim-signify) - shows GIT info about modified/added/removed lines
+  - [sindrets/diffview.nvim](https://github.com/sindrets/diffview.nvim) - great GIT diff plugin for comparing file tree with particular revision(s) or browse file/selection history
+  - [f-person/git-blame.nvim](https://github.com/f-person/git-blame.nvim) - show Git blame in-line virtual text.
+  - [junegunn/gv](https://github.com/junegunn/gv.vim) - show git commits graph
+- [tzachar/cmp-tabnine](https://github.com/tzachar/cmp-tabnine) - AI completion mechanism
+- [rmagatti/goto-preview](https://github.com/rmagatti/goto-preview) - do not jump around the definition in new tabs/buffers - show floating preview window and edit it there, close the preview. Being on top of searched function: `gpd` (for definition).
+- [itchyny/vim-cursorword](https://github.com/itchyny/vim-cursorword) - underline all the words that the cursor is on right now. Handy for typo spotting.
+- [auto-save.nvim](https://github.com/Pocco81/auto-save.nvim) - exactly what the name suggests.
+- [tpope/vim-obsession](https://github.com/tpope/vim-obsession) - VIM session manager
+- [tpope/vim-surround](https://github.com/tpope/vim-surround) - easily surrond text with brackets, braces, quotes
+- [ntpeters/vim-better-whitespace](https://github.com/ntpeters/vim-better-whitespace) - automatically trim/prune obsolete whitespace
+- [preservim/vimux](https://github.com/preservim/vimux) - integrate neovim with TMUX - run commands in splits easily (@TODO: Add keymappings)
+- [christoomey/vim-tmux-navigator](https://github.com/christoomey/vim-tmux-navigator) - integrate movements between TMUX splits and VIM windows/splits
+- [towolf/vim-helm](https://github.com/towolf/vim-helm) - Helm files support
+- [jvgrootveld/telescope-zoxide](https://github.com/jvgrootveld/telescope-zoxide) - Use Zoxide inside vim
+- [kevinhwang91/nvim-bqf](https://github.com/kevinhwang91/nvim-bqf) - much better quickfix window
+- [nvim-pack/nvim-spectre](https://github.com/nvim-pack/nvim-spectre) - Search and replace like on other IDEs
+- [wincent/ferret](https://github.com/wincent/ferret) - Search and replace for files in your project. To be used if Spectre doesn't work as expected (see LunarVim usage docs for details)
+- [roobert/search-replace.nvim](https://github.com/roobert/search-replace.nvim) - Better local search and replace
+- [ggandor/leap.nvim](https://github.com/ggandor/leap.nvim) - Jump around the buffer like crazy
 
 ## Keymappings
 
@@ -20,7 +56,7 @@ To get the whole list of keymaps you can browse them with `:Telescope keymaps`
 
 ## File browser
 
-Uses: [NvimTree](https://github.com/nvim-tree/nvim-tree.lua) 
+Uses: [NvimTree](https://github.com/nvim-tree/nvim-tree.lua)
 
 Toggle file browser with `<Space>e`. The root of the tree will be set to the project of the current file (project is any parent directory with `.git`, `node_modules` etc.).
 
@@ -61,10 +97,10 @@ You can also close all buffers except the one you're in:
 ## Diff opened buffer to current file
 
 1. Open a buffer in split:
-  1. `<Space>bf`: find buffer
-  2. Select buffer, `<Ctrl>+<Shift>+v`: Open in split
-2. (if opened) Close NvimTree: `<Space>e`
-3. `:windo diffthis`: start diff
+1. `<Space>bf`: find buffer
+1. Select buffer, `<Ctrl>+<Shift>+v`: Open in split
+1. (if opened) Close NvimTree: `<Space>e`
+1. `:windo diffthis`: start diff
 
 To close the diff either close any buffer with `<Space>q`
 
@@ -105,7 +141,7 @@ In the DirDiff view you can:
 - sync the changes with `s`. The editor will ask you which changes to accept ('A' or 'B')
 - to sync multiple files at once, select them with `<Shift>v`, then press `s` to sync.
 
-*TODO*: Integrate DirDiff with Nvim Tree, introduce simple shortcuts/marks for diffing two directories.
+_TODO_: Integrate DirDiff with Nvim Tree, introduce simple shortcuts/marks for diffing two directories.
 
 ## Search and replace
 
@@ -119,7 +155,7 @@ To replace text locally, run:
 
 `<Space>ro`
 
-It will open a pattern/replace snippet (`:%s/<pattern>/<replacement>/gcI`) 
+It will open a pattern/replace snippet (`:%s/<pattern>/<replacement>/gcI`)
 
 This will replace every occurence of `<pattern>` in a current file to `<replacement>`. Pattern can be a regex, including groups etc.
 :::note[Caveat]
@@ -141,7 +177,7 @@ You can also run the replacement for all opened buffers: `<Space>rb`
 
 ### Spectre
 
-Uses: [nvim-spectre](https://github.com/nvim-pack/nvim-spectre) 
+Uses: [nvim-spectre](https://github.com/nvim-pack/nvim-spectre)
 
 To replace particular occurences in a whole project, run `:Spectre`.
 
@@ -192,7 +228,7 @@ For example to replace:
 
 ```yaml
 text:
-  replace: under 
+  replace: under
 ```
 
 to:
@@ -238,16 +274,17 @@ After S is pressed you need to provide two characters, for where you want jump, 
 
 For example: to jump to `Preview` link below, from this place, press `s` followed by `Pr` and the third character which will be highlighted there.
 
-You can also jump from insert mode! Press `<Ctrl>+O` while in insert mode, then `s` or `S`, following the pattern (like above) and you are where you wanna be. 
+You can also jump from insert mode! Press `<Ctrl>+O` while in insert mode, then `s` or `S`, following the pattern (like above) and you are where you wanna be.
 
 See plugin docs for details.
 
 ## Markdown
 
 Uses:
- - [markdown-preview](https://github.com/iamcco/markdown-preview.nvim)
- - [vim-markdown](https://github.com/preservim/vim-markdown)
- - [SidOfc/mkdx](https://github.com/SidOfc/mkdx) 
+
+- [markdown-preview](https://github.com/iamcco/markdown-preview.nvim)
+- [vim-markdown](https://github.com/preservim/vim-markdown)
+- [SidOfc/mkdx](https://github.com/SidOfc/mkdx)
 
 ### Preview
 
@@ -258,7 +295,7 @@ Start preview with `:MarkdownPreview`. Stop with `:MarkdownStop`.
 ### Navigation
 
 - `gd` (over a link): go to definition (list where the link was used)
-- `<Space>j` (over a link): jump to header. Go back with with double backtick ``` `` ```.
+- `<Space>j` (over a link): jump to header. Go back with with double backtick ` `` `.
 - `]]`: go to next header. `<Plug>Markdown_MoveToNextHeader`
 - `[[`: go to previous header. Contrast with `]h`. `<Plug>Markdown_MoveToPreviousHeader`
 - `][`: go to next sibling header if any. `<Plug>Markdown_MoveToNextSiblingHeader`
@@ -287,7 +324,7 @@ To resize Vim windows, use `<Ctrl>+<arrows>`
 
 ## Align text
 
-Uses: [tabular](https://github.com/godlygeek/tabular) 
+Uses: [tabular](https://github.com/godlygeek/tabular)
 
 You can align any text with any character (for example align everything with `=` or `:`).
 
@@ -351,13 +388,13 @@ However running ansible script is encouraged.
 
 ## GIT
 
-Uses: 
+Uses:
 
 - [tpope/fugitive](https://github.com/tpope/vim-fugitive)
 - [kdheepak/lazygit.nvim](https://github.com/kdheepak/lazygit.nvim)
 - [sindrets/diffview.nvim](https://github.com/sindrets/diffview.nvim)
 - [f-person/git-blame.nvim](https://github.com/f-person/git-blame.nvim)
-- [junegunn/gv](https://github.com/junegunn/gv.vim)  
+- [junegunn/gv](https://github.com/junegunn/gv.vim)
 
 See below git related operations from inside Vim.
 
@@ -497,4 +534,3 @@ Lazygit supports conflicts resolving: when there is a conflict, you can browse t
 I really suggest to go through Lazygit docs/[tutorial video](https://youtu.be/VDXvbHZYeKY) to get to know this tool.
 
 If there is something Lazygit can't do, you can invoke custom command by hitting `:` and running anything (like `git pull <remote> <branch> --no-ff --no-commit` or anything else)
-
