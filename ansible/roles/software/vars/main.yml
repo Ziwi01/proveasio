@@ -11,7 +11,7 @@ service_manager: systemd
 default_apt_packages:
   - curl
   - unzip
-  - mlocate
+    #- plocate
   - tree
   - htop
   - jq
@@ -21,7 +21,7 @@ default_apt_packages:
   - php
   - composer
   - keychain
-  - exa # Used in fzf-tab
+    #  - exa # Used in fzf-tab
   - bc # Required for git commands in cmdline
   - libfuse2 # Required for Neovim Appimage
   - groff # Required for AWS CLI
