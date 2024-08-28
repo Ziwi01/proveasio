@@ -123,7 +123,7 @@ rvm1_user: "{{ ansible_user_id }}"
 ruby_gems:
   - ruby: all
     gems:
-      - neovim: 0.9.1
+      - neovim: 0.10.0
 # Puppet
 puppet_version: 8.4.0
 puppet_lint_version: 4.2.3
