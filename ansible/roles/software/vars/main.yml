@@ -41,6 +41,8 @@ default_apt_packages:
   - gdu
   - gh
   - bat
+  - luarocks
+  - lua5.4
 # Specific versions for software (github)
 # Fixed versions should be set without `v` prefix (e.g: 1.4.3)
 github_packages:
