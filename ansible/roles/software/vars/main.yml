@@ -113,7 +113,7 @@ docker_apt_packages:
   containerd.io: latest
 # RVM / Ruby
 rvm1_rubies:
-  - ruby-3.3.0
+  - ruby-3.3.4
 rvm1_user: "{{ ansible_user_id }}"
 # Ruby
 # Install any gem for any ruby. `all` installs for all of them
