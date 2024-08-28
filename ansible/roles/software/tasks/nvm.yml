@@ -29,6 +29,7 @@
     export NVM_DIR="{{ ansible_env.HOME }}/.local/opt/nvm"
     wget -qO- https://raw.githubusercontent.com/nvm-sh/nvm/v{{ nvm_version }}/install.sh | bash
   args:
+    executable: /bin/bash
     creates: "{{ ansible_env.HOME }}/.local/opt/nvm/nvm.sh"
   register: nvm_result
   changed_when: "'already installed' not in nvm_result.stdout"
