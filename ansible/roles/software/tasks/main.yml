@@ -424,20 +424,6 @@
     - versions
     - neovim
 
-# AstroNvim
-- name: "[Software] Install AstroNvim config"
-  ansible.builtin.include_tasks:
-    file: astronvim.yml
-    apply:
-      tags:
-        - software
-        - astronvim
-  when: "'astronvim' not in software_tasks_exclude"
-  tags:
-    - software
-    - versions
-    - astronvim
-
 # Puppet
 - name: "[Software] Install Puppet"
   ansible.builtin.include_tasks:

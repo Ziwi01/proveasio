@@ -68,7 +68,6 @@ github_packages:
   pes: latest # Puppet Editor Services. They don't release anymore, so latest means latest commit
   p10k: latest
   rvm1_ansible: 2.2.0 # Version of https://github.com/rvm/rvm1-ansible
-  lunarvim: latest
 # Kubectl version
 kubectl_version: latest
 # Packages and their versions to install with PIP
@@ -148,10 +147,6 @@ ansible_pip_version: latest
 ansible_lint_pip_version: latest
 # LunarVIM
 lunarvim_remove: true
-# AstroNvim
-astronvim_config_url: https://github.com/Ziwi01/astronvim.git
-astronvim_config_version: main
-astronvim_config_path: "{{ ansible_env.HOME }}/.config/astronvim"
 # Azure CLI
 azurecli_apt_version: latest
 # AWS CLI

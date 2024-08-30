@@ -1,0 +1,29 @@
+# Install neovim custom config
+---
+- name: "[Neovim config] Clone/update config version {{ neovim_config_version }}"
+  ansible.builtin.git:
+    repo: "{{ neovim_config_url }}"
+    dest: "{{ neovim_config_path }}"
+    update: true
+    version: "{{ neovim_config_version }}"
+
+- name: "[Neovim config] Update Neovim config"
+  ansible.builtin.command: "nvim --headless +q"
+  environment:
+    PATH: "{{ ansible_env.HOME }}/.local/bin/:{{ ansible_env.PATH }}"
+    NVIM_APPNAME: { { neovim_config_appname } }
+
+- name: "[Neovim config] Save used version"
+  vars:
+    app: neovim-config
+    target_version:
+      neovim_config_version: "{{ neovim_config_version }}"
+    query: '.neovim_config_version = "{{ neovim_config_version }}"'
+  ansible.builtin.include_role:
+    name: common
+    tasks_from: save_version.yml
+    apply:
+      tags:
+        - versions
+  tags:
+    - versions

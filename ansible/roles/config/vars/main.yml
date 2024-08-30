@@ -17,3 +17,9 @@ config_files_overwrite: true
 
 # Backup config files on every
 config_files_backup: true
+
+# Neovim config
+neovim_config_url: https://github.com/Ziwi01/astronvim.git
+neovim_config_version: main
+neovim_config_appname: astronvim
+neovim_config_path: "{{ ansible_env.HOME }}/.config/{{ neovim_config_appname }}"

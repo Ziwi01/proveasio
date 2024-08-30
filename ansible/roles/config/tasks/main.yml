@@ -57,6 +57,19 @@
     - config
     - tmux
 
+- name: "[Config] Install Neovim config"
+  ansible.builtin.include_tasks:
+    file: neovim.yml
+    apply:
+      tags:
+        - config
+        - neovim-config
+  when: "'neovim-config' not in config_tasks_exclude"
+  tags:
+    - config
+    - versions
+    - neovim-config
+
 - name: "[Config] Configure sdkman"
   ansible.builtin.include_tasks:
     file: sdkman.yml

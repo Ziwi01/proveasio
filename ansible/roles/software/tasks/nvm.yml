@@ -1,6 +1,5 @@
 # Install Node Version Manager
-# Please note this is a requirement for LunarVIM plugin which is being installed later.
-# Also, some tools get installed in node (language servers etc.)
+# Some tools get installed in node (language servers etc.)
 # Source: https://github.com/nvm-sh/nvm
 ---
 - name: "[NVM] Get Github URL for proper version"
