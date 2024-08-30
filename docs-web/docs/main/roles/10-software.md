@@ -10,7 +10,7 @@ Various tools:
 4. [Diff-so-fancy](https://github.com/so-fancy/diff-so-fancy) - alternate GIT DIFF presentation
 5. [Git fuzzy](https://github.com/bigH/git-fuzzy.git) - managing GIT commands using FZF
 6. [Gita](https://github.com/nosarthur/gita) - managing multiple GIT repositories at once (add groups, execute git or shell commands for those groups etc.)
-7. ~[TheFuck](https://github.com/nvbn/thefuck) - corrects errors in previous console commands~
+7. (temporarily disabled) ~[TheFuck](https://github.com/nvbn/thefuck) - corrects errors in previous console commands~
 8. [BAT](https://github.com/sharkdp/bat) - (much) better CAT
 9. [Zoxide](https://github.com/ajeetdsouza/zoxide) - traverse directories with ease (also with FZF)
 10. [Helm](https://github.com/helm/helm) - Kubernetes 'package manager'
@@ -25,7 +25,7 @@ Various tools:
 Development-related software:
 
 1. [Neovim](https://github.com/neovim/neovim) - more handsome VIM brother
-2. [LunarVIM](https://github.com/LunarVim/LunarVim) - Neovim IDE-like extension with awesome plugins/configurations included out of the box
+2. [AstroNvim](https://astronvim.com/) - Neovim IDE-like extension with awesome plugins/configurations included out of the box
 3. [RVM](https://rvm.io/) (Ruby enVironment Manager, installed using [rvm1-ansible-role](https://github.com/rvm/rvm1-ansible)), along with Ruby `3.1.3`
 4. [PDK](https://puppet.com/try-puppet/puppet-development-kit/) (Puppet Development Kit)
 5. [NVM](https://github.com/nvm-sh/nvm) (Node Version Manager) with latest LTS Node version (by default). Among all - dependency for LunarVIM installation
@@ -76,5 +76,5 @@ Available software excludes:
 - rust
 - ansible
 - neovim
-- lunarvim
+- astronvim
 - puppet

@@ -1,52 +1,63 @@
 # Neovim
 
+Neovim is installed by default and used as a default editor.
+
+## Changing Neovim config
+
+By default, I clone my personal Neovim config, which is using [AstroNvim](https://docs.astronvim.com) Neovim distribution.
+
+You can use your own config - either entirely different, or you can fork my config and tailor it to your needs.
+
+Neovim config is defined in variables as below:
+
+```yaml
+neovim_config_url: https://github.com/Ziwi01/astronvim.git
+neovim_config_version: main
+neovim_config_appname: astronvim
+```
+
+The config will be cloned into `$HOME/.config/{{ neovim_config_appname }}`
+
+## AstroNvim
+
 Inside Vim, the main key (leader key) is `<Space>` - most of the shortucts start with that.
 
-:::warning
-This documentation needs to be updated with new AstroNvim approach
-:::
+### Plugins
 
-## Plugins
+Some example plugins used in this config:
 
-:::warning
-**TODO**: Update below list
-:::
-
-- [folke/trouble.nvim](https://github.com/folke/trouble.nvim) - Toggle diagnostic windows and browse through them (`<Space>t` will list options to open)
-- [rodjek/vim-puppet](https://github.com/rodjek/vim-puppet) - Puppet syntax support
-- [pearofducks/ansible-vim](https://github.com/pearofducks/ansible-vim) - Ansible support
 - [nanotee/zoxide.vim](https://github.com/nanotee/zoxide.vim) - Zoxide inside VIM: `:Zi` or `:Z <query>`.For Zoxide descrption see above for Zoxide description
 - [will133/vim-dirdiff](https://github.com/will133/vim-dirdiff) - Diff directories. (`:DirDiff <dir1> <dir2>`)
-- [plasticboy/vim-markdown](https://github.com/preservim/vim-markdown) - Markdown support
-- [Sid0fc/mkdx](https://github.com/SidOfc/mkdx) - Markdown support #2
-- [iamcco/markdown-preview.nvim](https://github.com/iamcco/markdown-preview.nvim) - Preview your markdown files in the browser (with dynamic scroll and refresh)
-- [godlygeek/tabular](https://github.com/godlygeek/tabular) - easily line up text (like align with equal sign etc.)
+- [Sid0fc/mkdx](https://github.com/SidOfc/mkdx) - Markdown support
 - [junegunn/fzf](https://github.com/junegunn/fzf) and [junegunn/fzf.vim](https://github.com/junegunn/fzf.vim) - FZF integration in VIM
-- GIT integration plugins:
-  - [tpope/fugitive](https://github.com/tpope/vim-fugitive) - Git wrapper, execute any Git command from VIM
-  - [kdheepak/lazygit.nvim](https://github.com/kdheepak/lazygit.nvim) - Neovim integration with awesome GIT wrapper (LazyGIT). See `software` role description for details.
-  - [mhinz/vim-signify](https://github.com/mhinz/vim-signify) - shows GIT info about modified/added/removed lines
-  - [sindrets/diffview.nvim](https://github.com/sindrets/diffview.nvim) - great GIT diff plugin for comparing file tree with particular revision(s) or browse file/selection history
-  - [f-person/git-blame.nvim](https://github.com/f-person/git-blame.nvim) - show Git blame in-line virtual text.
-  - [junegunn/gv](https://github.com/junegunn/gv.vim) - show git commits graph
-- [tzachar/cmp-tabnine](https://github.com/tzachar/cmp-tabnine) - AI completion mechanism
+- [tpope/fugitive](https://github.com/tpope/vim-fugitive) - Git wrapper, execute any Git command from VIM
+- [kdheepak/lazygit.nvim](https://github.com/kdheepak/lazygit.nvim) - Neovim integration with awesome GIT wrapper (LazyGIT). See `software` role description for details.
+- [mhinz/vim-signify](https://github.com/mhinz/vim-signify) - shows GIT info about modified/added/removed lines
+- [f-person/git-blame.nvim](https://github.com/f-person/git-blame.nvim) - show Git blame in-line virtual text.
+- [junegunn/gv](https://github.com/junegunn/gv.vim) - show git commits graph
 - [rmagatti/goto-preview](https://github.com/rmagatti/goto-preview) - do not jump around the definition in new tabs/buffers - show floating preview window and edit it there, close the preview. Being on top of searched function: `gpd` (for definition).
-- [itchyny/vim-cursorword](https://github.com/itchyny/vim-cursorword) - underline all the words that the cursor is on right now. Handy for typo spotting.
 - [auto-save.nvim](https://github.com/Pocco81/auto-save.nvim) - exactly what the name suggests.
-- [tpope/vim-obsession](https://github.com/tpope/vim-obsession) - VIM session manager
-- [tpope/vim-surround](https://github.com/tpope/vim-surround) - easily surrond text with brackets, braces, quotes
-- [ntpeters/vim-better-whitespace](https://github.com/ntpeters/vim-better-whitespace) - automatically trim/prune obsolete whitespace
 - [preservim/vimux](https://github.com/preservim/vimux) - integrate neovim with TMUX - run commands in splits easily (@TODO: Add keymappings)
 - [christoomey/vim-tmux-navigator](https://github.com/christoomey/vim-tmux-navigator) - integrate movements between TMUX splits and VIM windows/splits
 - [towolf/vim-helm](https://github.com/towolf/vim-helm) - Helm files support
-- [jvgrootveld/telescope-zoxide](https://github.com/jvgrootveld/telescope-zoxide) - Use Zoxide inside vim
 - [kevinhwang91/nvim-bqf](https://github.com/kevinhwang91/nvim-bqf) - much better quickfix window
-- [nvim-pack/nvim-spectre](https://github.com/nvim-pack/nvim-spectre) - Search and replace like on other IDEs
 - [wincent/ferret](https://github.com/wincent/ferret) - Search and replace for files in your project. To be used if Spectre doesn't work as expected (see LunarVim usage docs for details)
 - [roobert/search-replace.nvim](https://github.com/roobert/search-replace.nvim) - Better local search and replace
-- [ggandor/leap.nvim](https://github.com/ggandor/leap.nvim) - Jump around the buffer like crazy
 
-## Keymappings
+There is also [AstroNvim community repository](https://github.com/AstroNvim/astrocommunity/tree/main), where you can find plugins tailored and configured for AstroNvim.
+
+I use couple of them as they provide seamless integration with AstroNvim ecosystem. For the whole list of plugins used see [community.lua](https://github.com/Ziwi01/astronvim/blob/main/lua/community.lua) file.
+
+See below examples of community plugins used:
+
+- [folke/trouble.nvim](https://github.com/folke/trouble.nvim) - Toggle diagnostic windows and browse through them (`<Space>t` will list options to open)
+- [jvgrootveld/telescope-zoxide](https://github.com/jvgrootveld/telescope-zoxide) - Use Zoxide inside vim
+- [ggandor/leap.nvim](https://github.com/ggandor/leap.nvim) - Jump around the buffer like crazy
+- [nvim-pack/nvim-spectre](https://github.com/nvim-pack/nvim-spectre) - Search and replace like on other IDEs
+- [sindrets/diffview.nvim](https://github.com/sindrets/diffview.nvim) - great GIT diff plugin for comparing file tree with particular revision(s) or browse file/selection history
+- [RRethy/vim-illuminate](https://github.com/RRethy/vim-illuminate) - highlight all the words that the cursor is on right now. Handy for typo spotting.
+
+### Keymappings
 
 Uses: [nvim-whichkey](https://github.com/folke/which-key.nvim)
 
@@ -54,9 +65,9 @@ After hitting `<Space>` (or a key from which a keymap starts), the popup will sh
 
 To get the whole list of keymaps you can browse them with `:Telescope keymaps`
 
-## File browser
+### File browser
 
-Uses: [NvimTree](https://github.com/nvim-tree/nvim-tree.lua)
+Uses: [NeoTree](https://github.com/nvim-neo-tree/neo-tree.nvim)
 
 Toggle file browser with `<Space>e`. The root of the tree will be set to the project of the current file (project is any parent directory with `.git`, `node_modules` etc.).
 
@@ -64,27 +75,26 @@ You can change focus from the tree to file with `<Alt>+<arrows>`.
 
 Useful shortcuts:
 
-- `g?`: open help
+- `?`: open help
 - `<Enter>`: go into/open directory, open file
-- `<C-]>`: go into directory and make it root.
-- `<TAB>`: preview file (open buffer, but don't focus on it. Any other `<TAB>` will use the same buffer)
-- `-`: go up the directory tree
-- `gtg`: ripgrep for text in selected directory
-- `gtf`: search for file in selected directory
-- `<Space>f`: search for file in current project
-- `v`: Open file in vertical split. Useful to compare two files - open in split, close the tree (`<Space>e`), and compare: `:windo diffthis`
+- `.`: go into directory and make it root.
+- `P`: preview file (open buffer, but don't focus on it. Any other `<TAB>` will use the same buffer)
+- `<Backspace>`: go up the directory tree
+- `z`: fold all nodes
+- `<Shift+F>`: find files in directory
+- `s`: Open file in vertical split. Useful to compare two files - open in split, close the tree (`<Space>e`), and compare: `:windo diffthis`
 
-## Switch buffers around
+### Switch buffers around
 
 You can switch around opened buffers with `<Shift>H` (left) or `<Shift>L` (right).
 
 Also you can pick the buffer from a fuzzy search with `<Space>bf`. From this view, `<Enter>` will just open the file, but `<Ctrl>+<Shift>+v` will open that buffer in a vertical split.
 
-## Jump to last opened buffer
+### Jump to last opened buffer
 
 Use `<C-6>` to jump between last edited place (buffer).
 
-## Close opened buffers
+### Close opened buffers
 
 To close the buffer you are in: `<Space>c`.
 
@@ -92,14 +102,14 @@ You can also close all buffers except the one you're in:
 
 - `<Space>bh`: close all buffers to the left
 - `<Space>bl`: close all buffers to the right
-- `<Space>e`: pick a buffer to close (buffer icons will turn into letters, pick one to close that buffer)
+- `<Space>bD`: pick a buffer to close (buffer icons will turn into letters, pick one to close that buffer)
 
-## Diff opened buffer to current file
+### Diff opened buffer to current file
 
 1. Open a buffer in split:
-1. `<Space>bf`: find buffer
+1. `<Space>fb`: find buffer
 1. Select buffer, `<Ctrl>+<Shift>+v`: Open in split
-1. (if opened) Close NvimTree: `<Space>e`
+1. (if opened) Close NeoTree: `<Space>e`
 1. `:windo diffthis`: start diff
 
 To close the diff either close any buffer with `<Space>q`
@@ -118,7 +128,7 @@ Or apply changes between windows:
 
 Of course, switch focus between windows with `<Alt>+<arrows>`
 
-## Diff directories
+### Diff directories
 
 Uses [DirDiff](https://github.com/will133/vim-dirdiff)
 
@@ -143,13 +153,15 @@ In the DirDiff view you can:
 
 _TODO_: Integrate DirDiff with Nvim Tree, introduce simple shortcuts/marks for diffing two directories.
 
-## Search and replace
+### Search and replace
 
 There are couple of methods to do search and replace, each of them has its pros and cons.
 
-### Locally
+#### Locally
 
 Uses: [roobert/search-replace.nvim](https://github.com/roobert/search-replace.nvim)
+
+**TODO**: update this
 
 To replace text locally, run:
 
@@ -175,7 +187,7 @@ To see what selections are available under current cursor: `<Space>rs`
 
 You can also run the replacement for all opened buffers: `<Space>rb`
 
-### Spectre
+#### Spectre
 
 Uses: [nvim-spectre](https://github.com/nvim-pack/nvim-spectre)
 
@@ -200,7 +212,7 @@ In the example below, there is a search for 'lazygit' with replacement for `Work
   </div>
 </details>
 
-### Ferret
+#### Ferret
 
 Uses: [Ferret](https://github.com/wincent/ferret)
 
@@ -220,7 +232,7 @@ Unlike Spectre, there is no preview of how the replacement wil look like.
 </details>
 <br />
 
-#### Multiline replace
+##### Multiline replace
 
 Spectre does not support it, but with Ferret you can replace a string with multiline string using `\r` in the substition part.
 
@@ -244,27 +256,23 @@ text:
 2. Above will show you search results. Evaluate them (you can remove entries with `dd`)
 3. Replace: `<Space>r`, insert replacement string: `\1\2\r\1newkey:\r\1  newkey2: value`. Here `\1` is whitespace before the key (first regex group), `\2` is for old key. `\r` is newline.
 
-## Open recent file
+### Open recent file
 
-From welcome screen, just hit `r`, which will fuzzy list recently open files.
+In any buffer you can hit `<Space>fo` to open the same window.
 
-In any buffer you can hit `<Space>sr` to open the same window.
+### Find text
 
-## Find text
-
-To dynamically find text in entire project, run `<Space>st`. This will open a fuzzy window with file list and a preview.
+To dynamically find text in entire project, run `<Space>fw`. To include hidden files, run `<Space>fW`. This will open a fuzzy window with file list and a preview.
 
 You can also used Spectre/Ferret (see above).
 
-To search for text in particular directory only, open NvimTree (`<Space>e`), select directory and hit `gtg`.
+### Find files
 
-## Find files
+To dynamically find files in a project, run `<Space>ff`. This will open a fuzzy search window
 
-To dynamically find files in a project, run `<Space>sf`. This will open a fuzzy search window
+To find files in a particular directory, open NeoTree (`F`)
 
-To find files in a particular directory, open NvimTree (`<Space>e`), select directory and hit `gtf`
-
-## Jumping
+### Jumping
 
 Uses: [leap.nvim](https://github.com/ggandor/leap.nvim)
 
@@ -278,66 +286,58 @@ You can also jump from insert mode! Press `<Ctrl>+O` while in insert mode, then 
 
 See plugin docs for details.
 
-## Markdown
+### Markdown
 
 Uses:
 
-- [markdown-preview](https://github.com/iamcco/markdown-preview.nvim)
-- [vim-markdown](https://github.com/preservim/vim-markdown)
+<!-- - [markdown-preview](https://github.com/iamcco/markdown-preview.nvim) -->
+
 - [SidOfc/mkdx](https://github.com/SidOfc/mkdx)
 
-### Preview
+<!-- #### Preview -->
+<!---->
+<!-- This can run a preview in your browser with auto-scroll, dynamic refresh and all. See above link for details. -->
+<!---->
+<!-- Start preview with `:MarkdownPreview`. Stop with `:MarkdownStop`. -->
 
-This can run a preview in your browser with auto-scroll, dynamic refresh and all. See above link for details.
+#### Navigation
 
-Start preview with `:MarkdownPreview`. Stop with `:MarkdownStop`.
+<!-- - `gd` (over a link): go to definition (list where the link was used) -->
+<!-- - `<Space>j` (over a link): jump to header. Go back with with double backtick ` `` `. -->
 
-### Navigation
-
-- `gd` (over a link): go to definition (list where the link was used)
-- `<Space>j` (over a link): jump to header. Go back with with double backtick ` `` `.
 - `]]`: go to next header. `<Plug>Markdown_MoveToNextHeader`
 - `[[`: go to previous header. Contrast with `]h`. `<Plug>Markdown_MoveToPreviousHeader`
-- `][`: go to next sibling header if any. `<Plug>Markdown_MoveToNextSiblingHeader`
-- `[]`: go to previous sibling header if any. `<Plug>Markdown_MoveToPreviousSiblingHeader`
-- `]h`: go to Current header. `<Plug>Markdown_MoveToCurHeader`
-- `]u`: go to parent header (Up). `<Plug>Markdown_MoveToParentHeader`
 
-### Editing
+#### Editing
 
-- `<Space>ln` (over a word): make it a link
-- `<Space>=` (over a checkbox (`[ ]`)): Next tick ( `[-]` then `[x]`)
-- `<Space>-` (over a checkbox (`[ ]`)): Previous tick
-- `` <Space>` ``: toggle quote
+<!-- #### ToC -->
+<!---->
+<!-- To navigate a markdown file base on table of contents, run `:Toc` to open vertical split. `:Toch` to open horizontal split instead. Close the window with `<Space>q` when active. (reminder: navigate between windows with `<Alt><arrows>`) -->
+<!---->
+<!-- To automatically generate Toc based on the headers, run `:InsertToc` (bulleted list), or `:InsertNToc` (numbered list). An optional argument can be used to specify how many levels of headers to display in the table of content, e.g., to display up to and including h3, use `:InsertToc 3` -->
 
-### ToC
-
-To navigate a markdown file base on table of contents, run `:Toc` to open vertical split. `:Toch` to open horizontal split instead. Close the window with `<Space>q` when active. (reminder: navigate between windows with `<Alt><arrows>`)
-
-To automatically generate Toc based on the headers, run `:InsertToc` (bulleted list), or `:InsertNToc` (numbered list). An optional argument can be used to specify how many levels of headers to display in the table of content, e.g., to display up to and including h3, use `:InsertToc 3`
-
-## Resize/pick splits
+### Resize/pick splits
 
 Navigation through splits is as easy as `<Alt><arrows>`. This includes Tmux panes also (so you can go out of Vim to other Tmux pane basically).
 
 To resize Vim windows, use `<Ctrl>+<arrows>`
 
-## Align text
+### Align text
 
-Uses: [tabular](https://github.com/godlygeek/tabular)
+<!-- Uses: [tabular](https://github.com/godlygeek/tabular) -->
+<!---->
+<!-- You can align any text with any character (for example align everything with `=` or `:`). -->
+<!---->
+<!-- Simply select the text (probably visually with `<Shift>v`), and run `:Tabularize /<char>`, e.g `:Tabularize /=` (see example below) -->
+<!---->
+<!-- <details> -->
+<!--   <summary><b>Example:</b> Tabular align</summary> -->
+<!--   <div align="center"> -->
+<!--     <img src="https://ziwi01.github.io/proveasio/assets/vim-tabular.png" /> -->
+<!--   </div> -->
+<!-- </details> -->
 
-You can align any text with any character (for example align everything with `=` or `:`).
-
-Simply select the text (probably visually with `<Shift>v`), and run `:Tabularize /<char>`, e.g `:Tabularize /=` (see example below)
-
-<details>
-  <summary><b>Example:</b> Tabular align</summary>
-  <div align="center">
-    <img src="https://ziwi01.github.io/proveasio/assets/vim-tabular.png" />
-  </div>
-</details>
-
-## Commands with Vimux
+### Commands with Vimux
 
 Uses: [Vimux](https://github.com/preservim/vimux)
 
@@ -349,11 +349,11 @@ I intend to use it for running tests (rspec, linting, custom verifications), int
 Finish Vimux integration.
 :::
 
-## Plugin management
+### Plugin management
 
 Uses: [Lazy.nvim](https://github.com/folke/lazy.nvim)
 
-This is a plugin manager, which is used in LunarVim.
+This is a plugin manager.
 
 Open Lazy window with `:Lazy`. From there you can list, debug, update/sync all the plugins.
 
@@ -361,11 +361,11 @@ It is a good idea to update the plugins from time to time (with `s` or `i` from 
 
 Along with plugin updates would be good to run LunarVim updates also (see below)
 
-## Updates
+### Updates
 
 For plugin updates please see above.
 
-The recommended way is to update LunarVim using this repository.
+The recommended way is to update AstroNvim using this repository.
 
 Update everything (all software, config files etc.):
 
@@ -373,20 +373,18 @@ Update everything (all software, config files etc.):
 ansible-playbook -i inventory.yml setup-windows.yml -k
 ```
 
-Or update lunarvim only:
+Or update Neovim config only:
 
 ```shell
-ansible-playbook -i inventory.yml setup-windows.yml -k --tags 'lunarvim'
+ansible-playbook -i inventory.yml setup-windows.yml -k --tags 'neovim,neovim-config'
 ```
 
 Manual updates can be done instead of running ansible:
 
-- `:LvimUpdate`: will update LunarVim core and core plugins
+- `:AstroUpdate`: will update astroNvim core and core plugins. After update often you need to run `:Lazy update`
 - `:TSUpdateSync`: will update Treesitter parsers
 
-However running ansible script is encouraged.
-
-## GIT
+### GIT
 
 Uses:
 
@@ -398,7 +396,7 @@ Uses:
 
 See below git related operations from inside Vim.
 
-### Diff current changes
+#### Diff current changes
 
 To quickly preview current GIT changes, use fugitives `:Gvdiff` or `<Space>gd`. This will open a vertical split with all the local modifications.
 
@@ -418,7 +416,7 @@ Diffview opens in separate tab, you can switch the tab(s) with `gt` (next tab) a
 
 To close it, use `:DiffviewClose` or simply `:tabc`
 
-### Diff another branch
+#### Diff another branch
 
 To open a nice diff between your local and other branch, run `:DiffviewOpen <branch_name>`. You can hit `<TAB>` before entering branch name so it will list available branches.
 
@@ -437,7 +435,7 @@ To get changes only for this file, compared to another branch, you can use `:Gvd
   </div>
 </details>
 
-### Diff current file with different file on another branch
+#### Diff current file with different file on another branch
 
 Sometimes you need to diff a file you're working on, with different branch, but on different branch the file has either different name, or is located elsewhere.
 
@@ -445,19 +443,19 @@ To do this, run:
 
 `:Gvdiff <branch_name>:<relative_file_path>`
 
-### Conflicts resolve
+#### Conflicts resolve
 
 If you get any conflicts after the merge, you can run `:DiffviewOpen`, which will show conflicts at the top, and it will use a 3-way diff (3 windows split: with current branch changes, final output and with incoming branch changes).
 
 For simple conflict resolve you can also use Lazygit (see [Lazygit section](./vim#lazygit-from-vim))
 
-### Checkout branch
+#### Checkout branch
 
 Quickly checkout any branch with `<Space>gb`. Checkout to specific commit with `<Space>gc`. Checkout specific commit for current file with `<Space>gC`
 
 Alternatively you can also checkout with `:G checkout <branch>`
 
-### Git blame
+#### Git blame
 
 Basically git blame shows as a 'shadowed' text when you cycle through lines in normal mode.
 
@@ -473,7 +471,7 @@ From this view, you can run `g?` to show help of what you can do, like:
 - `p`: jump to patch in preview window
 - `-`: reblame at commit
 
-### File history
+#### File history
 
 To get all files history, enter `:DiffviewFileHistory`
 
@@ -506,13 +504,13 @@ Alternatively, you can use `:GV` to browse all commits (`<Enter>` to preview thi
   </div>
 </details>
 
-### Reload file after checkout
+#### Reload file after checkout
 
 Sometimes when you have a file opened in a buffer and you checkout to another branch (e.g from lazygit), the file does not get reloaded automatically. There are some indications that changes occured (in left gutter panel in form of `|` sign).
 
 To reload checked out changes, type `:e`.
 
-### Lazygit from Vim
+#### Lazygit from Vim
 
 Uses: [Lazygit](https://github.com/jesseduffield/lazygit)
 

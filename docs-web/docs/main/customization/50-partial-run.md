@@ -20,7 +20,7 @@ Above will run only configuration part of the automation, it won't install/updat
 You can run multiple multiple tags at once:
 
 ```shell
-ansible-playbook -i inventory.yml setup-ubuntu.yml --tags "neovim,lunarvim,tmux" -K
+ansible-playbook -i inventory.yml setup-ubuntu.yml --tags "neovim,neovim-config,tmux" -K
 ```
 
 :::
@@ -49,7 +49,7 @@ For particular functionality (`software` + `config`) below tags are available:
 - kubectl
 - lazygit
 - lsg
-- lunarvim
+- neovim-config
 - neovim
 - nvm
 - p10k

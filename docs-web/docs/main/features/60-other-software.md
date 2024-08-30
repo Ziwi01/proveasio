@@ -6,3 +6,5 @@
 - [yq](https://mikefarah.gitbook.io/yq/) - YAML parser
 - [htop](https://github.com/htop-dev/htop) - better top
 - [jq](https://stedolan.github.io/jq/) - JSON parser
+
+And more...

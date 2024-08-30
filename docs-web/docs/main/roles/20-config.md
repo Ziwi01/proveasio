@@ -8,7 +8,6 @@ This role is mostly configs management. It will apply configuration for:
 - thefuck (`~/.config/thefuck/settings.py`)
 - LazyGIT (`~/.config/lazygit/config.yml`)
 - ansible-lint (`~/.ansible-lint`)
-- lunarvim (`~/.config/lvim/config.lua`)
 - SDKMAN (`~/.sdkman/etc/config`)
 
 If you want to exclude particular component configuration, you can add an array of sections, for example:
@@ -29,7 +28,7 @@ Available configs excludes:
 - sdkman
 - git
 - lazygit
-- lunarvim
+- neovim-config
 - thefuck
 - ansible
 
@@ -40,4 +39,3 @@ By default, all configuration files are backed up in `~/.configs_backup` on ever
 To disable taking backups, set:
 
 `config_files_backup: false`
-
