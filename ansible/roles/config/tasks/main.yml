@@ -59,7 +59,7 @@
 
 - name: "[Config] Install Neovim config"
   ansible.builtin.include_tasks:
-    file: neovim.yml
+    file: neovim-config.yml
     apply:
       tags:
         - config

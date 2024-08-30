@@ -11,7 +11,7 @@
   ansible.builtin.command: "nvim --headless +q"
   environment:
     PATH: "{{ ansible_env.HOME }}/.local/bin/:{{ ansible_env.PATH }}"
-    NVIM_APPNAME: { { neovim_config_appname } }
+    NVIM_APPNAME: "{{ neovim_config_appname }}"
 
 - name: "[Neovim config] Save used version"
   vars:
