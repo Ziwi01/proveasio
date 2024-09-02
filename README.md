@@ -54,7 +54,7 @@ Below you can find brief summary of included tools and features. For more detail
   - [Azure CLI](https://learn.microsoft.com/en-us/cli/azure/) - CLI interface for Azure management
   - [AWS CLI](https://github.com/aws/aws-cli) - CLI interface to interact with AWS
 
-- Neovim replaces VIM. Uses LunarVim IDE for Neovim, which makes VIM fully functional, feature-rich IDE
+- Neovim replaces VIM. By default uses custom configured AstroNvim IDE for Neovim, which makes VIM fully functional, feature-rich IDE. You can also use your own config/modifications
 
 - Useful software:
 

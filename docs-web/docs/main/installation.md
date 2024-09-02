@@ -19,10 +19,10 @@ Assuming all the [requirements](./requirements) are met:
 
 4. (from repo root) Run `sudo ./prepare-ubuntu.sh` (if not already run during windows setup) to update the system and install required python and ansible packages
 5. Reload your terminal (close and open again)
-6. (from repo root) Run ansible:
+6. Run ansible:
 
    ```shell
-   cd ansible; ansible-playbook -i inventory.yml setup-ubuntu.yml -K
+   cd ~/proveasio/ansible; ansible-playbook -i inventory.yml setup-ubuntu.yml -K
    ```
 
 7. After successful installation (green summary of versions installed), reload you terminal.

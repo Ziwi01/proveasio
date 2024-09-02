@@ -24,6 +24,10 @@ Inside Vim, the main key (leader key) is `<Space>` - most of the shortucts start
 
 ### Plugins
 
+:::note
+Below list is not comprehensive - it needs to be updated with all used plugins description
+:::
+
 Some example plugins used in this config:
 
 - [nanotee/zoxide.vim](https://github.com/nanotee/zoxide.vim) - Zoxide inside VIM: `:Zi` or `:Z <query>`.For Zoxide descrption see above for Zoxide description
@@ -286,21 +290,9 @@ You can also jump from insert mode! Press `<Ctrl>+O` while in insert mode, then 
 
 See plugin docs for details.
 
-### Markdown
-
-Uses:
-
-<!-- - [markdown-preview](https://github.com/iamcco/markdown-preview.nvim) -->
-
-- [SidOfc/mkdx](https://github.com/SidOfc/mkdx)
-
-<!-- #### Preview -->
-<!---->
-<!-- This can run a preview in your browser with auto-scroll, dynamic refresh and all. See above link for details. -->
-<!---->
-<!-- Start preview with `:MarkdownPreview`. Stop with `:MarkdownStop`. -->
-
 #### Navigation
+
+TODO: Update below shortcuts
 
 <!-- - `gd` (over a link): go to definition (list where the link was used) -->
 <!-- - `<Space>j` (over a link): jump to header. Go back with with double backtick ` `` `. -->
@@ -309,6 +301,8 @@ Uses:
 - `[[`: go to previous header. Contrast with `]h`. `<Plug>Markdown_MoveToPreviousHeader`
 
 #### Editing
+
+TODO: Add plugin for ToC support
 
 <!-- #### ToC -->
 <!---->
@@ -324,18 +318,13 @@ To resize Vim windows, use `<Ctrl>+<arrows>`
 
 ### Align text
 
-<!-- Uses: [tabular](https://github.com/godlygeek/tabular) -->
-<!---->
-<!-- You can align any text with any character (for example align everything with `=` or `:`). -->
-<!---->
-<!-- Simply select the text (probably visually with `<Shift>v`), and run `:Tabularize /<char>`, e.g `:Tabularize /=` (see example below) -->
-<!---->
-<!-- <details> -->
-<!--   <summary><b>Example:</b> Tabular align</summary> -->
-<!--   <div align="center"> -->
-<!--     <img src="https://ziwi01.github.io/proveasio/assets/vim-tabular.png" /> -->
-<!--   </div> -->
-<!-- </details> -->
+Uses: [EasyAlign](https://github.com/junegunn/vim-easy-align)
+
+You can align any text with any character (for example align everything with `=` or `:`).
+
+Simply select the text (probably visually with `<Shift>v`), and run `:EasyAlign <char>`, e.g `:EasyAlign =`
+
+More usages can be found in [demo](https://github.com/junegunn/vim-easy-align?tab=readme-ov-file#demo)
 
 ### Commands with Vimux
 
