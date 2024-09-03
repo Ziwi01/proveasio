@@ -23,6 +23,16 @@
   tags:
     - always
 
+# Include OS-specific variables
+- name: "[Software] Include OS group_vars {{ facter_os.name }}-{{ facter_os.release.major }}"
+  ansible.builtin.include_vars: "{{ item }}"
+  with_first_found:
+    - files:
+        - "{{ playbook_dir }}/group_vars/{{ facter_os.name | lower }}-{{ facter_os.release.major }}.yml"
+      skip: true
+  tags:
+    - always
+
 # Common software
 - name: "[Software] Install packages"
   ansible.builtin.include_tasks:
@@ -35,161 +45,7 @@
   tags:
     - software
     - versions
-    - software_packages
-
-# Install `yq` YAML parser
-# Used for editing YAML files for versions and release purposes.
-- name: "[Software] Install yq"
-  ansible.builtin.include_tasks:
-    file: yq.yml
-    apply:
-      tags:
-        - software
-        - yq
-  tags:
-    - software
-    - versions
-    - yq
-
-# Latest GIT
-- name: "[Software] Install git"
-  ansible.builtin.include_tasks:
-    file: git.yml
-    apply:
-      tags:
-        - software
-        - git
-  when: "'git' not in software_tasks_exclude"
-  tags:
-    - software
-    - versions
-    - git
-
-# ripgrep
-- name: "[Software] Install ripgrep"
-  ansible.builtin.include_tasks:
-    file: ripgrep.yml
-    apply:
-      tags:
-        - software
-        - ripgrep
-  when: "'ripgrep' not in software_tasks_exclude"
-  tags:
-    - software
-    - versions
-    - ripgrep
-
-# FD
-- name: "[Software] Install fd"
-  ansible.builtin.include_tasks:
-    file: fd.yml
-    apply:
-      tags:
-        - software
-        - fd
-  when: "'fd' not in software_tasks_exclude"
-  tags:
-    - software
-    - versions
-    - fd
-
-# ls-with-git-status
-- name: "[Software] Install lsg"
-  ansible.builtin.include_tasks:
-    file: lsg.yml
-    apply:
-      tags:
-        - software
-        - lsg
-  when: "'lsg' not in software_tasks_exclude"
-  tags:
-    - software
-    - versions
-    - lsg
-
-# FZF (fuzzy-finder)
-- name: "[Software] Install fzf"
-  ansible.builtin.include_tasks:
-    file: fzf.yml
-    apply:
-      tags:
-        - software
-        - fzf
-  when: "'fzf' not in software_tasks_exclude"
-  tags:
-    - software
-    - versions
-    - fzf
-
-# Diff-so-fancy
-- name: "[Software] Install diff-so-fancy"
-  ansible.builtin.include_tasks:
-    file: diff-so-fancy.yml
-    apply:
-      tags:
-        - software
-        - diff-so-fancy
-  when: "'diff-so-fancy' not in software_tasks_exclude"
-  tags:
-    - software
-    - versions
-    - diff-so-fancy
-
-# Git-fuzzy
-- name: "[Software] Install git-fuzzy"
-  ansible.builtin.include_tasks:
-    file: git-fuzzy.yml
-    apply:
-      tags:
-        - software
-        - git-fuzzy
-  when: "'git-fuzzy' not in software_tasks_exclude"
-  tags:
-    - software
-    - versions
-    - git-fuzzy
-
-# LazyGIT
-- name: "[Software] Install lazygit"
-  ansible.builtin.include_tasks:
-    file: lazygit.yml
-    apply:
-      tags:
-        - software
-        - lazygit
-  when: "'lazygit' not in software_tasks_exclude"
-  tags:
-    - software
-    - versions
-    - lazygit
-
-# Gita
-- name: "[Software] Install gita"
-  ansible.builtin.include_tasks:
-    file: gita.yml
-    apply:
-      tags:
-        - software
-        - gita
-  when: "'gita' not in software_tasks_exclude"
-  tags:
-    - software
-    - versions
-    - gita
-
-# # thefuck
-# - name: "[Software] Install thefuck"
-#   ansible.builtin.include_tasks:
-#     file: thefuck.yml
-#     apply:
-#       tags:
-#         - software
-#         - thefuck
-#   when: "'thefuck' not in software_tasks_exclude"
-#   tags:
-#     - software
-#     - versions
-#     - thefuck
+    - thefuck
 
 - name: "[Software] Install bottom"
   ansible.builtin.include_tasks:

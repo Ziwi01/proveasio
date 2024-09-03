@@ -19,6 +19,16 @@
   tags:
     - always
 
+# Include OS-specific variables
+- name: "[Software] Include OS group_vars {{ facter_os.name }}-{{ facter_os.release.major }}"
+  ansible.builtin.include_vars: "{{ item }}"
+  with_first_found:
+    - files:
+        - "{{ playbook_dir }}/group_vars/{{ facter_os.name | lower }}-{{ facter_os.release.major }}.yml"
+      skip: true
+  tags:
+    - always
+
 - name: "[Config] Configure zsh"
   ansible.builtin.include_tasks:
     file: zsh.yml
