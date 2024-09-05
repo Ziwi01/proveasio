@@ -16,11 +16,10 @@ To exclude certain parts of ansible code for every subsequent runs, you can add 
 
 ```yaml
 software_tasks_exclude:
-  - bat    # do not install Bat
+  - azurecli # do not install azurecli
   - puppet # do not install Puppet
 config_tasks_exclude:
   - zsh # do not configure ZSH
 ```
 
 For full list of exclude options, see [software](../roles/software) or [config](../roles/config) role description.
-

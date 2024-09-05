@@ -18,7 +18,6 @@ There are couple of useful plugins installed there (you can find them in `ansibl
 - fuzzy search/go to directory
 - aliases autosuggestions - tells you that you have an alias for particular commands
 - easily traversing through **visited** directories (using [zoxide](https://github.com/ajeetdsouza/zoxide))
-- correct your commands automatically with [thefuck](https://github.com/nvbn/thefuck)
+- (turned off temporarily) ~correct your commands automatically with [thefuck](https://github.com/nvbn/thefuck)~
 - finding files with FZF
 - Windows clipboard support - also works from VIM (copying in VIM makes it available in Windows clipboard)
-

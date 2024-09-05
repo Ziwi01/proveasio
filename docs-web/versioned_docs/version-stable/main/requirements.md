@@ -12,7 +12,7 @@ If using Windows with WSL2 Ubuntu also ensure:
 
 - Windows 10 version 2004 and higher (Build 19041 and higher) or Windows 11
 - WSL2 installed/enabled (version 0.67.6 and above)
-- Ubuntu 22.04 installed
+- Ubuntu 24.04 installed
 - `systemd` enabled for installed Ubuntu distribution
 
 :::note

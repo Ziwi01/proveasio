@@ -21,7 +21,7 @@ To go back to `/home/user/projects/ansible`, use something like `z ansible` or `
 
 ## Find and open files with `fd` and `fzf`
 
-Uses: 
+Uses:
 
 - [fd](https://github.com/sharkdp/fd)
 - [fzf](https://github.com/junegunn/fzf)
@@ -73,6 +73,10 @@ There is an alias `btail <file>`, which will use BAT as tail command. This gives
 
 ## Correct commands with `thefuck`
 
+:::warning[thefuck dropped support]
+Please note that for now thefuck installation is turned off until it supports Python 3.12.x.
+:::
+
 Uses: [thefuck](https://github.com/nvbn/thefuck)
 
 Misspelling a command is a real pain in the ass. Here comes the solution. When you misspell a command, try hitting `ESC ESC` or just type `fuck` and hit enter.
@@ -92,7 +96,7 @@ There are lots of rules - see [rules list](https://github.com/nvbn/thefuck/tree/
 
 Docker is installed and available for use. Confirm it with `systemctl status docker` :)
 
-For Kubernetes management from CLI there is a [`kubectl`](https://kubernetes.io/docs/reference/kubectl/kubectl/). For GUI management use [`k9s`](https://k9scli.io/) 
+For Kubernetes management from CLI there is a [`kubectl`](https://kubernetes.io/docs/reference/kubectl/kubectl/). For GUI management use [`k9s`](https://k9scli.io/)
 
 To setup a local kubernetes cluster for development purposes you can use [`kind create cluster`](https://kind.sigs.k8s.io/) which will quickly provision new cluster in Docker.
 

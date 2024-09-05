@@ -8,6 +8,7 @@ To include/exclude whole roles:
 - software
 
 :::tip[Example: including only config]
+
 ```shell
 ansible-playbook -i inventory.yml setup-ubuntu.yml --tags "config" -K
 ```
@@ -19,14 +20,23 @@ Above will run only configuration part of the automation, it won't install/updat
 You can run multiple multiple tags at once:
 
 ```shell
-ansible-playbook -i inventory.yml setup-ubuntu.yml --tags "neovim,lunarvim,tmux" -K
+ansible-playbook -i inventory.yml setup-ubuntu.yml --tags "neovim,neovim-config,tmux" -K
 ```
+
 :::
 
-    For particular functionality (`software` + `config`) below tags are available:
+:::tip[Example: including particular software installation without config]
+
+```shell
+ansible-playbook -i inventory.yml setup-ubuntu.yml --tags "zsh" --skip-tags "config" -K
+```
+
+Above will run only `software` role for ZSH, and will **not** run configuration for it.
+:::
+
+For particular functionality (`software` + `config`) below tags are available:
 
 - ansible
-- bat
 - diff-so-fancy
 - fd
 - fzf
@@ -39,7 +49,7 @@ ansible-playbook -i inventory.yml setup-ubuntu.yml --tags "neovim,lunarvim,tmux"
 - kubectl
 - lazygit
 - lsg
-- lunarvim
+- neovim-config
 - neovim
 - nvm
 - p10k
@@ -49,7 +59,7 @@ ansible-playbook -i inventory.yml setup-ubuntu.yml --tags "neovim,lunarvim,tmux"
 - rvm
 - sdkman
 - software_packages
-- thefuck
+- ~thefuck~ # temporarily disabled. See docs.
 - tmux
 - w32yank
 - yq

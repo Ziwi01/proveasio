@@ -10,15 +10,11 @@ For usage examples see [Usage](../../usage/terminal#languages)
 
 # Go
 
-Automatic installation of Go is done using [`GVM`](https://github.com/moovweb/gvm) - Go Version Manager. By default `go1.20.4` gets installed (at the time of writing). See [Usage](../../usage/terminal#languages) for details.
+Automatic installation of Go is done using [`GVM`](https://github.com/moovweb/gvm) - Go Version Manager. See [Usage](../../usage/terminal#languages) for details.
 
 ## Ruby
 
 For Ruby management, there is [Ruby Version Manager (RVM)](https://rvm.io/) installed. See available Ruby's with `rvm list`, use particular with `rvm use <ruby_version>`. There are some gems already preinstalled on Rubys available here (like `neovim` gem, or if Puppet is being installed, it installs `puppet` and `puppet-lint` gems).
-
-:::note
-There might be some issues with installing/managing Ruby versions `< 3.1.x` on Ubuntu 22.04, but that might have been a random issue (to be confirmed)
-:::
 
 ## JAVA/groovy
 
@@ -42,11 +38,10 @@ By default, Puppet gets installed **for all rubies**. If you choose to install l
 
 Ansible gets installed using PIP in designated `pyenv` Python environment. Also ansible-lint gets installed.
 
-Also, there is an [Ansible Language Server](https://github.com/ansible/ansible-language-server) installed globally using default NPM, but LunarVIM uses it's own, auto-installed language server.
+Also, there is an [Ansible Language Server](https://github.com/ansible/ansible-language-server) installed globally using default NPM.
 
-To configure linter diagnostics (enable/disable some checks) in LunarVIM for Ansible files, see: `ansible/roles/config/files/ansible-lint`
+To configure linter diagnostics (enable/disable some checks) for Ansible files, see: `ansible/roles/config/files/ansible-lint`
 
 ## Rust
 
-As LunarVIM requires it, [Rust](https://www.rust-lang.org/) is installed with [Cargo](https://github.com/rust-lang/cargo/) package manager.
-
+[Rust](https://www.rust-lang.org/) is installed with [Cargo](https://github.com/rust-lang/cargo/) package manager.
