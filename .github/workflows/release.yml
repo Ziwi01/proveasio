@@ -7,7 +7,7 @@ on:
 
 jobs:
   tagged-release:
-    name: "Tagged Release"
+    name: "Release"
     runs-on: "ubuntu-24.04"
 
     steps:

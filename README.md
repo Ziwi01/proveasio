@@ -4,7 +4,7 @@
 
 <div align="center">
 
-<a href="">![CI build](https://github.com/Ziwi01/proveasio/actions/workflows/pre-release.yml/badge.svg?branch=master)</a>
+<a href="">![CI build](https://github.com/Ziwi01/proveasio/actions/workflows/build.yml/badge.svg?branch=master)</a>
 <a href="">![License](https://img.shields.io/github/license/Ziwi01/proveasio)</a>
 <a href="">![Last commit](https://img.shields.io/github/last-commit/Ziwi01/proveasio)</a>
 
@@ -27,7 +27,7 @@ Below you can find brief summary of included tools and features. For more detail
     <details>
       <summary><b>Example:</b> Terminal commandline</summary>
       <div align="center">
-        <img src="./docs-web/static/terminal_preview.png" />
+        <img src="./docs-web/static/assets/terminal_preview.png" />
       </div>
     </details>
     <br />
