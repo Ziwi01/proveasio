@@ -17,7 +17,7 @@ Assuming all the [requirements](./requirements) are met:
      mail: james.doe@hell.no
    ```
 
-4. (from repo root) Run `sudo ./prepare-ubuntu.sh` (if not already run during windows setup) to update the system and install required python and ansible packages
+4. Run `sudo ~/proveasio/prepare-ubuntu.sh` (if not already run during windows setup) to update the system and install required python and ansible packages
 5. Reload your terminal (close and open again)
 6. Run ansible:
 
