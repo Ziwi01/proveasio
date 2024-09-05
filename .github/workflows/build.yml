@@ -47,7 +47,7 @@ jobs:
 
       - name: Build Proveasio'ned environment
         working-directory: ./ansible
-        run: ansible-plaVybook -i inventory.yml setup-ubuntu.yml
+        run: ansible-playbook -i inventory.yml setup-ubuntu.yml
 
       - name: Push latest tag
         run: |
