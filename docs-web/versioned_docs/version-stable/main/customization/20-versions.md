@@ -1,7 +1,7 @@
 # Versions management
 
 :::warning[Latest defaults]
-Please note that all software versions since 2.0.0 are set to 'latest', including `master` branch.
+Please note that all software versions since 2.0.0 are set to 'latest'.
 
 If you need to have particular software version static, add it to [overrides.yml](./variables)
 
