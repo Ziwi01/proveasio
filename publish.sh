@@ -30,8 +30,8 @@ git checkout master
 echo 'git pull'
 git pull
 
-echo 'git merge develop'
-git merge develop
+echo 'git rebase develop'
+git rebase develop
 
 echo 'git push'
 git push
