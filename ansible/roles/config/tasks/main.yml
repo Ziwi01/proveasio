@@ -20,12 +20,12 @@
     - always
 
 # Include OS-specific variables
-- name: "[Software] Include OS group_vars {{ facter_os.name }}-{{ facter_os.release.major }}"
+- name: "[Config] Include OS group_vars Ubuntu-{{ ansible_facts.distribution_major_version }}"
   ansible.builtin.include_vars: "{{ item }}"
   with_first_found:
     - files:
-        - "{{ playbook_dir }}/group_vars/{{ facter_os.name | lower }}-{{ facter_os.release.major }}.yml"
-      skip: true
+        - "{{ playbook_dir }}/group_vars/ubuntu-{{ ansible_facts.distribution_major_version }}.yml"
+      skip: false
   tags:
     - always
 
