@@ -192,3 +192,6 @@ sdkman_update_alternatives: []
 go_versions:
   - go1.21.6
 go_default: go1.21.6
+
+rvm1_gpg_key_servers:
+  - hkp://keys.openpgp.org
