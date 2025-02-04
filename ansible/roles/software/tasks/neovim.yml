@@ -15,7 +15,7 @@
     app: neovim
     repo: neovim/neovim
     version_query: curl -s https://api.github.com/repos/neovim/neovim/releases/latest | jq .tag_name | tr -d '"' | tr -d 'v'
-    github_uri: "v{{ neovim_version }}/nvim.appimage"
+    github_uri: "v{{ neovim_version }}/nvim-linux-x86_64.appimage"
   ansible.builtin.include_role:
     name: common
     tasks_from: github_version.yml
@@ -44,7 +44,7 @@
   vars:
     app: neovim
     repo: neovim/neovim
-    github_uri: "nightly/nvim.appimage"
+    github_uri: "nightly/nvim-linux-x86_64.appimage"
   ansible.builtin.include_role:
     name: common
     tasks_from: github_version.yml
