@@ -9,6 +9,7 @@
 
 - name: "[Neovim config] Update Neovim config"
   ansible.builtin.command: "nvim --headless +q"
+  failed_when: false
   environment:
     PATH: "{{ ansible_env.HOME }}/.local/bin/:{{ ansible_env.PATH }}"
     NVIM_APPNAME: "{{ neovim_config_appname }}"
