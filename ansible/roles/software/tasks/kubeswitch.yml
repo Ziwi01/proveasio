@@ -1,0 +1,61 @@
+# kubeswitch installation
+#
+# https://github.com/danielfoehrKn/kubeswitch
+---
+- name: "[kubeswitch] Get Github URL for proper version"
+  vars:
+    app: kubeswitch
+    repo: danielfoehrKn/kubeswitch
+    version_query: curl -s https://api.github.com/repos/danielfoehrKn/kubeswitch/releases/latest | jq .name -r | cut -f1 -d' ' | cut -f2 -d'v'
+    github_uri: "{{ kubeswitch_version }}/switcher_linux_amd64"
+  ansible.builtin.include_role:
+    name: common
+    tasks_from: github_version.yml
+    apply:
+      tags:
+        - versions
+  tags:
+    - versions
+
+- name: "[kubeswitch] Check if kubeswitch {{ kubeswitch_version }} is installed"
+  ansible.builtin.stat:
+    path: "{{ ansible_env.HOME }}/.local/opt/kubeswitch-{{ kubeswitch_version }}"
+  register: kubeswitch_dir
+
+- name: "Installation"
+  when: not kubeswitch_dir.stat.exists
+  block:
+    - name: "[kubeswitch] Create directory in {{ ansible_env.HOME }}/.local/opt"
+      ansible.builtin.file:
+        path: "{{ ansible_env.HOME }}/.local/opt/kubeswitch-{{ kubeswitch_version }}"
+        state: directory
+        mode: '0755'
+
+    - name: "[kubeswitch] Download kubeswitch {{ kubeswitch_version }}"
+      ansible.builtin.get_url:
+        url: "{{ kubeswitch_url }}"
+        dest: "{{ ansible_env.HOME }}/.local/opt/kubeswitch-{{ kubeswitch_version }}/kubeswitch"
+        mode: '0755'
+
+    - name: "[kubeswitch] Link {{ kubeswitch_version }} binary"
+      ansible.builtin.file:
+        src: "{{ ansible_env.HOME }}/.local/opt/kubeswitch-{{ kubeswitch_version }}/kubeswitch"
+        dest: "{{ ansible_env.HOME }}/.local/bin/switcher"
+        state: link
+        force: true
+
+- name: "[kubeswitch] Save used version"
+  vars:
+    app: kubeswitch
+    target_version:
+      github_packages:
+        kubeswitch: "{{ kubeswitch_version }}"
+    query: ".github_packages.kubeswitch = \"{{ kubeswitch_version }}\""
+  ansible.builtin.include_role:
+    name: common
+    tasks_from: save_version.yml
+    apply:
+      tags:
+        - versions
+  tags:
+    - versions

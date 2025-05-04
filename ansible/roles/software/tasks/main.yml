@@ -73,6 +73,20 @@
     - versions
     - pay-respects
 
+# Kubectl context switcher
+- name: "[Software] Install kubeswitch"
+  ansible.builtin.include_tasks:
+    file: kubeswitch.yml
+    apply:
+      tags:
+        - software
+        - kubeswitch
+  when: "'kubeswitch' not in software_tasks_exclude"
+  tags:
+    - software
+    - versions
+    - kubeswitch
+
 # Zoxide
 - name: "[Software] Install zoxide"
   ansible.builtin.include_tasks:

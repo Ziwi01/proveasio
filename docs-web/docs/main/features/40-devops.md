@@ -3,7 +3,7 @@
 There is some pre-installed DevOps-related software:
 
 - [Docker](https://www.docker.com/) with [docker-compose](https://docs.docker.com/compose/)
-- [kubectl](https://kubernetes.io/docs/tasks/tools/#kubectl) - manage kubernetes cluster
+  - [kubectl](https://kubernetes.io/docs/tasks/tools/#kubectl) with [kubeswitch](https://github.com/danielfoehrKn/kubeswitch) - manage kubernetes clusters
 - [KinD](https://kind.sigs.k8s.io/) - Kubernetes in docker - create a cluster locally
 - [k9s](https://github.com/derailed/k9s) - Terminal GUI for managing kubernetes clusters
 - [Helm](https://github.com/helm/helm) - Kubernetes package manager

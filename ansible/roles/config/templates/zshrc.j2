@@ -138,6 +138,11 @@ ZSH_COLORIZE_TOOL=chroma
 ### Pay Respects
 eval "$(pay-respects zsh --alias)"
 
+### Kubectl context switch
+echo 'source <(switcher init zsh)' >> ~/.zshrc
+echo 'source <(alias s=switch)' >> ~/.zshrc
+echo 'source <(switch completion zsh)' >> ~/.zshrc
+
 ### Fuzzy Finder
 
 # Setup fzf
