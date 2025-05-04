@@ -116,18 +116,6 @@
     - config
     - lazygit
 
-# - name: "[Config] Configure thefuck"
-#   ansible.builtin.include_tasks:
-#     file: thefuck.yml
-#     apply:
-#       tags:
-#         - config
-#         - thefuck
-#   when: "'thefuck' not in config_tasks_exclude"
-#   tags:
-#     - config
-#     - thefuck
-
 - name: "[Config] Configure ansible"
   ansible.builtin.include_tasks:
     file: ansible.yml
