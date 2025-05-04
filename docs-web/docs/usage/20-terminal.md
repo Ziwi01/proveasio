@@ -71,26 +71,15 @@ There is an alias `btail <file>`, which will use BAT as tail command. This gives
   </div>
 </details>
 
-## Correct commands with `thefuck`
+## Correct commands with `pay-respects`
 
-:::warning[thefuck dropped support]
-Please note that for now thefuck installation is turned off until it supports Python 3.12.x.
-:::
+Uses: [pay-respects](https://github.com/iffse/pay-respects)
 
-Uses: [thefuck](https://github.com/nvbn/thefuck)
+Misspelling a command is a real pain in the ass. Here comes the solution. When you misspell a command, try hitting `f` (and Enter).
 
-Misspelling a command is a real pain in the ass. Here comes the solution. When you misspell a command, try hitting `ESC ESC` or just type `fuck` and hit enter.
+`pay-respects` will try to correct this command for you. This is handy especially in git commands, for example if you want to push new branch to the remote
 
-`thefuck` will try to correct this command for you. This is handy especially in git commands, for example if you want to push new branch to the remote:
-
-<details>
-  <summary><b>Example:</b> Correct new branch push with `thefuck`</summary>
-  <div align="center">
-    <img src="https://ziwi01.github.io/proveasio/assets/thefuck.png" />
-  </div>
-</details>
-
-There are lots of rules - see [rules list](https://github.com/nvbn/thefuck/tree/master/thefuck/rules) (you can also add you own rules in `~/.config/thefuck/rules/`)
+You can add your own rules easily in TOML file - see the repository for details.
 
 ## Docker/Kubernetes
 

@@ -68,6 +68,7 @@ github_packages:
   pes: latest # Puppet Editor Services. They don't release anymore, so latest means latest commit
   p10k: latest
   rvm1_ansible: 2.2.0 # Version of https://github.com/rvm/rvm1-ansible
+  pay_respects: latest
 # Kubectl version
 kubectl_version: latest
 # Packages and their versions to install with PIP

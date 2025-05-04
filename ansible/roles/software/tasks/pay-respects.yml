@@ -1,0 +1,62 @@
+# pay_respects (better, faster GREP)
+# Source: https://github.com/BurntSushi/pay_respects
+---
+- name: "[pay-respects] Check installed pay-respects version"
+  ansible.builtin.command: dpkg-query -W pay-respects
+  register: pay_respects_check_deb
+  ignore_errors: true
+  changed_when: pay_respects_check_deb.rc > 1
+  failed_when: pay_respects_check_deb.rc > 1
+  tags:
+    - versions
+
+- name: "[pay-respects] Get Github URL for proper version"
+  vars:
+    app: pay_respects
+    repo: iffse/pay-respects
+    version_query: curl -s https://api.github.com/repos/iffse/pay-respects/releases/latest | jq .name -r | cut -f2 -d'v'
+    github_uri: "v{{ pay_respects_version }}/pay-respects_{{ pay_respects_version }}-1_amd64.deb"
+  ansible.builtin.include_role:
+    name: common
+    tasks_from: github_version.yml
+    apply:
+      tags:
+        - versions
+  tags:
+    - versions
+
+- name: "Installation"
+  when: pay_respects_check_deb.stdout | regex_search('[0-9]+\.[0-9]+\.[0-9]+') | default(0) != pay_respects_version
+  block:
+    - name: "[pay-respects] Create directory in {{ ansible_env.HOME }}/.local/opt"
+      ansible.builtin.file:
+        path: "{{ ansible_env.HOME }}/.local/opt/pay_respects-{{ pay_respects_version }}"
+        state: directory
+        mode: '0755'
+
+    - name: "[pay-respects] Download pay-respects {{ pay_respects_version }}"
+      ansible.builtin.get_url:
+        url: "{{ pay_respects_url }}"
+        dest: "{{ ansible_env.HOME }}/.local/opt/pay_respects-{{ pay_respects_version }}"
+        mode: '0755'
+
+    - name: "[pay-respects] Install {{ pay_respects_version }} .deb package"
+      ansible.builtin.apt:
+        deb: "{{ ansible_env.HOME }}/.local/opt/pay_respects-{{ pay_respects_version }}/pay-respects_{{ pay_respects_version }}-1_amd64.deb"
+      become: true
+
+- name: "[pay-respects] Save used version"
+  vars:
+    app: pay_respects
+    target_version:
+      github_packages:
+        pay_respects: "{{ pay_respects_version }}"
+    query: ".github_packages.pay_respects = \"{{ pay_respects_version }}\""
+  ansible.builtin.include_role:
+    name: common
+    tasks_from: save_version.yml
+    apply:
+      tags:
+        - versions
+  tags:
+    - versions
