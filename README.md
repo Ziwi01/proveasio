@@ -51,7 +51,7 @@ Below you can find brief summary of included tools and features. For more detail
   - [Helm](https://github.com/helm/helm) - Kubernetes package manager
   - [Terraform](https://github.com/hashicorp/terraform) - infrastructure as code tool
   - [Terragrunt](https://github.com/gruntwork-io/terragrunt) - wrapper for Terraform to deal with multiple environments
-  - [Azure CLI](https://learn.microsoft.com/en-us/cli/azure/) - CLI interface for Azure management
+- [Azure CLI](https://learn.microsoft.com/en-us/cli/azure/) with [az-account-switcher](https://github.com/abij/az-account-switcher) - CLI interface for Azure management
   - [AWS CLI](https://github.com/aws/aws-cli) - CLI interface to interact with AWS
 
 - Neovim replaces VIM. By default uses custom configured AstroNvim IDE for Neovim, which makes VIM fully functional, feature-rich IDE. You can also use your own config/modifications

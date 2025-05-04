@@ -1,0 +1,47 @@
+---
+# az-account-switcher
+#
+# Source: https://github.com/abij/az-account-switcher
+- name: "[az-account-switcher] Install az-account-switcher specific version"
+  ansible.builtin.pip:
+    name: "az-account-switcher=={{ pip_packages['az_account_switcher'] }}"
+    executable: "{{ ansible_env.HOME }}/.pyenv/shims/pip3"
+  register: pip_out
+  changed_when: "'Requirement already satisfied' not in pip_out.stdout"
+  when: pip_packages['az_account_switcher'] != 'latest'
+
+- name: "[az-account-switcher] Install az-account-switcher latest version"
+  ansible.builtin.pip:
+    name: "az-account-switcher"
+    executable: "{{ ansible_env.HOME }}/.pyenv/shims/pip3"
+    extra_args: --upgrade
+  register: pip_out
+  changed_when: "'Requirement already satisfied' not in pip_out.stdout"
+  when: pip_packages['az_account_switcher'] == 'latest'
+
+- name: "[az-account-switcher] Get installed az-account-switcher version"
+  ansible.builtin.shell: |
+    set -e -o pipefail
+    {{ ansible_env.HOME }}/.pyenv/shims/pip3 show az-account-switcher | grep Version | awk '{print $2}'
+  args:
+    executable: /bin/bash
+  changed_when: false
+  register: az_account_switcher_version
+  tags:
+    - versions
+
+- name: "[az-account-switcher] Save used version"
+  vars:
+    app: az-account-switcher
+    target_version:
+      pip_packages:
+        az_account_switcher: "{{ az_account_switcher_version.stdout }}"
+    query: ".pip_packages.az_account_switcher = \"{{ az_account_switcher_version.stdout }}\""
+  ansible.builtin.include_role:
+    name: common
+    tasks_from: save_version.yml
+    apply:
+      tags:
+        - versions
+  tags:
+    - versions

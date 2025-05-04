@@ -87,6 +87,20 @@
     - versions
     - kubeswitch
 
+# AZ subscription switcher
+- name: "[Software] Install az-account-switcher"
+  ansible.builtin.include_tasks:
+    file: az-account-switcher.yml
+    apply:
+      tags:
+        - software
+        - az-account-switcher
+  when: "'az-account-switcher' not in software_tasks_exclude"
+  tags:
+    - software
+    - versions
+    - az-account-switcher
+
 # Zoxide
 - name: "[Software] Install zoxide"
   ansible.builtin.include_tasks:
