@@ -107,6 +107,9 @@ plugins=(
     pyenv-lazy
     jq
     kubectl
+    aws
+    azure
+    terraform
 {% if actual_node_version.stdout | regex_search('^v[0-9]*\.[0-9]*\.[0-9]*') %}
     zsh-snv
 {% endif %}
@@ -142,6 +145,11 @@ eval "$(pay-respects zsh --alias)"
 echo 'source <(switcher init zsh)' >> ~/.zshrc
 echo 'source <(alias s=switch)' >> ~/.zshrc
 echo 'source <(switch completion zsh)' >> ~/.zshrc
+
+### kubecolor
+alias kubectl=kubecolor
+source <(kubectl completion zsh)
+compdef kubecolor=kubectl
 
 ### Fuzzy Finder
 

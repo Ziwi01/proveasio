@@ -197,6 +197,19 @@
     - versions
     - kubectl
 
+- name: "[Software] kubecolor"
+  ansible.builtin.include_tasks:
+    file: kubecolor.yml
+    apply:
+      tags:
+        - software
+        - kubecolor
+  when: "'kubecolor' not in software_tasks_exclude"
+  tags:
+    - software
+    - versions
+    - kubecolor
+
 - name: "[Software] KinD"
   ansible.builtin.include_tasks:
     file: kind.yml

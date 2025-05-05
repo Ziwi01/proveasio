@@ -1,0 +1,62 @@
+# kubecolor (colorize kubectl output)
+# Source: https://github.com/kubecolor/kubecolor
+---
+- name: "[kubecolor] Check installed kubecolor version"
+  ansible.builtin.command: dpkg-query -W kubecolor
+  register: kubecolor_check_deb
+  ignore_errors: true
+  changed_when: kubecolor_check_deb.rc > 1
+  failed_when: kubecolor_check_deb.rc > 1
+  tags:
+    - versions
+
+- name: "[kubecolor] Get Github URL for proper version"
+  vars:
+    app: kubecolor
+    repo: kubecolor/kubecolor
+    version_query: curl -s https://api.github.com/repos/kubecolor/kubecolor/releases/latest | jq .name -r | cut -f2 -d'v'
+    github_uri: "v{{ kubecolor_version }}/kubecolor_{{ kubecolor_version }}_linux_amd64.deb"
+  ansible.builtin.include_role:
+    name: common
+    tasks_from: github_version.yml
+    apply:
+      tags:
+        - versions
+  tags:
+    - versions
+
+- name: "Installation"
+  when: kubecolor_check_deb.stdout | regex_search('[0-9]+\.[0-9]+\.[0-9]+') | default(0) != kubecolor_version
+  block:
+    - name: "[kubecolor] Create directory in {{ ansible_env.HOME }}/.local/opt"
+      ansible.builtin.file:
+        path: "{{ ansible_env.HOME }}/.local/opt/kubecolor-{{ kubecolor_version }}"
+        state: directory
+        mode: '0755'
+
+    - name: "[kubecolor] Download kubecolor {{ kubecolor_version }}"
+      ansible.builtin.get_url:
+        url: "{{ kubecolor_url }}"
+        dest: "{{ ansible_env.HOME }}/.local/opt/kubecolor-{{ kubecolor_version }}"
+        mode: '0755'
+
+    - name: "[kubecolor] Install {{ kubecolor_version }} .deb package"
+      ansible.builtin.apt:
+        deb: "{{ ansible_env.HOME }}/.local/opt/kubecolor-{{ kubecolor_version }}/kubecolor_{{ kubecolor_version }}_linux_amd64.deb"
+      become: true
+
+- name: "[kubecolor] Save used version"
+  vars:
+    app: kubecolor
+    target_version:
+      github_packages:
+        kubecolor: "{{ kubecolor_version }}"
+    query: ".github_packages.kubecolor = \"{{ kubecolor_version }}\""
+  ansible.builtin.include_role:
+    name: common
+    tasks_from: save_version.yml
+    apply:
+      tags:
+        - versions
+  tags:
+    - versions

@@ -57,6 +57,7 @@ github_packages:
   fd: latest
   kind: latest
   k9s: latest
+  kubecolor: latest
   yq: latest
   win32yank: latest
   terraform: latest

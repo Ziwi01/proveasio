@@ -10,7 +10,7 @@ Various tools:
 4. [Diff-so-fancy](https://github.com/so-fancy/diff-so-fancy) - alternate GIT DIFF presentation
 5. [Git fuzzy](https://github.com/bigH/git-fuzzy.git) - managing GIT commands using FZF
 6. [Gita](https://github.com/nosarthur/gita) - managing multiple GIT repositories at once (add groups, execute git or shell commands for those groups etc.)
-7. (temporarily disabled) ~[TheFuck](https://github.com/nvbn/thefuck) - corrects errors in previous console commands~
+7. [pay-respects](https://github.com/iffse/pay-respects) - corrects errors in previous console commands
 8. [BAT](https://github.com/sharkdp/bat) - (much) better CAT
 9. [Zoxide](https://github.com/ajeetdsouza/zoxide) - traverse directories with ease (also with FZF)
 10. [Helm](https://github.com/helm/helm) - Kubernetes 'package manager'
@@ -59,7 +59,6 @@ Available software excludes:
 - git-fuzzy
 - lazygit
 - gita
-- thefuck
 - bat
 - zoxide
 - helm
@@ -78,3 +77,7 @@ Available software excludes:
 - neovim
 - astronvim
 - puppet
+- kubecolor
+- pay-respects
+- kubeswitch
+- az-account-switcher
