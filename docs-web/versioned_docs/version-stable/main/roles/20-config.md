@@ -29,7 +29,6 @@ Available configs excludes:
 - git
 - lazygit
 - neovim-config
-- thefuck
 - ansible
 
 ## Backups
