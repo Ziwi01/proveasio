@@ -142,9 +142,9 @@ ZSH_COLORIZE_TOOL=chroma
 eval "$(pay-respects zsh --alias)"
 
 ### Kubectl context switch
-echo 'source <(switcher init zsh)' >> ~/.zshrc
-echo 'source <(alias s=switch)' >> ~/.zshrc
-echo 'source <(switch completion zsh)' >> ~/.zshrc
+source <(switcher init zsh)
+source <(alias s=switch)
+source <(switch completion zsh)
 
 ### kubecolor
 alias kubectl=kubecolor
