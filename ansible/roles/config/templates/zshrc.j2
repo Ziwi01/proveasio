@@ -165,7 +165,7 @@ fi
 source "${HOME}/.fzf/shell/key-bindings.zsh"
 
 # use bat as preview tool
-export FZF_PREVIEW_COMMAND='{{ bat_bin_name }} --style numbers,changes --color always --line-range :500 {}'
+export FZF_PREVIEW_COMMAND='batcat --style numbers,changes --color always --line-range :500 {}'
 # change default options
 export FZF_DEFAULT_OPTS='--height 100% --layout=reverse --border --ansi'
 
@@ -175,10 +175,10 @@ alias bfind="fzf --preview '$FZF_PREVIEW_COMMAND' --bind shift-up:preview-page-u
 alias vimfind="vim \$(bfind)"
 # add alias for (b)etter tail
 btail() {
-    tail -f $1 | {{ bat_bin_name }} --paging=never -l log
+    tail -f $1 | batcat --paging=never -l log
 }
 # cat alias
-alias cat={{ bat_bin_name }}
+alias cat=batcat
 
 # disable sort when completing `git checkout`
 zstyle ':completion:*:git-checkout:*' sort false
@@ -275,7 +275,7 @@ alias vim=nvim
 alias nvim=nvim
 alias vimdiff='nvim -d'
 alias top=htop
-export MANPAGER="sh -c 'col -bx | {{ bat_bin_name }} -l man -p'"
+export MANPAGER="sh -c 'col -bx | batcat -l man -p'"
 export ANSIBLE_TRANSFORM_INVALID_GROUP_CHARS=ignore
 
 # To customize prompt, run `p10k configure` or edit ~/.p10k.zsh.
