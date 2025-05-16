@@ -19,16 +19,6 @@
   tags:
     - always
 
-# Include OS-specific variables
-- name: "[Config] Include OS group_vars Ubuntu-{{ ansible_facts.distribution_major_version }}"
-  ansible.builtin.include_vars: "{{ item }}"
-  with_first_found:
-    - files:
-        - "{{ playbook_dir }}/group_vars/ubuntu-{{ ansible_facts.distribution_major_version }}.yml"
-      skip: false
-  tags:
-    - always
-
 - name: "[Config] Configure zsh"
   ansible.builtin.include_tasks:
     file: zsh.yml
