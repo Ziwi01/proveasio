@@ -1,0 +1,66 @@
+---
+# DRY - Docker manager and alternative to docker ps
+# Source: https://github.com/moncho/dry
+
+- name: Check if DRY is installed
+  ansible.builtin.stat:
+    path: /usr/local/bin/dry
+  register: dry_stat
+
+- name: Get installed DRY version (if present)
+  ansible.builtin.command: /usr/local/bin/dry --version
+  register: dry_version
+  changed_when: false
+  failed_when: false
+  when: dry_stat.stat.exists
+
+- name: "[DRY] Get Github URL for proper version"
+  vars:
+    app: dry
+    repo: moncho/dry
+    version_query: curl -s https://api.github.com/repos/moncho/dry/releases/latest | jq .tag_name -r | cut -f2 -d'v' | awk '{print $1}'
+    github_uri: "v{{ dry_version }}/dry-linux-amd64"
+  ansible.builtin.include_role:
+    name: common
+    tasks_from: github_version.yml
+    apply:
+      tags:
+        - versions
+  tags:
+    - versions
+
+- name: "Installation"
+  when: dry_check_version.stdout | default('') | regex_search('[0-9]+\.[0-9]+\.[0-9]+') | default(0) != dry_version
+  block:
+    - name: "[DRY] Create directory in {{ ansible_env.HOME }}/.local/opt"
+      ansible.builtin.file:
+        path: "{{ ansible_env.HOME }}/.local/opt/dry-{{ dry_version }}"
+        state: directory
+        mode: "0755"
+
+    - name: "[DRY] Download DRY {{ dry_version }}"
+      ansible.builtin.get_url:
+        url: "{{ dry_url }}"
+        dest: "{{ ansible_env.HOME }}/.local/opt/dry-{{ dry_version }}"
+        mode: "0755"
+
+    - name: "[DRY] Symlink dry binary to ~/.local/bin"
+      ansible.builtin.file:
+        src: "{{ ansible_env.HOME }}/.local/opt/dry-{{ dry_version }}/dry-linux-amd64"
+        dest: "{{ ansible_env.HOME }}/.local/bin/dry"
+        state: link
+        force: true
+
+- name: "[DRY] Save used version"
+  vars:
+    app: dry
+    target_version:
+      github_packages:
+        dry: "{{ dry_version }}"
+    query: '.github_packages.dry = "{{ dry_version }}"'
+  ansible.builtin.include_role:
+    name: common
+    tasks_from: save_version.yml
+    apply:
+      tags:
+        - versions

@@ -71,6 +71,7 @@ github_packages:
   rvm1_ansible: 2.2.0 # Version of https://github.com/rvm/rvm1-ansible
   pay_respects: latest
   kubeswitch: latest
+  dry: latest
 # Kubectl version
 kubectl_version: latest
 # Packages and their versions to install with PIP

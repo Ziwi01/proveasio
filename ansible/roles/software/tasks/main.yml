@@ -148,6 +148,20 @@
     - versions
     - git-fuzzy
 
+# DRY (moncho/dry)
+- name: "[Software] Install dry"
+  ansible.builtin.include_tasks:
+    file: dry.yml
+    apply:
+      tags:
+        - software
+        - dry
+  when: "'dry' not in software_tasks_exclude"
+  tags:
+    - software
+    - versions
+    - dry
+
 # LazyGIT
 - name: "[Software] Install lazygit"
   ansible.builtin.include_tasks:

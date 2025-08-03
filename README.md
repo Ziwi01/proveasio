@@ -63,7 +63,9 @@ Below you can find brief summary of included tools and features. For more detail
   - [bat](https://github.com/sharkdp/bat) - prettier cat with syntax highlight, line numbers etc.
   - [yq](https://mikefarah.gitbook.io/yq/) - YAML parser
   - [htop](https://github.com/htop-dev/htop) - better top
+
   - [jq](https://stedolan.github.io/jq/) - JSON parser
+  - [dry](https://github.com/moncho/dry) - Terminal UI for Docker, alternative to docker ps
 
 - Languages support (with version management):
 
