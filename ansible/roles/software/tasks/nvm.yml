@@ -39,7 +39,12 @@
 
 # TODO: Check if this version is already there for this user
 - name: "[NVM] Install Node {{ node_version }}" # noqa no-changed-when
-  ansible.builtin.shell: ". {{ ansible_env.HOME }}/.local/opt/nvm/nvm.sh; nvm install {{ node_version }}"
+  ansible.builtin.shell: ". {{ ansible_env.HOME }}/.local/opt/nvm/nvm.sh; nvm install {{ node_version }} --default"
+  args:
+    executable: /bin/bash
+
+- name: "[NVM] Set default Node to {{ node_version }}" # noqa no-changed-when
+  ansible.builtin.shell: ". {{ ansible_env.HOME }}/.local/opt/nvm/nvm.sh; nvm alias default {{ node_version }}"
   args:
     executable: /bin/bash
 
