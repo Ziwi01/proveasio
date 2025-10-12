@@ -1,5 +1,5 @@
 gui:
-  showIcons: true
+  nerdFontsVersion: "3"
 git:
   paging:
     colorArg: always
@@ -9,3 +9,15 @@ os:
   editAtLine: 'nvim --server "$NVIM" --remote-tab {{filename}}; [ -z "$NVIM" ] || nvim --server "$NVIM" --remote-send ":{{line}}<CR>"'
   editAtLineAndWait: 'nvim +{{line}} {{filename}}'
 promptToReturnFromSubprocess: false
+
+customCommands:
+  - key: 'a'
+    command: 'nvim --server "$NVIM" -c "DiffviewOpen {{.SelectedLocalBranch.Name}}"'
+    context: 'localBranches'
+    output: terminal
+    description: 'Diff this branch with current branch'
+  - key: 'a'
+    command: 'nvim --server "$NVIM" -c "DiffviewOpen {{.SelectedRemoteBranch.Name}}"'
+    context: 'remoteBranches'
+    output: terminal
+    description: 'Diff this branch with current branch'
