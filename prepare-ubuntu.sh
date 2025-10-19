@@ -1,6 +1,6 @@
 #!/bin/bash
 
-PYTHON_VERSION='3.12.5'
+PYTHON_VERSION='3.14.0'
 
 if [ "$EUID" -ne 0 ]; then
   echo "Please run this script using 'sudo'"
@@ -19,15 +19,15 @@ echo "Install yq requirement"
 wget https://github.com/mikefarah/yq/releases/latest/download/yq_linux_amd64 -O /usr/bin/yq && chmod +x /usr/bin/yq
 
 SCRIPT_DIR=$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" &>/dev/null && pwd)
-ANSIBLE_VERSION=$(yq '.ansible_pip_version' ${SCRIPT_DIR}/ansible/roles/software/vars/main.yml)
+ANSIBLE_VERSION=$(yq '.ansible_pip_version' "${SCRIPT_DIR}"/ansible/roles/software/vars/main.yml)
 
-if [ ${ANSIBLE_VERSION} != 'latest' ]; then
+if [ "${ANSIBLE_VERSION}" != 'latest' ]; then
   ANSIBLE_PIP_INSTALL="ansible==${ANSIBLE_VERSION}"
 else
   ANSIBLE_PIP_INSTALL='ansible'
 fi
 
-sudo -u ${SUDO_USER} bash <<_
+sudo -u "${SUDO_USER}" bash <<_
 echo "Install pyenv"
 curl https://pyenv.run | bash
 
