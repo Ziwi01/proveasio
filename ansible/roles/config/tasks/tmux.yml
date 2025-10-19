@@ -22,6 +22,15 @@
     state: directory
     mode: '0755'
 
+- name: "[Config][Tmuxp] Check for existing files in {{ ansible_env.HOME }}/.tmuxp"
+  ansible.builtin.find:
+    paths: "{{ ansible_env.HOME }}/.tmuxp"
+    file_type: file
+    recurse: no
+    hidden: true
+  register: tmuxp_existing_files
+  changed_when: false
+
 - name: "[Config][Tmuxp] Add default session file"
   vars:
     app: Tmuxp
@@ -30,3 +39,4 @@
   ansible.builtin.include_role:
     name: common
     tasks_from: config_file.yml
+  when: tmuxp_existing_files.matched | default(0) == 0
