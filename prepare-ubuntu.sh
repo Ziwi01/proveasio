@@ -2,20 +2,31 @@
 
 PYTHON_VERSION='3.14.0'
 
+# Formatting helpers for visible output
+if [ -t 1 ]; then
+  RESET="\033[0m"; BOLD="\033[1m"; RED="\033[31m"; GREEN="\033[32m"; YELLOW="\033[33m"; BLUE="\033[34m"; MAGENTA="\033[35m"; CYAN="\033[36m"
+else
+  RESET=""; BOLD=""; RED=""; GREEN=""; YELLOW=""; BLUE=""; MAGENTA=""; CYAN=""
+fi
+
+hr() { printf "%b\n" "${MAGENTA}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${RESET}"; }
+section() { hr; printf "%b\n" "${BOLD}${CYAN}$1${RESET}"; hr; }
+
 if [ "$EUID" -ne 0 ]; then
-  echo "Please run this script using 'sudo'"
+  printf "%b\n" "${BOLD}${RED}Please run this script using 'sudo'${RESET}"
   exit
 fi
 
-echo "Updating apt..."
+section "Updating apt"
 apt-get update
-echo "Upgrading system..."
+
+section "Upgrading system"
 apt-get upgrade -y
 
-echo "Installing pyenv requirements..."
+section "Installing pyenv requirements"
 apt-get install -y make build-essential libkrb5-dev libssl-dev zlib1g-dev libbz2-dev libreadline-dev libsqlite3-dev wget curl llvm libncursesw5-dev xz-utils tk-dev libxml2-dev libxmlsec1-dev libffi-dev liblzma-dev
 
-echo "Install yq requirement"
+section "Install yq requirement"
 wget https://github.com/mikefarah/yq/releases/latest/download/yq_linux_amd64 -O /usr/bin/yq && chmod +x /usr/bin/yq
 
 SCRIPT_DIR=$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" &>/dev/null && pwd)
@@ -28,10 +39,20 @@ else
 fi
 
 sudo -u "${SUDO_USER}" bash <<_
-echo "Install pyenv"
+# Formatting helpers for visible output (user context)
+if [ -t 1 ]; then
+  RESET="\033[0m"; BOLD="\033[1m"; RED="\033[31m"; GREEN="\033[32m"; YELLOW="\033[33m"; BLUE="\033[34m"; MAGENTA="\033[35m"; CYAN="\033[36m"
+else
+  RESET=""; BOLD=""; RED=""; GREEN=""; YELLOW=""; BLUE=""; MAGENTA=""; CYAN=""
+fi
+
+hr() { printf "%b\n" "\${MAGENTA}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\${RESET}"; }
+section() { hr; printf "%b\n" "\${BOLD}\${CYAN}\$1\${RESET}"; hr; }
+
+section "Install pyenv"
 curl https://pyenv.run | bash
 
-echo "Set up .bashrc (temporarily)"
+section "Set up .bashrc (temporarily)"
 grep -qxF 'export PYENV_ROOT="\$HOME/.pyenv"' ~/.bashrc || echo 'export PYENV_ROOT="\$HOME/.pyenv"' >> ~/.bashrc
 grep -qxF 'command -v pyenv >/dev/null || export PATH="\$PYENV_ROOT/bin:\$PATH"' ~/.bashrc || echo 'command -v pyenv >/dev/null || export PATH="\$PYENV_ROOT/bin:\$PATH"' >> ~/.bashrc
 grep -qxF 'eval "\$(pyenv init -)"' ~/.bashrc || echo 'eval "\$(pyenv init -)"' >> ~/.bashrc
@@ -42,20 +63,26 @@ command -v pyenv >/dev/null || export PATH="\$PYENV_ROOT/bin:\$PATH"
 eval "\$(pyenv init -)"
 eval "\$(pyenv virtualenv-init -)"
 
-echo "Install Python ${PYTHON_VERSION}"
+section "Install pyenv update plugin"
+git clone https://github.com/pyenv/pyenv-update.git "\$PYENV_ROOT/plugins/pyenv-update"
+
+section "Run pyenv update"
+pyenv update
+
+section "Install Python ${PYTHON_VERSION}"
 pyenv install ${PYTHON_VERSION}
 pyenv global ${PYTHON_VERSION}
 
-echo "Upgrade PIP"
+section "Upgrade PIP"
 pip install --upgrade pip
 
-echo "Install ansible with PIP"
+section "Install ansible with PIP"
 pip install --user ${ANSIBLE_PIP_INSTALL}
 
-echo "Install setuptools"
+section "Install setuptools"
 pip install --user setuptools
 
-echo "Install pywinrm with PIP for potential Windows support"
+section "Install pywinrm with PIP for potential Windows support"
 pip install --user "pywinrm>=0.3.0"
 pip install --user "pywinrm[credssp]"
 pip install --user "pywinrm[kerberos]"
