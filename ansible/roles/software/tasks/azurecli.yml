@@ -58,7 +58,7 @@
     app: azure-cli
     target_version:
       azurecli_apt_version: "{{ azurecli_version.stdout }}"
-    query: ".azurecli_apt_version = \"{{ azurecli_version.stdout }}\""
+    yq_query: ".azurecli_apt_version = \"{{ azurecli_version.stdout }}\""
   ansible.builtin.include_role:
     name: common
     tasks_from: save_version.yml

@@ -2,7 +2,7 @@
 - name: "[{{ app }}] Save version to `current-versions.yml`"
   ansible.builtin.shell: |
     set -e -o pipefail
-    yq -i '{{ query }}' {{ playbook_dir }}/../current-versions.yml
+    yq -i '{{ yq_query }}' {{ playbook_dir }}/../current-versions.yml
   args:
     executable: /bin/bash
   changed_when: false

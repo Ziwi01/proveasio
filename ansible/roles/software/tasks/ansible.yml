@@ -60,7 +60,7 @@
     app: ansible
     target_version:
       ansible_pip_version: "{{ ansible_version_pip.stdout }}"
-    query: ".ansible_pip_version = \"{{ ansible_version_pip.stdout }}\""
+    yq_query: ".ansible_pip_version = \"{{ ansible_version_pip.stdout }}\""
   ansible.builtin.include_role:
     name: common
     tasks_from: save_version.yml
@@ -101,7 +101,7 @@
     app: ansible-lint
     target_version:
       ansible_lint_pip_version: "{{ ansible_lint_version.stdout }}"
-    query: ".ansible_lint_pip_version = \"{{ ansible_lint_version.stdout }}\""
+    yq_query: ".ansible_lint_pip_version = \"{{ ansible_lint_version.stdout }}\""
   ansible.builtin.include_role:
     name: common
     tasks_from: save_version.yml

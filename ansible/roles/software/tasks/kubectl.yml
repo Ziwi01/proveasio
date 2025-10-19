@@ -60,7 +60,7 @@
     app: kubectl
     target_version:
       kubectl_version: "{{ kubectl_version }}"
-    query: ".kubectl_version = \"{{ kubectl_version }}\""
+    yq_query: ".kubectl_version = \"{{ kubectl_version }}\""
   ansible.builtin.include_role:
     name: common
     tasks_from: save_version.yml

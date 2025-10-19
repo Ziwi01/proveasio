@@ -60,7 +60,7 @@
     target_version:
       github_packages:
         nvm: "{{ nvm_version }}"
-    query: '.github_packages.nvm = "{{ nvm_version }}"'
+    yq_query: '.github_packages.nvm = "{{ nvm_version }}"'
   ansible.builtin.include_role:
     name: common
     tasks_from: save_version.yml
@@ -75,7 +75,7 @@
     app: node
     target_version:
       node_version: "{{ node_version }}"
-    query: '.node_version = "{{ node_version }}"'
+    yq_query: '.node_version = "{{ node_version }}"'
   ansible.builtin.include_role:
     name: common
     tasks_from: save_version.yml

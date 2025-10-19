@@ -52,7 +52,7 @@
     target_version:
       github_packages:
         diff_so_fancy: "{{ diff_so_fancy_version }}"
-    query: ".github_packages.diff_so_fancy = \"{{ diff_so_fancy_version }}\""
+    yq_query: ".github_packages.diff_so_fancy = \"{{ diff_so_fancy_version }}\""
   ansible.builtin.include_role:
     name: common
     tasks_from: save_version.yml

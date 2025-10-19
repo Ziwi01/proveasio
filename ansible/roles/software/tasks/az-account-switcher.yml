@@ -36,7 +36,7 @@
     target_version:
       pip_packages:
         az_account_switcher: "{{ az_account_switcher_version.stdout }}"
-    query: ".pip_packages.az_account_switcher = \"{{ az_account_switcher_version.stdout }}\""
+    yq_query: ".pip_packages.az_account_switcher = \"{{ az_account_switcher_version.stdout }}\""
   ansible.builtin.include_role:
     name: common
     tasks_from: save_version.yml

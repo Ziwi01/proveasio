@@ -62,7 +62,7 @@
     target_version:
       github_packages:
         helm: "{{ helm_version }}"
-    query: ".github_packages.helm = \"{{ helm_version }}\""
+    yq_query: ".github_packages.helm = \"{{ helm_version }}\""
   ansible.builtin.include_role:
     name: common
     tasks_from: save_version.yml

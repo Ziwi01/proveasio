@@ -19,7 +19,7 @@
     app: neovim-config
     target_version:
       neovim_config_version: "{{ neovim_config_version }}"
-    query: '.neovim_config_version = "{{ neovim_config_version }}"'
+    yq_query: '.neovim_config_version = "{{ neovim_config_version }}"'
   ansible.builtin.include_role:
     name: common
     tasks_from: save_version.yml

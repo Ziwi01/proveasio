@@ -70,7 +70,7 @@
     target_version:
       github_packages:
         p10k: "{{ p10k_version }}"
-    query: ".github_packages.p10k = \"{{ p10k_version }}\""
+    yq_query: ".github_packages.p10k = \"{{ p10k_version }}\""
   ansible.builtin.include_role:
     name: common
     tasks_from: save_version.yml

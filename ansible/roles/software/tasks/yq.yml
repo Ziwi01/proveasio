@@ -52,7 +52,7 @@
     target_version:
       github_packages:
         yq: "{{ yq_version }}"
-    query: ".github_packages.yq = \"{{ yq_version }}\""
+    yq_query: ".github_packages.yq = \"{{ yq_version }}\""
   ansible.builtin.include_role:
     name: common
     tasks_from: save_version.yml

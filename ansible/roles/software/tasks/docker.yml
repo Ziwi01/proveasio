@@ -75,7 +75,7 @@
   vars:
     app: "{{ package.item.key }}"
     target_version: "{{ {'docker_apt_packages': {package.item.key: package.stdout}} }}"
-    query: ".docker_apt_packages.\"{{ package.item.key }}\" = \"{{ package.stdout }}\""
+    yq_query: ".docker_apt_packages.\"{{ package.item.key }}\" = \"{{ package.stdout }}\""
   ansible.builtin.include_role:
     name: common
     tasks_from: save_version.yml

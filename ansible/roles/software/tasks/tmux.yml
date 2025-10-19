@@ -146,7 +146,7 @@
     target_version:
       pip_packages:
         tmuxp: "{{ tmuxp_version.stdout }}"
-    query: ".pip_packages.tmuxp = \"{{ tmuxp_version.stdout }}\""
+    yq_query: ".pip_packages.tmuxp = \"{{ tmuxp_version.stdout }}\""
   ansible.builtin.include_role:
     name: common
     tasks_from: save_version.yml
@@ -162,7 +162,7 @@
     target_version:
       github_packages:
         tmux: "{{ tmux_version }}"
-    query: ".github_packages.tmux = \"{{ tmux_version }}\""
+    yq_query: ".github_packages.tmux = \"{{ tmux_version }}\""
   ansible.builtin.include_role:
     name: common
     tasks_from: save_version.yml
@@ -178,7 +178,7 @@
     target_version:
       github_packages:
         tpm: "{{ tpm_version }}"
-    query: ".github_packages.tpm = \"{{ tpm_version }}\""
+    yq_query: ".github_packages.tpm = \"{{ tpm_version }}\""
   ansible.builtin.include_role:
     name: common
     tasks_from: save_version.yml

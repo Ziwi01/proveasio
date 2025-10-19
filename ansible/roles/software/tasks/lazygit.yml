@@ -59,7 +59,7 @@
     target_version:
       github_packages:
         lazygit: "{{ lazygit_version }}"
-    query: ".github_packages.lazygit = \"{{ lazygit_version }}\""
+    yq_query: ".github_packages.lazygit = \"{{ lazygit_version }}\""
   ansible.builtin.include_role:
     name: common
     tasks_from: save_version.yml

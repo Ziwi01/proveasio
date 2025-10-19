@@ -65,7 +65,7 @@
     target_version:
       github_packages:
         fd: "{{ fd_version }}"
-    query: ".github_packages.fd = \"{{ fd_version }}\""
+    yq_query: ".github_packages.fd = \"{{ fd_version }}\""
   ansible.builtin.include_role:
     name: common
     tasks_from: save_version.yml

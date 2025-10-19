@@ -77,7 +77,7 @@
     app: SDKMan
     target_version:
       sdkman_install_packages: "{{ sdkman_install_packages }}"
-    query: ".sdkman_install_packages |= {{ sdkman_install_packages | regex_replace(\"'\", '\"') }}"
+    yq_query: ".sdkman_install_packages |= {{ sdkman_install_packages | regex_replace(\"'\", '\"') }}"
   ansible.builtin.include_role:
     name: common
     tasks_from: save_version.yml
@@ -126,7 +126,7 @@
     app: SDKMan
     target_version:
       sdkman_defaults: "{{ sdkman_defaults }}"
-    query: ".sdkman_defaults |= {{ sdkman_defaults | regex_replace(\"'\", '\"') }}"
+    yq_query: ".sdkman_defaults |= {{ sdkman_defaults | regex_replace(\"'\", '\"') }}"
   ansible.builtin.include_role:
     name: common
     tasks_from: save_version.yml

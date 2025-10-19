@@ -63,7 +63,7 @@
     target_version:
       github_packages:
         terraform: "{{ terraform_version }}"
-    query: ".github_packages.terraform = \"{{ terraform_version }}\""
+    yq_query: ".github_packages.terraform = \"{{ terraform_version }}\""
   ansible.builtin.include_role:
     name: common
     tasks_from: save_version.yml
