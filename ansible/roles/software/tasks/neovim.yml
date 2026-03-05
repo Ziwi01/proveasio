@@ -58,16 +58,16 @@
 - name: "Installation"
   when: neovim_version | default(neovim_check_exact) != neovim_check_exact or (neovim_version_exact.stdout | default(neovim_check_exact) != neovim_check_exact)
   block:
-    - name: "[Neovim] Create release directory in {{ ansible_env.HOME }}/.local/opt"
+    - name: "[Neovim] Create release directory in {{ ansible_facts['env']['HOME'] }}/.local/opt"
       ansible.builtin.file:
-        path: "{{ ansible_env.HOME }}/.local/opt/neovim-{{ neovim_version }}"
+        path: "{{ ansible_facts['env']['HOME'] }}/.local/opt/neovim-{{ neovim_version }}"
         state: directory
         mode: '0755'
       when: github_packages['neovim'] != 'nightly'
 
-    - name: "[Neovim] Create nightly directory in {{ ansible_env.HOME }}/.local/opt"
+    - name: "[Neovim] Create nightly directory in {{ ansible_facts['env']['HOME'] }}/.local/opt"
       ansible.builtin.file:
-        path: "{{ ansible_env.HOME }}/.local/opt/neovim-nightly"
+        path: "{{ ansible_facts['env']['HOME'] }}/.local/opt/neovim-nightly"
         state: directory
         mode: '0755'
       when: github_packages['neovim'] == 'nightly'
@@ -75,15 +75,15 @@
     - name: "[Neovim] Download Neovim release"
       ansible.builtin.get_url:
         url: "{{ neovim_url }}"
-        dest: "{{ ansible_env.HOME }}/.local/opt/neovim-{{ neovim_version }}/nvim-{{ neovim_version }}.appimage"
+        dest: "{{ ansible_facts['env']['HOME'] }}/.local/opt/neovim-{{ neovim_version }}/nvim-{{ neovim_version }}.appimage"
         mode: '0755'
         force: true
       when: github_packages['neovim'] != 'nightly'
 
     - name: "[Neovim] Link Neovim release appimage"
       ansible.builtin.file:
-        src: "{{ ansible_env.HOME }}/.local/opt/neovim-{{ neovim_version }}/nvim-{{ neovim_version }}.appimage"
-        dest: "{{ ansible_env.HOME }}/.local/bin/nvim"
+        src: "{{ ansible_facts['env']['HOME'] }}/.local/opt/neovim-{{ neovim_version }}/nvim-{{ neovim_version }}.appimage"
+        dest: "{{ ansible_facts['env']['HOME'] }}/.local/bin/nvim"
         state: link
         force: true
       become: true
@@ -92,15 +92,15 @@
     - name: "[Neovim] Download Neovim nightly"
       ansible.builtin.get_url:
         url: "{{ neovim_url }}"
-        dest: "{{ ansible_env.HOME }}/.local/opt/neovim-nightly/nvim-{{ neovim_version_exact.stdout }}.appimage"
+        dest: "{{ ansible_facts['env']['HOME'] }}/.local/opt/neovim-nightly/nvim-{{ neovim_version_exact.stdout }}.appimage"
         mode: '0755'
         force: true
       when: github_packages['neovim'] == 'nightly'
 
     - name: "[Neovim] Link Neovim nightly appimage"
       ansible.builtin.file:
-        src: "{{ ansible_env.HOME }}/.local/opt/neovim-nightly/nvim-{{ neovim_version_exact.stdout }}.appimage"
-        dest: "{{ ansible_env.HOME }}/.local/bin/nvim"
+        src: "{{ ansible_facts['env']['HOME'] }}/.local/opt/neovim-nightly/nvim-{{ neovim_version_exact.stdout }}.appimage"
+        dest: "{{ ansible_facts['env']['HOME'] }}/.local/bin/nvim"
         state: link
         force: true
       become: true

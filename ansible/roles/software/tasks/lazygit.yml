@@ -18,7 +18,7 @@
 
 - name: "[LazyGIT] Check if LazyGIT {{ lazygit_version }} is installed"
   ansible.builtin.stat:
-    path: "{{ ansible_env.HOME }}/.local/opt/lazygit-{{ lazygit_version }}"
+    path: "{{ ansible_facts['env']['HOME'] }}/.local/opt/lazygit-{{ lazygit_version }}"
   register: lazygit_dir
 
 - name: "Installation"
@@ -30,16 +30,16 @@
         dest: "/tmp/lazygit-{{ lazygit_version }}.tar.gz"
         mode: '0755'
 
-    - name: "[LazyGIT] Create directory in {{ ansible_env.HOME }}/.local/opt"
+    - name: "[LazyGIT] Create directory in {{ ansible_facts['env']['HOME'] }}/.local/opt"
       ansible.builtin.file:
-        path: "{{ ansible_env.HOME }}/.local/opt/lazygit-{{ lazygit_version }}"
+        path: "{{ ansible_facts['env']['HOME'] }}/.local/opt/lazygit-{{ lazygit_version }}"
         state: directory
         mode: '0755'
 
     - name: "[LazyGIT] Untar archive"
       ansible.builtin.unarchive:
         src: "/tmp/lazygit-{{ lazygit_version }}.tar.gz"
-        dest: "{{ ansible_env.HOME }}/.local/opt/lazygit-{{ lazygit_version }}"
+        dest: "{{ ansible_facts['env']['HOME'] }}/.local/opt/lazygit-{{ lazygit_version }}"
 
     - name: "[LazyGIT] Cleanup tar.gz file"
       ansible.builtin.file:
@@ -48,8 +48,8 @@
 
 - name: "[LazyGIT] Link {{ lazygit_version }} binary"
   ansible.builtin.file:
-    src: "{{ ansible_env.HOME }}/.local/opt/lazygit-{{ lazygit_version }}/lazygit"
-    dest: "{{ ansible_env.HOME }}/.local/bin/lazygit"
+    src: "{{ ansible_facts['env']['HOME'] }}/.local/opt/lazygit-{{ lazygit_version }}/lazygit"
+    dest: "{{ ansible_facts['env']['HOME'] }}/.local/bin/lazygit"
     state: link
     force: true
 

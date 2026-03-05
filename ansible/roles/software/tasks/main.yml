@@ -2,7 +2,7 @@
 # Ensure local bin/opt directories are there
 - name: "[Software] Ensure dotted directories are there"
   ansible.builtin.file:
-    path: "{{ ansible_env.HOME }}/{{ item }}"
+    path: "{{ ansible_facts['env']['HOME'] }}/{{ item }}"
     state: directory
     mode: "0755"
   loop:
@@ -50,6 +50,20 @@
     - versions
     - yq
 
+# FX - Terminal JSON viewer and processor
+- name: "[Software] Install fx"
+  ansible.builtin.include_tasks:
+    file: fx.yml
+    apply:
+      tags:
+        - software
+        - fx
+  when: "'fx' not in software_tasks_exclude"
+  tags:
+    - software
+    - versions
+    - fx
+
 # Latest GIT
 - name: "[Software] Install git"
   ansible.builtin.include_tasks:
@@ -91,6 +105,20 @@
     - software
     - versions
     - fd
+
+# EZA (modern ls replacement)
+- name: "[Software] Install eza"
+  ansible.builtin.include_tasks:
+    file: eza.yml
+    apply:
+      tags:
+        - software
+        - eza
+  when: "'eza' not in software_tasks_exclude"
+  tags:
+    - software
+    - versions
+    - eza
 
 # ls-with-git-status
 - name: "[Software] Install lsg"

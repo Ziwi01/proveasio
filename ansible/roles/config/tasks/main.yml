@@ -26,10 +26,12 @@
       tags:
         - config
         - zsh
+        - eza
   when: "'zsh' not in config_tasks_exclude"
   tags:
     - config
     - zsh
+    - eza
 
 - name: "[Config] Configure p10k"
   ansible.builtin.include_tasks:

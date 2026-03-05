@@ -1,0 +1,62 @@
+# FX - Terminal JSON viewer and processor
+# Source: https://github.com/antonmedv/fx
+---
+- name: "[FX] Get Github URL for proper version"
+  vars:
+    app: fx
+    repo: antonmedv/fx
+    version_query: curl -s https://api.github.com/repos/antonmedv/fx/releases/latest | jq .tag_name -r | cut -f2 -d'v'
+    github_uri: "{{ fx_version }}/fx_linux_amd64"
+  ansible.builtin.include_role:
+    name: common
+    tasks_from: github_version.yml
+    apply:
+      tags:
+        - versions
+  tags:
+    - versions
+
+- name: "[FX] Check if FX {{ fx_version }} is installed"
+  ansible.builtin.stat:
+    path: "{{ ansible_facts['env']['HOME'] }}/.local/opt/fx-{{ fx_version }}"
+  register: fx_dir
+  tags:
+    - versions
+
+- name: "Installation"
+  when: not fx_dir.stat.exists
+  block:
+    - name: "[FX] Create directory {{ ansible_facts['env']['HOME'] }}/.local/opt/fx-{{ fx_version }}"
+      ansible.builtin.file:
+        path: "{{ ansible_facts['env']['HOME'] }}/.local/opt/fx-{{ fx_version }}"
+        state: directory
+        mode: "0755"
+
+    - name: "[FX] Download FX {{ fx_version }}"
+      ansible.builtin.get_url:
+        url: "{{ fx_url }}"
+        dest: "{{ ansible_facts['env']['HOME'] }}/.local/opt/fx-{{ fx_version }}/fx"
+        mode: "0755"
+
+- name: "[FX] Link {{ fx_version }} binary to ~/.local/bin/fx"
+  ansible.builtin.file:
+    src: "{{ ansible_facts['env']['HOME'] }}/.local/opt/fx-{{ fx_version }}/fx"
+    dest: "{{ ansible_facts['env']['HOME'] }}/.local/bin/fx"
+    state: link
+    force: true
+
+- name: "[FX] Save used version"
+  vars:
+    app: fx
+    target_version:
+      github_packages:
+        fx: "{{ fx_version }}"
+    yq_query: ".github_packages.fx = \"{{ fx_version }}\""
+  ansible.builtin.include_role:
+    name: common
+    tasks_from: save_version.yml
+    apply:
+      tags:
+        - versions
+  tags:
+    - versions

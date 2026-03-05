@@ -28,21 +28,21 @@
 - name: "Installation"
   when: kubecolor_check_deb.stdout | regex_search('[0-9]+\.[0-9]+\.[0-9]+') | default(0) != kubecolor_version
   block:
-    - name: "[kubecolor] Create directory in {{ ansible_env.HOME }}/.local/opt"
+    - name: "[kubecolor] Create directory in {{ ansible_facts['env']['HOME'] }}/.local/opt"
       ansible.builtin.file:
-        path: "{{ ansible_env.HOME }}/.local/opt/kubecolor-{{ kubecolor_version }}"
+        path: "{{ ansible_facts['env']['HOME'] }}/.local/opt/kubecolor-{{ kubecolor_version }}"
         state: directory
         mode: '0755'
 
     - name: "[kubecolor] Download kubecolor {{ kubecolor_version }}"
       ansible.builtin.get_url:
         url: "{{ kubecolor_url }}"
-        dest: "{{ ansible_env.HOME }}/.local/opt/kubecolor-{{ kubecolor_version }}"
+        dest: "{{ ansible_facts['env']['HOME'] }}/.local/opt/kubecolor-{{ kubecolor_version }}"
         mode: '0755'
 
     - name: "[kubecolor] Install {{ kubecolor_version }} .deb package"
       ansible.builtin.apt:
-        deb: "{{ ansible_env.HOME }}/.local/opt/kubecolor-{{ kubecolor_version }}/kubecolor_{{ kubecolor_version }}_linux_amd64.deb"
+        deb: "{{ ansible_facts['env']['HOME'] }}/.local/opt/kubecolor-{{ kubecolor_version }}/kubecolor_{{ kubecolor_version }}_linux_amd64.deb"
       become: true
 
 - name: "[kubecolor] Save used version"

@@ -22,15 +22,15 @@
 
 - name: "[terraform] Check if terraform {{ terraform_version }} is installed"
   ansible.builtin.stat:
-    path: "{{ ansible_env.HOME }}/.local/opt/terraform-{{ terraform_version }}"
+    path: "{{ ansible_facts['env']['HOME'] }}/.local/opt/terraform-{{ terraform_version }}"
   register: terraform_dir
 
 - name: "Installation"
   when: not terraform_dir.stat.exists
   block:
-    - name: "[terraform] Create directory in {{ ansible_env.HOME }}/.local/opt"
+    - name: "[terraform] Create directory in {{ ansible_facts['env']['HOME'] }}/.local/opt"
       ansible.builtin.file:
-        path: "{{ ansible_env.HOME }}/.local/opt/terraform-{{ terraform_version }}"
+        path: "{{ ansible_facts['env']['HOME'] }}/.local/opt/terraform-{{ terraform_version }}"
         state: directory
         mode: '0755'
 
@@ -43,7 +43,7 @@
     - name: "[terraform] Unzip archive"
       ansible.builtin.unarchive:
         src: "/tmp/terraform-{{ terraform_version }}.zip"
-        dest: "{{ ansible_env.HOME }}/.local/opt/terraform-{{ terraform_version }}"
+        dest: "{{ ansible_facts['env']['HOME'] }}/.local/opt/terraform-{{ terraform_version }}"
 
     - name: "[terraform] Cleanup zip file"
       ansible.builtin.file:
@@ -52,8 +52,8 @@
 
 - name: "[terraform] Link {{ terraform_version }} binary"
   ansible.builtin.file:
-    src: "{{ ansible_env.HOME }}/.local/opt/terraform-{{ terraform_version }}/terraform"
-    dest: "{{ ansible_env.HOME }}/.local/bin/terraform"
+    src: "{{ ansible_facts['env']['HOME'] }}/.local/opt/terraform-{{ terraform_version }}/terraform"
+    dest: "{{ ansible_facts['env']['HOME'] }}/.local/bin/terraform"
     state: link
     force: true
 

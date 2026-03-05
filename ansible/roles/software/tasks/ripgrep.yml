@@ -28,21 +28,21 @@
 - name: "Installation"
   when: ripgrep_check_deb.stdout | regex_search('[0-9]+\.[0-9]+\.[0-9]+') | default(0) != ripgrep_version
   block:
-    - name: "[Ripgrep] Create directory in {{ ansible_env.HOME }}/.local/opt"
+    - name: "[Ripgrep] Create directory in {{ ansible_facts['env']['HOME'] }}/.local/opt"
       ansible.builtin.file:
-        path: "{{ ansible_env.HOME }}/.local/opt/ripgrep-{{ ripgrep_version }}"
+        path: "{{ ansible_facts['env']['HOME'] }}/.local/opt/ripgrep-{{ ripgrep_version }}"
         state: directory
         mode: '0755'
 
     - name: "[Ripgrep] Download Ripgrep {{ ripgrep_version }}"
       ansible.builtin.get_url:
         url: "{{ ripgrep_url }}"
-        dest: "{{ ansible_env.HOME }}/.local/opt/ripgrep-{{ ripgrep_version }}"
+        dest: "{{ ansible_facts['env']['HOME'] }}/.local/opt/ripgrep-{{ ripgrep_version }}"
         mode: '0755'
 
     - name: "[Ripgrep] Install {{ ripgrep_version }} .deb package"
       ansible.builtin.apt:
-        deb: "{{ ansible_env.HOME }}/.local/opt/ripgrep-{{ ripgrep_version }}/ripgrep_{{ ripgrep_version }}-1_amd64.deb"
+        deb: "{{ ansible_facts['env']['HOME'] }}/.local/opt/ripgrep-{{ ripgrep_version }}/ripgrep_{{ ripgrep_version }}-1_amd64.deb"
       become: true
 
 - name: "[Ripgrep] Save used version"

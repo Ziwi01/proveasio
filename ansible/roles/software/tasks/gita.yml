@@ -6,7 +6,7 @@
 - name: "[gita] Install Gita specific version"
   ansible.builtin.pip:
     name: "gita=={{ pip_packages['gita'] }}"
-    executable: "{{ ansible_env.HOME }}/.pyenv/shims/pip3"
+    executable: "{{ ansible_facts['env']['HOME'] }}/.pyenv/shims/pip3"
   register: pip_out
   changed_when: "'Requirement already satisfied' not in pip_out.stdout"
   when: pip_packages['gita'] != 'latest'
@@ -14,7 +14,7 @@
 - name: "[gita] Install Gita latest version"
   ansible.builtin.pip:
     name: "gita"
-    executable: "{{ ansible_env.HOME }}/.pyenv/shims/pip3"
+    executable: "{{ ansible_facts['env']['HOME'] }}/.pyenv/shims/pip3"
     extra_args: --upgrade
   register: pip_out
   changed_when: "'Requirement already satisfied' not in pip_out.stdout"
@@ -23,7 +23,7 @@
 - name: "[gita] Get installed Gita version"
   ansible.builtin.shell: |
     set -e -o pipefail
-    {{ ansible_env.HOME }}/.pyenv/shims/pip3 show gita | grep Version | awk '{print $2}'
+    {{ ansible_facts['env']['HOME'] }}/.pyenv/shims/pip3 show gita | grep Version | awk '{print $2}'
   args:
     executable: /bin/bash
   changed_when: false

@@ -10,7 +10,7 @@ git: # .gitconfig info
 config_tasks_exclude: []
 
 # Path where to save configuration files
-config_backup_dir: "{{ ansible_env.HOME }}/.configs_backup"
+config_backup_dir: "{{ ansible_facts['env']['HOME'] }}/.configs_backup"
 
 # Switch all config overwrites on/off
 config_files_overwrite: true
@@ -22,4 +22,4 @@ config_files_backup: true
 neovim_config_url: https://github.com/Ziwi01/astronvim.git
 neovim_config_version: main
 neovim_config_appname: astronvim
-neovim_config_path: "{{ ansible_env.HOME }}/.config/{{ neovim_config_appname }}"
+neovim_config_path: "{{ ansible_facts['env']['HOME'] }}/.config/{{ neovim_config_appname }}"

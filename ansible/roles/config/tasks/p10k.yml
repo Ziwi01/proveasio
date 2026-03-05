@@ -5,7 +5,7 @@
   vars:
     app: p10k
     source_file: p10k.zsh
-    target_file: "{{ ansible_env.HOME }}/.p10k.zsh"
+    target_file: "{{ ansible_facts['env']['HOME'] }}/.p10k.zsh"
   ansible.builtin.include_role:
     name: common
     tasks_from: config_file.yml

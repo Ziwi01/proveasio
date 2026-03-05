@@ -2,12 +2,12 @@
 ---
 # Ruby gems
 - name: "[Puppet] Install Puppet/puppet-lint ruby gems for ALL rubies"
-  ansible.builtin.command: "{{ ansible_env.HOME }}/.rvm/bin/rvm all do gem install 'puppet:{{ puppet_version }}' 'puppet-lint:{{ puppet_lint_version }}'"
+  ansible.builtin.command: "{{ ansible_facts['env']['HOME'] }}/.rvm/bin/rvm all do gem install 'puppet:{{ puppet_version }}' 'puppet-lint:{{ puppet_lint_version }}'"
   changed_when: false
   when: "'all' in puppet_rubies"
 
 - name: "[Puppet] Install Puppet/puppet-lint ruby gems for subset of rubies"
-  ansible.builtin.command: "{{ ansible_env.HOME }}/.rvm/bin/rvm {{ item }} do gem install 'puppet:{{ puppet_version }}' 'puppet-lint:{{ puppet_lint_version }}'"
+  ansible.builtin.command: "{{ ansible_facts['env']['HOME'] }}/.rvm/bin/rvm {{ item }} do gem install 'puppet:{{ puppet_version }}' 'puppet-lint:{{ puppet_lint_version }}'"
   changed_when: false
   loop: "{{ puppet_rubies }}"
   when: "'all' not in puppet_rubies and puppet_rubies | length > 0"
@@ -63,7 +63,7 @@
 - name: "[Puppet Editor Services] Clone repository"
   ansible.builtin.git:
     repo: "{{ puppet_pes_url }}"
-    dest: "{{ ansible_env.HOME }}/.lsp/puppet-editor-services"
+    dest: "{{ ansible_facts['env']['HOME'] }}/.lsp/puppet-editor-services"
     update: true
     force: true
     version: "{{ pes_version }}"
@@ -86,22 +86,22 @@
 
 # TODO: Add changes_when/failed_when
 - name: "[Puppet] Update bundler for all rubies" # noqa no-changed-when ignore-errors
-  ansible.builtin.command: "{{ ansible_env.HOME }}/.rvm/bin/rvm all-gemsets do gem update bundler"
+  ansible.builtin.command: "{{ ansible_facts['env']['HOME'] }}/.rvm/bin/rvm all-gemsets do gem update bundler"
   ignore_errors: true
 
 # TODO: Add changes_when/failed_when
 - name: "[Puppet] Run bundle install" # noqa no-changed-when ignore-errors
-  ansible.builtin.command: "{{ ansible_env.HOME }}/.rvm/bin/rvm all-gemsets do bundle install"
+  ansible.builtin.command: "{{ ansible_facts['env']['HOME'] }}/.rvm/bin/rvm all-gemsets do bundle install"
   ignore_errors: true
   args:
-    chdir: "{{ ansible_env.HOME }}/.lsp/puppet-editor-services"
+    chdir: "{{ ansible_facts['env']['HOME'] }}/.lsp/puppet-editor-services"
 
 # TODO: Add changes_when/failed_when
 - name: "[Puppet] Run bundle exec rake gem_revendor" # noqa no-changed-when ignore-errors
-  ansible.builtin.command: "{{ ansible_env.HOME }}/.rvm/bin/rvm all-gemsets do bundle exec rake gem_revendor"
+  ansible.builtin.command: "{{ ansible_facts['env']['HOME'] }}/.rvm/bin/rvm all-gemsets do bundle exec rake gem_revendor"
   ignore_errors: true
   args:
-    chdir: "{{ ansible_env.HOME }}/.lsp/puppet-editor-services"
+    chdir: "{{ ansible_facts['env']['HOME'] }}/.lsp/puppet-editor-services"
 
 #
 # PDK (Puppet Development Kit)

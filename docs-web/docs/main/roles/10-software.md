@@ -5,7 +5,8 @@ This role will install all necessary things to have the terminal pretty and usef
 Various tools:
 
 1. ZSH shell based on [Oh-my-ZSH](https://github.com/ohmyzsh/ohmyzsh) framework, with [powerlevel10k](https://github.com/romkatv/powerlevel10k) theme, and some custom plugins.
-2. [LS with GIT status](https://github.com/gerph/ls-with-git-status) - list files/directories with GIT info
+2. [EZA](https://github.com/eza-community/eza) - modern replacement for `ls` with icons, colours, Git integration and ZSH completions. Aliased as `ls` and `ll`.
+3. [LS with GIT status](https://github.com/gerph/ls-with-git-status) - list files/directories with GIT info
 3. [FZF Fuzzy finder](https://github.com/junegunn/fzf) - insane speed fuzzy finder with milion usage scenarios
 4. [Diff-so-fancy](https://github.com/so-fancy/diff-so-fancy) - alternate GIT DIFF presentation
 5. [Git fuzzy](https://github.com/bigH/git-fuzzy.git) - managing GIT commands using FZF
@@ -21,6 +22,7 @@ Various tools:
 15. [LazyGIT](https://github.com/jesseduffield/lazygit) - GIT wrapper for both terminal and VIM
 16. [keychain](https://www.funtoo.org/Funtoo:Keychain) - ssh-agent wrapper to keep SSH keys across terminal logins
 17. [yq](https://mikefarah.gitbook.io/yq/) - awesome terminal YAML parser (also JSON, XML etc.)
+18. [FX](https://github.com/antonmedv/fx) - terminal JSON viewer and processor
 
 Development-related software:
 
@@ -49,6 +51,8 @@ See [excluding code](../customization/excludes) for details.
 
 Available software excludes:
 
+- fx
+- eza
 - packages (default apt packages installation, including **dependencies**)
 - git
 - ripgrep

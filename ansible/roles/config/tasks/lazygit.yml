@@ -2,7 +2,7 @@
 # Source: https://github.com/jesseduffield/lazygit
 - name: "[Config][Lazygit] Ensure lazygit config directory"
   ansible.builtin.file:
-    path: "{{ ansible_env.HOME }}/.config/lazygit"
+    path: "{{ ansible_facts['env']['HOME'] }}/.config/lazygit"
     state: directory
     mode: '0755'
 
@@ -10,7 +10,7 @@
   vars:
     app: lazygit
     source_file: lazygit.yml
-    target_file: "{{ ansible_env.HOME }}/.config/lazygit/config.yml"
+    target_file: "{{ ansible_facts['env']['HOME'] }}/.config/lazygit/config.yml"
   ansible.builtin.include_role:
     name: common
     tasks_from: config_file.yml

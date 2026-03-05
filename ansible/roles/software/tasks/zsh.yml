@@ -40,7 +40,7 @@
 
 - name: '[Zsh] Esnure ~/.loca/bin is added to PATH'
   ansible.builtin.lineinfile:
-    path: "{{ ansible_env.HOME }}/.zshrc" 
+    path: "{{ ansible_facts['env']['HOME'] }}/.zshrc" 
     regexp: '^.*\.local/bin.*$'
     line: 'export PATH=$PATH:$HOME/.local/bin:$HOME/bin:/usr/local/bin' 
 

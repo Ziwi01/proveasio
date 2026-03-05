@@ -4,7 +4,7 @@
   vars:
     app: ansible-lint
     source_file: ansible-lint
-    target_file: "{{ ansible_env.HOME }}/.ansible-lint"
+    target_file: "{{ ansible_facts['env']['HOME'] }}/.ansible-lint"
   ansible.builtin.include_role:
     name: common
     tasks_from: config_file.yml

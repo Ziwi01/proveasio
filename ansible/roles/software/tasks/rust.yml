@@ -8,7 +8,7 @@
   register: rust_install
   args:
     chdir: "/tmp"
-    creates: "{{ ansible_env.HOME }}/.rust"
+    creates: "{{ ansible_facts['env']['HOME'] }}/.rust"
     executable: /bin/bash
 
 - name: "[Rust] Show Rust install/update info"

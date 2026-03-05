@@ -20,29 +20,29 @@
 
 - name: "[yq] Check if yq {{ yq_version }} is installed"
   ansible.builtin.stat:
-    path: "{{ ansible_env.HOME }}/.local/opt/yq-{{ yq_version }}"
+    path: "{{ ansible_facts['env']['HOME'] }}/.local/opt/yq-{{ yq_version }}"
   register: yq_dir
 
 - name: "Installation"
   when: not yq_dir.stat.exists
   block:
 
-    - name: "[yq] Create directory in {{ ansible_env.HOME }}/.local/opt"
+    - name: "[yq] Create directory in {{ ansible_facts['env']['HOME'] }}/.local/opt"
       ansible.builtin.file:
-        path: "{{ ansible_env.HOME }}/.local/opt/yq-{{ yq_version }}"
+        path: "{{ ansible_facts['env']['HOME'] }}/.local/opt/yq-{{ yq_version }}"
         state: directory
         mode: '0755'
 
     - name: "[yq] Download yq {{ yq_version }}"
       ansible.builtin.get_url:
         url: "{{ yq_url }}"
-        dest: "{{ ansible_env.HOME }}/.local/opt/yq-{{ yq_version }}/yq"
+        dest: "{{ ansible_facts['env']['HOME'] }}/.local/opt/yq-{{ yq_version }}/yq"
         mode: '0755'
 
 - name: "[yq] Link {{ yq_version }} binary"
   ansible.builtin.file:
-    src: "{{ ansible_env.HOME }}/.local/opt/yq-{{ yq_version }}/yq"
-    dest: "{{ ansible_env.HOME }}/.local/bin/yq"
+    src: "{{ ansible_facts['env']['HOME'] }}/.local/opt/yq-{{ yq_version }}/yq"
+    dest: "{{ ansible_facts['env']['HOME'] }}/.local/bin/yq"
     state: link
     force: true
 
