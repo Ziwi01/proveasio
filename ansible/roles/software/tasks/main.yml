@@ -2,7 +2,7 @@
 # Ensure local bin/opt directories are there
 - name: "[Software] Ensure dotted directories are there"
   ansible.builtin.file:
-    path: "{{ ansible_env.HOME }}/{{ item }}"
+    path: "{{ ansible_facts['env']['HOME'] }}/{{ item }}"
     state: directory
     mode: "0755"
   loop:

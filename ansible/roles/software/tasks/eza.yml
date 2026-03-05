@@ -18,7 +18,7 @@
 
 - name: "[EZA] Check if EZA {{ eza_version }} is installed"
   ansible.builtin.stat:
-    path: "{{ ansible_env.HOME }}/.local/opt/eza-{{ eza_version }}"
+    path: "{{ ansible_facts['env']['HOME'] }}/.local/opt/eza-{{ eza_version }}"
   register: eza_dir
   tags:
     - versions
@@ -26,9 +26,9 @@
 - name: "Installation"
   when: not eza_dir.stat.exists
   block:
-    - name: "[EZA] Create directory {{ ansible_env.HOME }}/.local/opt/eza-{{ eza_version }}"
+    - name: "[EZA] Create directory {{ ansible_facts['env']['HOME'] }}/.local/opt/eza-{{ eza_version }}"
       ansible.builtin.file:
-        path: "{{ ansible_env.HOME }}/.local/opt/eza-{{ eza_version }}"
+        path: "{{ ansible_facts['env']['HOME'] }}/.local/opt/eza-{{ eza_version }}"
         state: directory
         mode: "0755"
 
@@ -41,7 +41,7 @@
     - name: "[EZA] Untar EZA archive"
       ansible.builtin.unarchive:
         src: "/tmp/eza-{{ eza_version }}.tar.gz"
-        dest: "{{ ansible_env.HOME }}/.local/opt/eza-{{ eza_version }}"
+        dest: "{{ ansible_facts['env']['HOME'] }}/.local/opt/eza-{{ eza_version }}"
 
     - name: "[EZA] Cleanup tar.gz file"
       ansible.builtin.file:
@@ -51,13 +51,13 @@
     - name: "[EZA] Download ZSH completion script for {{ eza_version }}"
       ansible.builtin.get_url:
         url: "https://raw.githubusercontent.com/eza-community/eza/v{{ eza_version }}/completions/zsh/_eza"
-        dest: "{{ ansible_env.HOME }}/.local/opt/eza-{{ eza_version }}/_eza"
+        dest: "{{ ansible_facts['env']['HOME'] }}/.local/opt/eza-{{ eza_version }}/_eza"
         mode: "0644"
 
 - name: "[EZA] Link {{ eza_version }} binary to ~/.local/bin/eza"
   ansible.builtin.file:
-    src: "{{ ansible_env.HOME }}/.local/opt/eza-{{ eza_version }}/eza"
-    dest: "{{ ansible_env.HOME }}/.local/bin/eza"
+    src: "{{ ansible_facts['env']['HOME'] }}/.local/opt/eza-{{ eza_version }}/eza"
+    dest: "{{ ansible_facts['env']['HOME'] }}/.local/bin/eza"
     state: link
     force: true
 

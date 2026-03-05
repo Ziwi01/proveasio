@@ -7,7 +7,7 @@
     bash < <(curl -s -S -L https://raw.githubusercontent.com/moovweb/gvm/master/binscripts/gvm-installer)
   register: gvm_install
   args:
-    creates: "{{ ansible_env.HOME }}/.gvm"
+    creates: "{{ ansible_facts['env']['HOME'] }}/.gvm"
     executable: /bin/bash
 
 - name: "[GVM] Show GVM install/update info"
@@ -15,15 +15,15 @@
     msg: "{{ gvm_install.stdout | default('No output was passed from GVM install command') }}"
 
 - name: "[Go] Install Go versions"
-  ansible.builtin.shell: ". {{ ansible_env.HOME }}/.gvm/scripts/gvm && gvm install {{ goversion }} -B"
+  ansible.builtin.shell: ". {{ ansible_facts['env']['HOME'] }}/.gvm/scripts/gvm && gvm install {{ goversion }} -B"
   args:
-    creates: "{{ ansible_env.HOME }}/.gvm/environments/{{ goversion }}"
+    creates: "{{ ansible_facts['env']['HOME'] }}/.gvm/environments/{{ goversion }}"
     executable: /bin/bash
   loop: "{{ go_versions }}"
   loop_control:
     loop_var: goversion
 
 - name: "[Go] Set default to {{ go_default }}"
-  ansible.builtin.shell: ". {{ ansible_env.HOME }}/.gvm/scripts/gvm && gvm use {{ go_default }} --default"
+  ansible.builtin.shell: ". {{ ansible_facts['env']['HOME'] }}/.gvm/scripts/gvm && gvm use {{ go_default }} --default"
   args:
     executable: /bin/bash

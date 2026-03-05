@@ -4,5 +4,5 @@
 - name: "[LSG] Copy ls-with-git-status binary"
   ansible.builtin.copy:
     src: "ls-with-git-status/lsg"
-    dest: "{{ ansible_env.HOME }}/.local/bin/lsg"
+    dest: "{{ ansible_facts['env']['HOME'] }}/.local/bin/lsg"
     mode: '0755'

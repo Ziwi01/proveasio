@@ -19,17 +19,17 @@
 - name: "[NVM] Create ~/.local/opt/nvm"
   ansible.builtin.file:
     state: directory
-    path: "{{ ansible_env.HOME }}/.local/opt/nvm"
+    path: "{{ ansible_facts['env']['HOME'] }}/.local/opt/nvm"
     mode: "0755"
 
 - name: "[NVM] Install NVM" # noqa no-changed-when
   ansible.builtin.shell: |
     set -e -o pipefail
-    export NVM_DIR="{{ ansible_env.HOME }}/.local/opt/nvm"
+    export NVM_DIR="{{ ansible_facts['env']['HOME'] }}/.local/opt/nvm"
     wget -qO- https://raw.githubusercontent.com/nvm-sh/nvm/v{{ nvm_version }}/install.sh | bash
   args:
     executable: /bin/bash
-    creates: "{{ ansible_env.HOME }}/.local/opt/nvm/nvm.sh"
+    creates: "{{ ansible_facts['env']['HOME'] }}/.local/opt/nvm/nvm.sh"
   register: nvm_result
   changed_when: "'already installed' not in nvm_result.stdout"
 
@@ -39,17 +39,17 @@
 
 # TODO: Check if this version is already there for this user
 - name: "[NVM] Install Node {{ node_version }}" # noqa no-changed-when
-  ansible.builtin.shell: ". {{ ansible_env.HOME }}/.local/opt/nvm/nvm.sh; nvm install {{ node_version }} --default"
+  ansible.builtin.shell: ". {{ ansible_facts['env']['HOME'] }}/.local/opt/nvm/nvm.sh; nvm install {{ node_version }} --default"
   args:
     executable: /bin/bash
 
 - name: "[NVM] Set default Node to {{ node_version }}" # noqa no-changed-when
-  ansible.builtin.shell: ". {{ ansible_env.HOME }}/.local/opt/nvm/nvm.sh; nvm alias default {{ node_version }}"
+  ansible.builtin.shell: ". {{ ansible_facts['env']['HOME'] }}/.local/opt/nvm/nvm.sh; nvm alias default {{ node_version }}"
   args:
     executable: /bin/bash
 
 - name: "[NVM] Install Node default packages" # noqa no-changed-when
-  ansible.builtin.shell: ". {{ ansible_env.HOME }}/.local/opt/nvm/nvm.sh; npm install -g {{ item }}"
+  ansible.builtin.shell: ". {{ ansible_facts['env']['HOME'] }}/.local/opt/nvm/nvm.sh; npm install -g {{ item }}"
   args:
     executable: /bin/bash
   loop: "{{ npm_default_packages }}"

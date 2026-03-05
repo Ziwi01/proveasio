@@ -22,15 +22,15 @@
 
 - name: "[k9s] Check if k9s {{ k9s_version }} is installed"
   ansible.builtin.stat:
-    path: "{{ ansible_env.HOME }}/.local/opt/k9s-{{ k9s_version }}"
+    path: "{{ ansible_facts['env']['HOME'] }}/.local/opt/k9s-{{ k9s_version }}"
   register: k9s_dir
 
 - name: "Installation"
   when: not k9s_dir.stat.exists
   block:
-    - name: "[k9s] Create directory in {{ ansible_env.HOME }}/.local/opt"
+    - name: "[k9s] Create directory in {{ ansible_facts['env']['HOME'] }}/.local/opt"
       ansible.builtin.file:
-        path: "{{ ansible_env.HOME }}/.local/opt/k9s-{{ k9s_version }}"
+        path: "{{ ansible_facts['env']['HOME'] }}/.local/opt/k9s-{{ k9s_version }}"
         state: directory
         mode: '0755'
 
@@ -43,7 +43,7 @@
     - name: "[k9s] Untar archive"
       ansible.builtin.unarchive:
         src: "/tmp/k9s-{{ k9s_version }}.tar.gz"
-        dest: "{{ ansible_env.HOME }}/.local/opt/k9s-{{ k9s_version }}"
+        dest: "{{ ansible_facts['env']['HOME'] }}/.local/opt/k9s-{{ k9s_version }}"
 
     - name: "[k9s] Cleanup tar.gz file"
       ansible.builtin.file:
@@ -52,8 +52,8 @@
 
 - name: "[k9s] Link {{ k9s_version }} binary"
   ansible.builtin.file:
-    src: "{{ ansible_env.HOME }}/.local/opt/k9s-{{ k9s_version }}/k9s"
-    dest: "{{ ansible_env.HOME }}/.local/bin/k9s"
+    src: "{{ ansible_facts['env']['HOME'] }}/.local/opt/k9s-{{ k9s_version }}/k9s"
+    dest: "{{ ansible_facts['env']['HOME'] }}/.local/bin/k9s"
     state: link
     force: true
 

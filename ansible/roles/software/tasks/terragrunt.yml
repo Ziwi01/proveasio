@@ -22,28 +22,28 @@
 
 - name: "[terragrunt] Check if terragrunt {{ terragrunt_version }} is installed"
   ansible.builtin.stat:
-    path: "{{ ansible_env.HOME }}/.local/opt/terragrunt-{{ terragrunt_version }}"
+    path: "{{ ansible_facts['env']['HOME'] }}/.local/opt/terragrunt-{{ terragrunt_version }}"
   register: terragrunt_dir
 
 - name: "Installation"
   when: not terragrunt_dir.stat.exists
   block:
-    - name: "[terragrunt] Create directory in {{ ansible_env.HOME }}/.local/opt"
+    - name: "[terragrunt] Create directory in {{ ansible_facts['env']['HOME'] }}/.local/opt"
       ansible.builtin.file:
-        path: "{{ ansible_env.HOME }}/.local/opt/terragrunt-{{ terragrunt_version }}"
+        path: "{{ ansible_facts['env']['HOME'] }}/.local/opt/terragrunt-{{ terragrunt_version }}"
         state: directory
         mode: '0755'
 
     - name: "[terragrunt] Download terragrunt {{ terragrunt_version }}"
       ansible.builtin.get_url:
         url: "{{ terragrunt_url }}"
-        dest: "{{ ansible_env.HOME }}/.local/opt/terragrunt-{{ terragrunt_version }}/terragrunt"
+        dest: "{{ ansible_facts['env']['HOME'] }}/.local/opt/terragrunt-{{ terragrunt_version }}/terragrunt"
         mode: '0755'
 
 - name: "[terragrunt] Link {{ terragrunt_version }} binary"
   ansible.builtin.file:
-    src: "{{ ansible_env.HOME }}/.local/opt/terragrunt-{{ terragrunt_version }}/terragrunt"
-    dest: "{{ ansible_env.HOME }}/.local/bin/terragrunt"
+    src: "{{ ansible_facts['env']['HOME'] }}/.local/opt/terragrunt-{{ terragrunt_version }}/terragrunt"
+    dest: "{{ ansible_facts['env']['HOME'] }}/.local/bin/terragrunt"
     state: link
     force: true
 

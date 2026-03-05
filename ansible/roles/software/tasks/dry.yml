@@ -32,22 +32,22 @@
 - name: "Installation"
   when: dry_check_version.stdout | default('') | regex_search('[0-9]+\.[0-9]+\.[0-9]+') | default(0) != dry_version
   block:
-    - name: "[DRY] Create directory in {{ ansible_env.HOME }}/.local/opt"
+    - name: "[DRY] Create directory in {{ ansible_facts['env']['HOME'] }}/.local/opt"
       ansible.builtin.file:
-        path: "{{ ansible_env.HOME }}/.local/opt/dry-{{ dry_version }}"
+        path: "{{ ansible_facts['env']['HOME'] }}/.local/opt/dry-{{ dry_version }}"
         state: directory
         mode: "0755"
 
     - name: "[DRY] Download DRY {{ dry_version }}"
       ansible.builtin.get_url:
         url: "{{ dry_url }}"
-        dest: "{{ ansible_env.HOME }}/.local/opt/dry-{{ dry_version }}"
+        dest: "{{ ansible_facts['env']['HOME'] }}/.local/opt/dry-{{ dry_version }}"
         mode: "0755"
 
     - name: "[DRY] Symlink dry binary to ~/.local/bin"
       ansible.builtin.file:
-        src: "{{ ansible_env.HOME }}/.local/opt/dry-{{ dry_version }}/dry-linux-amd64"
-        dest: "{{ ansible_env.HOME }}/.local/bin/dry"
+        src: "{{ ansible_facts['env']['HOME'] }}/.local/opt/dry-{{ dry_version }}/dry-linux-amd64"
+        dest: "{{ ansible_facts['env']['HOME'] }}/.local/bin/dry"
         state: link
         force: true
 

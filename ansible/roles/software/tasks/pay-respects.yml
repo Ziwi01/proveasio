@@ -28,21 +28,21 @@
 - name: "Installation"
   when: pay_respects_check_deb.stdout | regex_search('[0-9]+\.[0-9]+\.[0-9]+') | default(0) != pay_respects_version
   block:
-    - name: "[pay-respects] Create directory in {{ ansible_env.HOME }}/.local/opt"
+    - name: "[pay-respects] Create directory in {{ ansible_facts['env']['HOME'] }}/.local/opt"
       ansible.builtin.file:
-        path: "{{ ansible_env.HOME }}/.local/opt/pay_respects-{{ pay_respects_version }}"
+        path: "{{ ansible_facts['env']['HOME'] }}/.local/opt/pay_respects-{{ pay_respects_version }}"
         state: directory
         mode: '0755'
 
     - name: "[pay-respects] Download pay-respects {{ pay_respects_version }}"
       ansible.builtin.get_url:
         url: "{{ pay_respects_url }}"
-        dest: "{{ ansible_env.HOME }}/.local/opt/pay_respects-{{ pay_respects_version }}"
+        dest: "{{ ansible_facts['env']['HOME'] }}/.local/opt/pay_respects-{{ pay_respects_version }}"
         mode: '0755'
 
     - name: "[pay-respects] Install {{ pay_respects_version }} .deb package"
       ansible.builtin.apt:
-        deb: "{{ ansible_env.HOME }}/.local/opt/pay_respects-{{ pay_respects_version }}/pay-respects_{{ pay_respects_version }}-1_amd64.deb"
+        deb: "{{ ansible_facts['env']['HOME'] }}/.local/opt/pay_respects-{{ pay_respects_version }}/pay-respects_{{ pay_respects_version }}-1_amd64.deb"
       become: true
 
 - name: "[pay-respects] Save used version"

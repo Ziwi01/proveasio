@@ -32,7 +32,7 @@
 
 - name: "[Tmux] Check if Tmux {{ tmux_version }} is installed"
   ansible.builtin.stat:
-    path: "{{ ansible_env.HOME }}/.local/opt/tmux-{{ tmux_version }}"
+    path: "{{ ansible_facts['env']['HOME'] }}/.local/opt/tmux-{{ tmux_version }}"
   register: tmux_dir
 
 - name: "Installation"
@@ -44,9 +44,9 @@
         dest: "/tmp/tmux-{{ tmux_version }}.tar.gz"
         mode: '0755'
 
-    - name: "[Tmux] Create directory in {{ ansible_env.HOME }}/.local/opt"
+    - name: "[Tmux] Create directory in {{ ansible_facts['env']['HOME'] }}/.local/opt"
       ansible.builtin.file:
-        path: "{{ ansible_env.HOME }}/.local/opt/tmux-{{ tmux_version }}"
+        path: "{{ ansible_facts['env']['HOME'] }}/.local/opt/tmux-{{ tmux_version }}"
         state: directory
         mode: '0755'
 
@@ -57,17 +57,17 @@
     - name: "[Tmux] Untar archive"
       ansible.builtin.unarchive:
         src: "/tmp/tmux-{{ tmux_version }}.tar.gz"
-        dest: "{{ ansible_env.HOME }}/.local/opt"
+        dest: "{{ ansible_facts['env']['HOME'] }}/.local/opt"
 
     - name: "[Tmux] Configure & make"
       ansible.builtin.shell: "./configure && make"
       args:
-        chdir: "{{ ansible_env.HOME }}/.local/opt/tmux-{{ tmux_version }}"
+        chdir: "{{ ansible_facts['env']['HOME'] }}/.local/opt/tmux-{{ tmux_version }}"
 
     - name: "[Tmux] Make install"
       ansible.builtin.command: "make install"
       args:
-        chdir: "{{ ansible_env.HOME }}/.local/opt/tmux-{{ tmux_version }}"
+        chdir: "{{ ansible_facts['env']['HOME'] }}/.local/opt/tmux-{{ tmux_version }}"
       become: true
 
     - name: "[Tmux] Turn off failed installation handler"
@@ -79,9 +79,9 @@
         path: "/tmp/tmux-{{ tmux_version }}.tar.gz"
         state: absent
 
-    - name: "[TMUX] Create Tmux plugin dir {{ ansible_env.HOME }}/.tmux/plugins"
+    - name: "[TMUX] Create Tmux plugin dir {{ ansible_facts['env']['HOME'] }}/.tmux/plugins"
       ansible.builtin.file:
-        path: "{{ ansible_env.HOME }}/.tmux/plugins"
+        path: "{{ ansible_facts['env']['HOME'] }}/.tmux/plugins"
         state: directory
         mode: '0755'
         recurse: true
@@ -94,9 +94,9 @@
         update: true
         version: "{{ tpm_version }}"
   rescue:
-    - name: "[Tmux] Remove TMUX dir {{ ansible_env.HOME }}/.local/opt/tmux-{{ tmux_version }} as installation failed"
+    - name: "[Tmux] Remove TMUX dir {{ ansible_facts['env']['HOME'] }}/.local/opt/tmux-{{ tmux_version }} as installation failed"
       ansible.builtin.file:
-        path: "{{ ansible_env.HOME }}/.local/opt/tmux-{{ tmux_version }}"
+        path: "{{ ansible_facts['env']['HOME'] }}/.local/opt/tmux-{{ tmux_version }}"
         state: absent
       when: tmux_failed | bool
 
@@ -108,14 +108,14 @@
 - name: "[TMUX] Install tmuxp session manager"
   ansible.builtin.pip:
     name: "tmuxp"
-    executable: "{{ ansible_env.HOME }}/.pyenv/shims/pip3"
+    executable: "{{ ansible_facts['env']['HOME'] }}/.pyenv/shims/pip3"
   register: pip_out
   changed_when: "'Requirement already satisfied' not in pip_out.stdout"
 
 - name: "[Tmux] Install tmuxp session manager specific version"
   ansible.builtin.pip:
     name: "tmuxp=={{ pip_packages['tmuxp'] }}"
-    executable: "{{ ansible_env.HOME }}/.pyenv/shims/pip3"
+    executable: "{{ ansible_facts['env']['HOME'] }}/.pyenv/shims/pip3"
   register: pip_out
   changed_when: "'Requirement already satisfied' not in pip_out.stdout"
   when: pip_packages['tmuxp'] != 'latest'
@@ -123,7 +123,7 @@
 - name: "[Tmux] Install tmuxp latest version"
   ansible.builtin.pip:
     name: "tmuxp"
-    executable: "{{ ansible_env.HOME }}/.pyenv/shims/pip3"
+    executable: "{{ ansible_facts['env']['HOME'] }}/.pyenv/shims/pip3"
     extra_args: --upgrade
   register: pip_out
   changed_when: "'Requirement already satisfied' not in pip_out.stdout"
@@ -132,7 +132,7 @@
 - name: "[tmux] Get installed tmuxp version"
   ansible.builtin.shell: |
     set -e -o pipefail
-    {{ ansible_env.HOME }}/.pyenv/shims/pip3 show tmuxp | grep Version | awk '{print $2}'
+    {{ ansible_facts['env']['HOME'] }}/.pyenv/shims/pip3 show tmuxp | grep Version | awk '{print $2}'
   args:
     executable: /bin/bash
   changed_when: false

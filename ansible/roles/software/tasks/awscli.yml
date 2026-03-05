@@ -8,26 +8,26 @@
     force: true
     mode: '0644'
 
-- name: "[AWS CLI] Create installation directory in {{ ansible_env.HOME }}/.local/opt"
+- name: "[AWS CLI] Create installation directory in {{ ansible_facts['env']['HOME'] }}/.local/opt"
   ansible.builtin.file:
-    path: "{{ ansible_env.HOME }}/.local/opt/awscli-install"
+    path: "{{ ansible_facts['env']['HOME'] }}/.local/opt/awscli-install"
     state: directory
     mode: '0755'
 
 - name: "[AWS CLI] Extract binary"
   ansible.builtin.unarchive:
     src: "/tmp/awscliv2.zip"
-    dest: "{{ ansible_env.HOME }}/.local/opt/awscli-install"
+    dest: "{{ ansible_facts['env']['HOME'] }}/.local/opt/awscli-install"
 
 - name: "[AWS CLI] Install/update"
   ansible.builtin.shell: |
     set -e -o pipefail
-    ./aws/install --bin-dir {{ ansible_env.HOME }}/.local/bin --install-dir {{ ansible_env.HOME }}/.local/opt/aws-cli --update
+    ./aws/install --bin-dir {{ ansible_facts['env']['HOME'] }}/.local/bin --install-dir {{ ansible_facts['env']['HOME'] }}/.local/opt/aws-cli --update
   register: aws_install
   changed_when: aws_install.stdout is not regex('^Found same AWS CLI version:')
   args:
     executable: /bin/bash
-    chdir: "{{ ansible_env.HOME }}/.local/opt/awscli-install"
+    chdir: "{{ ansible_facts['env']['HOME'] }}/.local/opt/awscli-install"
 
 - name: "[AWS CLI] Show install/update info"
   ansible.builtin.debug:
@@ -37,4 +37,4 @@
   ansible.builtin.pip:
     name: awscli
     state: absent
-    executable: "{{ ansible_env.HOME }}/.pyenv/shims/pip3"
+    executable: "{{ ansible_facts['env']['HOME'] }}/.pyenv/shims/pip3"

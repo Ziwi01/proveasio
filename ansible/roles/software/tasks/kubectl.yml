@@ -30,28 +30,28 @@
 
 - name: "[kubectl] Check if kubectl {{ kubectl_version }} is installed"
   ansible.builtin.stat:
-    path: "{{ ansible_env.HOME }}/.local/opt/kubectl-{{ kubectl_version }}"
+    path: "{{ ansible_facts['env']['HOME'] }}/.local/opt/kubectl-{{ kubectl_version }}"
   register: kubectl_dir
 
 - name: "Installation"
   when: not kubectl_dir.stat.exists
   block:
-    - name: "[kubectl] Create directory in {{ ansible_env.HOME }}/.local/opt"
+    - name: "[kubectl] Create directory in {{ ansible_facts['env']['HOME'] }}/.local/opt"
       ansible.builtin.file:
-        path: "{{ ansible_env.HOME }}/.local/opt/kubectl-{{ kubectl_version }}"
+        path: "{{ ansible_facts['env']['HOME'] }}/.local/opt/kubectl-{{ kubectl_version }}"
         state: directory
         mode: '0755'
 
     - name: "[kubectl] Download kubectl {{ kubectl_version }}"
       ansible.builtin.get_url:
         url: "{{ kubectl_url }}"
-        dest: "{{ ansible_env.HOME }}/.local/opt/kubectl-{{ kubectl_version }}/kubectl"
+        dest: "{{ ansible_facts['env']['HOME'] }}/.local/opt/kubectl-{{ kubectl_version }}/kubectl"
         mode: '0755'
 
 - name: "[kubectl] Link {{ kubectl_version }} binary"
   ansible.builtin.file:
-    src: "{{ ansible_env.HOME }}/.local/opt/kubectl-{{ kubectl_version }}/kubectl"
-    dest: "{{ ansible_env.HOME }}/.local/bin/kubectl"
+    src: "{{ ansible_facts['env']['HOME'] }}/.local/opt/kubectl-{{ kubectl_version }}/kubectl"
+    dest: "{{ ansible_facts['env']['HOME'] }}/.local/bin/kubectl"
     state: link
     force: true
 

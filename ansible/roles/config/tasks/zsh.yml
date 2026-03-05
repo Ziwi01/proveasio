@@ -4,7 +4,7 @@
 - name: "[Config][ZSH] Get exact node version"
   ansible.builtin.shell: |
     set -e -o pipefail
-    . {{ ansible_env.HOME }}/.local/opt/nvm/nvm.sh
+    . {{ ansible_facts['env']['HOME'] }}/.local/opt/nvm/nvm.sh
     nvm use {{ node_version | default('default') }} 2>&1 1>/dev/null
     nvm list current | grep -Eo 'v[0-9]*\.[0-9]*\.[0-9]*'
   args:
@@ -16,7 +16,7 @@
 - name: "[Config][ZSH] Resolve EZA version for FPATH"
   ansible.builtin.shell: |
     set -e -o pipefail
-    ls -1d {{ ansible_env.HOME }}/.local/opt/eza-* 2>/dev/null | sort -V | tail -1 | xargs -I{} basename {} | cut -d'-' -f2
+    ls -1d {{ ansible_facts['env']['HOME'] }}/.local/opt/eza-* 2>/dev/null | sort -V | tail -1 | xargs -I{} basename {} | cut -d'-' -f2
   args:
     executable: /bin/bash
   changed_when: false
@@ -33,7 +33,7 @@
   vars:
     app: ZSH
     source_template: zshrc.j2
-    target_file: "{{ ansible_env.HOME }}/.zshrc"
+    target_file: "{{ ansible_facts['env']['HOME'] }}/.zshrc"
   ansible.builtin.include_role:
     name: common
     tasks_from: config_file.yml

@@ -42,21 +42,21 @@
 - name: "Installation"
   when: fd_check_deb.stdout | regex_search('[0-9]+\.[0-9]+\.[0-9]+') | default(0) != fd_version
   block:
-    - name: "[FD] Create directory in {{ ansible_env.HOME }}/.local/opt"
+    - name: "[FD] Create directory in {{ ansible_facts['env']['HOME'] }}/.local/opt"
       ansible.builtin.file:
-        path: "{{ ansible_env.HOME }}/.local/opt/fd-{{ fd_version }}"
+        path: "{{ ansible_facts['env']['HOME'] }}/.local/opt/fd-{{ fd_version }}"
         state: directory
         mode: '0755'
 
     - name: "[FD] Download FD {{ fd_version }}"
       ansible.builtin.get_url:
         url: "{{ fd_url }}"
-        dest: "{{ ansible_env.HOME }}/.local/opt/fd-{{ fd_version }}"
+        dest: "{{ ansible_facts['env']['HOME'] }}/.local/opt/fd-{{ fd_version }}"
         mode: '0755'
 
     - name: "[FD] Install {{ fd_version }} .deb package"
       ansible.builtin.apt:
-        deb: "{{ ansible_env.HOME }}/.local/opt/fd-{{ fd_version }}/fd_{{ fd_version }}_amd64.deb"
+        deb: "{{ ansible_facts['env']['HOME'] }}/.local/opt/fd-{{ fd_version }}/fd_{{ fd_version }}_amd64.deb"
       become: true
 
 - name: "[fd] Save used version"
