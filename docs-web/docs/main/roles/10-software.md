@@ -22,6 +22,7 @@ Various tools:
 15. [LazyGIT](https://github.com/jesseduffield/lazygit) - GIT wrapper for both terminal and VIM
 16. [keychain](https://www.funtoo.org/Funtoo:Keychain) - ssh-agent wrapper to keep SSH keys across terminal logins
 17. [yq](https://mikefarah.gitbook.io/yq/) - awesome terminal YAML parser (also JSON, XML etc.)
+18. [FX](https://github.com/antonmedv/fx) - terminal JSON viewer and processor
 
 Development-related software:
 
@@ -50,6 +51,7 @@ See [excluding code](../customization/excludes) for details.
 
 Available software excludes:
 
+- fx
 - eza
 - packages (default apt packages installation, including **dependencies**)
 - git

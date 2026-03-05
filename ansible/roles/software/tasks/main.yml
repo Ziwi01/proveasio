@@ -50,6 +50,20 @@
     - versions
     - yq
 
+# FX - Terminal JSON viewer and processor
+- name: "[Software] Install fx"
+  ansible.builtin.include_tasks:
+    file: fx.yml
+    apply:
+      tags:
+        - software
+        - fx
+  when: "'fx' not in software_tasks_exclude"
+  tags:
+    - software
+    - versions
+    - fx
+
 # Latest GIT
 - name: "[Software] Install git"
   ansible.builtin.include_tasks:
