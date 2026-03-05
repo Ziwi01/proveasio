@@ -36,6 +36,7 @@ Above will run only `software` role for ZSH, and will **not** run configuration 
 
 For particular functionality (`software` + `config`) below tags are available:
 
+- eza
 - ansible
 - diff-so-fancy
 - fd

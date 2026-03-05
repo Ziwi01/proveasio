@@ -115,6 +115,11 @@ plugins=(
 {% endif %}
 )
 
+# EZA - must be set before oh-my-zsh sources compinit
+if command -v eza &>/dev/null; then
+  export FPATH="${HOME}/.local/opt/eza-{{ eza_version }}:$FPATH"
+fi
+
 source $ZSH/oh-my-zsh.sh
 
 # Load NVM, but use lazyload (save ~2s startup time)
@@ -275,6 +280,13 @@ export ANSIBLE_TRANSFORM_INVALID_GROUP_CHARS=ignore
 
 # To customize prompt, run `p10k configure` or edit ~/.p10k.zsh.
 [[ ! -f ~/.p10k.zsh ]] || source ~/.p10k.zsh
+
+# EZA
+if command -v eza &>/dev/null; then
+  alias eza='eza --group-directories-first --icons --color=always -a --git'
+  alias ls='eza'
+  alias ll='eza -l'
+fi
 
 # Cargo
 . "$HOME/.cargo/env"

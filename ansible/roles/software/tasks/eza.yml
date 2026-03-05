@@ -1,0 +1,78 @@
+# EZA - A modern, maintained replacement for ls
+# Source: https://github.com/eza-community/eza
+---
+- name: "[EZA] Get Github URL for proper version"
+  vars:
+    app: eza
+    repo: eza-community/eza
+    version_query: curl -s https://api.github.com/repos/eza-community/eza/releases/latest | jq .tag_name -r | cut -f2 -d'v'
+    github_uri: "v{{ eza_version }}/eza_x86_64-unknown-linux-musl.tar.gz"
+  ansible.builtin.include_role:
+    name: common
+    tasks_from: github_version.yml
+    apply:
+      tags:
+        - versions
+  tags:
+    - versions
+
+- name: "[EZA] Check if EZA {{ eza_version }} is installed"
+  ansible.builtin.stat:
+    path: "{{ ansible_env.HOME }}/.local/opt/eza-{{ eza_version }}"
+  register: eza_dir
+  tags:
+    - versions
+
+- name: "Installation"
+  when: not eza_dir.stat.exists
+  block:
+    - name: "[EZA] Create directory {{ ansible_env.HOME }}/.local/opt/eza-{{ eza_version }}"
+      ansible.builtin.file:
+        path: "{{ ansible_env.HOME }}/.local/opt/eza-{{ eza_version }}"
+        state: directory
+        mode: "0755"
+
+    - name: "[EZA] Download EZA {{ eza_version }}"
+      ansible.builtin.get_url:
+        url: "{{ eza_url }}"
+        dest: "/tmp/eza-{{ eza_version }}.tar.gz"
+        mode: "0755"
+
+    - name: "[EZA] Untar EZA archive"
+      ansible.builtin.unarchive:
+        src: "/tmp/eza-{{ eza_version }}.tar.gz"
+        dest: "{{ ansible_env.HOME }}/.local/opt/eza-{{ eza_version }}"
+
+    - name: "[EZA] Cleanup tar.gz file"
+      ansible.builtin.file:
+        path: "/tmp/eza-{{ eza_version }}.tar.gz"
+        state: absent
+
+    - name: "[EZA] Download ZSH completion script for {{ eza_version }}"
+      ansible.builtin.get_url:
+        url: "https://raw.githubusercontent.com/eza-community/eza/v{{ eza_version }}/completions/zsh/_eza"
+        dest: "{{ ansible_env.HOME }}/.local/opt/eza-{{ eza_version }}/_eza"
+        mode: "0644"
+
+- name: "[EZA] Link {{ eza_version }} binary to ~/.local/bin/eza"
+  ansible.builtin.file:
+    src: "{{ ansible_env.HOME }}/.local/opt/eza-{{ eza_version }}/eza"
+    dest: "{{ ansible_env.HOME }}/.local/bin/eza"
+    state: link
+    force: true
+
+- name: "[EZA] Save used version"
+  vars:
+    app: eza
+    target_version:
+      github_packages:
+        eza: "{{ eza_version }}"
+    yq_query: ".github_packages.eza = \"{{ eza_version }}\""
+  ansible.builtin.include_role:
+    name: common
+    tasks_from: save_version.yml
+    apply:
+      tags:
+        - versions
+  tags:
+    - versions

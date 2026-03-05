@@ -5,7 +5,8 @@ This role will install all necessary things to have the terminal pretty and usef
 Various tools:
 
 1. ZSH shell based on [Oh-my-ZSH](https://github.com/ohmyzsh/ohmyzsh) framework, with [powerlevel10k](https://github.com/romkatv/powerlevel10k) theme, and some custom plugins.
-2. [LS with GIT status](https://github.com/gerph/ls-with-git-status) - list files/directories with GIT info
+2. [EZA](https://github.com/eza-community/eza) - modern replacement for `ls` with icons, colours, Git integration and ZSH completions. Aliased as `ls` and `ll`.
+3. [LS with GIT status](https://github.com/gerph/ls-with-git-status) - list files/directories with GIT info
 3. [FZF Fuzzy finder](https://github.com/junegunn/fzf) - insane speed fuzzy finder with milion usage scenarios
 4. [Diff-so-fancy](https://github.com/so-fancy/diff-so-fancy) - alternate GIT DIFF presentation
 5. [Git fuzzy](https://github.com/bigH/git-fuzzy.git) - managing GIT commands using FZF
@@ -49,6 +50,7 @@ See [excluding code](../customization/excludes) for details.
 
 Available software excludes:
 
+- eza
 - packages (default apt packages installation, including **dependencies**)
 - git
 - ripgrep

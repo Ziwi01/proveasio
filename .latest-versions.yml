@@ -1,5 +1,6 @@
 ---
 github_packages:
+  eza: latest
   neovim: latest
   diff_so_fancy: latest
   bat: latest

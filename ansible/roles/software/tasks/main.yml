@@ -92,6 +92,20 @@
     - versions
     - fd
 
+# EZA (modern ls replacement)
+- name: "[Software] Install eza"
+  ansible.builtin.include_tasks:
+    file: eza.yml
+    apply:
+      tags:
+        - software
+        - eza
+  when: "'eza' not in software_tasks_exclude"
+  tags:
+    - software
+    - versions
+    - eza
+
 # ls-with-git-status
 - name: "[Software] Install lsg"
   ansible.builtin.include_tasks:
