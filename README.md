@@ -14,9 +14,9 @@
 
 Prepare your Ubuntu terminal dev environment with one command (well, sort of). Become terminal power-user in no time.
 
-Install, configure and maintain Ubuntu 24.04/22.04 terminal environment focused on development and administration. This includes installation/configuration of very useful dev tools and customizations to ease out and speed up terminal usage during day-to-day work and to bump up productivity.
+Install, configure and maintain Ubuntu 24.04 terminal environment focused on development and administration. This includes installation/configuration of very useful dev tools and customizations to ease out and speed up terminal usage during day-to-day work and to bump up productivity.
 
-Below project is supported on Ubuntu running on Windows WSL2, but it is also tested on Ubuntu 22.04/24.04 images.
+Below project is supported on Ubuntu running on Windows WSL2, but it is also tested on Ubuntu 24.04 image.
 
 ## Features
 
@@ -89,7 +89,7 @@ See [Troubleshooting](https://ziwi01.github.io/proveasio/main/troubleshooting)
 
 ## Contributing
 
-If you want to help with this piece of software: fork it, create a branch, make changes, test it (preferably including Github workflow for Ubuntu 22.04) and open a Pull Request. You can see [TODO](./TODO.md) for ideas :)
+If you want to help with this piece of software: fork it, create a branch, make changes, test it (preferably including Github workflow for Ubuntu 24.04) and open a Pull Request. You can see [TODO](./TODO.md) for ideas :)
 
 Thanks in advance!
 

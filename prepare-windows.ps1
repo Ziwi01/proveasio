@@ -2,9 +2,9 @@
 # Install WSL2 distro
 ###############
 
-Write-Host "Install WSL2 + Ubuntu 22.04`r`n"
-wsl.exe --install -d 'Ubuntu-22.04'
-wsl.exe --set-default 'Ubuntu-22.04'
+Write-Host "Install WSL2 + Ubuntu 24.04`r`n"
+wsl.exe --install -d 'Ubuntu-24.04'
+wsl.exe --set-default 'Ubuntu-24.04'
 
 ###############
 # Enable WinRM Windows service with CredSSP authentication, disable Basic Auth

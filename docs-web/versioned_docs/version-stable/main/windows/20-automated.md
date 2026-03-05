@@ -12,7 +12,7 @@ Download this repository somewhere on Windows.
 
 There is a script `prepare-windows.ps1`, which will:
 
-- Install WSL with Ubuntu 22.04.
+- Install WSL with Ubuntu 24.04.
 - Enable WinRM protocol with CredSSP authentication transport (to be able to run Ansible from WSL2 to configure Windows)
 - Install [Chocolatey](https://chocolatey.org/) package manager to install software
 

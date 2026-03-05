@@ -9,26 +9,6 @@ on:
   workflow_dispatch:
 
 jobs:
-  ubuntu-22:
-    name: "Build (Ubuntu 22)"
-    runs-on: ubuntu-22.04
-
-    steps:
-      - uses: actions/checkout@v3
-        with:
-          fetch-depth: 0
-
-      - name: Fix grub-efi-amd64 error
-        run: |
-          sudo apt remove shim-signed grub-efi-amd64-bin -y --allow-remove-essential
-
-      - name: Prepare for setup
-        run: sudo sh prepare-ubuntu.sh
-
-      - name: Build Proveasio'ned environment
-        working-directory: ./ansible
-        run: ansible-playbook -i inventory.yml setup-ubuntu.yml
-
   ubuntu-24:
     name: "Build (Ubuntu 24)"
     runs-on: ubuntu-24.04
