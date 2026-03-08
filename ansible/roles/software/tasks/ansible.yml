@@ -28,18 +28,25 @@
 # ansible-lint
 #
 - name: "[Ansible] Install Ansible PIP specific version"
-  ansible.builtin.pip:
-    name: "ansible=={{ ansible_pip_version }}"
-    executable: "{{ ansible_facts['env']['HOME'] }}/.pyenv/shims/pip3"
+  ansible.builtin.shell: |
+    set -e -o pipefail
+    {{ ansible_facts['env']['HOME'] }}/.local/bin/uv pip install "ansible=={{ ansible_pip_version }}"
+  args:
+    executable: /bin/bash
+  environment:
+    VIRTUAL_ENV: "{{ ansible_facts['env']['HOME'] }}/.venv"
   register: pip_out
   changed_when: "'Requirement already satisfied' not in pip_out.stdout"
   when: ansible_pip_version != 'latest'
 
 - name: "[Ansible] Install Ansible PIP latest version"
-  ansible.builtin.pip:
-    name: "ansible"
-    executable: "{{ ansible_facts['env']['HOME'] }}/.pyenv/shims/pip3"
-    extra_args: --upgrade
+  ansible.builtin.shell: |
+    set -e -o pipefail
+    {{ ansible_facts['env']['HOME'] }}/.local/bin/uv pip install --upgrade ansible
+  args:
+    executable: /bin/bash
+  environment:
+    VIRTUAL_ENV: "{{ ansible_facts['env']['HOME'] }}/.venv"
   register: pip_out
   changed_when: "'Requirement already satisfied' not in pip_out.stdout"
   when: ansible_pip_version == 'latest'
@@ -47,10 +54,12 @@
 - name: "[Ansible] Get installed Ansible version from PIP"
   ansible.builtin.shell: |
     set -e -o pipefail
-    {{ ansible_facts['env']['HOME'] }}/.pyenv/shims/pip3 show ansible | grep Version | awk '{print $2}'
+    {{ ansible_facts['env']['HOME'] }}/.local/bin/uv pip show ansible | grep Version | awk '{print $2}'
   changed_when: false
   args:
     executable: /bin/bash
+  environment:
+    VIRTUAL_ENV: "{{ ansible_facts['env']['HOME'] }}/.venv"
   register: ansible_version_pip
   tags:
     - versions
@@ -71,27 +80,36 @@
     - versions
 
 - name: "[Ansible] Install ansible-lint PIP specific version"
-  ansible.builtin.pip:
-    name: "ansible-lint=={{ ansible_lint_pip_version }}"
-    executable: "{{ ansible_facts['env']['HOME'] }}/.pyenv/shims/pip3"
+  ansible.builtin.shell: |
+    set -e -o pipefail
+    {{ ansible_facts['env']['HOME'] }}/.local/bin/uv pip install "ansible-lint=={{ ansible_lint_pip_version }}"
+  args:
+    executable: /bin/bash
+  environment:
+    VIRTUAL_ENV: "{{ ansible_facts['env']['HOME'] }}/.venv"
   register: pip_out
   changed_when: "'Requirement already satisfied' not in pip_out.stdout"
   when: ansible_lint_pip_version != 'latest'
 
 - name: "[Ansible] Install ansible-lint PIP latest version"
-  ansible.builtin.pip:
-    name: "ansible-lint"
-    executable: "{{ ansible_facts['env']['HOME'] }}/.pyenv/shims/pip3"
-    extra_args: --upgrade
+  ansible.builtin.shell: |
+    set -e -o pipefail
+    {{ ansible_facts['env']['HOME'] }}/.local/bin/uv pip install --upgrade ansible-lint
+  args:
+    executable: /bin/bash
+  environment:
+    VIRTUAL_ENV: "{{ ansible_facts['env']['HOME'] }}/.venv"
   register: pip_out
   changed_when: "'Requirement already satisfied' not in pip_out.stdout"
   when: ansible_lint_pip_version == 'latest'
 
 - name: "[Ansible] Get installed Ansible version from PIP"
-  ansible.builtin.shell: "set -e -o pipefail; {{ ansible_facts['env']['HOME'] }}/.pyenv/shims/pip3 show ansible-lint | grep Version | awk '{print $2}'"
+  ansible.builtin.shell: "set -e -o pipefail; {{ ansible_facts['env']['HOME'] }}/.local/bin/uv pip show ansible-lint | grep Version | awk '{print $2}'"
   changed_when: false
   args:
     executable: /bin/bash
+  environment:
+    VIRTUAL_ENV: "{{ ansible_facts['env']['HOME'] }}/.venv"
   register: ansible_lint_version
   tags:
     - versions

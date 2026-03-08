@@ -34,7 +34,11 @@
     msg: "{{ aws_install.stdout | default('No output was passed from AWS install command') }}"
 
 - name: "[AWS CLI] Remove AWS cli from pip"
-  ansible.builtin.pip:
-    name: awscli
-    state: absent
-    executable: "{{ ansible_facts['env']['HOME'] }}/.pyenv/shims/pip3"
+  ansible.builtin.shell: |
+    set -e -o pipefail
+    {{ ansible_facts['env']['HOME'] }}/.local/bin/uv pip uninstall awscli || true
+  args:
+    executable: /bin/bash
+  environment:
+    VIRTUAL_ENV: "{{ ansible_facts['env']['HOME'] }}/.venv"
+  changed_when: false

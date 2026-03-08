@@ -76,11 +76,15 @@ github_packages:
   dry: latest
 # Kubectl version
 kubectl_version: latest
+# uv Python version to install and use for the managed venv at ~/.venv
+uv_python_version: "3.14.0"
 # Packages and their versions to install with PIP
 pip_packages:
   gita: latest
   tmuxp: 1.55.0
   az_account_switcher: latest
+  spec_kit: latest
+
 # FZF
 fzf_git_url: "https://github.com/junegunn/fzf.git"
 fzf_home: "{{ ansible_facts['env']['HOME'] }}/.fzf"
@@ -100,9 +104,9 @@ omz_plugins:
   zsh-syntax-highlighting: https://github.com/zsh-users/zsh-syntax-highlighting.git
   zsh-sdkman: https://github.com/matthieusb/zsh-sdkman.git
   zsh-lazyload: https://github.com/qoomon/zsh-lazyload
-  pyenv-lazy: https://github.com/davidparsson/zsh-pyenv-lazy.git
   zsh-snv: https://github.com/rpeshkov/zsh-snv
   jq: https://github.com/reegnz/jq-zsh-plugin.git
+
 # TMUX Plugin Manager
 tmux_plugins_dir: "{{ ansible_facts['env']['HOME'] }}/.tmux/plugins"
 tpm_git_url: https://github.com/tmux-plugins/tpm.git

@@ -1,0 +1,46 @@
+# uv - An extremely fast Python package and project manager
+# Source: https://docs.astral.sh/uv/
+---
+- name: "[uv] Install uv via official installer"
+  ansible.builtin.shell: |
+    set -e -o pipefail
+    curl -LsSf https://astral.sh/uv/install.sh | sh
+  args:
+    executable: /bin/bash
+    creates: "{{ ansible_facts['env']['HOME'] }}/.local/bin/uv"
+
+- name: "[uv] Ensure uv is on PATH in .bashrc"
+  ansible.builtin.lineinfile:
+    path: "{{ ansible_facts['env']['HOME'] }}/.bashrc"
+    line: 'export PATH="$HOME/.local/bin:$PATH"'
+    state: present
+
+- name: "[uv] Create Python venv at ~/.venv"
+  ansible.builtin.shell: |
+    set -e -o pipefail
+    {{ ansible_facts['env']['HOME'] }}/.local/bin/uv venv --python {{ uv_python_version }} {{ ansible_facts['env']['HOME'] }}/.venv
+  args:
+    executable: /bin/bash
+    creates: "{{ ansible_facts['env']['HOME'] }}/.venv/bin/activate"
+
+- name: "[uv] Ensure venv is activated in .bashrc"
+  ansible.builtin.lineinfile:
+    path: "{{ ansible_facts['env']['HOME'] }}/.bashrc"
+    line: 'source "$HOME/.venv/bin/activate"'
+    state: present
+
+- name: "[uv] Get installed uv version"
+  ansible.builtin.shell: |
+    set -e -o pipefail
+    {{ ansible_facts['env']['HOME'] }}/.local/bin/uv --version | awk '{print $2}'
+  args:
+    executable: /bin/bash
+  changed_when: false
+  register: uv_version_installed
+  tags:
+    - versions
+
+- name: "[uv] Show installed version"
+  ansible.builtin.debug:
+    msg: "uv version installed: {{ uv_version_installed.stdout }}"
+

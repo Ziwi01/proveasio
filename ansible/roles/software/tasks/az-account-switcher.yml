@@ -3,18 +3,25 @@
 #
 # Source: https://github.com/abij/az-account-switcher
 - name: "[az-account-switcher] Install az-account-switcher specific version"
-  ansible.builtin.pip:
-    name: "az-account-switcher=={{ pip_packages['az_account_switcher'] }}"
-    executable: "{{ ansible_facts['env']['HOME'] }}/.pyenv/shims/pip3"
+  ansible.builtin.shell: |
+    set -e -o pipefail
+    {{ ansible_facts['env']['HOME'] }}/.local/bin/uv pip install "az-account-switcher=={{ pip_packages['az_account_switcher'] }}"
+  args:
+    executable: /bin/bash
+  environment:
+    VIRTUAL_ENV: "{{ ansible_facts['env']['HOME'] }}/.venv"
   register: pip_out
   changed_when: "'Requirement already satisfied' not in pip_out.stdout"
   when: pip_packages['az_account_switcher'] != 'latest'
 
 - name: "[az-account-switcher] Install az-account-switcher latest version"
-  ansible.builtin.pip:
-    name: "az-account-switcher"
-    executable: "{{ ansible_facts['env']['HOME'] }}/.pyenv/shims/pip3"
-    extra_args: --upgrade
+  ansible.builtin.shell: |
+    set -e -o pipefail
+    {{ ansible_facts['env']['HOME'] }}/.local/bin/uv pip install --upgrade az-account-switcher
+  args:
+    executable: /bin/bash
+  environment:
+    VIRTUAL_ENV: "{{ ansible_facts['env']['HOME'] }}/.venv"
   register: pip_out
   changed_when: "'Requirement already satisfied' not in pip_out.stdout"
   when: pip_packages['az_account_switcher'] == 'latest'
@@ -22,9 +29,11 @@
 - name: "[az-account-switcher] Get installed az-account-switcher version"
   ansible.builtin.shell: |
     set -e -o pipefail
-    {{ ansible_facts['env']['HOME'] }}/.pyenv/shims/pip3 show az-account-switcher | grep Version | awk '{print $2}'
+    {{ ansible_facts['env']['HOME'] }}/.local/bin/uv pip show az-account-switcher | grep Version | awk '{print $2}'
   args:
     executable: /bin/bash
+  environment:
+    VIRTUAL_ENV: "{{ ansible_facts['env']['HOME'] }}/.venv"
   changed_when: false
   register: az_account_switcher_version
   tags:

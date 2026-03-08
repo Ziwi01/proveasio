@@ -1,0 +1,49 @@
+# spec-kit - A collection of tools for writing specifications
+# Source: https://github.com/github/spec-kit
+---
+- name: "[spec-kit] Install spec-kit specific version via uv"
+  ansible.builtin.shell: |
+    set -e -o pipefail
+    {{ ansible_facts['env']['HOME'] }}/.local/bin/uv tool install "spec-kit=={{ pip_packages['spec_kit'] }}"
+  args:
+    executable: /bin/bash
+  register: spec_kit_install
+  changed_when: "'Installed' in spec_kit_install.stdout or spec_kit_install.rc == 0"
+  when: pip_packages['spec_kit'] != 'latest'
+
+- name: "[spec-kit] Install spec-kit latest version via uv"
+  ansible.builtin.shell: |
+    set -e -o pipefail
+    {{ ansible_facts['env']['HOME'] }}/.local/bin/uv tool install --upgrade spec-kit
+  args:
+    executable: /bin/bash
+  register: spec_kit_install
+  changed_when: "'Installed' in spec_kit_install.stdout or 'Updated' in spec_kit_install.stdout"
+  when: pip_packages['spec_kit'] == 'latest'
+
+- name: "[spec-kit] Get installed spec-kit version"
+  ansible.builtin.shell: |
+    set -e -o pipefail
+    {{ ansible_facts['env']['HOME'] }}/.local/bin/uv tool list | grep spec-kit | awk '{print $2}' | tr -d 'v'
+  args:
+    executable: /bin/bash
+  changed_when: false
+  register: spec_kit_version
+  tags:
+    - versions
+
+- name: "[spec-kit] Save used version"
+  vars:
+    app: spec-kit
+    target_version:
+      pip_packages:
+        spec_kit: "{{ spec_kit_version.stdout }}"
+    yq_query: ".pip_packages.spec_kit = \"{{ spec_kit_version.stdout }}\""
+  ansible.builtin.include_role:
+    name: common
+    tasks_from: save_version.yml
+    apply:
+      tags:
+        - versions
+  tags:
+    - versions

@@ -4,13 +4,31 @@ PYTHON_VERSION='3.14.0'
 
 # Formatting helpers for visible output
 if [ -t 1 ]; then
-  RESET="\033[0m"; BOLD="\033[1m"; RED="\033[31m"; GREEN="\033[32m"; YELLOW="\033[33m"; BLUE="\033[34m"; MAGENTA="\033[35m"; CYAN="\033[36m"
+  RESET="\033[0m"
+  BOLD="\033[1m"
+  RED="\033[31m"
+  GREEN="\033[32m"
+  YELLOW="\033[33m"
+  BLUE="\033[34m"
+  MAGENTA="\033[35m"
+  CYAN="\033[36m"
 else
-  RESET=""; BOLD=""; RED=""; GREEN=""; YELLOW=""; BLUE=""; MAGENTA=""; CYAN=""
+  RESET=""
+  BOLD=""
+  RED=""
+  GREEN=""
+  YELLOW=""
+  BLUE=""
+  MAGENTA=""
+  CYAN=""
 fi
 
 hr() { printf "%b\n" "${MAGENTA}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${RESET}"; }
-section() { hr; printf "%b\n" "${BOLD}${CYAN}$1${RESET}"; hr; }
+section() {
+  hr
+  printf "%b\n" "${BOLD}${CYAN}$1${RESET}"
+  hr
+}
 
 if [ "$EUID" -ne 0 ]; then
   printf "%b\n" "${BOLD}${RED}Please run this script using 'sudo'${RESET}"
@@ -23,8 +41,8 @@ apt-get update
 section "Upgrading system"
 apt-get upgrade -y
 
-section "Installing pyenv requirements"
-apt-get install -y make build-essential libkrb5-dev libssl-dev zlib1g-dev libbz2-dev libreadline-dev libsqlite3-dev wget curl llvm libncursesw5-dev xz-utils tk-dev libxml2-dev libxmlsec1-dev libffi-dev liblzma-dev
+section "Installing base requirements"
+apt-get install -y curl wget
 
 section "Install yq requirement"
 wget https://github.com/mikefarah/yq/releases/latest/download/yq_linux_amd64 -O /usr/bin/yq && chmod +x /usr/bin/yq
@@ -49,41 +67,37 @@ fi
 hr() { printf "%b\n" "\${MAGENTA}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\${RESET}"; }
 section() { hr; printf "%b\n" "\${BOLD}\${CYAN}\$1\${RESET}"; hr; }
 
-section "Install pyenv"
-curl https://pyenv.run | bash
+section "Install uv"
+curl -LsSf https://astral.sh/uv/install.sh | sh
 
-section "Set up .bashrc (temporarily)"
-grep -qxF 'export PYENV_ROOT="\$HOME/.pyenv"' ~/.bashrc || echo 'export PYENV_ROOT="\$HOME/.pyenv"' >> ~/.bashrc
-grep -qxF 'command -v pyenv >/dev/null || export PATH="\$PYENV_ROOT/bin:\$PATH"' ~/.bashrc || echo 'command -v pyenv >/dev/null || export PATH="\$PYENV_ROOT/bin:\$PATH"' >> ~/.bashrc
-grep -qxF 'eval "\$(pyenv init -)"' ~/.bashrc || echo 'eval "\$(pyenv init -)"' >> ~/.bashrc
-grep -qxF 'eval "\$(pyenv virtualenv-init -)"' ~/.bashrc || echo 'eval "\$(pyenv virtualenv-init -)"' >> ~/.bashrc
+section "Set up .bashrc for uv (temporarily)"
+grep -qxF 'export PATH="\$HOME/.local/bin:\$PATH"' ~/.bashrc || echo 'export PATH="\$HOME/.local/bin:\$PATH"' >> ~/.bashrc
 
-export PYENV_ROOT="\$HOME/.pyenv"
-command -v pyenv >/dev/null || export PATH="\$PYENV_ROOT/bin:\$PATH"
-eval "\$(pyenv init -)"
-eval "\$(pyenv virtualenv-init -)"
+export PATH="\$HOME/.local/bin:\$PATH"
 
-section "Install pyenv update plugin"
-git clone https://github.com/pyenv/pyenv-update.git "\$PYENV_ROOT/plugins/pyenv-update"
+section "Install Python ${PYTHON_VERSION} with uv"
+uv python install ${PYTHON_VERSION}
 
-section "Run pyenv update"
-pyenv update
+section "Create Python venv with uv"
+uv venv --python ${PYTHON_VERSION} "\$HOME/.venv"
 
-section "Install Python ${PYTHON_VERSION}"
-pyenv install ${PYTHON_VERSION}
-pyenv global ${PYTHON_VERSION}
+# Activate venv for all subsequent steps in this script
+source "\$HOME/.venv/bin/activate"
+
+# Also persist venv activation in .bashrc
+grep -qxF 'source "\$HOME/.venv/bin/activate"' ~/.bashrc || echo 'source "\$HOME/.venv/bin/activate"' >> ~/.bashrc
 
 section "Upgrade PIP"
-pip install --upgrade pip
+uv pip install --upgrade pip
 
-section "Install ansible with PIP"
-pip install --user ${ANSIBLE_PIP_INSTALL}
+section "Install ansible with uv pip"
+uv pip install ${ANSIBLE_PIP_INSTALL}
 
 section "Install setuptools"
-pip install --user setuptools
+uv pip install setuptools
 
-section "Install pywinrm with PIP for potential Windows support"
-pip install --user "pywinrm>=0.3.0"
-pip install --user "pywinrm[credssp]"
-pip install --user "pywinrm[kerberos]"
+section "Install pywinrm with uv pip for potential Windows support"
+uv pip install "pywinrm>=0.3.0"
+uv pip install "pywinrm[credssp]"
+uv pip install "pywinrm[kerberos]"
 _

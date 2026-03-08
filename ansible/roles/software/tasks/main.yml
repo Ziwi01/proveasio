@@ -36,6 +36,21 @@
     - software
     - versions
 
+# uv - Python package and project manager
+- name: "[Software] Install uv"
+  ansible.builtin.include_tasks:
+    file: uv.yml
+    apply:
+      tags:
+        - software
+        - uv
+  when: "'uv' not in software_tasks_exclude"
+  tags:
+    - software
+    - versions
+    - uv
+
+
 # Install `yq` YAML parser
 # Used for editing YAML files for versions and release purposes.
 - name: "[Software] Install yq"
@@ -571,3 +586,18 @@
     - software
     - versions
     - awscli
+
+# spec-kit - Specification tools by GitHub
+- name: "[Software] Install spec-kit"
+  ansible.builtin.include_tasks:
+    file: spec-kit.yml
+    apply:
+      tags:
+        - software
+        - spec-kit
+  when: "'spec-kit' not in software_tasks_exclude"
+  tags:
+    - software
+    - versions
+    - spec-kit
+
