@@ -23,6 +23,8 @@ github_packages:
   tpm: latest
   pes: latest
   p10k: latest
+  uv: latest
+  opencode: latest
 git_apt_version: latest
 pip_packages:
   gita: latest

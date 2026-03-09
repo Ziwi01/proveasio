@@ -571,3 +571,31 @@
     - software
     - versions
     - awscli
+
+# UV - Fast Python package and project manager
+- name: "[Software] Install uv"
+  ansible.builtin.include_tasks:
+    file: uv.yml
+    apply:
+      tags:
+        - software
+        - uv
+  when: "'uv' not in software_tasks_exclude"
+  tags:
+    - software
+    - versions
+    - uv
+
+# opencode - AI coding assistant
+- name: "[Software] Install opencode"
+  ansible.builtin.include_tasks:
+    file: opencode.yml
+    apply:
+      tags:
+        - software
+        - opencode
+  when: "'opencode' not in software_tasks_exclude"
+  tags:
+    - software
+    - versions
+    - opencode

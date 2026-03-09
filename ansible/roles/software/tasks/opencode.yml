@@ -1,0 +1,70 @@
+# opencode - AI coding assistant
+# Source: https://github.com/anomalyco/opencode
+---
+- name: "[opencode] Get Github URL for proper version"
+  vars:
+    app: opencode
+    repo: anomalyco/opencode
+    version_query: curl -s https://api.github.com/repos/anomalyco/opencode/releases/latest | jq .tag_name -r | cut -f2 -d'v'
+    github_uri: "v{{ opencode_version }}/opencode-linux-x64.tar.gz"
+  ansible.builtin.include_role:
+    name: common
+    tasks_from: github_version.yml
+    apply:
+      tags:
+        - versions
+  tags:
+    - versions
+
+- name: "[opencode] Check if opencode {{ opencode_version }} is installed"
+  ansible.builtin.stat:
+    path: "{{ ansible_facts['env']['HOME'] }}/.local/opt/opencode-{{ opencode_version }}"
+  register: opencode_dir
+
+- name: "Installation"
+  when: not opencode_dir.stat.exists
+  block:
+    - name: "[opencode] Create directory in {{ ansible_facts['env']['HOME'] }}/.local/opt"
+      ansible.builtin.file:
+        path: "{{ ansible_facts['env']['HOME'] }}/.local/opt/opencode-{{ opencode_version }}"
+        state: directory
+        mode: "0755"
+
+    - name: "[opencode] Download opencode {{ opencode_version }}"
+      ansible.builtin.get_url:
+        url: "{{ opencode_url }}"
+        dest: "/tmp/opencode-{{ opencode_version }}.tar.gz"
+        mode: "0755"
+
+    - name: "[opencode] Untar archive"
+      ansible.builtin.unarchive:
+        src: "/tmp/opencode-{{ opencode_version }}.tar.gz"
+        dest: "{{ ansible_facts['env']['HOME'] }}/.local/opt/opencode-{{ opencode_version }}"
+
+    - name: "[opencode] Cleanup tar.gz file"
+      ansible.builtin.file:
+        path: "/tmp/opencode-{{ opencode_version }}.tar.gz"
+        state: absent
+
+- name: "[opencode] Link {{ opencode_version }} binary to ~/.local/bin/opencode"
+  ansible.builtin.file:
+    src: "{{ ansible_facts['env']['HOME'] }}/.local/opt/opencode-{{ opencode_version }}/opencode"
+    dest: "{{ ansible_facts['env']['HOME'] }}/.local/bin/opencode"
+    state: link
+    force: true
+
+- name: "[opencode] Save used version"
+  vars:
+    app: opencode
+    target_version:
+      github_packages:
+        opencode: "{{ opencode_version }}"
+    yq_query: ".github_packages.opencode = \"{{ opencode_version }}\""
+  ansible.builtin.include_role:
+    name: common
+    tasks_from: save_version.yml
+    apply:
+      tags:
+        - versions
+  tags:
+    - versions

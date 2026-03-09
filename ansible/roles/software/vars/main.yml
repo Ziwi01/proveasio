@@ -74,6 +74,8 @@ github_packages:
   pay_respects: latest
   kubeswitch: latest
   dry: latest
+  uv: latest
+  opencode: latest
 # Kubectl version
 kubectl_version: latest
 # Packages and their versions to install with PIP

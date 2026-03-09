@@ -1,0 +1,79 @@
+# UV - Fast Python package and project manager
+# Source: https://github.com/astral-sh/uv
+---
+- name: "[uv] Get Github URL for proper version"
+  vars:
+    app: uv
+    repo: astral-sh/uv
+    version_query: curl -s https://api.github.com/repos/astral-sh/uv/releases/latest | jq .tag_name -r | cut -f2 -d'v'
+    github_uri: "{{ uv_version }}/uv-x86_64-unknown-linux-musl.tar.gz"
+  ansible.builtin.include_role:
+    name: common
+    tasks_from: github_version.yml
+    apply:
+      tags:
+        - versions
+  tags:
+    - versions
+
+- name: "[uv] Check if uv {{ uv_version }} is installed"
+  ansible.builtin.stat:
+    path: "{{ ansible_facts['env']['HOME'] }}/.local/opt/uv-{{ uv_version }}"
+  register: uv_dir
+
+- name: "Installation"
+  when: not uv_dir.stat.exists
+  block:
+    - name: "[uv] Create directory in {{ ansible_facts['env']['HOME'] }}/.local/opt"
+      ansible.builtin.file:
+        path: "{{ ansible_facts['env']['HOME'] }}/.local/opt/uv-{{ uv_version }}"
+        state: directory
+        mode: "0755"
+
+    - name: "[uv] Download uv {{ uv_version }}"
+      ansible.builtin.get_url:
+        url: "{{ uv_url }}"
+        dest: "/tmp/uv-{{ uv_version }}.tar.gz"
+        mode: "0755"
+
+    - name: "[uv] Untar archive"
+      ansible.builtin.unarchive:
+        src: "/tmp/uv-{{ uv_version }}.tar.gz"
+        dest: "{{ ansible_facts['env']['HOME'] }}/.local/opt/uv-{{ uv_version }}"
+        extra_opts:
+          - "--strip-components=1"
+
+    - name: "[uv] Cleanup tar.gz file"
+      ansible.builtin.file:
+        path: "/tmp/uv-{{ uv_version }}.tar.gz"
+        state: absent
+
+- name: "[uv] Link {{ uv_version }} uv binary to ~/.local/bin/uv"
+  ansible.builtin.file:
+    src: "{{ ansible_facts['env']['HOME'] }}/.local/opt/uv-{{ uv_version }}/uv"
+    dest: "{{ ansible_facts['env']['HOME'] }}/.local/bin/uv"
+    state: link
+    force: true
+
+- name: "[uv] Link {{ uv_version }} uvx binary to ~/.local/bin/uvx"
+  ansible.builtin.file:
+    src: "{{ ansible_facts['env']['HOME'] }}/.local/opt/uv-{{ uv_version }}/uvx"
+    dest: "{{ ansible_facts['env']['HOME'] }}/.local/bin/uvx"
+    state: link
+    force: true
+
+- name: "[uv] Save used version"
+  vars:
+    app: uv
+    target_version:
+      github_packages:
+        uv: "{{ uv_version }}"
+    yq_query: ".github_packages.uv = \"{{ uv_version }}\""
+  ansible.builtin.include_role:
+    name: common
+    tasks_from: save_version.yml
+    apply:
+      tags:
+        - versions
+  tags:
+    - versions
