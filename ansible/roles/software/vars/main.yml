@@ -64,7 +64,7 @@ github_packages:
   win32yank: latest
   terraform: latest
   terragrunt: latest
-  bottom: 0.10.2
+  bottom: latest
   git_fuzzy: latest # Does not have releases, latest (for latest commit) or specific commit
   nvm: latest # Node Version Manater
   tpm: latest # Tmux plugin manager. Does not have releases, gets latest tag instead
@@ -81,7 +81,7 @@ kubectl_version: latest
 # Packages and their versions to install with PIP
 pip_packages:
   gita: latest
-  tmuxp: 1.55.0
+  tmuxp: latest
   az_account_switcher: latest
 # FZF
 fzf_git_url: "https://github.com/junegunn/fzf.git"
@@ -120,7 +120,7 @@ docker_apt_packages:
   containerd.io: latest
 # RVM / Ruby
 rvm1_rubies:
-  - ruby-3.3.4
+  - ruby-3.4.7
 rvm1_user: "{{ ansible_user_id }}"
 # Ruby
 # Install any gem for any ruby. `all` installs for all of them
@@ -171,24 +171,22 @@ sdkman_tmp_dir: /tmp
 sdkman_validate_ssl: true
 sdkman_install_packages:
   - candidate: java
-    version: 18.0.2-open
-  - candidate: java
-    version: 21.0.2-open
+    version: 25.0.2-open
   - candidate: gradle
-    version: 8.5
+    version: 9.4.0
   - candidate: groovy
-    version: 4.0.18
+    version: 5.0.4
   - candidate: maven
-    version: 3.9.6
+    version: 3.9.14
 sdkman_uninstall_packages: []
 # sdkman_uninstall_packages:
 #   - { candidate: java, version: 6u45 }
 # Configure default candidate versions
 sdkman_defaults:
-  java: "21.0.2-open"
-  gradle: "8.5"
-  groovy: "4.0.18"
-  maven: "3.9.6"
+  java: "25.0.2-open"
+  gradle: "9.4.0"
+  groovy: "5.0.4"
+  maven: "3.9.14"
 # Flush caches before/after installing SDK packages
 # Reference: http://sdkman.io/usage (Flush section)
 sdkman_flush_caches_before: []
@@ -198,8 +196,8 @@ sdkman_flush_caches_after: []
 sdkman_update_alternatives: []
 # Go versions installed with GVM
 go_versions:
-  - go1.21.6
-go_default: go1.21.6
+  - go1.26.1
+go_default: go1.26.1
 
 rvm1_gpg_key_servers:
   - hkp://keys.openpgp.org

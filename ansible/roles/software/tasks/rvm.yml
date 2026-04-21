@@ -40,6 +40,22 @@
         path: "/tmp/rvm1-ansible-{{ rvm1_ansible_version }}.tar.gz"
         state: absent
 
+- name: "[RVM] Allow passwordless sudo for apt-get (required by RVM requirements installer)"
+  become: true
+  ansible.builtin.lineinfile:
+    path: /etc/sudoers.d/rvm-apt
+    line: "{{ ansible_user_id }} ALL=(ALL) NOPASSWD: /usr/bin/apt-get"
+    create: true
+    mode: '0440'
+    validate: 'visudo -cf %s'
+
+- name: "[RVM] Silence PATH mismatch check to prevent install failures"
+  ansible.builtin.lineinfile:
+    path: "{{ ansible_facts['env']['HOME'] }}/.rvmrc"
+    line: "rvm_silence_path_mismatch_check_flag=1"
+    create: true
+    mode: '0644'
+
 - name: "[RVM] Install RVM and rubies" # noqa role-name[path]
   ansible.builtin.include_role:
     name: "{{ ansible_facts['env']['HOME'] }}/.local/opt/rvm1-ansible-{{ rvm1_ansible_version }}"
