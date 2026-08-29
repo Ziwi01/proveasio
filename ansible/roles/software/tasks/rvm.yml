@@ -44,7 +44,7 @@
   become: true
   ansible.builtin.lineinfile:
     path: /etc/sudoers.d/rvm-apt
-    line: "{{ ansible_user_id }} ALL=(ALL) NOPASSWD: /usr/bin/apt-get"
+    line: "{{ ansible_facts['user_id'] }} ALL=(ALL) NOPASSWD: /usr/bin/apt-get"
     create: true
     mode: '0440'
     validate: 'visudo -cf %s'
