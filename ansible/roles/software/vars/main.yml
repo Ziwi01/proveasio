@@ -121,7 +121,7 @@ docker_apt_packages:
 # RVM / Ruby
 rvm1_rubies:
   - ruby-3.4.7
-rvm1_user: "{{ ansible_user_id }}"
+rvm1_user: "{{ ansible_facts['user_id'] }}"
 # Ruby
 # Install any gem for any ruby. `all` installs for all of them
 # Note that if Puppet is installed, it will install puppet/puppet-lint gems, so no need to add here.
@@ -163,8 +163,8 @@ awscli_url: https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip
 puppet_pes_url: https://github.com/puppetlabs/puppet-editor-services.git
 # SDK Man
 sdkman_update: true
-sdkman_user: "{{ ansible_user_id }}"
-sdkman_group: "{{ ansible_user_gid }}"
+sdkman_user: "{{ ansible_facts['user_id'] }}"
+sdkman_group: "{{ ansible_facts['user_gid'] }}"
 sdkman_user_home_dir: "{{ ansible_facts['env']['HOME'] }}"
 sdkman_dir: "{{ sdkman_user_home_dir + '/.sdkman' }}"
 sdkman_tmp_dir: /tmp

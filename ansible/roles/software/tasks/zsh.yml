@@ -17,14 +17,14 @@
 - name: '[Zsh] Check current default shell'
   become: true
   become_user: root
-  ansible.builtin.command: sh -c "grep {{ ansible_user_id }} /etc/passwd | grep -o '[^:]*$'"
+  ansible.builtin.command: sh -c "grep {{ ansible_facts['user_id'] }} /etc/passwd | grep -o '[^:]*$'"
   register: user_shell
   changed_when: user_shell.rc < 0
 
 - name: '[Zsh] Update shell to Zsh'
   become: true
   become_user: root
-  ansible.builtin.command: chsh -s /bin/zsh {{ ansible_user_id }}
+  ansible.builtin.command: chsh -s /bin/zsh {{ ansible_facts['user_id'] }}
   changed_when: user_shell.stdout != '/bin/zsh'
   when: user_shell.stdout != '/bin/zsh'
 

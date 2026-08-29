@@ -11,7 +11,7 @@
 # Install SDKMAN if not uninstalled
 - name: "[SDKMan] Install SDKMAN!"
   when: not sdkman_init.stat.exists
-  become: '{{ sdkman_user != ansible_user_id }}'
+  become: "{{ sdkman_user != ansible_facts['user_id'] }}"
   become_user: '{{ sdkman_user }}'
   block:
     - name: "[SDKMan] Download SDKMAN"

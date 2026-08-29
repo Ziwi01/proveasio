@@ -2,8 +2,15 @@
 ---
 - name: "[Git] Add git-core/ppa repository"
   become: true
-  ansible.builtin.apt_repository:
-    repo: ppa:git-core/ppa
+  ansible.builtin.deb822_repository:
+    name: git-core-ppa
+    types: deb
+    uris: "https://ppa.launchpadcontent.net/git-core/ppa/ubuntu"
+    suites: "{{ ansible_facts['distribution_release'] }}"
+    components: main
+    signed_by: "https://keyserver.ubuntu.com/pks/lookup?op=get&search=0xF911AB184317630C59970973E363C90F8F1B6217"
+    install_python_debian: true
+    state: present
 
 - name: "[Git] Install latest Git if requested"
   become: true
