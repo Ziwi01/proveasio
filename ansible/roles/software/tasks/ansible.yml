@@ -22,7 +22,7 @@
   args:
     executable: /bin/bash
   environment:
-    PATH: "{{ ansible_facts['env']['HOME'] }}/.local/opt/nvm/versions/node/{{ npm_version.stdout }}/bin:{{ ansible_env.PATH }}"
+    PATH: "{{ ansible_facts['env']['HOME'] }}/.local/opt/nvm/versions/node/{{ npm_version.stdout }}/bin:{{ ansible_facts['env']['PATH'] }}"
 
 #
 # ansible-lint
