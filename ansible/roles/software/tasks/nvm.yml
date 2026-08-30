@@ -84,3 +84,50 @@
         - versions
   tags:
     - versions
+
+# nvm keeps every installed Node version under
+# `~/.local/opt/nvm/versions/node/<version>`. Old versions are never removed
+# when a new default is installed, so they accumulate. `node_version` may be an
+# alias (e.g. `lts/jod`), so the concrete version to keep is resolved from the
+# `default` alias via nvm. Controlled by the same switches as every other tool:
+#   - cleanup_old_versions:         global on/off switch (default: true)
+#   - cleanup_old_versions_exclude: add `node` to keep every Node version
+- name: "[NVM] Cleanup old Node versions"
+  when:
+    - cleanup_old_versions | bool
+    - "'node' not in cleanup_old_versions_exclude"
+  tags:
+    - versions
+    - cleanup
+  block:
+    - name: "[NVM] Resolve currently active (default) Node version"
+      ansible.builtin.shell: |
+        set -e -o pipefail
+        . {{ ansible_facts['env']['HOME'] }}/.local/opt/nvm/nvm.sh
+        nvm version default
+      args:
+        executable: /bin/bash
+      register: nvm_default_version
+      changed_when: false
+
+    - name: "[NVM] Find installed Node versions"
+      ansible.builtin.find:
+        paths: "{{ ansible_facts['env']['HOME'] }}/.local/opt/nvm/versions/node"
+        file_type: directory
+        recurse: false
+      register: nvm_found_versions
+      when:
+        - nvm_default_version.stdout | length > 0
+        - nvm_default_version.stdout != 'N/A'
+
+    - name: "[NVM] Remove old Node versions (keeping {{ nvm_default_version.stdout }})"
+      ansible.builtin.file:
+        path: "{{ item.path }}"
+        state: absent
+      loop: "{{ nvm_found_versions.files | default([]) }}"
+      loop_control:
+        label: "{{ item.path | basename }}"
+      when:
+        - nvm_default_version.stdout | length > 0
+        - nvm_default_version.stdout != 'N/A'
+        - (item.path | basename) != nvm_default_version.stdout

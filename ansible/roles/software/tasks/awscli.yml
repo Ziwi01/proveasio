@@ -38,3 +38,44 @@
     name: awscli
     state: absent
     executable: "{{ ansible_facts['env']['HOME'] }}/.pyenv/shims/pip3"
+
+# AWS CLI v2 installs into `~/.local/opt/aws-cli/v2/<version>` and points a
+# `current` symlink at the active version. The bundled installer never removes
+# the previous versions, so they accumulate. Keep only the version referenced
+# by the `current` symlink. Controlled by the same switches as every other tool:
+#   - cleanup_old_versions:         global on/off switch (default: true)
+#   - cleanup_old_versions_exclude: add `aws-cli` to keep every version
+- name: "[AWS CLI] Cleanup old versions"
+  when:
+    - cleanup_old_versions | bool
+    - "'aws-cli' not in cleanup_old_versions_exclude"
+  tags:
+    - versions
+    - cleanup
+  block:
+    - name: "[AWS CLI] Check currently active version symlink"
+      ansible.builtin.stat:
+        path: "{{ ansible_facts['env']['HOME'] }}/.local/opt/aws-cli/v2/current"
+      register: awscli_current
+
+    - name: "[AWS CLI] Find installed versions in ~/.local/opt/aws-cli/v2"
+      ansible.builtin.find:
+        paths: "{{ ansible_facts['env']['HOME'] }}/.local/opt/aws-cli/v2"
+        file_type: directory
+        excludes: current
+        recurse: false
+      register: awscli_found_versions
+      when: awscli_current.stat.exists and awscli_current.stat.islnk
+
+    - name: "[AWS CLI] Remove old versions (keeping {{ awscli_current.stat.lnk_target | default('') | basename }})"
+      ansible.builtin.file:
+        path: "{{ item.path }}"
+        state: absent
+      loop: "{{ awscli_found_versions.files | default([]) }}"
+      loop_control:
+        label: "{{ item.path | basename }}"
+      when:
+        - awscli_current.stat.exists
+        - awscli_current.stat.islnk
+        - (item.path | basename) != 'current'
+        - (item.path | basename) != (awscli_current.stat.lnk_target | basename)

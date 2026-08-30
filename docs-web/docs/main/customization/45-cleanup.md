@@ -58,6 +58,50 @@ before `-<version>`). This mirrors the way
 [`software_tasks_exclude`](./excludes) works, so the convention should feel
 familiar.
 
+## AWS CLI
+
+AWS CLI is also cleaned up, but it uses its own on-disk layout. Its bundled
+installer keeps every version under `~/.local/opt/aws-cli/v2/<version>` and
+points a `current` symlink at the active one:
+
+```text
+~/.local/opt/aws-cli/v2/
+├── 2.34.33
+├── 2.36.34        <- current
+└── current -> 2.36.34
+```
+
+The cleanup keeps only the version the `current` symlink points to and removes
+the rest. To keep every AWS CLI version, add `aws-cli` to the exclude list:
+
+```yaml
+cleanup_old_versions_exclude:
+  - aws-cli
+```
+
+## Node (nvm)
+
+Node versions are installed by `nvm` under
+`~/.local/opt/nvm/versions/node/<version>` and are never removed when a new
+default is installed:
+
+```text
+~/.local/opt/nvm/versions/node/
+├── v20.19.5
+├── v22.22.2
+└── v22.23.2   <- default
+```
+
+The cleanup resolves the concrete version behind the `default` alias (the
+`node_version` variable may be an alias such as `lts/jod`) and removes every
+other installed Node version. To keep every Node version, add `node` to the
+exclude list:
+
+```yaml
+cleanup_old_versions_exclude:
+  - node
+```
+
 :::note[Neovim]
 Neovim is intentionally left out of the automatic cleanup because it uses a
 different on-disk layout (a shared `neovim-nightly` directory holding the
@@ -72,5 +116,6 @@ versions will also prune old directories:
 ansible-playbook -i inventory.yml setup-ubuntu.yml --tags versions -K
 ```
 
-You can also target the cleanup steps specifically with the `cleanup` tag.
+To skip the cleanup while still running everything else, use
+`--skip-tags cleanup`.
 :::
