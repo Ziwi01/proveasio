@@ -1,0 +1,38 @@
+# Remove old versioned installations from `~/.local/opt`
+#
+# Software is installed into versioned directories following the pattern
+# `~/.local/opt/<app>-<version>`. Whenever a new version is installed the old
+# directory is left behind. This reusable task removes every `<app>-*`
+# directory except the one for the version currently in use (`keep`).
+#
+# Inputs:
+#   - app:  directory prefix of the software (e.g. `eza`, `pay_respects`)
+#   - keep: version to preserve (e.g. `{{ eza_version }}`)
+#
+# Behaviour is controlled by two variables (see `software/vars/main.yml`):
+#   - cleanup_old_versions:         global on/off switch (default: true)
+#   - cleanup_old_versions_exclude: list of `app` names to never auto-clean
+---
+- name: "[{{ app }}] Cleanup old versions (keeping {{ app }}-{{ keep }})"
+  when:
+    - cleanup_old_versions | bool
+    - app not in cleanup_old_versions_exclude
+    - keep is defined
+    - keep | string | length > 0
+  block:
+    - name: "[{{ app }}] Find installed versions in ~/.local/opt"
+      ansible.builtin.find:
+        paths: "{{ ansible_facts['env']['HOME'] }}/.local/opt"
+        patterns: "{{ app }}-*"
+        file_type: directory
+        recurse: false
+      register: cleanup_found_versions
+
+    - name: "[{{ app }}] Remove old versions"
+      ansible.builtin.file:
+        path: "{{ item.path }}"
+        state: absent
+      loop: "{{ cleanup_found_versions.files }}"
+      loop_control:
+        label: "{{ item.path | basename }}"
+      when: (item.path | basename) != (app ~ '-' ~ keep)

@@ -60,3 +60,18 @@
         - versions
   tags:
     - versions
+
+- name: "[kubecolor] Cleanup old versions"
+  vars:
+    app: kubecolor
+    keep: "{{ kubecolor_version }}"
+  ansible.builtin.include_role:
+    name: common
+    tasks_from: cleanup_versions.yml
+    apply:
+      tags:
+        - versions
+        - cleanup
+  tags:
+    - versions
+    - cleanup

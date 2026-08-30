@@ -59,3 +59,18 @@
         - versions
   tags:
     - versions
+
+- name: "[kubeswitch] Cleanup old versions"
+  vars:
+    app: kubeswitch
+    keep: "{{ kubeswitch_version }}"
+  ansible.builtin.include_role:
+    name: common
+    tasks_from: cleanup_versions.yml
+    apply:
+      tags:
+        - versions
+        - cleanup
+  tags:
+    - versions
+    - cleanup

@@ -61,3 +61,18 @@
         - versions
   tags:
     - versions
+
+- name: "[diff-so-fancy] Cleanup old versions"
+  vars:
+    app: diff-so-fancy
+    keep: "{{ diff_so_fancy_version }}"
+  ansible.builtin.include_role:
+    name: common
+    tasks_from: cleanup_versions.yml
+    apply:
+      tags:
+        - versions
+        - cleanup
+  tags:
+    - versions
+    - cleanup

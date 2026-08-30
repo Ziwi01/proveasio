@@ -23,3 +23,8 @@ config_tasks_exclude:
 ```
 
 For full list of exclude options, see [software](../roles/software) or [config](../roles/config) role description.
+
+## Old versions cleanup
+
+Old versioned installs under `~/.local/opt` are removed automatically. This can
+be disabled globally or per-tool — see [Cleaning up old versions](./cleanup).

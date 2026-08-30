@@ -60,3 +60,18 @@
         - versions
   tags:
     - versions
+
+- name: "[pay-respects] Cleanup old versions"
+  vars:
+    app: pay_respects
+    keep: "{{ pay_respects_version }}"
+  ansible.builtin.include_role:
+    name: common
+    tasks_from: cleanup_versions.yml
+    apply:
+      tags:
+        - versions
+        - cleanup
+  tags:
+    - versions
+    - cleanup

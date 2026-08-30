@@ -76,3 +76,18 @@
         - versions
   tags:
     - versions
+
+- name: "[EZA] Cleanup old versions"
+  vars:
+    app: eza
+    keep: "{{ eza_version }}"
+  ansible.builtin.include_role:
+    name: common
+    tasks_from: cleanup_versions.yml
+    apply:
+      tags:
+        - versions
+        - cleanup
+  tags:
+    - versions
+    - cleanup

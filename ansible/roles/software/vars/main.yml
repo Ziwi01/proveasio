@@ -3,6 +3,18 @@
 # This is array of tasks to exclude from software role.
 # For list of tasks see: software/tasks/main.yml or see README.md
 software_tasks_exclude: []
+# Automatically remove old versions from `~/.local/opt` after a newer version
+# is installed. Software is installed into versioned directories
+# (e.g. `~/.local/opt/eza-<version>`); with this enabled only the currently
+# used version is kept, older ones are deleted.
+cleanup_old_versions: true
+# Per-tool opt-out for the auto-cleanup above (mirrors `software_tasks_exclude`).
+# List the `app` directory prefixes that should keep ALL their versions.
+# Example:
+# cleanup_old_versions_exclude:
+#   - helm # keep every ~/.local/opt/helm-* version
+#   - k9s  # keep every ~/.local/opt/k9s-* version
+cleanup_old_versions_exclude: []
 # System manager to use. Ansible has issues detecting SysV vs. SystemD on WSL distributions
 # If you are using SysVInit WSL (not recommended, see `README.md`), overwrite this in `ansible/vars/overrides.yml` to `sysvinit`
 service_manager: systemd

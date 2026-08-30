@@ -74,3 +74,18 @@
         - versions
   tags:
     - versions
+
+- name: "[fd] Cleanup old versions"
+  vars:
+    app: fd
+    keep: "{{ fd_version }}"
+  ansible.builtin.include_role:
+    name: common
+    tasks_from: cleanup_versions.yml
+    apply:
+      tags:
+        - versions
+        - cleanup
+  tags:
+    - versions
+    - cleanup
