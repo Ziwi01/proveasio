@@ -23,7 +23,15 @@
   loop_control:
     loop_var: goversion
 
+- name: "[Go] Read current default Go environment"
+  ansible.builtin.slurp:
+    path: "{{ ansible_facts['env']['HOME'] }}/.gvm/environments/default"
+  register: gvm_default_raw
+  failed_when: false
+
 - name: "[Go] Set default to {{ go_default }}"
   ansible.builtin.shell: ". {{ ansible_facts['env']['HOME'] }}/.gvm/scripts/gvm && gvm use {{ go_default }} --default"
   args:
     executable: /bin/bash
+  changed_when: true
+  when: gvm_default_raw.content is not defined or go_default not in (gvm_default_raw.content | b64decode)

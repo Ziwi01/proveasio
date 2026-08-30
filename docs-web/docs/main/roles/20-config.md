@@ -33,7 +33,7 @@ Available configs excludes:
 
 ## Backups
 
-By default, all configuration files are backed up in `~/.configs_backup` on every ansible run, in form of `<filename>-<date>`.
+By default, a configuration file is backed up in `~/.configs_backup`, in form of `<app>-<filename>-<date>`, whenever Proveasio actually changes it (unchanged files are not re-backed up).
 
 To disable taking backups, set:
 

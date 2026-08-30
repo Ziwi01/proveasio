@@ -18,11 +18,17 @@
   tags:
     - versions
 
+- name: "[Win32Yank] Check if win32yank is already installed"
+  ansible.builtin.stat:
+    path: "{{ ansible_facts['env']['HOME'] }}/.local/bin/win32yank.exe"
+  register: win32yank_bin
+
 - name: "[Win32Yank] Download archive"
   ansible.builtin.get_url:
     url: "{{ win32yank_url }}"
     dest: "/tmp/win32yank-x64.zip"
     mode: '0644'
+  when: not win32yank_bin.stat.exists
 
 - name: "[Win32Yank] Extract binary"
   ansible.builtin.unarchive:
@@ -30,6 +36,7 @@
     dest: "{{ ansible_facts['env']['HOME'] }}/.local/bin/"
     creates: "{{ ansible_facts['env']['HOME'] }}/.local/bin/win32yank.exe"
     mode: '0755'
+  when: not win32yank_bin.stat.exists
 
 - name: "[win32yank] Save used version"
   vars:

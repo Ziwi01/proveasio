@@ -41,10 +41,11 @@
       tags:
         - always
     - name: "[Init] Ensure `current-versions.yml` file"
-      ansible.builtin.file:
-        path: "{{ playbook_dir }}/../current-versions.yml"
+      ansible.builtin.copy:
+        dest: "{{ playbook_dir }}/../current-versions.yml"
+        content: ""
+        force: false
         mode: "0644"
-        state: touch
       tags:
         - always
     - name: "[Software] Include software role"

@@ -1,7 +1,21 @@
 # TODO
 
-- [ ] fix(playbooks): Analyze shell commands and add missing changed_when/failed_when directives
-- [ ] feat(neovim): Add Vimux keymaps (Telescope?), document usage.
+- [x] fix(playbooks): Add idempotency checks to shell/command tasks that always report `changed` (TPM install, nvm install/alias, gvm default, puppet/rvm gems, ansible LS, FZF handler)
+- [x] chore(playbooks): Document shell/command tasks that must run on every run (nvim headless sync, TPM update, version probes)
+- [x] fix(playbooks): Fix tasks reporting `changed` on already-applied runs — Group A (from `ansible/playbook-run.log` analysis)
+  - `setup-ubuntu.yml` ensure `current-versions.yml` → `copy` `content:""` `force:false` instead of `state: touch`
+  - `software/tasks/rust.yml` → fix wrong `creates:` path (`~/.rust` never existed → `~/.cargo/bin/rustup`)
+  - `software/tasks/nvm.yml` Install NVM → `changed_when` now ignores the `creates` "skipped, since … exists" stdout
+  - `software/tasks/w32yank.yml` → stat-gate download/extract on existing `win32yank.exe`
+  - `software/tasks/awscli.yml` → persistent download dest + drop `force: true`
+  - `common/tasks/config_file.yml` → back up via module `backup: true` (only on change) + relocate into `config_backup_dir`; removed the always-changed timestamped copy
+  - `software/tasks/puppet.yml` & `rvm.yml` gem installs → `gem install --conservative` (empty output when already present → green)
+- [x] chore(playbooks): Treat npm global installs as must-run and document — Group B
+  - `software/tasks/nvm.yml` npm default packages & `software/tasks/ansible.yml` language server: `npm install -g` always reports `changed N packages`; documented as accepted must-run
+- [ ] fix(playbooks): Resolve Puppet Editor Services `changed` churn — Group C (needs further analysis)
+  - `[Puppet Editor Services] Clone repository` reports `changed` every run: `rake gem_revendor` dirties `vendor/`, then `git force: true` resets it, which re-triggers the bundle/rake build
+  - Options: gate the build on a real `pes_version` change (compare saved SHA) instead of `pes_clone.changed`; drop `force: true` or exclude vendored files; add `changed_when` to the rake task
+  - Note: external `rvm1-ansible` role's "Install rvm installer" also reports `changed` (third-party, out of scope)
 - [ ] docs(gita): Describe `gita` usage and example
 - [x] Migrate to AstroNvim / uninstall LunarVim / use Neovim release
 - [x] install fswatch, ruby neovim-ruby-host, treesitter-cli, NPM neovim, gdu, bottom, NPM vscode-langservers-extracted

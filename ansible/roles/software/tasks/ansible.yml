@@ -14,15 +14,20 @@
     executable: /bin/bash
   register: npm_version
 
+# NOTE (must-run): `npm install -g` re-links global packages and always reports
+# work ("changed N packages") even when already current, so this task shows
+# `changed` on every run. Accepted as a must-run task: there is no cheap
+# idempotent check for "already at latest" without a network version lookup.
 - name: "[Ansible] Install Ansible Language server for current NPM"
   ansible.builtin.shell: |
     set -e -o pipefail
     npm install @ansible/ansible-language-server --location=global
-  changed_when: false
+  changed_when: "'up to date' not in als_install.stdout"
   args:
     executable: /bin/bash
   environment:
     PATH: "{{ ansible_facts['env']['HOME'] }}/.local/opt/nvm/versions/node/{{ npm_version.stdout }}/bin:{{ ansible_facts['env']['PATH'] }}"
+  register: als_install
 
 #
 # ansible-lint

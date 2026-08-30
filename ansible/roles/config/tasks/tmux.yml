@@ -8,13 +8,16 @@
     name: common
     tasks_from: config_file.yml
 
-# TODO: Add changed_when/failed_when
-- name: "[Config][Tmux] Install plugins" # noqa no-changed-when
+- name: "[Config][Tmux] Install plugins"
   ansible.builtin.command: "{{ ansible_facts['env']['HOME'] }}/.tmux/plugins/tpm/bin/install_plugins"
+  register: tpm_install
+  changed_when: "'Installing' in tpm_install.stdout"
 
-# TODO: Add changed_when/failed_when
-- name: "[Config][Tmux] Update plugins" # noqa no-changed-when
+# Plugins are updated on every run by design (always keep plugins current).
+- name: "[Config][Tmux] Update plugins"
   ansible.builtin.command: "{{ ansible_facts['env']['HOME'] }}/.tmux/plugins/tpm/bin/update_plugins all"
+  register: tpm_update
+  changed_when: "'update success' in tpm_update.stdout"
 
 - name: "[Config][Tmuxp] Create directory in {{ ansible_facts['env']['HOME'] }}/.tmuxp"
   ansible.builtin.file:

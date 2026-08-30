@@ -7,8 +7,13 @@
     update: true
     version: "{{ neovim_config_version }}"
 
+# Runs on every play by design: the headless launch drives lazy.nvim/Mason
+# plugin + LSP sync. There is no reliable "already up to date" signal to gate
+# on, so this is an accepted always-run task (changed_when:false keeps it from
+# reporting a spurious change on every run).
 - name: "[Neovim config] Update Neovim config"
   ansible.builtin.command: "nvim --headless +q"
+  changed_when: false
   failed_when: false
   environment:
     PATH: "{{ ansible_facts['env']['HOME'] }}/.local/bin/:{{ ansible_facts['env']['PATH'] }}"

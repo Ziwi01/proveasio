@@ -2,13 +2,15 @@
 ---
 # Ruby gems
 - name: "[Puppet] Install Puppet/puppet-lint ruby gems for ALL rubies"
-  ansible.builtin.command: "{{ ansible_facts['env']['HOME'] }}/.rvm/bin/rvm all do gem install 'puppet:{{ puppet_version }}' 'puppet-lint:{{ puppet_lint_version }}'"
-  changed_when: false
+  ansible.builtin.command: "{{ ansible_facts['env']['HOME'] }}/.rvm/bin/rvm all do gem install --conservative 'puppet:{{ puppet_version }}' 'puppet-lint:{{ puppet_lint_version }}'"
+  register: puppet_gems_all
+  changed_when: "'Successfully installed' in puppet_gems_all.stdout"
   when: "'all' in puppet_rubies"
 
 - name: "[Puppet] Install Puppet/puppet-lint ruby gems for subset of rubies"
-  ansible.builtin.command: "{{ ansible_facts['env']['HOME'] }}/.rvm/bin/rvm {{ item }} do gem install 'puppet:{{ puppet_version }}' 'puppet-lint:{{ puppet_lint_version }}'"
-  changed_when: false
+  ansible.builtin.command: "{{ ansible_facts['env']['HOME'] }}/.rvm/bin/rvm {{ item }} do gem install --conservative 'puppet:{{ puppet_version }}' 'puppet-lint:{{ puppet_lint_version }}'"
+  register: puppet_gems_subset
+  changed_when: "'Successfully installed' in puppet_gems_subset.stdout"
   loop: "{{ puppet_rubies }}"
   when: "'all' not in puppet_rubies and puppet_rubies | length > 0"
 
@@ -67,6 +69,7 @@
     update: true
     force: true
     version: "{{ pes_version }}"
+  register: pes_clone
 
 - name: "[Puppet Editor Services] Save used version"
   vars:
@@ -84,22 +87,25 @@
   tags:
     - versions
 
-# TODO: Add changes_when/failed_when
-- name: "[Puppet] Update bundler for all rubies" # noqa no-changed-when ignore-errors
+# Only rebuild the vendored bundle when the PES source actually changed.
+- name: "[Puppet] Update bundler for all rubies" # noqa no-handler
   ansible.builtin.command: "{{ ansible_facts['env']['HOME'] }}/.rvm/bin/rvm all-gemsets do gem update bundler"
-  ignore_errors: true
+  register: pes_bundler
+  changed_when: "'Successfully installed' in pes_bundler.stdout"
+  when: pes_clone.changed
 
-# TODO: Add changes_when/failed_when
-- name: "[Puppet] Run bundle install" # noqa no-changed-when ignore-errors
+- name: "[Puppet] Run bundle install" # noqa no-handler
   ansible.builtin.command: "{{ ansible_facts['env']['HOME'] }}/.rvm/bin/rvm all-gemsets do bundle install"
-  ignore_errors: true
   args:
     chdir: "{{ ansible_facts['env']['HOME'] }}/.lsp/puppet-editor-services"
+  register: pes_bundle
+  changed_when: "'Installing' in pes_bundle.stdout"
+  when: pes_clone.changed
 
-# TODO: Add changes_when/failed_when
-- name: "[Puppet] Run bundle exec rake gem_revendor" # noqa no-changed-when ignore-errors
+- name: "[Puppet] Run bundle exec rake gem_revendor" # noqa no-changed-when ignore-errors no-handler
   ansible.builtin.command: "{{ ansible_facts['env']['HOME'] }}/.rvm/bin/rvm all-gemsets do bundle exec rake gem_revendor"
   ignore_errors: true
+  when: pes_clone.changed
   args:
     chdir: "{{ ansible_facts['env']['HOME'] }}/.lsp/puppet-editor-services"
 

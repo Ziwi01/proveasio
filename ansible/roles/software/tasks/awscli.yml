@@ -4,8 +4,7 @@
 - name: "[AWS CLI] Download archive"
   ansible.builtin.get_url:
     url: "{{ awscli_url }}"
-    dest: "/tmp/awscliv2.zip"
-    force: true
+    dest: "{{ ansible_facts['env']['HOME'] }}/.local/opt/awscliv2.zip"
     mode: '0644'
 
 - name: "[AWS CLI] Create installation directory in {{ ansible_facts['env']['HOME'] }}/.local/opt"
@@ -16,7 +15,7 @@
 
 - name: "[AWS CLI] Extract binary"
   ansible.builtin.unarchive:
-    src: "/tmp/awscliv2.zip"
+    src: "{{ ansible_facts['env']['HOME'] }}/.local/opt/awscliv2.zip"
     dest: "{{ ansible_facts['env']['HOME'] }}/.local/opt/awscli-install"
 
 - name: "[AWS CLI] Install/update"

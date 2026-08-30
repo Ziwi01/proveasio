@@ -61,8 +61,9 @@
     name: "{{ ansible_facts['env']['HOME'] }}/.local/opt/rvm1-ansible-{{ rvm1_ansible_version }}"
 
 - name: "[RVM] Install default gems for rubies"
-  ansible.builtin.command: "{{ ansible_facts['env']['HOME'] }}/.rvm/bin/rvm {{ item.0.ruby }} do gem install '{{ item.1.keys() | list | first }}:{{ item.1.values() | list | first }}'"
-  changed_when: false
+  ansible.builtin.command: "{{ ansible_facts['env']['HOME'] }}/.rvm/bin/rvm {{ item.0.ruby }} do gem install --conservative '{{ item.1.keys() | list | first }}:{{ item.1.values() | list | first }}'"
+  register: rvm_default_gems
+  changed_when: "'Successfully installed' in rvm_default_gems.stdout"
   loop: "{{ ruby_gems | subelements('gems') }}"
   loop_control:
     loop_var: item

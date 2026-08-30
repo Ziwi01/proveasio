@@ -31,28 +31,45 @@
     executable: /bin/bash
     creates: "{{ ansible_facts['env']['HOME'] }}/.local/opt/nvm/nvm.sh"
   register: nvm_result
-  changed_when: "'already installed' not in nvm_result.stdout"
+  changed_when: "'already installed' not in nvm_result.stdout and 'skipped, since' not in nvm_result.stdout"
 
 - name: "[NVM] Show NVM install" # noqa no-changed-when
   ansible.builtin.debug:
     var: nvm_result.stdout
 
-# TODO: Check if this version is already there for this user
-- name: "[NVM] Install Node {{ node_version }}" # noqa no-changed-when
+- name: "[NVM] Install Node {{ node_version }}"
   ansible.builtin.shell: ". {{ ansible_facts['env']['HOME'] }}/.local/opt/nvm/nvm.sh; nvm install {{ node_version }} --default"
   args:
     executable: /bin/bash
+  register: nvm_install_node
+  changed_when: "'is already installed' not in (nvm_install_node.stdout + nvm_install_node.stderr)"
 
-- name: "[NVM] Set default Node to {{ node_version }}" # noqa no-changed-when
+- name: "[NVM] Get current default Node alias"
+  ansible.builtin.shell: ". {{ ansible_facts['env']['HOME'] }}/.local/opt/nvm/nvm.sh; nvm alias default"
+  args:
+    executable: /bin/bash
+  register: nvm_current_default
+  changed_when: false
+  failed_when: false
+
+- name: "[NVM] Set default Node to {{ node_version }}"
   ansible.builtin.shell: ". {{ ansible_facts['env']['HOME'] }}/.local/opt/nvm/nvm.sh; nvm alias default {{ node_version }}"
   args:
     executable: /bin/bash
+  changed_when: true
+  when: node_version not in nvm_current_default.stdout
 
-- name: "[NVM] Install Node default packages" # noqa no-changed-when
+# NOTE (must-run): `npm install -g` re-links global packages and always reports
+# work ("changed N packages") even when they are already current, so this task
+# shows `changed` on every run. Accepted as a must-run task: there is no cheap
+# idempotent check for "already at latest" without a per-package network lookup.
+- name: "[NVM] Install Node default packages"
   ansible.builtin.shell: ". {{ ansible_facts['env']['HOME'] }}/.local/opt/nvm/nvm.sh; npm install -g {{ item }}"
   args:
     executable: /bin/bash
   loop: "{{ npm_default_packages }}"
+  register: npm_global_install
+  changed_when: "'up to date' not in npm_global_install.stdout"
 
 - name: "[NVM] Save used NVM version"
   vars:
