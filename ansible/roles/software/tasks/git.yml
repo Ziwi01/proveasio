@@ -1,5 +1,31 @@
 # Install specific GIT version
 ---
+# The git-core PPA used to be added with `add-apt-repository ppa:git-core/ppa`,
+# which drops a legacy one-line `.list` source (e.g.
+# `ppa_git_core_ppa_<release>.list` or `git-core-ubuntu-ppa-<release>.list`)
+# without a managed `Signed-By` key. This role now manages the repo via
+# `deb822_repository` (`git-core-ppa.sources` + `/etc/apt/keyrings/git-core-ppa.asc`).
+# If the old `.list` file is left behind, APT sees the same repo declared twice
+# with conflicting `Signed-By` values and refuses to read its sources:
+#   E:Conflicting values set for option Signed-By regarding source ... git-core/ppa
+# Remove any such legacy `.list` source first so the migration is self-healing.
+- name: "[Git] Find legacy git-core PPA .list sources"
+  become: true
+  ansible.builtin.find:
+    paths: /etc/apt/sources.list.d
+    patterns: "*.list"
+    contains: ".*git-core/ppa.*"
+  register: git_legacy_ppa_sources
+
+- name: "[Git] Remove legacy git-core PPA .list sources (migrated to deb822)"
+  become: true
+  ansible.builtin.file:
+    path: "{{ item.path }}"
+    state: absent
+  loop: "{{ git_legacy_ppa_sources.files }}"
+  loop_control:
+    label: "{{ item.path | basename }}"
+
 - name: "[Git] Add git-core/ppa repository"
   become: true
   ansible.builtin.deb822_repository:
