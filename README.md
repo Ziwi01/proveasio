@@ -67,6 +67,11 @@ Below you can find brief summary of included tools and features. For more detail
   - [jq](https://stedolan.github.io/jq/) - JSON parser
   - [dry](https://github.com/moncho/dry) - Terminal UI for Docker, alternative to docker ps
 
+- AI coding agents:
+
+  - [opencode](https://github.com/anomalyco/opencode) - terminal-based AI coding agent
+  - [ccmux](https://github.com/epilande/ccmux) - run and track AI coding agents in TMUX: live session states, a status sidebar/popup picker, and desktop notifications (bridged to Windows toasts on WSL via [wsl-notify-send](https://github.com/stuartleeks/wsl-notify-send)). Integrates with `opencode` out of the box.
+
 - Languages support (with version management):
 
   - Python

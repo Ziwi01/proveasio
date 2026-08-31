@@ -89,6 +89,8 @@ github_packages:
   uv: latest
   opencode: latest
   hunk: latest
+  ccmux: latest
+  wsl_notify_send: latest # WSL -> Windows notification bridge (used by ccmux)
 # Kubectl version
 kubectl_version: latest
 # Packages and their versions to install with PIP

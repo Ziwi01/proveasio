@@ -156,6 +156,13 @@ alias kubectl=kubecolor
 source <(kubectl completion zsh)
 compdef kubecolor=kubectl
 
+### ccmux (AI coding agent session tracker) completions
+# Must come after compinit (sourced by oh-my-zsh above), since the script
+# registers itself with compdef. See: https://github.com/epilande/ccmux
+if command -v ccmux &>/dev/null; then
+  eval "$(ccmux completion zsh)"
+fi
+
 ### Fuzzy Finder
 
 # Setup fzf

@@ -9,12 +9,13 @@ This role is mostly configs management. It will apply configuration for:
 - LazyGIT (`~/.config/lazygit/config.yml`)
 - ansible-lint (`~/.ansible-lint`)
 - SDKMAN (`~/.sdkman/etc/config`)
+- ccmux (`~/.config/ccmux/ccmux.json`)
 
 If you want to exclude particular component configuration, you can add an array of sections, for example:
 
 ```yaml
 config_tasks_exclude:
-  - ansible-lint
+  - ansible
   - tmux
 ```
 
@@ -30,6 +31,7 @@ Available configs excludes:
 - lazygit
 - neovim-config
 - ansible
+- ccmux
 
 ## Backups
 

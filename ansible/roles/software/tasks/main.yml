@@ -613,3 +613,31 @@
     - software
     - versions
     - hunk
+
+# wsl-notify-send - Bridge WSL desktop notifications to Windows toasts (used by ccmux)
+- name: "[Software] Install wsl-notify-send"
+  ansible.builtin.include_tasks:
+    file: wsl-notify-send.yml
+    apply:
+      tags:
+        - software
+        - wsl-notify-send
+  when: "'wsl-notify-send' not in software_tasks_exclude"
+  tags:
+    - software
+    - versions
+    - wsl-notify-send
+
+# ccmux - Run and track AI coding agents in tmux
+- name: "[Software] Install ccmux"
+  ansible.builtin.include_tasks:
+    file: ccmux.yml
+    apply:
+      tags:
+        - software
+        - ccmux
+  when: "'ccmux' not in software_tasks_exclude"
+  tags:
+    - software
+    - versions
+    - ccmux

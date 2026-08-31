@@ -9,5 +9,8 @@
 - [fx](https://github.com/antonmedv/fx) - terminal JSON viewer and processor
 - [jq](https://stedolan.github.io/jq/) - JSON parser
 - [hunk](https://github.com/modem-dev/hunk) - terminal-based code review and diff viewer
+- [opencode](https://github.com/anomalyco/opencode) - terminal-based AI coding agent
+- [ccmux](https://github.com/epilande/ccmux) - run and track AI coding agents in tmux (live session states, sidebar, desktop notifications)
+- [wsl-notify-send](https://github.com/stuartleeks/wsl-notify-send) - bridge desktop notifications from WSL to Windows toasts (used by ccmux)
 
 And more...

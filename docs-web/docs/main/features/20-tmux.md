@@ -18,3 +18,4 @@ Custom modifications in `roles/config/files/tmux.conf` include:
 - mouse support
 - prevent deselect+auto scroll on mouse selection copy (very annoying..)
 - seamless navigation between TMUX splits and VIM splits
+- [ccmux](https://github.com/epilande/ccmux) keybindings to track AI coding agents (see [ccmux usage](../../usage/tmux#track-ai-coding-agents-ccmux))

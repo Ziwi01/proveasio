@@ -1,0 +1,62 @@
+# wsl-notify-send - Bridge desktop notifications from WSL to Windows toast notifications
+# Used as the ccmux `command` notification backend so working-agent alerts reach
+# the Windows desktop (dbus/notify-send do not reach the Windows host from WSL).
+# Source: https://github.com/stuartleeks/wsl-notify-send
+---
+- name: "[wsl-notify-send] Get Github URL for proper version"
+  vars:
+    app: wsl_notify_send
+    repo: stuartleeks/wsl-notify-send
+    version_query: curl -s https://api.github.com/repos/stuartleeks/wsl-notify-send/releases/latest | jq .tag_name -r | cut -f2 -d'v'
+    github_uri: "v{{ wsl_notify_send_version }}/wsl-notify-send_windows_amd64.zip"
+  ansible.builtin.include_role:
+    name: common
+    tasks_from: github_version.yml
+    apply:
+      tags:
+        - versions
+  tags:
+    - versions
+
+- name: "[wsl-notify-send] Check if wsl-notify-send is already installed"
+  ansible.builtin.stat:
+    path: "{{ ansible_facts['env']['HOME'] }}/.local/bin/wsl-notify-send.exe"
+  register: wsl_notify_send_bin
+
+- name: "[wsl-notify-send] Download archive"
+  ansible.builtin.get_url:
+    url: "{{ wsl_notify_send_url }}"
+    dest: "/tmp/wsl-notify-send_windows_amd64.zip"
+    mode: '0644'
+  when: not wsl_notify_send_bin.stat.exists
+
+- name: "[wsl-notify-send] Extract binary"
+  ansible.builtin.unarchive:
+    src: "/tmp/wsl-notify-send_windows_amd64.zip"
+    dest: "{{ ansible_facts['env']['HOME'] }}/.local/bin/"
+    include:
+      - wsl-notify-send.exe
+    creates: "{{ ansible_facts['env']['HOME'] }}/.local/bin/wsl-notify-send.exe"
+    mode: '0755'
+  when: not wsl_notify_send_bin.stat.exists
+
+- name: "[wsl-notify-send] Cleanup zip file"
+  ansible.builtin.file:
+    path: "/tmp/wsl-notify-send_windows_amd64.zip"
+    state: absent
+
+- name: "[wsl-notify-send] Save used version"
+  vars:
+    app: wsl_notify_send
+    target_version:
+      github_packages:
+        wsl_notify_send: "{{ wsl_notify_send_version }}"
+    yq_query: ".github_packages.wsl_notify_send = \"{{ wsl_notify_send_version }}\""
+  ansible.builtin.include_role:
+    name: common
+    tasks_from: save_version.yml
+    apply:
+      tags:
+        - versions
+  tags:
+    - versions

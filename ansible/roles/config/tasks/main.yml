@@ -59,6 +59,18 @@
     - config
     - tmux
 
+- name: "[Config] Configure ccmux"
+  ansible.builtin.include_tasks:
+    file: ccmux.yml
+    apply:
+      tags:
+        - config
+        - ccmux
+  when: "'ccmux' not in config_tasks_exclude"
+  tags:
+    - config
+    - ccmux
+
 - name: "[Config] Install Neovim config"
   ansible.builtin.include_tasks:
     file: neovim-config.yml

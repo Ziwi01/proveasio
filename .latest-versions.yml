@@ -25,6 +25,8 @@ github_packages:
   p10k: latest
   uv: latest
   opencode: latest
+  ccmux: latest
+  wsl_notify_send: latest
 git_apt_version: latest
 pip_packages:
   gita: latest

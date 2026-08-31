@@ -1,0 +1,92 @@
+# ccmux - Run and track AI coding agents in tmux (live session states, sidebar, notifications)
+# Source: https://github.com/epilande/ccmux
+# Distributed as a standalone prebuilt Linux binary (no Bun/Homebrew needed).
+---
+- name: "[ccmux] Get Github URL for proper version"
+  vars:
+    app: ccmux
+    repo: epilande/ccmux
+    version_query: curl -s https://api.github.com/repos/epilande/ccmux/releases/latest | jq .tag_name -r | cut -f2 -d'v'
+    github_uri: "v{{ ccmux_version }}/ccmux-linux-x64"
+  ansible.builtin.include_role:
+    name: common
+    tasks_from: github_version.yml
+    apply:
+      tags:
+        - versions
+  tags:
+    - versions
+
+- name: "[ccmux] Check if ccmux {{ ccmux_version }} is installed"
+  ansible.builtin.stat:
+    path: "{{ ansible_facts['env']['HOME'] }}/.local/opt/ccmux-{{ ccmux_version }}"
+  register: ccmux_dir
+
+- name: "Installation"
+  when: not ccmux_dir.stat.exists
+  block:
+    - name: "[ccmux] Create directory in {{ ansible_facts['env']['HOME'] }}/.local/opt"
+      ansible.builtin.file:
+        path: "{{ ansible_facts['env']['HOME'] }}/.local/opt/ccmux-{{ ccmux_version }}"
+        state: directory
+        mode: "0755"
+
+    - name: "[ccmux] Download ccmux {{ ccmux_version }} binary"
+      ansible.builtin.get_url:
+        url: "{{ ccmux_url }}"
+        dest: "{{ ansible_facts['env']['HOME'] }}/.local/opt/ccmux-{{ ccmux_version }}/ccmux"
+        mode: "0755"
+
+- name: "[ccmux] Link {{ ccmux_version }} binary to ~/.local/bin/ccmux"
+  ansible.builtin.file:
+    src: "{{ ansible_facts['env']['HOME'] }}/.local/opt/ccmux-{{ ccmux_version }}/ccmux"
+    dest: "{{ ansible_facts['env']['HOME'] }}/.local/bin/ccmux"
+    state: link
+    force: true
+
+# OpenCode integration: `ccmux setup --agent opencode` drops an auto-discovered
+# JS plugin at ~/.config/opencode/plugin/ccmux.js that reports live session
+# state (working / idle / waiting) to the ccmux daemon.
+# See: https://github.com/epilande/ccmux#opencode
+- name: "[ccmux] Check for OpenCode integration plugin"
+  ansible.builtin.stat:
+    path: "{{ ansible_facts['env']['HOME'] }}/.config/opencode/plugin/ccmux.js"
+  register: ccmux_opencode_plugin
+
+- name: "[ccmux] Install OpenCode integration (ccmux setup --agent opencode)"
+  ansible.builtin.command:
+    cmd: "{{ ansible_facts['env']['HOME'] }}/.local/bin/ccmux setup --agent opencode"
+  register: ccmux_opencode_setup
+  changed_when: true
+  when: not ccmux_dir.stat.exists or not ccmux_opencode_plugin.stat.exists
+
+- name: "[ccmux] Save used version"
+  vars:
+    app: ccmux
+    target_version:
+      github_packages:
+        ccmux: "{{ ccmux_version }}"
+    yq_query: ".github_packages.ccmux = \"{{ ccmux_version }}\""
+  ansible.builtin.include_role:
+    name: common
+    tasks_from: save_version.yml
+    apply:
+      tags:
+        - versions
+  tags:
+    - versions
+
+- name: "[ccmux] Cleanup old versions"
+  vars:
+    app: ccmux
+    keep: "{{ ccmux_version }}"
+  ansible.builtin.include_role:
+    name: common
+    tasks_from: cleanup_versions.yml
+    apply:
+      tags:
+        - versions
+        - cleanup
+  tags:
+    - versions
+    - cleanup

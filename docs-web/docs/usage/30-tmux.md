@@ -96,3 +96,25 @@ Sometimes you need to enter the same commands in all you panes (like after loggi
 
 You can turn on panes synchronizations with: `<C-b>:` and writing `setw synchronize-panes on`
 
+## Track AI coding agents (ccmux)
+
+Uses: [ccmux](https://github.com/epilande/ccmux)
+
+When you run multiple AI coding agents (`opencode`, Claude Code, Codex and others) across tmux panes, it gets hard to track which one is idle, working, or waiting for you. [ccmux](https://github.com/epilande/ccmux) discovers the agents already running in your panes and shows their live state, so you can jump straight to the one that needs attention.
+
+It works with your existing workflow - you don't change how you launch agents. `opencode` integration is set up automatically (a plugin is dropped into `~/.config/opencode/plugin/ccmux.js`), so its sessions report their state out of the box.
+
+The following keybindings are configured:
+
+- `<C-b><C-p>` - open the ccmux **picker** in a centered popup (closes and drops you into the selected agent's pane)
+- `<Alt>p` - open the ccmux picker from any pane (no prefix)
+- `<C-b><C-o>` - toggle the ccmux **sidebar** (an always-visible agent status rail) in every window
+- `<Alt>o` - toggle the ccmux sidebar from any pane (no prefix)
+- `<C-b><C-i>` - open the picker in persistent **dashboard** mode (stays open after switching)
+
+:::tip[Desktop notifications]
+Notifications are enabled by default and fire when an agent starts waiting for you or finishes. On WSL they are bridged to native Windows toast notifications through [wsl-notify-send](https://github.com/stuartleeks/wsl-notify-send). You can tweak or disable them in `~/.config/ccmux/ccmux.json` (see the [config role](../main/roles/config)), or test the setup with `ccmux notify`.
+:::
+
+You can list all commands with `ccmux --help` and see the full feature set in the [ccmux README](https://github.com/epilande/ccmux).
+

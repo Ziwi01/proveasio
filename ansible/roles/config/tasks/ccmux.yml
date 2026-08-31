@@ -1,0 +1,17 @@
+# Configure ccmux (~/.config/ccmux/ccmux.json)
+# Set backup/overwrite flags in `vars/main.yml`
+---
+- name: "[Config][ccmux] Create ~/.config/ccmux directory"
+  ansible.builtin.file:
+    path: "{{ ansible_facts['env']['HOME'] }}/.config/ccmux"
+    state: directory
+    mode: "0755"
+
+- name: "[Config][ccmux] Configure ccmux.json"
+  vars:
+    app: ccmux
+    source_file: ccmux.json
+    target_file: "{{ ansible_facts['env']['HOME'] }}/.config/ccmux/ccmux.json"
+  ansible.builtin.include_role:
+    name: common
+    tasks_from: config_file.yml
