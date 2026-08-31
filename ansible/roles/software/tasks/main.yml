@@ -599,3 +599,17 @@
     - software
     - versions
     - opencode
+
+# hunk - terminal-based code review and diff tool
+- name: "[Software] Install hunk"
+  ansible.builtin.include_tasks:
+    file: hunk.yml
+    apply:
+      tags:
+        - software
+        - hunk
+  when: "'hunk' not in software_tasks_exclude"
+  tags:
+    - software
+    - versions
+    - hunk

@@ -1,0 +1,87 @@
+# hunk - terminal-based code review and diff tool
+# Source: https://github.com/modem-dev/hunk
+---
+- name: "[hunk] Get Github URL for proper version"
+  vars:
+    app: hunk
+    repo: modem-dev/hunk
+    version_query: curl -s https://api.github.com/repos/modem-dev/hunk/releases/latest | jq .tag_name -r | cut -f2 -d'v'
+    github_uri: "v{{ hunk_version }}/hunkdiff-linux-x64.tar.gz"
+  ansible.builtin.include_role:
+    name: common
+    tasks_from: github_version.yml
+    apply:
+      tags:
+        - versions
+  tags:
+    - versions
+
+- name: "[hunk] Check if hunk {{ hunk_version }} is installed"
+  ansible.builtin.stat:
+    path: "{{ ansible_facts['env']['HOME'] }}/.local/opt/hunk-{{ hunk_version }}"
+  register: hunk_dir
+
+- name: "Installation"
+  when: not hunk_dir.stat.exists
+  block:
+    - name: "[hunk] Create directory in {{ ansible_facts['env']['HOME'] }}/.local/opt"
+      ansible.builtin.file:
+        path: "{{ ansible_facts['env']['HOME'] }}/.local/opt/hunk-{{ hunk_version }}"
+        state: directory
+        mode: "0755"
+
+    - name: "[hunk] Download hunk {{ hunk_version }}"
+      ansible.builtin.get_url:
+        url: "{{ hunk_url }}"
+        dest: "/tmp/hunk-{{ hunk_version }}.tar.gz"
+        mode: "0755"
+
+    - name: "[hunk] Untar archive"
+      ansible.builtin.unarchive:
+        src: "/tmp/hunk-{{ hunk_version }}.tar.gz"
+        dest: "{{ ansible_facts['env']['HOME'] }}/.local/opt/hunk-{{ hunk_version }}"
+        extra_opts:
+          - "--strip-components=1"
+
+    - name: "[hunk] Cleanup tar.gz file"
+      ansible.builtin.file:
+        path: "/tmp/hunk-{{ hunk_version }}.tar.gz"
+        state: absent
+
+- name: "[hunk] Link {{ hunk_version }} binary to ~/.local/bin/hunk"
+  ansible.builtin.file:
+    src: "{{ ansible_facts['env']['HOME'] }}/.local/opt/hunk-{{ hunk_version }}/hunk"
+    dest: "{{ ansible_facts['env']['HOME'] }}/.local/bin/hunk"
+    state: link
+    force: true
+
+- name: "[hunk] Save used version"
+  vars:
+    app: hunk
+    target_version:
+      github_packages:
+        hunk: "{{ hunk_version }}"
+    yq_query: ".github_packages.hunk = \"{{ hunk_version }}\""
+  ansible.builtin.include_role:
+    name: common
+    tasks_from: save_version.yml
+    apply:
+      tags:
+        - versions
+  tags:
+    - versions
+
+- name: "[hunk] Cleanup old versions"
+  vars:
+    app: hunk
+    keep: "{{ hunk_version }}"
+  ansible.builtin.include_role:
+    name: common
+    tasks_from: cleanup_versions.yml
+    apply:
+      tags:
+        - versions
+        - cleanup
+  tags:
+    - versions
+    - cleanup

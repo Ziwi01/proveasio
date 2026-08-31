@@ -8,5 +8,6 @@
 - [htop](https://github.com/htop-dev/htop) - better top
 - [fx](https://github.com/antonmedv/fx) - terminal JSON viewer and processor
 - [jq](https://stedolan.github.io/jq/) - JSON parser
+- [hunk](https://github.com/modem-dev/hunk) - terminal-based code review and diff viewer
 
 And more...

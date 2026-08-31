@@ -23,6 +23,7 @@ Various tools:
 16. [keychain](https://www.funtoo.org/Funtoo:Keychain) - ssh-agent wrapper to keep SSH keys across terminal logins
 17. [yq](https://mikefarah.gitbook.io/yq/) - awesome terminal YAML parser (also JSON, XML etc.)
 18. [FX](https://github.com/antonmedv/fx) - terminal JSON viewer and processor
+19. [hunk](https://github.com/modem-dev/hunk) - terminal-based code review and diff viewer with syntax highlighting
 
 Development-related software:
 
@@ -85,3 +86,4 @@ Available software excludes:
 - pay-respects
 - kubeswitch
 - az-account-switcher
+- hunk
