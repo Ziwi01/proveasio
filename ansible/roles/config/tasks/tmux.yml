@@ -1,4 +1,10 @@
 ---
+- name: "[Config][Tmux] Install session-naming helper script"
+  ansible.builtin.copy:
+    src: tmux-default-session-name.sh
+    dest: "{{ ansible_facts['env']['HOME'] }}/.local/bin/tmux-default-session-name"
+    mode: "0755"
+
 - name: "[Config][Tmux] Configure .tmux.conf"
   vars:
     app: Tmux

@@ -60,6 +60,43 @@
   changed_when: true
   when: not ccmux_dir.stat.exists or not ccmux_opencode_plugin.stat.exists
 
+# Zsh completions. Generated once here (instead of `eval "$(ccmux completion
+# zsh)"` at every shell startup) to keep shell startup fast and avoid console
+# output during Powerlevel10k instant prompt. The `completion` subcommand is
+# not present in every ccmux build, so this is best-effort: the file is written
+# only when the installed binary actually produces it, and ~/.zshrc adds the
+# dir to fpath only when the file exists.
+- name: "[ccmux] Generate zsh completion script (if supported by this build)"
+  ansible.builtin.command:
+    cmd: "{{ ansible_facts['env']['HOME'] }}/.local/bin/ccmux completion zsh"
+  register: ccmux_completion
+  changed_when: false
+  failed_when: false
+
+- name: "[ccmux] Ensure ~/.zfunc exists for the completion file"
+  ansible.builtin.file:
+    path: "{{ ansible_facts['env']['HOME'] }}/.zfunc"
+    state: directory
+    mode: "0755"
+  when:
+    - ccmux_completion.rc == 0
+    - ccmux_completion.stdout | length > 0
+
+- name: "[ccmux] Install zsh completion into ~/.zfunc/_ccmux"
+  ansible.builtin.copy:
+    dest: "{{ ansible_facts['env']['HOME'] }}/.zfunc/_ccmux"
+    content: "{{ ccmux_completion.stdout }}\n"
+    mode: "0644"
+  when:
+    - ccmux_completion.rc == 0
+    - ccmux_completion.stdout | length > 0
+
+- name: "[ccmux] Remove stale zsh completion when unsupported by this build"
+  ansible.builtin.file:
+    path: "{{ ansible_facts['env']['HOME'] }}/.zfunc/_ccmux"
+    state: absent
+  when: ccmux_completion.rc != 0 or ccmux_completion.stdout | length == 0
+
 - name: "[ccmux] Save used version"
   vars:
     app: ccmux

@@ -1,0 +1,39 @@
+#!/usr/bin/env bash
+# ccmux -> Windows toast bridge for WSL.
+#
+# ccmux emits UTF-8 notification text containing typographic punctuation
+# (middle dot "·", em dash "—", curly quotes, ...). The bundled
+# wsl-notify-send.exe renders the toast through the Windows ANSI codepage, so
+# raw UTF-8 shows up as mojibake (e.g. "Â·", "â€""). We transliterate the text
+# to clean ASCII first, so toasts stay readable on any Windows codepage.
+#
+# ccmux invokes this via `sh -c` with the CCMUX_* variables exported (see
+# notifications.command in ~/.config/ccmux/ccmux.json).
+set -u
+
+sanitize() {
+  # Map the punctuation ccmux commonly uses to ASCII, then transliterate/drop
+  # anything else non-ASCII as a safety net.
+  printf '%s' "${1-}" \
+    | sed -e 's/\xe2\x80\x94/-/g' \
+          -e 's/\xe2\x80\x93/-/g' \
+          -e 's/\xc2\xb7/-/g' \
+    | iconv -f UTF-8 -t ASCII//TRANSLIT 2>/dev/null
+}
+
+category="$(sanitize "ccmux: ${CCMUX_PROJECT:-}")"
+title="$(sanitize "${CCMUX_TITLE:-ccmux}")"
+body="$(sanitize "${CCMUX_BODY:-}")"
+
+if [ -n "$body" ]; then
+  message="$title - $body"
+else
+  message="$title"
+fi
+
+# Resolve the notifier; fall back to the known install location if the daemon's
+# PATH does not include ~/.local/bin.
+notifier="$(command -v wsl-notify-send.exe 2>/dev/null || true)"
+[ -z "$notifier" ] && notifier="${HOME}/.local/bin/wsl-notify-send.exe"
+
+exec "$notifier" --category "$category" "$message"

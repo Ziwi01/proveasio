@@ -4,7 +4,7 @@
     "events": ["waiting", "finished"],
     "delayMs": 1000,
     "backend": "command",
-    "command": "wsl-notify-send.exe --category \"ccmux: $CCMUX_PROJECT\" \"$CCMUX_TITLE — $CCMUX_BODY\""
+    "command": "$HOME/.local/bin/ccmux-wsl-notify"
   },
   "sidebar": {
     "width": 32,

@@ -7,6 +7,15 @@
     state: directory
     mode: "0755"
 
+# WSL -> Windows toast bridge that transliterates ccmux's UTF-8 punctuation to
+# ASCII, avoiding mojibake in Windows notifications (referenced by the
+# notifications.command in ccmux.json).
+- name: "[Config][ccmux] Install ccmux-wsl-notify helper into ~/.local/bin"
+  ansible.builtin.copy:
+    src: ccmux-wsl-notify
+    dest: "{{ ansible_facts['env']['HOME'] }}/.local/bin/ccmux-wsl-notify"
+    mode: "0755"
+
 - name: "[Config][ccmux] Configure ccmux.json"
   vars:
     app: ccmux
