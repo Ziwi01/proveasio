@@ -7,7 +7,7 @@
   vars:
     app: git_fuzzy
     repo: bigH/git-fuzzy
-    version_query: curl -s https://api.github.com/repos/bigH/git-fuzzy/commits/main | jq -r '.sha'
+    version_query: gh_curl https://api.github.com/repos/bigH/git-fuzzy/commits/main | jq -r '.sha'
   ansible.builtin.include_role:
     name: common
     tasks_from: github_version.yml

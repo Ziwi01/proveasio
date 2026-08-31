@@ -54,7 +54,7 @@
   vars:
     app: p10k
     repo: romkatv/powerlevel10k
-    version_query: curl -s https://api.github.com/repos/romkatv/powerlevel10k/releases/latest  | jq .name -r | cut -f2 -d'v'
+    version_query: gh_curl https://api.github.com/repos/romkatv/powerlevel10k/releases/latest  | jq .name -r | cut -f2 -d'v'
   ansible.builtin.include_role:
     name: common
     tasks_from: github_version.yml

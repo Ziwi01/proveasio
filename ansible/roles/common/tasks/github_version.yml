@@ -1,10 +1,63 @@
 ---
+# Resolve an OPTIONAL GitHub API token once per run and use it to authenticate
+# the release/version lookups below.
+#
+# Why: the version queries hit the GitHub REST API. Unauthenticated requests are
+# capped at 60/hour (shared per public IP), which a full run exhausts quickly and
+# surfaces as "Target version is `null`" on repeated runs. An authenticated token
+# raises the limit to 5000/hour.
+#
+# Token sources, in order of precedence (first non-empty wins):
+#   1. `github_api_token` variable (e.g. set in ansible/vars/overrides.yml)
+#   2. GITHUB_TOKEN / GH_TOKEN environment variables (of the machine running Ansible)
+#   3. `gh auth token` (available after a one-time `gh auth login`)
+# When none is found, queries run unauthenticated exactly as before.
+- name: "[common] Resolve optional GitHub API token (once per run)"
+  when: github_api_token_resolved is not defined
+  block:
+    - name: "[common] Seed GitHub API token from vars/env"
+      ansible.builtin.set_fact:
+        github_api_token: "{{ github_api_token | default(lookup('env', 'GITHUB_TOKEN') or lookup('env', 'GH_TOKEN') or '', true) }}"
+      no_log: true
+
+    - name: "[common] Fall back to `gh auth token`"
+      ansible.builtin.command: gh auth token
+      register: gh_auth_token
+      changed_when: false
+      failed_when: false
+      no_log: true
+      when: github_api_token | length == 0
+
+    - name: "[common] Use gh CLI token when available"
+      ansible.builtin.set_fact:
+        github_api_token: "{{ gh_auth_token.stdout | trim }}"
+      no_log: true
+      when:
+        - gh_auth_token.stdout is defined
+        - gh_auth_token.stdout | trim | length > 0
+
+    - name: "[common] Mark GitHub API token resolution done"
+      ansible.builtin.set_fact:
+        github_api_token: "{{ github_api_token | default('') }}"
+        github_api_token_resolved: true
+
 - name: "[{{ app }}] Get latest version if requested"
   ansible.builtin.shell: |
     set -e -o pipefail
+    # Authenticated curl helper: adds the Authorization header only when a token
+    # is present, so unauthenticated runs behave exactly as before.
+    gh_curl() {
+      auth=()
+      if [ -n "${GITHUB_TOKEN:-}" ]; then
+        auth=(-H "Authorization: Bearer ${GITHUB_TOKEN}")
+      fi
+      curl -s "${auth[@]}" "$@"
+    }
     {{ version_query }}
   args:
     executable: /bin/bash
+  environment:
+    GITHUB_TOKEN: "{{ github_api_token | default('') }}"
   register: version
   changed_when: false
   when: github_packages[app] == 'latest'
@@ -15,7 +68,14 @@
 
 - name: "[{{ app }}] Fail if version is not null"
   ansible.builtin.fail:
-    msg: 'Target version is `null`. This is probably because Github API call limit was exceeded (run `curl -s https://api.github.com/` to verify). Try again later.'
+    msg: >-
+      Target version for `{{ app }}` is empty. The GitHub API call returned
+      nothing, most likely because the unauthenticated rate limit (60
+      requests/hour, shared per public IP) was exceeded. Authenticate to raise
+      it to 5000/hour using any one of: run `gh auth login` once, export
+      GITHUB_TOKEN (or GH_TOKEN), or set `github_api_token` in
+      ansible/vars/overrides.yml. Check your current limit with
+      `curl -s https://api.github.com/rate_limit`, then run again.
   when: lookup('vars', app ~ '_version') in ['', 'null'] or lookup('vars', app ~ '_version') | length == 0
 
 - name: "[{{ app }}] Set proper download URL"

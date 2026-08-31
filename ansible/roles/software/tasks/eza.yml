@@ -5,7 +5,7 @@
   vars:
     app: eza
     repo: eza-community/eza
-    version_query: curl -s https://api.github.com/repos/eza-community/eza/releases/latest | jq .tag_name -r | cut -f2 -d'v'
+    version_query: gh_curl https://api.github.com/repos/eza-community/eza/releases/latest | jq .tag_name -r | cut -f2 -d'v'
     github_uri: "v{{ eza_version }}/eza_x86_64-unknown-linux-musl.tar.gz"
   ansible.builtin.include_role:
     name: common

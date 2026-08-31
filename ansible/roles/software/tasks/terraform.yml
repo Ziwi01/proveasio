@@ -9,7 +9,7 @@
   vars:
     app: terraform
     repo: hashicorp/terraform
-    version_query: curl -s https://api.github.com/repos/hashicorp/terraform/releases/latest | jq .name -r | cut -f2 -d'v'
+    version_query: gh_curl https://api.github.com/repos/hashicorp/terraform/releases/latest | jq .name -r | cut -f2 -d'v'
     artifact_url: "https://releases.hashicorp.com/terraform/{{ terraform_version }}/terraform_{{ terraform_version }}_linux_amd64.zip"
   ansible.builtin.include_role:
     name: common

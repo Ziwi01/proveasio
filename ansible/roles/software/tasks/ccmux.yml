@@ -6,7 +6,7 @@
   vars:
     app: ccmux
     repo: epilande/ccmux
-    version_query: curl -s https://api.github.com/repos/epilande/ccmux/releases/latest | jq .tag_name -r | cut -f2 -d'v'
+    version_query: gh_curl https://api.github.com/repos/epilande/ccmux/releases/latest | jq .tag_name -r | cut -f2 -d'v'
     github_uri: "v{{ ccmux_version }}/ccmux-linux-x64"
   ansible.builtin.include_role:
     name: common

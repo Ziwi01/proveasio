@@ -7,7 +7,7 @@
   vars:
     app: zoxide
     repo: ajeetdsouza/zoxide
-    version_query: curl -s https://api.github.com/repos/ajeetdsouza/zoxide/releases/latest | jq .name -r | cut -f2 -d'v'
+    version_query: gh_curl https://api.github.com/repos/ajeetdsouza/zoxide/releases/latest | jq .name -r | cut -f2 -d'v'
     github_uri: "v{{ zoxide_version }}/zoxide-{{ zoxide_version }}-x86_64-unknown-linux-musl.tar.gz"
   ansible.builtin.include_role:
     name: common

@@ -5,7 +5,7 @@
   vars:
     app: rvm1_ansible
     repo: rvm/rvm1-ansible
-    version_query: curl -s https://api.github.com/repos/rvm/rvm1-ansible/releases/latest | jq .name -r | cut -f2 -d'v'
+    version_query: gh_curl https://api.github.com/repos/rvm/rvm1-ansible/releases/latest | jq .name -r | cut -f2 -d'v'
     artifact_url: "https://github.com/rvm/rvm1-ansible/archive/refs/tags/v{{ rvm1_ansible_version }}.tar.gz"
   ansible.builtin.include_role:
     name: common

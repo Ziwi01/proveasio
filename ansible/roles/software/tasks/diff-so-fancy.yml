@@ -7,7 +7,7 @@
   vars:
     app: diff_so_fancy
     repo: so-fancy/diff-so-fancy
-    version_query: curl -s https://api.github.com/repos/so-fancy/diff-so-fancy/releases/latest | jq .name -r | cut -f2 -d'v'
+    version_query: gh_curl https://api.github.com/repos/so-fancy/diff-so-fancy/releases/latest | jq .name -r | cut -f2 -d'v'
     github_uri: v{{ diff_so_fancy_version }}/diff-so-fancy
   ansible.builtin.include_role:
     name: common

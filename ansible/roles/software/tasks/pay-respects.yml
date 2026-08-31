@@ -14,7 +14,7 @@
   vars:
     app: pay_respects
     repo: iffse/pay-respects
-    version_query: curl -s https://api.github.com/repos/iffse/pay-respects/releases/latest | jq .name -r | cut -f2 -d'v'
+    version_query: gh_curl https://api.github.com/repos/iffse/pay-respects/releases/latest | jq .name -r | cut -f2 -d'v'
     github_uri: "v{{ pay_respects_version }}/pay-respects_{{ pay_respects_version }}-1_amd64.deb"
   ansible.builtin.include_role:
     name: common

@@ -8,7 +8,7 @@
   vars:
     app: helm
     repo: helm/helm
-    version_query: curl -s https://api.github.com/repos/helm/helm/releases/latest | jq .name -r | cut -f2 -d'v' | grep -Po '\d+\.\d+\.\d+\.?\d?'
+    version_query: gh_curl https://api.github.com/repos/helm/helm/releases/latest | jq .name -r | cut -f2 -d'v' | grep -Po '\d+\.\d+\.\d+\.?\d?'
     artifact_url: https://get.helm.sh/helm-v{{ helm_version }}-linux-amd64.tar.gz
   ansible.builtin.include_role:
     name: common

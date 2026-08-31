@@ -6,7 +6,7 @@
   vars:
     app: kubeswitch
     repo: danielfoehrKn/kubeswitch
-    version_query: curl -s https://api.github.com/repos/danielfoehrKn/kubeswitch/releases/latest | jq .name -r | cut -f1 -d' ' | cut -f2 -d'v'
+    version_query: gh_curl https://api.github.com/repos/danielfoehrKn/kubeswitch/releases/latest | jq .name -r | cut -f1 -d' ' | cut -f2 -d'v'
     github_uri: "{{ kubeswitch_version }}/switcher_linux_amd64"
   ansible.builtin.include_role:
     name: common

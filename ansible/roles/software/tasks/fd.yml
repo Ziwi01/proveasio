@@ -28,7 +28,7 @@
   vars:
     app: fd
     repo: sharkdp/fd
-    version_query: curl -s https://api.github.com/repos/sharkdp/fd/releases/latest | jq .name -r | cut -f2 -d'v'
+    version_query: gh_curl https://api.github.com/repos/sharkdp/fd/releases/latest | jq .name -r | cut -f2 -d'v'
     github_uri: v{{ fd_version }}/fd_{{ fd_version }}_amd64.deb
   ansible.builtin.include_role:
     name: common

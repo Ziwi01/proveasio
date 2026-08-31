@@ -7,7 +7,7 @@
   vars:
     app: wsl_notify_send
     repo: stuartleeks/wsl-notify-send
-    version_query: curl -s https://api.github.com/repos/stuartleeks/wsl-notify-send/releases/latest | jq .tag_name -r | cut -f2 -d'v'
+    version_query: gh_curl https://api.github.com/repos/stuartleeks/wsl-notify-send/releases/latest | jq .tag_name -r | cut -f2 -d'v'
     github_uri: "v{{ wsl_notify_send_version }}/wsl-notify-send_windows_amd64.zip"
   ansible.builtin.include_role:
     name: common

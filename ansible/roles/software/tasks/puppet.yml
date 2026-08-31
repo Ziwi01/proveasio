@@ -52,7 +52,7 @@
   vars:
     app: pes
     repo: puppetlabs/puppet-editor-services
-    version_query: curl -s https://api.github.com/repos/puppetlabs/puppet-editor-services/commits/main | jq -r '.sha'
+    version_query: gh_curl https://api.github.com/repos/puppetlabs/puppet-editor-services/commits/main | jq -r '.sha'
   ansible.builtin.include_role:
     name: common
     tasks_from: github_version.yml

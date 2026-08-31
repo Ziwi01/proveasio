@@ -14,7 +14,7 @@
   vars:
     app: kubecolor
     repo: kubecolor/kubecolor
-    version_query: curl -s https://api.github.com/repos/kubecolor/kubecolor/releases/latest | jq .name -r | cut -f2 -d'v'
+    version_query: gh_curl https://api.github.com/repos/kubecolor/kubecolor/releases/latest | jq .name -r | cut -f2 -d'v'
     github_uri: "v{{ kubecolor_version }}/kubecolor_{{ kubecolor_version }}_linux_amd64.deb"
   ansible.builtin.include_role:
     name: common

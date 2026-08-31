@@ -18,7 +18,7 @@
   vars:
     app: dry
     repo: moncho/dry
-    version_query: curl -s https://api.github.com/repos/moncho/dry/releases/latest | jq .tag_name -r | cut -f2 -d'v' | awk '{print $1}'
+    version_query: gh_curl https://api.github.com/repos/moncho/dry/releases/latest | jq .tag_name -r | cut -f2 -d'v' | awk '{print $1}'
     github_uri: "v{{ dry_version }}/dry-linux-amd64"
   ansible.builtin.include_role:
     name: common

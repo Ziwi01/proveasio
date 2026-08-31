@@ -14,7 +14,7 @@
   vars:
     app: neovim
     repo: neovim/neovim
-    version_query: curl -s https://api.github.com/repos/neovim/neovim/releases/latest | jq .tag_name | tr -d '"' | tr -d 'v'
+    version_query: gh_curl https://api.github.com/repos/neovim/neovim/releases/latest | jq .tag_name | tr -d '"' | tr -d 'v'
     github_uri: "v{{ neovim_version }}/nvim-linux-x86_64.appimage"
   ansible.builtin.include_role:
     name: common
@@ -29,9 +29,17 @@
 - name: "[Neovim] Get Neovim nightly version"
   ansible.builtin.shell: |
     set -e -o pipefail
-    curl -s https://api.github.com/repos/neovim/neovim/releases | jq -r 'map(select(.prerelease)) | first | .body' | grep -E '^NVIM ' | cut -d ' ' -f 2
+    auth=()
+    if [ -n "${GITHUB_TOKEN:-}" ]; then
+      auth=(-H "Authorization: Bearer ${GITHUB_TOKEN}")
+    fi
+    curl -s "${auth[@]}" https://api.github.com/repos/neovim/neovim/releases \
+      | jq -r 'map(select(.prerelease)) | first | .body' \
+      | grep -E '^NVIM ' | cut -d ' ' -f 2
   args:
     executable: /bin/bash
+  environment:
+    GITHUB_TOKEN: "{{ github_api_token | default('') }}"
   register: neovim_version_exact
   ignore_errors: true
   changed_when: neovim_version_exact.rc > 1

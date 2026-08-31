@@ -55,6 +55,15 @@ default_apt_packages:
   - bat
   - luarocks
   - lua5.4
+# Optional GitHub API token used to authenticate `latest` version lookups.
+# Unauthenticated GitHub API is limited to 60 requests/hour (per public IP);
+# authenticating raises it to 5000/hour and avoids "Target version is empty"
+# failures on repeated runs. Leave unset to run unauthenticated (default).
+# It is also auto-detected from the GITHUB_TOKEN / GH_TOKEN environment
+# variables or from `gh auth token` (run `gh auth login` once). Set it here or
+# in `ansible/vars/overrides.yml` to pin an explicit token.
+# github_api_token: ghp_xxx
+
 # Specific versions for software (github)
 # Fixed versions should be set without `v` prefix (e.g: 1.4.3)
 github_packages:

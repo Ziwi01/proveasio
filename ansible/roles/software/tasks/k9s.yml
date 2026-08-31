@@ -9,7 +9,7 @@
   vars:
     app: k9s
     repo: derailed/k9s
-    version_query: curl -s https://api.github.com/repos/derailed/k9s/releases/latest | jq .name -r | cut -f2 -d'v'
+    version_query: gh_curl https://api.github.com/repos/derailed/k9s/releases/latest | jq .name -r | cut -f2 -d'v'
     github_uri: v{{ k9s_version }}/k9s_Linux_amd64.tar.gz
   ansible.builtin.include_role:
     name: common

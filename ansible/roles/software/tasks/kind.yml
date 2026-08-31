@@ -9,7 +9,7 @@
   vars:
     app: kind
     repo: kubernetes-sigs/kind
-    version_query: curl -s https://api.github.com/repos/kubernetes-sigs/kind/releases/latest | jq .name -r | cut -f1 -d' ' | cut -f2 -d'v'
+    version_query: gh_curl https://api.github.com/repos/kubernetes-sigs/kind/releases/latest | jq .name -r | cut -f1 -d' ' | cut -f2 -d'v'
     github_uri: v{{ kind_version }}/kind-linux-amd64
   ansible.builtin.include_role:
     name: common

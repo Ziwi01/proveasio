@@ -5,7 +5,7 @@
   vars:
     app: fx
     repo: antonmedv/fx
-    version_query: curl -s https://api.github.com/repos/antonmedv/fx/releases/latest | jq .tag_name -r | cut -f2 -d'v'
+    version_query: gh_curl https://api.github.com/repos/antonmedv/fx/releases/latest | jq .tag_name -r | cut -f2 -d'v'
     github_uri: "{{ fx_version }}/fx_linux_amd64"
   ansible.builtin.include_role:
     name: common

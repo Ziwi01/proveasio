@@ -14,7 +14,7 @@
   vars:
     app: ripgrep
     repo: BurntSushi/ripgrep
-    version_query: curl -s https://api.github.com/repos/BurntSushi/ripgrep/releases/latest | jq .name -r | cut -f2 -d'v'
+    version_query: gh_curl https://api.github.com/repos/BurntSushi/ripgrep/releases/latest | jq .name -r | cut -f2 -d'v'
     github_uri: "{{ ripgrep_version }}/ripgrep_{{ ripgrep_version }}-1_amd64.deb"
   ansible.builtin.include_role:
     name: common

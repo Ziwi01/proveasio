@@ -5,7 +5,7 @@
   vars:
     app: opencode
     repo: anomalyco/opencode
-    version_query: curl -s https://api.github.com/repos/anomalyco/opencode/releases/latest | jq .tag_name -r | cut -f2 -d'v'
+    version_query: gh_curl https://api.github.com/repos/anomalyco/opencode/releases/latest | jq .tag_name -r | cut -f2 -d'v'
     github_uri: "v{{ opencode_version }}/opencode-linux-x64.tar.gz"
   ansible.builtin.include_role:
     name: common

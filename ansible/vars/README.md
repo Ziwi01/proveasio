@@ -28,4 +28,10 @@ If you are NOT using `systemd` on your WSL distro (see [README.md](./README.md) 
 service_manager: sysvinit
 ```
 
+To avoid GitHub API rate limits when resolving `latest` versions (60 req/hour unauthenticated, 5000 when authenticated), you can provide a token here. Alternatively set `GITHUB_TOKEN`/`GH_TOKEN` in your environment, or just run `gh auth login` once (all are auto-detected):
+
+```yaml
+github_api_token: ghp_xxx
+```
+
 For all possibilities, see each role vars file (`ansible/<role>/vars/main.yml`)
