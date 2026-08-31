@@ -50,8 +50,16 @@
   loop: '{{ sdkman_flush_caches_before }}'
   changed_when: false
 
+# SDKMAN 5.21+ gates the `selfupdate` command behind the `sdkman_selfupdate_feature`
+# flag (see sdkman-main.sh); without it `sdk selfupdate` returns "Invalid command"
+# and this task always reported `changed` while never actually self-updating.
+# Enable the flag just for this invocation. When already current, `sdk selfupdate`
+# prints exactly "No update available at this time." so the task reports green.
 - name: "[SDKMan] Update SDKMAN"
-  ansible.builtin.shell: . {{ sdkman_dir }}/bin/sdkman-init.sh && sdk selfupdate
+  ansible.builtin.shell: |
+    . {{ sdkman_dir }}/bin/sdkman-init.sh
+    export sdkman_selfupdate_feature=true
+    sdk selfupdate
   args:
     executable: /bin/bash
   register: sdk_selfupdate
