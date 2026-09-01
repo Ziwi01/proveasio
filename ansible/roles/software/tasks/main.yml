@@ -14,12 +14,35 @@
     - always
 
 # Include override variables
+#
+# `include_vars` REPLACES whole variables, so an `overrides.yml` that pins a few
+# versions under `github_packages:` (or `pip_packages:` / `docker_apt_packages:`)
+# would wipe out every other entry, including ones added by newer Proveasio
+# versions (e.g. `hunk`, `ccmux`, ...). That breaks lookups like
+# `github_packages[app]`. To keep overrides additive, we snapshot the default
+# catalogs first and merge the user's pins back on top of them afterwards.
+- name: "[Software] Snapshot default version catalogs before overrides"
+  ansible.builtin.set_fact:
+    _proveasio_default_github_packages: "{{ github_packages }}"
+    _proveasio_default_pip_packages: "{{ pip_packages }}"
+    _proveasio_default_docker_apt_packages: "{{ docker_apt_packages }}"
+  tags:
+    - always
+
 - name: "[Software] Include ansible/vars/overrides.yml"
   ansible.builtin.include_vars: "{{ item }}"
   with_first_found:
     - files:
         - "{{ playbook_dir }}/vars/overrides.yml"
       skip: true
+  tags:
+    - always
+
+- name: "[Software] Merge overridden version catalogs back onto defaults"
+  ansible.builtin.set_fact:
+    github_packages: "{{ _proveasio_default_github_packages | combine(github_packages | default({})) }}"
+    pip_packages: "{{ _proveasio_default_pip_packages | combine(pip_packages | default({})) }}"
+    docker_apt_packages: "{{ _proveasio_default_docker_apt_packages | combine(docker_apt_packages | default({})) }}"
   tags:
     - always
 

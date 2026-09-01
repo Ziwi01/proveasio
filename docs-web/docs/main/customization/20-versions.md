@@ -23,7 +23,28 @@ Also, it saves/updates them in `./current-versions.yml`. This file is added to `
 If you use `master` branch (which has all the versions set to `latest`), and you want stability for particular component, you can copy any of those outputs and add them to your `ansible/vars/overrides.yml` so this version will be used for any subsequent runs.
 
 :::note[Overriding one version in a group]
-For overriding only one package in a group (e.g `github_packages`), you need to set your desired version, but all the others need to be set to `latest`. In some cases `latest` can be something different (like `master` or `main`). You can find the reference in `latest-versions.yml`.
+You only need to set the packages you actually want to pin. Version catalogs
+(`github_packages`, `pip_packages`, `docker_apt_packages`) in your
+`ansible/vars/overrides.yml` are **merged on top of the defaults**, so any
+package you don't mention keeps its default (usually `latest`). For example:
+
+```yaml
+github_packages:
+  tmux: "3.7c"
+  neovim: "0.12.5"
+```
+
+This pins only `tmux` and `neovim`; every other tool — including ones added by
+newer Proveasio releases (e.g. `hunk`, `ccmux`) — still resolves normally. You
+no longer need to copy the whole catalog and set everything else to `latest`.
+
+:::tip[Upgrading from older Proveasio]
+Earlier versions replaced the whole catalog, so an `overrides.yml` copied from
+an old `current-versions.yml` could break newer runs with errors like
+`object of type 'dict' has no attribute 'hunk'`. With merging this no longer
+happens; you can safely trim your `overrides.yml` down to just the pins you care
+about.
+:::
 
 Please also note, that not every software version supports `latest`. Some need to be set explicitly. See `ansible/roles/software/vars/main.yml` for all static vars.
 :::
