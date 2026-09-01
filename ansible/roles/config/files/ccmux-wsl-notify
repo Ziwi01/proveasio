@@ -1,11 +1,26 @@
 #!/usr/bin/env bash
-# ccmux -> Windows toast bridge for WSL.
+# ccmux -> Windows toast bridge for WSL, with a custom layout.
 #
-# ccmux emits UTF-8 notification text containing typographic punctuation
-# (middle dot "·", em dash "—", curly quotes, ...). The bundled
+# wsl-notify-send renders `--category` as the toast TITLE and the first
+# positional arg as the BODY, so:
+#
+#   Title (row 1) = the ACTION   -> Finished / Needs permission: <tool> /
+#                                    Waiting for your input / Plan ready ...
+#   Body          = [tmux-session][window.pane][pane-title] (repo:branch) desc
+#
+# Field sources:
+#   action   <- CCMUX_SUBTITLE (ccmux's event line), falls back to CCMUX_EVENT
+#   session  <- tmux #{session_name}              (resolved from CCMUX_PANE)
+#   win.pane <- tmux #{window_index}.#{pane_index}
+#   pane-nm  <- tmux #{pane_title}  (opencode sets this to "OC | <title>")
+#   repo     <- CCMUX_PROJECT (+ :CCMUX_BRANCH)
+#   desc     <- CCMUX_BODY   (contextual message; a leading duplicate action
+#                             line is stripped)
+#
+# ccmux emits UTF-8 typographic punctuation (middle dot, em dash, curly quotes).
 # wsl-notify-send.exe renders the toast through the Windows ANSI codepage, so
-# raw UTF-8 shows up as mojibake (e.g. "Â·", "â€""). We transliterate the text
-# to clean ASCII first, so toasts stay readable on any Windows codepage.
+# raw UTF-8 shows up as mojibake (e.g. "Â·", "â€""). We transliterate to clean
+# ASCII first, so toasts stay readable on any Windows codepage.
 #
 # ccmux invokes this via `sh -c` with the CCMUX_* variables exported (see
 # notifications.command in ~/.config/ccmux/ccmux.json).
@@ -21,15 +36,43 @@ sanitize() {
     | iconv -f UTF-8 -t ASCII//TRANSLIT 2>/dev/null
 }
 
-category="$(sanitize "ccmux: ${CCMUX_PROJECT:-}")"
-title="$(sanitize "${CCMUX_TITLE:-ccmux}")"
-body="$(sanitize "${CCMUX_BODY:-}")"
-
-if [ -n "$body" ]; then
-  message="$title - $body"
-else
-  message="$title"
+# --- Row 1: what action this notification is about ------------------------
+action="${CCMUX_SUBTITLE:-}"
+if [ -z "$action" ]; then
+  case "${CCMUX_EVENT:-}" in
+    finished) action="Finished" ;;
+    waiting) action="Awaits input" ;;
+    *) action="${CCMUX_EVENT:-ccmux}" ;;
+  esac
 fi
+
+# --- tmux identity, resolved from the pane id -----------------------------
+ident=""
+if [ -n "${CCMUX_PANE:-}" ] && command -v tmux >/dev/null 2>&1; then
+  ident="$(tmux display-message -p -t "$CCMUX_PANE" \
+    '[#{session_name}][#{window_index}.#{pane_index}][#{pane_title}]' 2>/dev/null)"
+fi
+
+# --- repository (+ branch) ------------------------------------------------
+repo="${CCMUX_PROJECT:-}"
+[ -n "${CCMUX_BRANCH:-}" ] && repo="${repo}:${CCMUX_BRANCH}"
+
+# --- description: flatten newlines, strip a leading duplicate action ------
+desc="$(printf '%s' "${CCMUX_BODY:-}" | tr '\n' ' ')"
+case "$desc" in
+  "$action "*) desc="${desc#"$action" }" ;;
+  "$action") desc="" ;;
+esac
+desc="${desc# }"
+
+# --- assemble the body ----------------------------------------------------
+body="$ident"
+[ -n "$repo" ] && body="${body} (${repo})"
+[ -n "$desc" ] && body="${body} ${desc}"
+[ -n "$body" ] || body="${CCMUX_TITLE:-ccmux}"
+
+category="$(sanitize "$action")"
+message="$(sanitize "$body")"
 
 # Resolve the notifier; fall back to the known install location if the daemon's
 # PATH does not include ~/.local/bin.
