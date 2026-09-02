@@ -71,6 +71,48 @@ There is an alias `btail <file>`, which will use BAT as tail command. This gives
   </div>
 </details>
 
+## Browse opencode sessions with `ocs`
+
+Uses:
+
+- [opencode](https://github.com/anomalyco/opencode)
+- [fzf](https://github.com/junegunn/fzf)
+
+An opencode session is tied to the directory it was started from. Running `opencode` in `~/projects/proveasio` and then in `~/projects/proveasio/ansible` gives you two separate session lists, and the built-in `/sessions` picker only ever shows the ones belonging to the current directory. Sessions started from a subdirectory effectively disappear.
+
+`ocs` reads opencode's database directly and shows **every** session from **every** directory in one fuzzy-searchable list, sorted newest first. Pick one and it re-attaches to that session, switching to the right directory on the way. The preview pane shows the first message of the session, so you can tell apart the six sessions you named "New session".
+
+- Type to filter across date, path and title at once
+- `CTRL+/` toggles the preview pane
+- `ESC` aborts without launching anything
+
+:::note[Where the data comes from]
+Sessions live in `~/.local/share/opencode/opencode.db`. `ocs` only reads it — it never writes. Archived sessions are hidden.
+:::
+
+<details>
+  <summary><b>Example:</b> Browse sessions with `ocs` with a preview</summary>
+
+```text
+╭───────────────────────────── opencode sessions ──────────────────────────────╮
+│   session                                                            242/242 │
+│ ──────────────────────────────────────────────────────────────────────────── │
+│ ▌ 2026-09-03 01:31  ~                            Organizing opencode sessions│
+│ ▌ 2026-09-03 01:14  ~/.config/astronvim          Reviewing community.lua     │
+│ ▌ 2026-09-02 18:56  ~/github/awx-helm SAML Azure Entra setup guide           │
+│ ▌ 2026-09-02 16:38  ~/github/devops              Nexus Helm chart update     │
+│ ▌ 2026-09-02 12:11  ~/projects/proveasio         Ansible FZF clone task fails│
+│ ──────────────────────────────────────────────────────────────────────────── │
+│ When running ansible, I get error for FZF:                                   │
+│                                                                              │
+│ TASK [software : [fzf] Clone/checkout version 0.74.3] ********************** │
+│ [ERROR]: Task failed: Module failed: Failed to download remote objects       │
+╰──────────────────────────────────────────────────────────────────────────────╯
+```
+
+</details>
+<br />
+
 ## Correct commands with `pay-respects`
 
 Uses: [pay-respects](https://github.com/iffse/pay-respects)

@@ -59,6 +59,7 @@ See below examples of community plugins used:
 - [ggandor/leap.nvim](https://github.com/ggandor/leap.nvim) - Jump around the buffer like crazy
 - [nvim-pack/nvim-spectre](https://github.com/nvim-pack/nvim-spectre) - Search and replace like on other IDEs
 - [sindrets/diffview.nvim](https://github.com/sindrets/diffview.nvim) - great GIT diff plugin for comparing file tree with particular revision(s) or browse file/selection history
+- [esmuellert/codediff.nvim](https://github.com/esmuellert/codediff.nvim) - VSCode-style diff viewer; also powers directory diffing straight from the file browser (see [Diff directories](#diff-directories))
 - [RRethy/vim-illuminate](https://github.com/RRethy/vim-illuminate) - highlight all the words that the cursor is on right now. Handy for typo spotting.
 
 ### Keymappings
@@ -87,6 +88,8 @@ Useful shortcuts:
 - `z`: fold all nodes
 - `<Shift+F>`: find files in directory
 - `s`: Open file in vertical split. Useful to compare two files - open in split, close the tree (`<Space>e`), and compare: `:windo diffthis`
+- `gm`: mark the directory under the cursor as the diff source (press again to un-mark). See [Diff directories](#diff-directories)
+- `gd`: diff the directory under the cursor against the marked source. See [Diff directories](#diff-directories)
 
 ### Switch buffers around
 
@@ -134,6 +137,28 @@ Of course, switch focus between windows with `<Alt>+<arrows>`
 
 ### Diff directories
 
+There are two ways to diff two directories: straight from the [file browser](#file-browser) using CodeDiff (recommended), or with DirDiff.
+
+#### From Neo-Tree (CodeDiff)
+
+Uses [CodeDiff](https://github.com/esmuellert/codediff.nvim)
+
+You can compare two directories directly from the [NeoTree](#file-browser) file browser, without typing any paths:
+
+1. Open NeoTree (`<Space>e`) and browse to the first directory.
+1. With the cursor on that directory, press `gm` to mark it as the **diff source**. The directory gets a dimmed `(diff source)` tag next to it (just like the `(copied)`/`(cut)` clipboard markers).
+1. Move the cursor to the second directory and press `gd` to diff it against the marked source.
+
+This opens a CodeDiff explorer listing every file that differs between the two directories. Press `<Enter>` on a file to open its side-by-side diff.
+
+Notes:
+
+- `gm` toggles the mark: press it again on the already-marked directory to un-mark it.
+- `gd` clears the mark after opening the diff.
+- Both `gm` and `gd` only work on directory nodes. Running them on a file, or `gd` with no source marked, shows a warning.
+
+#### With DirDiff
+
 Uses [DirDiff](https://github.com/will133/vim-dirdiff)
 
 To diff two directories, ensure you are not in NvimTree window, and run: `:DirDiff <dir1> <dir2>`.
@@ -154,8 +179,6 @@ In the DirDiff view you can:
 - open diff with `<Enter>`
 - sync the changes with `s`. The editor will ask you which changes to accept ('A' or 'B')
 - to sync multiple files at once, select them with `<Shift>v`, then press `s` to sync.
-
-_TODO_: Integrate DirDiff with Nvim Tree, introduce simple shortcuts/marks for diffing two directories.
 
 ### Search and replace
 
@@ -359,13 +382,13 @@ The recommended way is to update AstroNvim using this repository.
 Update everything (all software, config files etc.):
 
 ```shell
-ansible-playbook -i inventory.yml setup-windows.yml -k
+ansible-playbook -i inventory.yml setup-ubuntu.yml -K
 ```
 
 Or update Neovim config only:
 
 ```shell
-ansible-playbook -i inventory.yml setup-windows.yml -k --tags 'neovim,neovim-config'
+ansible-playbook -i inventory.yml setup-ubuntu.yml -K --tags 'neovim,neovim-config'
 ```
 
 Manual updates can be done instead of running ansible:

@@ -23,6 +23,9 @@ Various tools:
 16. [keychain](https://www.funtoo.org/Funtoo:Keychain) - ssh-agent wrapper to keep SSH keys across terminal logins
 17. [yq](https://mikefarah.gitbook.io/yq/) - awesome terminal YAML parser (also JSON, XML etc.)
 18. [FX](https://github.com/antonmedv/fx) - terminal JSON viewer and processor
+19. [hunk](https://github.com/modem-dev/hunk) - terminal-based code review and diff viewer with syntax highlighting
+20. [opencode](https://github.com/anomalyco/opencode) - terminal-based AI coding agent
+21. [ccmux](https://github.com/epilande/ccmux) - run and track AI coding agents (opencode, Claude Code, Codex and more) in tmux, with live session states, a status sidebar and desktop notifications. Integrates with `opencode` out of the box and, on WSL, bridges notifications to Windows toasts via [wsl-notify-send](https://github.com/stuartleeks/wsl-notify-send)
 
 Development-related software:
 
@@ -43,27 +46,31 @@ To disable installation of anything, you can add an array in your overrides file
 
 ```
 software_tasks_exclude:
-  - bat
-  - keychain
+  - azurecli
+  - puppet
 ```
 
 See [excluding code](../customization/excludes) for details.
 
 Available software excludes:
 
-- fx
-- eza
 - packages (default apt packages installation, including **dependencies**)
+- fx
 - git
 - ripgrep
 - fd
+- eza
 - lsg
 - fzf
 - diff-so-fancy
 - git-fuzzy
+- dry
 - lazygit
 - gita
-- bat
+- bottom
+- pay-respects
+- kubeswitch
+- az-account-switcher
 - zoxide
 - helm
 - zsh
@@ -71,17 +78,23 @@ Available software excludes:
 - tmux
 - docker
 - kubectl
+- kubecolor
 - kind
 - k9s
 - rvm
 - sdkman
 - nvm
 - rust
+- gvm
 - ansible
 - neovim
-- astronvim
 - puppet
-- kubecolor
-- pay-respects
-- kubeswitch
-- az-account-switcher
+- terraform
+- terragrunt
+- azurecli
+- awscli
+- uv
+- opencode
+- hunk
+- wsl-notify-send
+- ccmux
