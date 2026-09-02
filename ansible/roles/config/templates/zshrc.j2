@@ -248,6 +248,49 @@ alias glo='git-fuzzy log'
 alias gd='git-fuzzy diff'
 alias gst='git-fuzzy status'
 
+# browse opencode sessions across all project directories
+ocs() {
+    emulate -L zsh
+    local db=$HOME/.local/share/opencode/opencode.db dw=42 row dir sid pv
+
+    [[ -r $db ]] || { print -u2 "ocs: no db at $db"; return 1; }
+
+    pv='sqlite3 "'$db'" "select p.data ->> '\''text'\''
+            from part p join message m on m.id = p.message_id
+            where p.session_id = {2}
+              and p.data ->> '\''type'\'' = '\''text'\''
+              and m.data ->> '\''role'\'' = '\''user'\''
+            order by p.time_created limit 1;"'
+
+    row=$(sqlite3 -separator $'\x1f' "$db" "
+          select strftime('%Y-%m-%d %H:%M', s.time_updated/1000, 'unixepoch', 'localtime'),
+                 replace(s.directory, '$HOME', '~'),
+                 coalesce(nullif(trim(s.title), ''), '(untitled)'),
+                 s.id,
+                 s.directory
+          from session s
+          where s.time_archived is null
+          order by s.time_updated desc;" \
+        | awk -F$'\x1f' -v dw=$dw '
+            function trunc(s, w) {
+              return length(s) > w ? "\xe2\x80\xa6" substr(s, length(s) - w + 2) : s
+            }
+            { printf "\033[38;5;245m%s\033[0m  \033[38;5;110m%-*s\033[0m  \033[38;5;253m%s\033[0m\t%s\t%s\n",
+                     $1, dw, trunc($2, dw), $3, $4, $5 }' \
+        | fzf --ansi --delimiter=$'\t' --with-nth=1 \
+              --prompt='  session  ' --pointer='▌' --info=inline-right \
+              --layout=reverse --height=90% \
+              --border=rounded --border-label=' opencode sessions ' \
+              --color='border:238,label:110,prompt:110,pointer:212,hl:212,hl+:212,info:245' \
+              --preview="$pv" --preview-window='down,45%,border-top,wrap' \
+              --bind='ctrl-/:toggle-preview') || return
+
+    sid=${${(s:	:)row}[2]}
+    dir=${${(s:	:)row}[3]}
+    [[ -d $dir ]] || { print -u2 "ocs: directory gone: $dir"; return 1; }
+    (cd -- "$dir" && opencode "$dir" --session "$sid")
+}
+
 # SSH/TMUX - show SSH host name as window name
 ssh() {
     if [ "$(ps -p $(ps -p $$ -o ppid=) -o comm=)" = "tmux: server" ]; then
