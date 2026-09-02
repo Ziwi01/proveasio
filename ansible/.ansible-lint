@@ -1,2 +1,26 @@
+---
+# The single ansible-lint config for this repo. It lives here, not at the repo
+# root, because ansible-lint discovers its config from the current working
+# directory and every documented invocation is `cd ansible && ansible-lint`.
+# Enforced by .github/workflows/lint.yml on any change under `ansible/`.
+use_default_rules: true
+
+exclude_paths:
+  # `roles/*/files/` holds static payload that is `copy:`d verbatim into the
+  # user's home (~/.tmuxp/default.yaml, ~/.p10k.zsh, ...). It is data, not
+  # Ansible code, so linting it as YAML/Ansible is a category error — and a
+  # `# noqa` comment there would ship to the user.
+  - roles/config/files
+  - roles/software/files
+  - roles/windows/files
+
 skip_list:
+  # Task names are prefixed with the tool, e.g. "[{{ app }}] Cleanup old
+  # versions". ansible-lint wants Jinja only at the end of `name:`; the prefix
+  # convention (see AGENTS.md) is deliberate and worth ~86 findings.
+  - name[template]
+  # Several tasks shell out to version-manager binaries (rvm, sdk, nvm) that
+  # have no Ansible module equivalent.
+  - command-instead-of-module
+  # Role vars are intentionally unprefixed (`github_packages`, `sdkman_dir`).
   - var-naming[no-role-prefix]

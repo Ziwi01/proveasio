@@ -382,13 +382,13 @@ The recommended way is to update AstroNvim using this repository.
 Update everything (all software, config files etc.):
 
 ```shell
-ansible-playbook -i inventory.yml setup-windows.yml -k
+ansible-playbook -i inventory.yml setup-ubuntu.yml -K
 ```
 
 Or update Neovim config only:
 
 ```shell
-ansible-playbook -i inventory.yml setup-windows.yml -k --tags 'neovim,neovim-config'
+ansible-playbook -i inventory.yml setup-ubuntu.yml -K --tags 'neovim,neovim-config'
 ```
 
 Manual updates can be done instead of running ansible:

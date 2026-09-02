@@ -1,7 +1,10 @@
 ---
 # FZF
+# Kept as `shell` deliberately: this handler only fires on a real FZF install and
+# swapping to `command` is an untestable behaviour change (the install script
+# expects a shell environment).
 - name: "[FZF] Run install script"
-  ansible.builtin.shell: "{{ fzf_home }}/install"
+  ansible.builtin.shell: "{{ fzf_home }}/install"  # noqa: command-instead-of-shell
   register: fzf_install
   changed_when: "'Downloading' in fzf_install.stdout"
 

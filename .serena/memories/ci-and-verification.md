@@ -2,9 +2,10 @@
 
 Deeper detail behind the "Verifying your work" section of `AGENTS.md`.
 
-## Workflows (4 files, all in `.github/workflows/`)
+## Workflows (5 files, all in `.github/workflows/`)
 
-There are **no PR-triggered workflows**. Nothing runs on `pull_request`.
+`lint.yml` is the only `pull_request`-triggered workflow; the other four run on push,
+schedule, tag or dispatch only.
 
 ### `build.yml` — "Build"
 - Triggers: push to `master`, weekly cron `0 6 * * 5`, `workflow_dispatch`
@@ -32,19 +33,34 @@ looking LTS smoke test.
 Triggers on `v*` tags. Changelog + non-prerelease GitHub Release + prune old prereleases.
 No build, no lint.
 
+### `lint.yml` — "Lint"
+- Triggers: `push` **and** `pull_request`, both path-filtered to `ansible/**` and
+  `.github/workflows/lint.yml`; plus `workflow_dispatch`
+- `ubuntu-latest`, `actions/setup-python@v5` with `3.12` (ansible-core 2.21 needs >= 3.12)
+- `pip install "ansible-lint~=26.8"` → `ansible-galaxy collection install ansible.windows
+  chocolatey.chocolatey community.general` → `ansible-lint --offline` in `./ansible`
+- The `~=` pin is deliberate: it lets patch fixes through but blocks a major rule overhaul
+  from breaking the gate. **Nothing bumps it** — Dependabot runs on this repo but only for
+  `/docs-web` npm, and there is no `.github/dependabot.yml`.
+- The collections are not needed for a *pass* (without them ansible-lint still exits 0),
+  but without them the log fills with "Unable to load module ..." warnings and module
+  option validation is silently skipped.
+
 ## What "done" actually means
 
-CI verifies exactly two things: the playbook runs green on Ubuntu 24.04, and the
-Docusaurus site builds. Nothing else is gated.
+CI verifies three things: the playbook runs green on Ubuntu 24.04, the Docusaurus site
+builds, and `ansible/` passes ansible-lint. Nothing else is gated.
 
 ## Commands
 
 ```bash
-cd docs-web && npm install && npm run build   # the real gate; CI uses `install`, not `ci`
-cd ansible && ansible-lint                    # picks up ansible/.ansible-lint (narrower)
-cd . && ansible-lint -c .ansible-lint ansible/ # root config, broader skip list
+cd docs-web && npm install && npm run build   # gate 1; CI uses `install`, not `ci`
+cd ansible && ansible-lint                    # gate 2; must say `Passed: 0 failure(s)`
 cd ansible && ansible-playbook -i inventory.yml setup-ubuntu.yml --syntax-check
 ```
+
+**There is exactly one ansible-lint config: `ansible/.ansible-lint`.** A second copy at
+the repo root was deleted — the two disagreed (111 findings vs 25) depending on CWD.
 
 `npm run build` **is** the docs lint: `docusaurus.config.js:24` sets
 `onBrokenLinks: 'throw'`, so any broken internal link fails the build.
@@ -65,7 +81,7 @@ cd ansible && ansible-playbook -i inventory.yml setup-ubuntu.yml --syntax-check
 - `yamllint` happens to be installed but there is no `.yamllint` and no convention around
   it; ansible-lint bundles its own yamllint pass
 
-**ansible-lint is configured but not enforced by any workflow.**
+**ansible-lint is enforced by `lint.yml`** (see below).
 
 ## Docs site
 

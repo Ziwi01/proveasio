@@ -1,0 +1,49 @@
+name: "Lint"
+
+on:
+  push:
+    paths:
+      - "ansible/**"
+      - ".github/workflows/lint.yml"
+  pull_request:
+    paths:
+      - "ansible/**"
+      - ".github/workflows/lint.yml"
+  workflow_dispatch:
+
+jobs:
+  ansible-lint:
+    name: "ansible-lint"
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      # ansible-core 2.21 requires Python >= 3.12.
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      # `~=26.8` allows patch/minor fixes but blocks a major rule overhaul from
+      # silently breaking this gate. Nothing bumps it automatically: Dependabot
+      # is active on this repo but only for /docs-web npm.
+      - name: Install ansible-lint
+        run: pip install "ansible-lint~=26.8"
+
+      # `pip install ansible-lint` brings ansible-core only, not the collections
+      # this repo uses. Without them ansible-lint still exits 0, but it floods the
+      # log with "Unable to load module ..." warnings and silently skips module
+      # option validation. Installing them makes CI match a developer machine,
+      # where `prepare-ubuntu.sh` installs the full `ansible` distribution.
+      - name: Install required collections
+        run: >-
+          ansible-galaxy collection install
+          ansible.windows
+          chocolatey.chocolatey
+          community.general
+
+      # Config is ansible/.ansible-lint; ansible-lint discovers it from CWD.
+      # `--offline` keeps the run deterministic by disabling implicit fetches.
+      - name: Run ansible-lint
+        working-directory: ./ansible
+        run: ansible-lint --offline

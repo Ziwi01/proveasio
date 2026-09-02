@@ -35,7 +35,7 @@
   ansible.builtin.find:
     paths: "{{ ansible_facts['env']['HOME'] }}/.tmuxp"
     file_type: file
-    recurse: no
+    recurse: false
     hidden: true
   register: tmuxp_existing_files
   changed_when: false

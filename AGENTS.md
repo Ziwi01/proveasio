@@ -6,19 +6,19 @@ code here — the "product" is the set of roles, the software catalog, and the d
 
 ## Running it
 
-Three requirements that are easy to get wrong:
+Two requirements that are easy to get wrong:
 
 ```bash
 cd ansible                                                    # ansible.cfg is discovered from CWD only
-ansible-playbook -i inventory.yml setup-ubuntu.yml -K         # both flags are mandatory
+ansible-playbook -i inventory.yml setup-ubuntu.yml -K         # -K is mandatory, -i is now optional
 ```
 
 - **`cd ansible/` first.** From the repo root, Ansible falls back to `/etc/ansible/ansible.cfg`.
-- **`-i inventory.yml` is mandatory.** `ansible.cfg:3` sets `inventory = hosts`, but no file
-  named `hosts` exists.
-- **`-K` is mandatory.** `ansible.cfg:4` sets `ask_become_pass`, which is not a valid key in
-  `[defaults]` (the real one is `become_ask_pass` under `[privilege_escalation]`). It is a
-  silent no-op. CI gets away without `-K` only because runners have passwordless sudo.
+- **`-K` is mandatory.** `ansible.cfg` deliberately does *not* set `become_ask_pass`: without a
+  TTY it prompts, warns about echoed input, and silently accepts an empty password. CI gets away
+  without `-K` only because runners have passwordless sudo.
+- `-i inventory.yml` is **optional** — `ansible.cfg:3` sets `inventory = inventory.yml`. Every doc
+  and both workflows still pass it explicitly; keep doing so for clarity.
 
 Useful subsets: `--tags versions` (re-resolve + prune), `--tags config`, `--tags <tool>`,
 `--skip-tags software`. Set `GITHUB_TOKEN` or run `gh auth login` first — a full run makes
@@ -27,16 +27,31 @@ Useful subsets: `--tags versions` (re-resolve + prune), `--tags config`, `--tags
 ## Verifying your work
 
 ```bash
-# The ONLY gate enforced by CI (.github/workflows/pages.yml). Fails on broken internal
-# links because docusaurus.config.js:24 sets onBrokenLinks: 'throw'.
+# Gate 1 (.github/workflows/pages.yml). Fails on broken internal links because
+# docusaurus.config.js:24 sets onBrokenLinks: 'throw'.
 cd docs-web && npm install && npm run build
 
-# Configured but NOT run by any workflow. Still worth running.
+# Gate 2 (.github/workflows/lint.yml). MANDATORY for any change under `ansible/` —
+# the workflow is path-filtered to `ansible/**` and runs on push and pull_request.
+# Must report `Passed: 0 failure(s)`; the tree is currently clean, so any finding is yours.
 cd ansible && ansible-lint
 
-# Cheap local proxy for the playbook. Does not catch errors in dynamic include_tasks.
+# Cheap local proxy for the playbook. Does not catch errors in dynamic include_tasks
+# (ansible-lint does — it is what caught the `enterntainment.yml` typo).
 cd ansible && ansible-playbook -i inventory.yml setup-ubuntu.yml --syntax-check
 ```
+
+**There is exactly one ansible-lint config: `ansible/.ansible-lint`.** It lives there
+because ansible-lint discovers config from the CWD and every invocation is
+`cd ansible && ansible-lint`. A second, divergent copy used to sit at the repo root and
+silently produced a different result (111 findings vs 25) depending on where you ran from
+— do not reintroduce it.
+
+To silence a finding, prefer an inline `# noqa: <rule>` on the offending line with a
+comment explaining why; that is the existing convention (see `puppet.yml`, `nvm.yml`,
+`docker.yml`). Only add to `skip_list` when the rule conflicts with a project-wide
+convention. `roles/*/files/` is excluded because it is static payload copied to the
+user's home, not Ansible code.
 
 **These do not exist — do not invent or "restore" them:** `npm run lint`, `npm run test`,
 any markdownlint runner, any Lua linter, `make`, `just`, `pytest`, pre-commit hooks.
@@ -141,12 +156,16 @@ Other conventions: every `shell:` task sets `args.executable: /bin/bash` and sta
 Tags are attached twice — outer `tags:` select whether the dynamic `include_tasks` runs at
 all, `apply.tags` stamp the tasks inside it. Only the outer ones can select.
 
-- `--tags software_packages`, `--tags cleanup`, `--tags sdkman_privilege` **select nothing.**
-  They exist only as `apply:` tags. `--skip-tags cleanup` does work; cleanup is reached via
-  `--tags versions`.
+- `--tags cleanup` and `--tags sdkman_privilege` **select nothing** — they exist only as
+  `apply:`/inner tags, and that is deliberate: running them alone would skip the version
+  resolution they depend on. Both work as `--skip-tags`; cleanup is reached via `--tags versions`.
+- `--tags software_packages` **does** work (it is on the outer `tags:` of `[Software] Install
+  packages`). Anything else you add must go on the outer `tags:` to be selectable.
 - `--tags eza` also pulls in config's zsh task — deliberate, because `zshrc.j2` embeds the
   eza version. Same for `zsh` → p10k.
 - The `windows` role has **zero tags**. Subset it with `bundle_include` instead.
+- `ansible-playbook setup-ubuntu.yml --list-tags` is the source of truth; keep
+  `docs-web/docs/main/customization/50-partial-run.md` in sync with it.
 
 ## Docs are part of the change
 

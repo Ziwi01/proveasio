@@ -1,15 +1,20 @@
 ---
-- include_tasks: common.yml
+- name: "[Windows] Install common software"
+  ansible.builtin.include_tasks: common.yml
   when: bundle_include.common | bool
 
-- include_tasks: dev.yml
+- name: "[Windows] Install development software"
+  ansible.builtin.include_tasks: dev.yml
   when: bundle_include.dev | bool
 
-- include_tasks: context_menu.yml
+- name: "[Windows] Configure context menu"
+  ansible.builtin.include_tasks: context_menu.yml
   when: bundle_include.context_menu | bool
 
-- include_tasks: terminal.yml
+- name: "[Windows] Configure terminal"
+  ansible.builtin.include_tasks: terminal.yml
   when: bundle_include.terminal | bool
 
-- include_tasks: enterntainment.yml
+- name: "[Windows] Install entertainment software"
+  ansible.builtin.include_tasks: entertainment.yml
   when: bundle_include.entertainment | bool

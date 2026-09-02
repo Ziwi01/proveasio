@@ -58,6 +58,7 @@
   tags:
     - software
     - versions
+    - software_packages
 
 # Install `yq` YAML parser
 # Used for editing YAML files for versions and release purposes.

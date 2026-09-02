@@ -40,12 +40,14 @@
 
 - name: '[Zsh] Esnure ~/.loca/bin is added to PATH'
   ansible.builtin.lineinfile:
-    path: "{{ ansible_facts['env']['HOME'] }}/.zshrc" 
+    path: "{{ ansible_facts['env']['HOME'] }}/.zshrc"
     regexp: '^.*\.local/bin.*$'
-    line: 'export PATH=$PATH:$HOME/.local/bin:$HOME/bin:/usr/local/bin' 
+    line: 'export PATH=$PATH:$HOME/.local/bin:$HOME/bin:/usr/local/bin'
 
+# Unpinned on purpose: this task is the plugin *update* mechanism, so it must
+# track each plugin's default branch rather than a fixed ref.
 - name: "[Zsh] Plugins install/update"
-  ansible.builtin.git:
+  ansible.builtin.git:  # noqa: latest[git]
     repo: "{{ item.value }}"
     dest: "{{ omz_home }}/custom/plugins/{{ item.key }}"
   loop: "{{ omz_plugins | dict2items }}"

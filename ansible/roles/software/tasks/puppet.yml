@@ -2,13 +2,13 @@
 ---
 # Ruby gems
 - name: "[Puppet] Install Puppet/puppet-lint ruby gems for ALL rubies"
-  ansible.builtin.command: "{{ ansible_facts['env']['HOME'] }}/.rvm/bin/rvm all do gem install --conservative 'puppet:{{ puppet_version }}' 'puppet-lint:{{ puppet_lint_version }}'"
+  ansible.builtin.command: "{{ ansible_facts['env']['HOME'] }}/.rvm/bin/rvm all do gem install --conservative 'puppet:{{ puppet_version }}' 'puppet-lint:{{ puppet_lint_version }}'"  # noqa: yaml[line-length]
   register: puppet_gems_all
   changed_when: "'Successfully installed' in puppet_gems_all.stdout"
   when: "'all' in puppet_rubies"
 
 - name: "[Puppet] Install Puppet/puppet-lint ruby gems for subset of rubies"
-  ansible.builtin.command: "{{ ansible_facts['env']['HOME'] }}/.rvm/bin/rvm {{ item }} do gem install --conservative 'puppet:{{ puppet_version }}' 'puppet-lint:{{ puppet_lint_version }}'"
+  ansible.builtin.command: "{{ ansible_facts['env']['HOME'] }}/.rvm/bin/rvm {{ item }} do gem install --conservative 'puppet:{{ puppet_version }}' 'puppet-lint:{{ puppet_lint_version }}'"  # noqa: yaml[line-length]
   register: puppet_gems_subset
   changed_when: "'Successfully installed' in puppet_gems_subset.stdout"
   loop: "{{ puppet_rubies }}"

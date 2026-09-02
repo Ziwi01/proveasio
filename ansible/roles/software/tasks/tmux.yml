@@ -59,15 +59,20 @@
         src: "/tmp/tmux-{{ tmux_version }}.tar.gz"
         dest: "{{ ansible_facts['env']['HOME'] }}/.local/opt"
 
+    # The enclosing block only runs when `~/.local/opt/tmux-<version>` is absent
+    # (see the `when: not tmux_dir.stat.exists` guard above), so a build here is
+    # always a real change.
     - name: "[Tmux] Configure & make"
       ansible.builtin.shell: "./configure && make"
       args:
         chdir: "{{ ansible_facts['env']['HOME'] }}/.local/opt/tmux-{{ tmux_version }}"
+      changed_when: true
 
     - name: "[Tmux] Make install"
       ansible.builtin.command: "make install"
       args:
         chdir: "{{ ansible_facts['env']['HOME'] }}/.local/opt/tmux-{{ tmux_version }}"
+      changed_when: true
       become: true
 
     - name: "[Tmux] Turn off failed installation handler"
