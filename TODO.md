@@ -17,6 +17,25 @@
   - Options: gate the build on a real `pes_version` change (compare saved SHA) instead of `pes_clone.changed`; drop `force: true` or exclude vendored files; add `changed_when` to the rake task
   - Note: external `rvm1-ansible` role's "Install rvm installer" also reports `changed` (third-party, out of scope)
 - [ ] docs(gita): Describe `gita` usage and example
+- [ ] fix(windows): `windows/tasks/main.yml:14` includes `enterntainment.yml` (typo, double `n`) — actual file is `entertainment.yml`
+  - `bundle_include.entertainment` defaults to `true` (`windows/vars/main.yml:10`), so the play fails for everyone
+  - Dynamic `include_tasks`, so `--syntax-check` does not catch it
+- [ ] fix(windows): `ansible/vars/overrides.yml` cannot override `windows` role vars
+  - `setup-windows.yml:2-3` loads it via `vars_files` (precedence 14), which loses to `roles/windows/vars/main.yml` (15)
+  - So `win_username` stays `Jimmy` despite `ansible/vars/README.md:12-13` and `docs-web/docs/main/windows/20-automated.md` saying otherwise
+  - Fix: switch to the `include_vars` pattern already used by `software`/`config`
+- [ ] fix(playbooks): `ansible.cfg` has two ineffective keys
+  - `:3` `inventory = hosts` — no `hosts` file exists, so `-i inventory.yml` is always required
+  - `:4` `ask_become_pass` is not valid under `[defaults]` (correct: `become_ask_pass` under `[privilege_escalation]`); confirmed no-op via `ansible-config dump`
+- [ ] fix(tags): `software_packages`, `cleanup` and `sdkman_privilege` select nothing
+  - They exist only as `apply:` tags, never on a top-level `include_tasks`, so `--tags <name>` cannot reach them
+  - `software_packages` is documented as usable at `docs-web/docs/main/customization/50-partial-run.md:63`
+- [ ] docs(vim): `docs-web/docs/usage/40-vim.md:385,391` show `setup-windows.yml --tags 'neovim,...'` — the windows playbook has no tags; should be `setup-ubuntu.yml`
+- [ ] chore(versions): Decide the fate of `.latest-versions.yml` — it is committed but read by nothing
+  - Its only consumers in `publish.sh:42-43` are commented out
+  - Drifted: still lists `bat` and `pip_packages.thefuck`; missing `bottom`, `dry`, `hunk`, `kubecolor`, `kubeswitch`, `pay_respects`, `rvm1_ansible`
+  - Either wire it back up or delete it and drop the reference in `docs-web/docs/main/download.md:20`
+- [ ] chore(software): Remove dead `software/tasks/lunarvim.yml` — comments only, not referenced from `main.yml`
 - [x] Migrate to AstroNvim / uninstall LunarVim / use Neovim release
 - [x] install fswatch, ruby neovim-ruby-host, treesitter-cli, NPM neovim, gdu, bottom, NPM vscode-langservers-extracted
 - [x] fix(neovim): Mason errors when opening VIM for the first time after new installation.
