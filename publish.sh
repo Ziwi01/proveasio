@@ -19,7 +19,14 @@ echo 'Update docs'
 rsync -avrE ${SCRIPT_DIR}/docs-web/docs/ ${SCRIPT_DIR}/docs-web/versioned_docs/version-stable/
 
 echo 'git commit updated docs'
-git commit -a -m 'build: Release updated docs'
+# `git commit -a` stages modifications to *tracked* files only, so doc pages added
+# since the previous release were rsynced above but never committed. That left the
+# stable docs referencing pages that do not exist there, breaking `npm run build`
+# (docusaurus.config.js sets `onBrokenLinks: 'throw'`). `git add -A <path>` also
+# stages new files. Scoped to the rsync target so unrelated dirty files are not
+# swept into the release commit.
+git add -A "${SCRIPT_DIR}/docs-web/versioned_docs/version-stable/"
+git commit -m 'build: Release updated docs'
 
 echo 'git push'
 git push
