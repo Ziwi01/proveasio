@@ -97,7 +97,7 @@ github_packages:
   kubeswitch: latest
   dry: latest
   uv: latest
-  opencode: latest
+  opencode: latest # Pin a version (e.g. "2.0.12") to opt into a specific release once its binaries are published
   hunk: latest
   ccmux: latest
   wsl_notify_send: latest # WSL -> Windows notification bridge (used by ccmux)

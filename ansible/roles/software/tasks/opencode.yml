@@ -1,12 +1,48 @@
 # opencode - AI coding assistant
 # Source: https://github.com/anomalyco/opencode
 ---
+# Mirror the official installer's (opencode.ai/install) target selection so that
+# pinning a future release (e.g. a v2.x once its binaries are published) fetches
+# the correct asset instead of the hard-coded linux-x64 one:
+#   arch     x86_64 -> x64, aarch64 -> arm64
+#   baseline x64 CPUs without AVX2 need the -baseline build (default one SIGILLs)
+#   musl     Alpine / musl libc (Ubuntu is glibc, so normally a no-op)
+- name: "[opencode] Resolve release asset for this host"
+  ansible.builtin.shell: |
+    set -e -o pipefail
+    arch="$(uname -m)"
+    case "$arch" in
+      x86_64|amd64) arch="x64" ;;
+      aarch64|arm64) arch="arm64" ;;
+      *) echo "[opencode] unsupported architecture: $arch" >&2; exit 1 ;;
+    esac
+    target="linux-${arch}"
+    if [ "$arch" = "x64" ] && ! grep -qwi avx2 /proc/cpuinfo 2>/dev/null; then
+      target="${target}-baseline"
+    fi
+    if [ -f /etc/alpine-release ] || (command -v ldd >/dev/null 2>&1 && ldd --version 2>&1 | grep -qi musl); then
+      target="${target}-musl"
+    fi
+    printf 'opencode-%s.tar.gz' "$target"
+  args:
+    executable: /bin/bash
+  register: opencode_asset_cmd
+  changed_when: false
+  tags:
+    - versions
+
+- name: "[opencode] Set release asset name"
+  ansible.builtin.set_fact:
+    opencode_asset: "{{ opencode_asset_cmd.stdout }}"
+  tags:
+    - versions
+
 - name: "[opencode] Get Github URL for proper version"
   vars:
     app: opencode
     repo: anomalyco/opencode
     version_query: gh_curl https://api.github.com/repos/anomalyco/opencode/releases/latest | jq .tag_name -r | cut -f2 -d'v'
-    github_uri: "v{{ opencode_version }}/opencode-linux-x64.tar.gz"
+    github_uri: "v{{ opencode_version }}/{{ opencode_asset }}"
   ansible.builtin.include_role:
     name: common
     tasks_from: github_version.yml
