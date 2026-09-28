@@ -184,6 +184,12 @@ runs inside the build; `.github/workflows/docker.yml` publishes it.
   `software/yq`, `software/zsh` or `config/zsh` (it asks `docker/test.sh --list --tags ...`);
   write `docker/build-info.env`; apt upgrade; playbook; `nvim-install.lua`; `cleanup.sh`;
   zsh warm-up.
+- `docker buildx bake update` (target `update`, `pull = false`, `PROVISIONED=update`) builds
+  the `update` stage `FROM ${BASE_IMAGE}` (default: `IMAGE`) and runs `provision.sh --update`:
+  it needs `ANSIBLE_TAGS`, reuses the base image's `PROFILE`, rejects new excludes, requires
+  tools taken back with `*_tasks_include` to be in the tags, skips the apt upgrade, and appends
+  `UPDATES+=(...)` to `build-info.env`. `test.sh` then tests everything the build's or any
+  update's tags selected. Each update adds about 4 layers; replaced files stay below.
 - `docker/test.sh` runs in the `test` stage; `final` depends on it. It selects checks from the
   includes in `software`/`config` `tasks/main.yml`, the effective excludes and the build tags.
 - `docker/nvim-install.lua` runs after the playbook and waits for Mason and treesitter installs.
@@ -199,6 +205,8 @@ runs inside the build; `.github/workflows/docker.yml` publishes it.
   `ANSIBLE_TAGS=software_packages,yq,eza,zsh,neovim,neovim-config,docker IMAGE=proveasio:smoke docker buildx bake`.
   It is the quick check (9 checks, about 5-7 minutes with cached bootstrap layers). Its 13
   Mason failures are expected, because the tag set leaves out nvm, gvm and rvm.
+  For update changes, also run an update on the smoke image:
+  `IMAGE=proveasio:smoke ANSIBLE_TAGS=eza docker buildx bake update` (9 checks).
 - On WSL, check free host memory before a build. A full build pushed WSL to its memory cap;
   on a host that also runs other large programs, that can exhaust Windows memory and Windows
   then shuts WSL down. The margin used so far: start only with at least 10 GB free physical

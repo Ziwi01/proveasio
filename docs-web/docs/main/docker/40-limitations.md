@@ -34,6 +34,10 @@ the largest tools that nothing else needs and is about 5.7 GB. See
 
 - **amd64 only.** On arm64 machines, such as Apple Silicon Macs, the image
   runs under emulation, which is slow and may not work for every tool.
+- **Updates make the image grow.** Each `docker buildx bake update` adds about
+  four layers, and the files it replaces stay in the layers below. After about
+  25 updates the image reaches Docker's limit of 127 layers. A full build
+  starts from an empty image again.
 - **Versions change between builds.** Two builds a day apart can contain
   different versions. Pin versions in `docker/overrides.yml`, or use a dated
   tag of the pre-built image.

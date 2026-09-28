@@ -93,6 +93,9 @@ Add these tools back together:
 - `sdkman` in both `software_tasks_include` and `config_tasks_include`,
 - `azurecli` and `az-account-switcher`.
 
+To add a tool to an image you already built, see
+[Updating tools in a built image](./build#updating-tools-in-a-built-image).
+
 ## Turning tools off
 
 Use `software_tasks_exclude` and `config_tasks_exclude`. The names are listed
@@ -124,13 +127,15 @@ ANSIBLE_SKIP_TAGS=puppet,rvm docker buildx bake
 `--skip-tags` leaves out the tasks with those tags, and the smoke tests skip
 them too.
 
-`--tags` builds an image from scratch with only the selected tasks. A new
-image needs the package, yq and zsh tasks, including the zsh configuration.
-The build stops before the playbook runs when the tags leave one of them out,
-and names the missing tasks. For example, `ANSIBLE_TAGS=neovim` stops, and so
-does `ANSIBLE_SKIP_TAGS=config`, because it also skips the zsh configuration.
-Excludes are the better way to leave tools out. The tag list is in
-[Partial run](../customization/partial-run).
+`--tags` builds an image from scratch with only the selected tasks. To
+update tools in an image you already have, use the `update` target instead,
+see [Updating tools in a built image](./build#updating-tools-in-a-built-image).
+A new image needs the package, yq and zsh tasks, including the zsh
+configuration. The build stops before the playbook runs when the tags leave
+one of them out, and names the missing tasks. For example,
+`ANSIBLE_TAGS=neovim` stops, and so does `ANSIBLE_SKIP_TAGS=config`, because
+it also skips the zsh configuration. Excludes are the better way to leave
+tools out. The tag list is in [Partial run](../customization/partial-run).
 
 ## Neovim config
 
@@ -187,6 +192,7 @@ Set these as environment variables when you run `docker buildx bake`.
 | `USERNAME` | `dev` | User inside the image. |
 | `USER_UID` / `USER_GID` | `1000` / `1000` | IDs of that user. Set them to yours (`id -u`, `id -g`) if you bind-mount files. |
 | `IMAGE` | `proveasio:local`, or `proveasio:<PROFILE>` for other profiles | Name of the loaded image. |
+| `BASE_IMAGE` | the value of `IMAGE` | Image the `update` target starts from. It has to be in the local image store. |
 
 To see the resolved build definition without building, run
 `docker buildx bake --print`.

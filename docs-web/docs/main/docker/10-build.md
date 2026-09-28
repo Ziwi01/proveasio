@@ -72,6 +72,68 @@ playbook step mounts the `docker/` directory and your local Neovim config, so
 this happens when you edit any file in them, including `docker/overrides.yml`.
 It also happens when you edit a file in `ansible/`.
 
+## Updating tools in a built image
+
+A full build runs the whole playbook again. To update only some tools in an
+image you already have, use the `update` target with the tags of those tools:
+
+```shell
+ANSIBLE_TAGS=terraform docker buildx bake update
+```
+
+The update starts from `proveasio:local`, runs the playbook with
+`--tags terraform`, runs all smoke tests again and loads the result as
+`proveasio:local`. The tags are listed in
+[Partial run](../customization/partial-run). For the slim image, add
+`PROFILE=slim`. For any other image, set `BASE_IMAGE` to the image to start
+from and `IMAGE` to the name of the result. The update reads the base image
+from the local image store, which works with the default `docker` buildx
+driver. A `docker-container` builder cannot see local images. The base image
+has to be in your local image store, so pull a published image first:
+
+```shell
+docker pull CHANGEME/proveasio:latest
+BASE_IMAGE=CHANGEME/proveasio:latest IMAGE=proveasio:local \
+  ANSIBLE_TAGS=neovim,neovim-config docker buildx bake update
+```
+
+An update:
+
+- needs `ANSIBLE_TAGS`. To update everything, run a full build.
+- uses the profile the base image was built with.
+- reads `docker/overrides.yml` again, so version pins and other settings can
+  change. Excludes can only get shorter. A tool you add back with
+  `software_tasks_include` must also be in `ANSIBLE_TAGS`, so that the update
+  installs it. A new exclude stops the build, because the tool would stay in
+  the image. To remove a tool, run a full build.
+- needs the same `NVIM_CONFIG` as the base build when it updates
+  `neovim-config` in an image built from a local Neovim config.
+- does not upgrade the Ubuntu packages.
+- needs the `USERNAME`, `USER_UID` and `USER_GID` the base image was built with.
+
+For example, to add Azure CLI to the slim image, put this in
+`docker/overrides.yml`:
+
+```yaml
+software_tasks_include:
+  - azurecli
+  - az-account-switcher
+```
+
+and run:
+
+```shell
+PROFILE=slim ANSIBLE_TAGS=azurecli,az-account-switcher docker buildx bake update
+```
+
+Keep that `docker/overrides.yml` for later updates of the image. Without the
+include, azurecli counts as a new exclude and the update stops.
+
+Each update adds about four layers, and the files it replaces stay in the
+layers below. The image grows by about the size of each tool you update. The
+updates of an image are listed in `~/proveasio/docker/build-info.env`. A full
+build starts from an empty image again.
+
 ## GitHub token
 
 About 33 of the version lookups call the GitHub API. Without a token GitHub

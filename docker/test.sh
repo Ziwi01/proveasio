@@ -12,8 +12,10 @@
 #
 # Selection comes from the real inputs: every include in
 # roles/{software,config}/tasks/main.yml, minus the excludes in the effective
-# ansible/vars/overrides.yml, filtered by the tags in docker/build-info.env
-# (or by --tags/--skip-tags; docker/provision.sh uses those).
+# ansible/vars/overrides.yml, filtered by the tags in docker/build-info.env:
+# an include counts when the build's tags or the tags of any recorded update
+# select it. --tags/--skip-tags replace all of those (docker/provision.sh
+# uses them).
 # Each selected include needs a check_<role>_<name> function below (dashes
 # become underscores). A missing function counts as a failure.
 set -uo pipefail
@@ -399,6 +401,19 @@ tags_select() {
   return 0
 }
 
+# image_selects <outer tags>: whether this image ran the include, because the
+# tags of the build (ANSIBLE_TAGS, ANSIBLE_SKIP_TAGS) or of any update select
+# it. UPDATES entries are "<date>|<tags>|<skip-tags>" (provision.sh --update).
+image_selects() {
+  local u rest
+  if tags_select "$1" "$ANSIBLE_TAGS" "$ANSIBLE_SKIP_TAGS"; then return 0; fi
+  for u in "${UPDATES[@]}"; do
+    rest="${u#*|}"
+    if tags_select "$1" "${rest%%|*}" "${rest#*|}"; then return 0; fi
+  done
+  return 1
+}
+
 check_fn() {
   local n="check_$1_$2"
   printf '%s' "${n//-/_}"
@@ -481,6 +496,7 @@ main() {
 
   ANSIBLE_TAGS=""
   ANSIBLE_SKIP_TAGS=""
+  UPDATES=()
   if [ "$tags_given" -eq 1 ]; then
     ANSIBLE_TAGS="$opt_tags"
     ANSIBLE_SKIP_TAGS="$opt_skip"
@@ -494,7 +510,7 @@ main() {
     while read -r name tags; do
       [ -n "$name" ] || continue
       excluded "$role" "$name" && continue
-      tags_select "$tags" "$ANSIBLE_TAGS" "$ANSIBLE_SKIP_TAGS" || continue
+      image_selects "$tags" || continue
       selected+=("$role/$name")
     done <<<"$lines"
   done

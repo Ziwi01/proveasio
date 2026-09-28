@@ -3,12 +3,19 @@
 # Proveasio developer workstation image.
 # Build from the repository root with `docker buildx bake` (docker-bake.hcl).
 # The playbook runs at build time. The `final` stage exists only when
-# docker/test.sh passed in the `test` stage.
+# docker/test.sh passed in the `test` stage. The `update` target of
+# docker-bake.hcl builds the `update` stage on an existing image instead of
+# `build`.
 
 ARG UBUNTU_VERSION=24.04
 ARG USERNAME=dev
 ARG USER_UID=1000
 ARG USER_GID=1000
+# The `update` target sets PROVISIONED=update, so the test, receipt and final
+# stages start from the `update` stage, which builds on BASE_IMAGE. Docker
+# resolves BASE_IMAGE only when that stage is built.
+ARG BASE_IMAGE=proveasio:local
+ARG PROVISIONED=build
 
 # Local Neovim config. Empty unless the build passes a named context called
 # `nvim-config`, which replaces this stage (Bake does that when NVIM_CONFIG is set).
@@ -102,16 +109,40 @@ RUN --mount=type=bind,source=docker,target=/tmp/proveasio-docker \
 COPY --chown=${USER_UID}:${USER_GID} --chmod=0755 docker/test.sh /home/${USERNAME}/proveasio/docker/test.sh
 CMD ["zsh", "-l"]
 
-FROM build AS test
+# Update of an existing Proveasio image: the playbook with ANSIBLE_TAGS on
+# top of BASE_IMAGE. docker/provision.sh --update lists the checks. The base
+# image's user, ENV, SHELL and CMD carry over.
+FROM ${BASE_IMAGE} AS update
+ARG USERNAME
+ARG USER_UID
+ARG USER_GID
+# As in `build`: RVM's requirements installer runs sudo apt-get, and sudoers keeps DEBIAN_FRONTEND.
+ARG DEBIAN_FRONTEND=noninteractive
+COPY --chown=${USER_UID}:${USER_GID} ansible /home/${USERNAME}/proveasio/ansible
+ARG REFRESH=manual
+ARG ANSIBLE_TAGS=""
+ARG ANSIBLE_SKIP_TAGS=""
+# Only checked against the base image's profile; the update keeps that one.
+ARG PROFILE=""
+RUN --mount=type=bind,source=docker,target=/tmp/proveasio-docker \
+    --mount=type=bind,from=nvim-config,target=/tmp/nvim-config \
+    --mount=type=secret,id=GITHUB_TOKEN,env=GITHUB_TOKEN \
+    PROVEASIO_IMAGE_BUILD=1 bash /tmp/proveasio-docker/provision.sh --update
+COPY --chown=${USER_UID}:${USER_GID} --chmod=0755 docker/test.sh /home/${USERNAME}/proveasio/docker/test.sh
+
+# `build` for a new image, `update` for an update.
+FROM ${PROVISIONED} AS provisioned
+
+FROM provisioned AS test
 RUN "$HOME/proveasio/docker/test.sh" | tee "$HOME/proveasio/docker/tests-passed"
 
-# Version receipt for CI. Copies from `build` so that `final` stays the last
-# stage and a plain `docker build` produces the image.
+# Version receipt for CI. Copies from `provisioned` so that `final` stays the
+# last stage and a plain `docker build` produces the image.
 FROM scratch AS receipt
 ARG USERNAME
-COPY --from=build /home/${USERNAME}/proveasio/current-versions.yml /current-versions.yml
+COPY --from=provisioned /home/${USERNAME}/proveasio/current-versions.yml /current-versions.yml
 
-FROM build AS final
+FROM provisioned AS final
 ARG USERNAME
 ARG USER_UID
 ARG USER_GID

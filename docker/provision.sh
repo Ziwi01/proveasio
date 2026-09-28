@@ -1,12 +1,21 @@
 #!/usr/bin/env bash
 # Playbook step of a Proveasio image build.
 #
-# docker/Dockerfile runs it in the RUN step of the `build` stage. It is
-# bind-mounted with the rest of docker/ at DOCKER_DIR, so it is not part of
-# the image. Steps: render ansible/vars/overrides.yml, stop when the tags or
-# excludes leave out a task every image needs, write docker/build-info.env,
-# upgrade the Ubuntu packages, run the playbook, install Mason tools and
-# treesitter parsers, remove build leftovers, and start zsh once.
+# docker/Dockerfile runs it in the RUN step of the `build` stage (a new image)
+# and, with --update, in the `update` stage (docker-bake.hcl target `update`,
+# on top of an existing image). It is bind-mounted with the rest of docker/ at
+# DOCKER_DIR, so it is not part of the image.
+#
+# New image: render ansible/vars/overrides.yml, stop when the tags or excludes
+# leave out a task every image needs, write docker/build-info.env, upgrade the
+# Ubuntu packages, run the playbook, install Mason tools and treesitter
+# parsers, remove build leftovers, and start zsh once.
+#
+# Update: check that the base image and the settings allow an update (see
+# update below), render the overrides with the base image's profile, run the
+# playbook with ANSIBLE_TAGS without upgrading Ubuntu, install Mason tools
+# only when the tags touch Neovim, remove leftovers, start zsh, and record the
+# update in docker/build-info.env.
 #
 # It runs render-overrides.sh and cleanup.sh, so it refuses to run unless
 # PROVEASIO_IMAGE_BUILD=1. docker/Dockerfile sets it for this one command.
@@ -20,10 +29,15 @@ fi
 # The opt-in goes to render-overrides.sh and cleanup.sh only, not to the playbook.
 unset PROVEASIO_IMAGE_BUILD
 
-if [ $# -gt 0 ]; then
-  echo "usage: provision.sh" >&2
-  exit 2
-fi
+MODE=full
+case "$#:${1:-}" in
+  0:) ;;
+  1:--update) MODE=update ;;
+  *)
+    echo "usage: provision.sh [--update]" >&2
+    exit 2
+    ;;
+esac
 
 PROVEASIO_HOME="${PROVEASIO_HOME:-$HOME/proveasio}"
 DOCKER_DIR="${DOCKER_DIR:-/tmp/proveasio-docker}"
@@ -48,10 +62,11 @@ selection() {
   PROVEASIO_HOME="$PROVEASIO_HOME" bash "$DOCKER_DIR/test.sh" --list --tags "$1" --skip-tags "$2"
 }
 
-# render: write ansible/vars/overrides.yml (docker/render-overrides.sh).
+# render [base overrides]: write ansible/vars/overrides.yml
+# (docker/render-overrides.sh). An update passes the image's previous file.
 render() {
   PROVEASIO_IMAGE_BUILD=1 PROVEASIO_HOME="$PROVEASIO_HOME" DOCKER_DIR="$DOCKER_DIR" \
-    NVIM_CONFIG_DIR="$NVIM_CONFIG_DIR" PROFILE="$PROFILE" \
+    NVIM_CONFIG_DIR="$NVIM_CONFIG_DIR" PROFILE="$PROFILE" PROVEASIO_BASE_OVERRIDES="${1:-}" \
     bash "$DOCKER_DIR/render-overrides.sh"
 }
 
@@ -138,13 +153,77 @@ warm_zsh() {
   fi
 }
 
-echo "provision: PROFILE=$PROFILE REFRESH=${REFRESH:-} ANSIBLE_TAGS=$ANSIBLE_TAGS ANSIBLE_SKIP_TAGS=$ANSIBLE_SKIP_TAGS"
-render
-check_required
-write_build_info
-sudo apt-get update
-sudo apt-get -y upgrade
-run_playbook
-nvim_install
-cleanup
-warm_zsh
+# excludes <overrides file> <role>: the effective <role>_tasks_exclude, sorted.
+# A missing key means the role default, which is [] for both roles.
+excludes() {
+  KEY="${2}_tasks_exclude" yq -r '(.[strenv(KEY)] // [])[]' "$1" | sort -u
+}
+
+full() {
+  echo "provision: PROFILE=$PROFILE REFRESH=${REFRESH:-} ANSIBLE_TAGS=$ANSIBLE_TAGS ANSIBLE_SKIP_TAGS=$ANSIBLE_SKIP_TAGS"
+  render
+  check_required
+  write_build_info
+  sudo apt-get update
+  sudo apt-get -y upgrade
+  run_playbook
+  nvim_install
+  cleanup
+  warm_zsh
+}
+
+update() {
+  local base role now base_ex added readded name selected requested
+  [ -n "$ANSIBLE_TAGS" ] || die "an update needs ANSIBLE_TAGS, the tags of the tools to update. To update everything, run a full build."
+  if [ ! -f "$BUILD_INFO" ] || [ ! -f "$OVERRIDES" ]; then
+    die "the base image has no $BUILD_INFO or $OVERRIDES. BASE_IMAGE must be a Proveasio image built with docker-bake.hcl."
+  fi
+  if [ "$HOME" != "/home/${USERNAME:-}" ] || [ "$(id -u)" != "${USER_UID:-}" ] || [ "$(id -g)" != "${USER_GID:-}" ]; then
+    die "USERNAME=${USERNAME:-} USER_UID=${USER_UID:-} USER_GID=${USER_GID:-} do not match the base image user $(id -un) ($(id -u):$(id -g), HOME=$HOME). Pass the values the base image was built with."
+  fi
+  # The base image's profile, not the build argument. Images built before
+  # profiles existed have no PROFILE line and are full images.
+  # shellcheck source=/dev/null
+  requested="${PROFILE:-}"
+  PROFILE="$(PROFILE=full; source "$BUILD_INFO"; printf '%s' "$PROFILE")"
+  if [ -n "$requested" ] && [ "$requested" != "$PROFILE" ]; then
+    die "the base image is a $PROFILE image, but PROFILE=$requested. Set PROFILE=$PROFILE (it also selects the default IMAGE and BASE_IMAGE) or set BASE_IMAGE to a $requested image."
+  fi
+  echo "provision: update of a $PROFILE image, REFRESH=${REFRESH:-} ANSIBLE_TAGS=$ANSIBLE_TAGS ANSIBLE_SKIP_TAGS=$ANSIBLE_SKIP_TAGS"
+
+  base="$(mktemp)"
+  cp "$OVERRIDES" "$base"
+  render "$base"
+
+  selected="$(selection "$ANSIBLE_TAGS" "$ANSIBLE_SKIP_TAGS")" || die "docker/test.sh --list failed"
+  [ -n "$selected" ] || die "ANSIBLE_TAGS='$ANSIBLE_TAGS' ANSIBLE_SKIP_TAGS='$ANSIBLE_SKIP_TAGS' select no task. The tags are listed in docs-web/docs/main/customization/50-partial-run.md."
+  for role in software config; do
+    now="$(excludes "$OVERRIDES" "$role")"
+    base_ex="$(excludes "$base" "$role")"
+    added="$(comm -13 <(printf '%s\n' "$base_ex") <(printf '%s\n' "$now") | sed '/^$/d' | paste -sd' ')"
+    if [ -n "$added" ]; then
+      die "${role}_tasks_exclude now also has: ${added}. An update cannot remove a tool from the image (it would stay installed and untested). If docker/overrides.yml changed since the base build (for example a removed *_tasks_include), restore it; to remove the tool, run a full build."
+    fi
+    readded="$(comm -23 <(printf '%s\n' "$base_ex") <(printf '%s\n' "$now") | sed '/^$/d')"
+    while IFS= read -r name; do
+      [ -n "$name" ] || continue
+      grep -qxF -- "$role/$name" <<<"$selected" \
+        || die "$role/$name is no longer excluded, but ANSIBLE_TAGS does not select it. Add its tag to ANSIBLE_TAGS so the update installs it."
+    done <<<"$readded"
+  done
+  if [ "$(yq -r '.neovim_config_source // ""' "$base")" = local ] \
+    && [ -z "$(ls -A "$NVIM_CONFIG_DIR" 2>/dev/null)" ] \
+    && grep -qxF config/neovim-config <<<"$selected"; then
+    die "the base image was built with NVIM_CONFIG and these tags update config/neovim-config. Pass the same NVIM_CONFIG (and --allow fs.read=<dir>) to the update."
+  fi
+  rm -f "$base"
+
+  sudo apt-get update
+  run_playbook
+  if grep -qxE 'software/neovim|config/neovim-config' <<<"$selected"; then nvim_install; fi
+  cleanup
+  warm_zsh
+  printf 'UPDATES+=(%q)\n' "$(date -u +%Y-%m-%dT%H:%M:%SZ)|$ANSIBLE_TAGS|$ANSIBLE_SKIP_TAGS" >> "$BUILD_INFO"
+}
+
+"$MODE"

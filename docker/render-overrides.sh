@@ -119,15 +119,28 @@ apply_includes config
 
 # A directory that exists but cannot be listed is an error: falling back to
 # the git config would build an image without the config the user asked for.
+nvim_local=0
 if [ -d "$NVIM_CONFIG_DIR" ]; then
   if ! nvim_entries="$(ls -A "$NVIM_CONFIG_DIR")"; then
     echo "render-overrides: cannot list $NVIM_CONFIG_DIR (the nvim-config build context)" >&2
     exit 1
   fi
   if [ -n "$nvim_entries" ]; then
+    nvim_local=1
     echo "render-overrides: using the local Neovim config from the nvim-config build context"
     merged="$(NVIM_CONFIG_DIR="$NVIM_CONFIG_DIR" yq '.neovim_config_source = "local" | .neovim_config_local_path = strenv(NVIM_CONFIG_DIR)' <<<"$merged")"
   fi
+fi
+
+# An update (docker/provision.sh --update) passes the image's previous
+# overrides in PROVEASIO_BASE_OVERRIDES. When the image was built from a local
+# Neovim config and this build has none, keep that record, so later updates
+# and playbook runs in the container know where the config came from.
+base="${PROVEASIO_BASE_OVERRIDES:-}"
+if [ -n "$base" ] && [ "$nvim_local" -eq 0 ] && [ "$(yq -r '.neovim_config_source // ""' "$base")" = local ]; then
+  base_path="$(yq -r '.neovim_config_local_path // ""' "$base")"
+  echo "render-overrides: keeping the local Neovim config source of the base image"
+  merged="$(BASE_PATH="$base_path" yq '.neovim_config_source = "local" | .neovim_config_local_path = strenv(BASE_PATH)' <<<"$merged")"
 fi
 
 mkdir -p "$(dirname "$target")"

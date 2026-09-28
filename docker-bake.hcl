@@ -5,6 +5,8 @@
 #   GITHUB_TOKEN=... docker buildx bake         authenticate GitHub API version lookups
 #   REFRESH=dev docker buildx bake              keep the cached playbook layer
 #   docker buildx bake image receipt            also write ./out/current-versions.yml
+#   ANSIBLE_TAGS=terraform docker buildx bake update
+#                                               update tools in proveasio:local in place
 #
 # `image receipt` builds both targets in one run with one REFRESH timestamp,
 # so the receipt matches the image. A separate `docker buildx bake receipt`
@@ -51,6 +53,10 @@ variable "NVIM_CONFIG" {
 variable "IMAGE" {
   default = PROFILE == "full" ? "proveasio:local" : "proveasio:${PROFILE}"
 }
+# Image the `update` target starts from. Defaults to the image it replaces.
+variable "BASE_IMAGE" {
+  default = IMAGE
+}
 # Read from the environment; used to expand `~` in NVIM_CONFIG.
 variable "HOME" {
   default = null
@@ -93,6 +99,20 @@ target "receipt" {
   inherits = ["_common"]
   target   = "receipt"
   output   = ["type=local,dest=out"]
+}
+
+# Runs the playbook with ANSIBLE_TAGS on top of BASE_IMAGE, runs the smoke
+# tests and loads the result as IMAGE. pull = false because BASE_IMAGE is
+# usually only in the local image store.
+target "update" {
+  inherits = ["_common", "docker-metadata-action"]
+  target   = "final"
+  pull     = false
+  args = {
+    PROVISIONED = "update"
+    BASE_IMAGE  = BASE_IMAGE
+  }
+  output = ["type=docker"]
 }
 
 group "default" {
