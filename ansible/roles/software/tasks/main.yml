@@ -64,6 +64,10 @@
       Remove software_tasks_exclude: {{ _proveasio_required_software | join(', ') or '-' }}
       and config_tasks_exclude: {{ _proveasio_required_config | join(', ') or '-' }}
       from ansible/vars/overrides.yml (docker/overrides.yml in an image build).
+      Without the zsh config exclude, the next run replaces ~/.zshrc. The old file
+      is kept in config_backup_dir when config_files_backup is true. To keep your
+      own shell config, see customization/config-files in the docs
+      (docs-web/docs/main/customization/30-config-files.md).
     quiet: true
   tags:
     - always

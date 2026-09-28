@@ -2,7 +2,8 @@
 
 Built on `develop` in Sept 2026 (spec `docs/superpowers/specs/2026-09-24-docker-image-design.md`,
 plan `docs/superpowers/plans/2026-09-24-docker-image.md`; slim profile and updates:
-`.superpowers/sdd/2026-09-25-docker-slim-and-update/`). The playbook runs inside
+spec `docs/superpowers/specs/2026-09-25-docker-slim-and-update-design.md`, plan
+`docs/superpowers/plans/2026-09-25-docker-slim-and-update.md`). The playbook runs inside
 `docker buildx bake`; the image is tested in the build before it exists.
 
 ## Files

@@ -47,6 +47,9 @@ OVERRIDES="$ANSIBLE_DIR/vars/overrides.yml"
 BUILD_INFO="$PROVEASIO_HOME/docker/build-info.env"
 ANSIBLE_TAGS="${ANSIBLE_TAGS:-}"
 ANSIBLE_SKIP_TAGS="${ANSIBLE_SKIP_TAGS:-}"
+# update() compares the base image's profile with the one asked for, and an
+# unset PROFILE asks for none.
+REQUESTED_PROFILE="${PROFILE:-}"
 PROFILE="${PROFILE:-full}"
 # The includes every new image needs (docs-web/docs/main/docker/20-customize.md).
 REQUIRED=(software/packages software/yq software/zsh config/zsh)
@@ -173,7 +176,8 @@ full() {
 }
 
 update() {
-  local base role now base_ex added readded name selected requested
+  local base role now base_ex added readded name selected requested passed image_wide tested item verb what
+  local fresh=()
   [ -n "$ANSIBLE_TAGS" ] || die "an update needs ANSIBLE_TAGS, the tags of the tools to update. To update everything, run a full build."
   if [ ! -f "$BUILD_INFO" ] || [ ! -f "$OVERRIDES" ]; then
     die "the base image has no $BUILD_INFO or $OVERRIDES. BASE_IMAGE must be a Proveasio image built with docker-bake.hcl."
@@ -183,8 +187,8 @@ update() {
   fi
   # The base image's profile, not the build argument. Images built before
   # profiles existed have no PROFILE line and are full images.
+  requested="$REQUESTED_PROFILE"
   # shellcheck source=/dev/null
-  requested="${PROFILE:-}"
   PROFILE="$(PROFILE=full; source "$BUILD_INFO"; printf '%s' "$PROFILE")"
   if [ -n "$requested" ] && [ "$requested" != "$PROFILE" ]; then
     die "the base image is a $PROFILE image, but PROFILE=$requested. Set PROFILE=$PROFILE (it also selects the default IMAGE and BASE_IMAGE) or set BASE_IMAGE to a $requested image."
@@ -215,6 +219,28 @@ update() {
     && [ -z "$(ls -A "$NVIM_CONFIG_DIR" 2>/dev/null)" ] \
     && grep -qxF config/neovim-config <<<"$selected"; then
     die "the base image was built with NVIM_CONFIG and these tags update config/neovim-config. Pass the same NVIM_CONFIG (and --allow fs.read=<dir>) to the update."
+  fi
+  # After the update, docker/test.sh checks every include the image's tags
+  # select in the checked-out ansible/. An include added to the checkout after
+  # the base build is not in the image, so its check fails unless these tags
+  # install it. tests-passed lists the checks the base image passed.
+  passed="$PROVEASIO_HOME/docker/tests-passed"
+  if [ -f "$passed" ]; then
+    image_wide="$(PROVEASIO_HOME="$PROVEASIO_HOME" bash "$DOCKER_DIR/test.sh" --list)" || die "docker/test.sh --list failed"
+    tested="$(sed -nE 's#^ok ([^ ]+).*#\1#p' "$passed")"
+    while IFS= read -r item; do
+      [ -n "$item" ] || continue
+      grep -qxF -- "$item" <<<"$tested" && continue
+      grep -qxF -- "$item" <<<"$selected" && continue
+      fresh+=("$item")
+    done <<<"$image_wide"
+    if [ ${#fresh[@]} -gt 0 ]; then
+      verb="is new"; what="its tag"
+      if [ ${#fresh[@]} -gt 1 ]; then verb="are new"; what="their tags"; fi
+      die "${fresh[*]} $verb in the checked-out ansible/ since the base image was built and would be tested but not installed. Add $what to ANSIBLE_TAGS, or run a full build."
+    fi
+  else
+    echo "WARNING: the base image has no $passed (built without its tests), so the check for includes added since the base build is skipped" >&2
   fi
   rm -f "$base"
 

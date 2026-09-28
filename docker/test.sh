@@ -132,7 +132,7 @@ check_software_fx()        { run_cmd fx --version && expect_receipt .github_pack
 check_software_git()       { run_cmd git --version && expect_receipt .git_apt_version deb; }
 check_software_ripgrep()   { run_cmd rg --version && expect_receipt .github_packages.ripgrep; }
 check_software_fd()        { run_cmd fd --version && expect_receipt .github_packages.fd; }
-check_software_eza()       { run_cmd eza --version && expect_receipt .github_packages.eza; }
+check_software_eza()       { run_cmd eza --version && expect_receipt .github_packages.eza && expect_file "$HOME/.zfunc/_eza"; }
 check_software_lsg()       { expect_exec "$HOME/.local/bin/lsg" && run_cmd bash -n "$HOME/.local/bin/lsg"; }
 check_software_fzf()       { run_cmd fzf --version && expect_receipt .github_packages.fzf; }
 

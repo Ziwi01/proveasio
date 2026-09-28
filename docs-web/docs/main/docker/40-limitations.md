@@ -16,7 +16,7 @@ themselves. The largest parts, measured in an image built with the defaults:
 | `~/.rustup` | 0.6 GB | `rust` |
 | `~/.local/lib` | 0.5 GB | |
 | `/opt/puppetlabs` | 0.4 GB | `puppet` |
-| `~/.local/opt/nvm` | 0.4 GB | `nvm` |
+| `~/.local/opt/nvm` | 0.4 GB | `nvm` and `ansible` |
 | `~/.gvm` | 0.3 GB | `gvm` |
 | `~/.local/opt/aws-cli` | 0.3 GB | `awscli` |
 

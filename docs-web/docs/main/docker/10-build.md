@@ -86,10 +86,11 @@ The update starts from `proveasio:local`, runs the playbook with
 `proveasio:local`. The tags are listed in
 [Partial run](../customization/partial-run). For the slim image, add
 `PROFILE=slim`. For any other image, set `BASE_IMAGE` to the image to start
-from and `IMAGE` to the name of the result. The update reads the base image
-from the local image store, which works with the default `docker` buildx
-driver. A `docker-container` builder cannot see local images. The base image
-has to be in your local image store, so pull a published image first:
+from and `IMAGE` to the name of the result, and add `PROFILE=slim` when the
+base is a slim image. The update reads the base image from the local image
+store, which works with the default `docker` buildx driver. A
+`docker-container` builder cannot see local images. To update a published
+image, pull it first:
 
 ```shell
 docker pull CHANGEME/proveasio:latest
@@ -100,7 +101,8 @@ BASE_IMAGE=CHANGEME/proveasio:latest IMAGE=proveasio:local \
 An update:
 
 - needs `ANSIBLE_TAGS`. To update everything, run a full build.
-- uses the profile the base image was built with.
+- needs `PROFILE` to match the profile of the base image. The default is
+  `full`, so add `PROFILE=slim` for a slim image.
 - reads `docker/overrides.yml` again, so version pins and other settings can
   change. Excludes can only get shorter. A tool you add back with
   `software_tasks_include` must also be in `ANSIBLE_TAGS`, so that the update
@@ -110,6 +112,9 @@ An update:
   `neovim-config` in an image built from a local Neovim config.
 - does not upgrade the Ubuntu packages.
 - needs the `USERNAME`, `USER_UID` and `USER_GID` the base image was built with.
+- uses the `ansible/` and `docker/test.sh` of your checkout. A tool added to
+  the checkout since the base build has to be in `ANSIBLE_TAGS`, or the update
+  stops.
 
 For example, to add Azure CLI to the slim image, put this in
 `docker/overrides.yml`:
@@ -127,7 +132,9 @@ PROFILE=slim ANSIBLE_TAGS=azurecli,az-account-switcher docker buildx bake update
 ```
 
 Keep that `docker/overrides.yml` for later updates of the image. Without the
-include, azurecli counts as a new exclude and the update stops.
+include, azurecli counts as a new exclude and the update stops. For updates,
+`docker/overrides.yml` has to match the image you update, so keep one per
+image.
 
 Each update adds about four layers, and the files it replaces stay in the
 layers below. The image grows by about the size of each tool you update. The
