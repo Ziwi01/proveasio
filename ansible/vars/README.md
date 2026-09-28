@@ -19,7 +19,7 @@ Also, you can manipulate which tasks from each role does not get executed, putti
 software_tasks_exclude:
   - azurecli # do not install azurecli
 config_tasks_exclude:
-  - zsh # do not configure zsh
+  - tmux # do not configure tmux
 ```
 
 If you are NOT using `systemd` on your WSL distro (see [README.md](./README.md) for details), set below:

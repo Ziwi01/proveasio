@@ -46,6 +46,28 @@
   tags:
     - always
 
+# packages (jq and curl for every version lookup), yq (save_version.yml) and
+# zsh (oh-my-zsh, and the .zshrc that sets NVIM_APPNAME and loads nvm, gvm and
+# rvm) are required, so their includes have no exclude guard. Both roles are
+# checked here, before anything is installed: the config role runs after the
+# whole software role, so a check there would fail an hour into the run.
+- name: "[Software] Check that no required task is excluded"
+  vars:
+    _proveasio_required_software: "{{ software_tasks_exclude | intersect(['packages', 'yq', 'zsh']) }}"
+    _proveasio_required_config: "{{ config_tasks_exclude | default([]) | intersect(['zsh']) }}"
+  ansible.builtin.assert:
+    that:
+      - _proveasio_required_software | length == 0
+      - _proveasio_required_config | length == 0
+    fail_msg: >-
+      packages, yq and zsh are required and cannot be excluded.
+      Remove software_tasks_exclude: {{ _proveasio_required_software | join(', ') or '-' }}
+      and config_tasks_exclude: {{ _proveasio_required_config | join(', ') or '-' }}
+      from ansible/vars/overrides.yml (docker/overrides.yml in an image build).
+    quiet: true
+  tags:
+    - always
+
 # Common software
 - name: "[Software] Install packages"
   ansible.builtin.include_tasks:
@@ -54,7 +76,6 @@
       tags:
         - software
         - software_packages
-  when: "'packages' not in software_tasks_exclude"
   tags:
     - software
     - versions
@@ -333,7 +354,6 @@
       tags:
         - software
         - zsh
-  when: "'zsh' not in software_tasks_exclude"
   tags:
     - software
     - versions

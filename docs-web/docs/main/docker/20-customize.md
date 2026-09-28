@@ -59,8 +59,8 @@ When you exclude a software task that has a config task with the same name
 (`tmux`, `ccmux`, `sdkman`, `lazygit`, `ansible`), exclude the config task
 too. For `neovim`, exclude `neovim-config`.
 
-Do not exclude `zsh`, in either list. The image's default command is zsh, and
-the smoke tests need the zsh configuration.
+`packages`, `yq` and `zsh` cannot be excluded, as on a native run. The
+playbook stops at its first tasks when `docker/overrides.yml` excludes one.
 
 The smoke tests read the same lists and skip what you excluded.
 

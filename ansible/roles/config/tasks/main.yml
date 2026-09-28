@@ -26,7 +26,6 @@
       tags:
         - config
         - zsh
-  when: "'zsh' not in config_tasks_exclude"
   tags:
     - config
     - zsh

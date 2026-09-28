@@ -78,6 +78,10 @@ group of sub-roles is just task files inside one role's `tasks/`.
   `~/.local/opt` dirs).
 - **`software`** (47 task files) installs things. **`config`** (10 task files) lays down
   dotfiles. **`windows`** is independent and shares nothing with the rest.
+- **Required tasks:** `packages`, `yq` and `zsh` (software) and `zsh` (config) have no
+  exclude guard. `[Software] Check that no required task is excluded` (tag `always`, right
+  after the overrides sandwich) fails the run when an overrides file lists one of them; it
+  checks `config_tasks_exclude` too, because the config role runs an hour later.
 - **Order is hard-wired**, not declared: `setup-ubuntu.yml:51,54` statically imports
   `software` then `config`. No role has `meta/main.yml`, so there are zero declared
   dependencies. `config` reads variables set by `software` (`sdkman_dir`, `node_version`) —

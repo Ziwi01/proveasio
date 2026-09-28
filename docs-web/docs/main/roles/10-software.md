@@ -52,9 +52,11 @@ software_tasks_exclude:
 
 See [excluding code](../customization/excludes) for details.
 
+`packages`, `yq` and `zsh` are required. The playbook stops at the start if
+`software_tasks_exclude` lists one of them.
+
 Available software excludes:
 
-- packages (default apt packages installation, including **dependencies**)
 - fx
 - git
 - ripgrep
@@ -73,7 +75,6 @@ Available software excludes:
 - az-account-switcher
 - zoxide
 - helm
-- zsh
 - w32yank
 - tmux
 - docker
