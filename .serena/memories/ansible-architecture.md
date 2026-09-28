@@ -50,23 +50,31 @@ and the absence of `meta/` means zero declared dependencies.
   deletes all but `<app>-<keep>`. Gated on `cleanup_old_versions` and
   `cleanup_old_versions_exclude`.
 
-## Ordering inside `software/tasks/main.yml` (666 lines)
+## Ordering inside `software/tasks/main.yml`
 
-`packages` (apt deps) → `yq` → ... → `nvm` (`:463`) → `ansible` (`:505`, sources
-`~/.local/opt/nvm/nvm.sh`) → ... → `ccmux` (`:655`, last).
+Required-task assert (`[Software] Check that no required task is excluded`) → `packages`
+(apt deps) → `yq` → ... → `nvm` → `ansible` (sources `~/.local/opt/nvm/nvm.sh`) → ... →
+`ccmux` (last).
 
-`yq` (`:64-74`) is the **only** tool with no `software_tasks_exclude` guard — it cannot be
-excluded because `common/save_version.yml` shells out to `yq` for every other tool.
+`packages`, `yq` and `zsh` have no `software_tasks_exclude` guard; see "Required tasks".
+
+## Required tasks
+
+`packages`, `yq`, `zsh` (software) and `zsh` (config) have no exclude guard. `packages`
+installs jq and curl for every version lookup, `common/save_version.yml` shells out to `yq`
+for every tool, and zsh brings oh-my-zsh and the `.zshrc` that sets `NVIM_APPNAME` and loads
+nvm, gvm and rvm. `[Software] Check that no required task is excluded` (tag `always`, right
+after the overrides sandwich in `software/tasks/main.yml`) checks both
+`software_tasks_exclude` and `config_tasks_exclude`. It sits in the software role because the
+config role runs after the whole software role, an hour into the run.
 
 ## Cross-role coupling (software -> config)
 
 `config` reads things `software` defines. Concrete cases:
 - `config/tasks/sdkman.yml:7` uses `sdkman_dir` from `software/vars/main.yml:204`
 - `config/tasks/zsh.yml:8` uses `node_version` from `software/vars/main.yml:183`
-- `config/templates/zshrc.j2:129-134` uses `eza_version` in the eza FPATH block, which is
-  guarded by `{% if eza_version is defined %}`. `eza_version` is a **fact** set at runtime by
-  `software/tasks/eza.yml`; `config/tasks/zsh.yml:16-30` greps `~/.local/opt/eza-*` as a
-  fallback for `--tags config`-only runs
+- eza has no cross-role coupling any more: `software/tasks/eza.yml` links `~/.zfunc/_eza`,
+  and `.zshrc` adds `~/.zfunc` to `fpath` when the directory exists.
 
 ## Inventory and connections
 
@@ -93,7 +101,5 @@ register in `config/tasks/main.yml` with a `config_tasks_exclude` guard and
 
 ## Linting nuance
 
-Two `.ansible-lint` files exist and differ. Root skips `name[template]`,
-`command-instead-of-module`, `var-naming[no-role-prefix]`; `ansible/.ansible-lint` skips
-only the last. A third copy at `config/files/ansible-lint` is a *product artifact*
+Only `ansible/.ansible-lint` exists (the divergent root copy was removed; do not restore it). A second copy at `config/files/ansible-lint` is a *product artifact*
 deployed to `~/.ansible-lint` — not a repo lint config.
