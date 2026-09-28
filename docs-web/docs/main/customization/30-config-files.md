@@ -6,5 +6,14 @@ As described in [`config role`](../roles/config) section, there are certain conf
 2. (**recommended**) I personally suggest to checkout a local branch in this repository (`git checkout -b my-branch`), modify any configuration file(s) in `ansible/roles/config/files` and/or `ansible/roles/config/templates` and commit them. When you want to update changes, just merge release tag (or `master`) to your branch when needed. That way, you can have both your own modifications to the file, and possible upcoming improvements/features which will come with those files. In case of confilcts, you can either choose your own piece of config, or the incoming one, or both.
 
 :::note[Neovim config]
-Neovim config (based on AstroNvim) has its own repository. You can fork it and modify for you use, or use your own Neovim config entirely (from your repository). For details see [Neovim usage section](../../usage/vim)
+Neovim config (based on AstroNvim) has its own repository. You can fork it and modify it, or use your own config entirely. For details see [Neovim usage section](../../usage/vim).
+
+To use your own repository, set `neovim_config_url` and `neovim_config_version` in `ansible/vars/overrides.yml`. To use a directory on your machine instead, set:
+
+```yaml
+neovim_config_source: local
+neovim_config_local_path: /home/you/my-nvim
+```
+
+The directory is copied to `~/.config/<neovim_config_appname>` on every run. The copy adds and overwrites files but never deletes any in the target. If you switch from a git config to a local one, the files of the old clone stay there, including its `.git` directory. Delete the target directory before the run to start clean.
 :::

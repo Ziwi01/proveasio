@@ -23,3 +23,8 @@ neovim_config_url: https://github.com/Ziwi01/astronvim.git
 neovim_config_version: main
 neovim_config_appname: astronvim
 neovim_config_path: "{{ ansible_facts['env']['HOME'] }}/.config/{{ neovim_config_appname }}"
+# Where the Neovim config comes from:
+#   git   - clone neovim_config_url at neovim_config_version (default)
+#   local - copy the directory neovim_config_local_path into neovim_config_path
+neovim_config_source: git
+neovim_config_local_path: ""

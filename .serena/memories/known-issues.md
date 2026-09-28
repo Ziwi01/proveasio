@@ -90,4 +90,4 @@ in `docs-web/docs/main/customization/50-partial-run.md`.
   a version and then never records it.
 - Task name prefix casing is inconsistent (`[EZA]`, `[Tmux]`, `[ccmux]`). No enforced rule.
 - `allow_broken_conditionals = True` in `ansible.cfg:8` — several `when:` expressions rely
-  on lenient evaluation (e.g. `neovim.yml:67`).
+  on lenient evaluation (e.g. `neovim.yml:74`).

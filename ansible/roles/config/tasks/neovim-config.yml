@@ -1,11 +1,31 @@
 # Install neovim custom config
 ---
+- name: "[Neovim config] Validate config source"
+  ansible.builtin.assert:
+    that:
+      - neovim_config_source in ['git', 'local']
+      - neovim_config_source == 'git' or neovim_config_local_path | length > 0
+      - neovim_config_source == 'git' or neovim_config_local_path | expanduser is abs
+    fail_msg: >-
+      neovim_config_source must be 'git' or 'local', and 'local' needs
+      neovim_config_local_path set to an absolute path or one starting with ~
+      (got source '{{ neovim_config_source }}', path '{{ neovim_config_local_path }}')
+    quiet: true
+
 - name: "[Neovim config] Clone/update config version {{ neovim_config_version }}"
   ansible.builtin.git:
     repo: "{{ neovim_config_url }}"
     dest: "{{ neovim_config_path }}"
     update: true
     version: "{{ neovim_config_version }}"
+  when: neovim_config_source == 'git'
+
+- name: "[Neovim config] Copy local config from {{ neovim_config_local_path }}"
+  ansible.builtin.copy:
+    src: "{{ neovim_config_local_path }}/"
+    dest: "{{ neovim_config_path }}/"
+    mode: preserve
+  when: neovim_config_source == 'local'
 
 # Runs on every play by design: the headless launch drives lazy.nvim/Mason
 # plugin + LSP sync. There is no reliable "already up to date" signal to gate
@@ -22,9 +42,10 @@
 - name: "[Neovim config] Save used version"
   vars:
     app: neovim-config
+    neovim_config_saved_version: "{{ neovim_config_version if neovim_config_source == 'git' else 'local' }}"
     target_version:
-      neovim_config_version: "{{ neovim_config_version }}"
-    yq_query: '.neovim_config_version = "{{ neovim_config_version }}"'
+      neovim_config_version: "{{ neovim_config_saved_version }}"
+    yq_query: '.neovim_config_version = "{{ neovim_config_saved_version }}"'
   ansible.builtin.include_role:
     name: common
     tasks_from: save_version.yml
