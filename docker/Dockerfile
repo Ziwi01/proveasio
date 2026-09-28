@@ -87,6 +87,8 @@ COPY --chown=${USER_UID}:${USER_GID} ansible /home/${USERNAME}/proveasio/ansible
 ARG REFRESH=manual
 ARG ANSIBLE_TAGS=""
 ARG ANSIBLE_SKIP_TAGS=""
+# docker/profile-<PROFILE>.yml is merged unless PROFILE is "full".
+ARG PROFILE=full
 
 # docker/provision.sh renders the overrides, checks the tags, runs the
 # playbook, installs Mason tools and treesitter parsers, removes build

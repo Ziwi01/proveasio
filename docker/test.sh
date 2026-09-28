@@ -355,6 +355,7 @@ check_config_ansible()  { expect_file "$HOME/.ansible-lint"; }
 # ------------------------------------------------------------- end of checks
 
 # includes <role>: "<name> <comma-separated outer tags>" for each include.
+# docker/render-overrides.sh (role_includes) parses the same list; keep both in sync.
 includes() {
   yq -r '.[] | select(has("ansible.builtin.include_tasks"))
     | (.["ansible.builtin.include_tasks"].file | sub("\.yml$"; "")) + " " + ((.tags // []) | join(","))' \

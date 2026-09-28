@@ -50,6 +50,49 @@ The profile:
 
 To change one of these for every build, edit `docker/profile.yml`.
 
+## Profiles
+
+`PROFILE` selects an extra settings file, `docker/profile-<PROFILE>.yml`. The
+build merges it after `docker/profile.yml` and before your
+`docker/overrides.yml`, with the same rules. The default, `full`, uses no
+extra file. The project has one profile, `slim` (see
+[Slim image](./build#slim-image)).
+
+```shell
+PROFILE=slim docker buildx bake
+```
+
+The image is loaded as `proveasio:<PROFILE>` unless you set `IMAGE`. The
+`full` image is `proveasio:local`. To make your own profile, create
+`docker/profile-<name>.yml` in the same format and build with
+`PROFILE=<name>`. Names use lowercase letters, digits and dashes.
+
+## Adding tools back
+
+The excludes of a profile are lists, and `docker/overrides.yml` can only add
+to them. To take tools out of those lists again, name them in
+`software_tasks_include` or `config_tasks_include`:
+
+```yaml
+software_tasks_include:
+  - azurecli
+  - az-account-switcher
+```
+
+```shell
+PROFILE=slim IMAGE=proveasio:slim-az docker buildx bake
+```
+
+These keys only remove names from the excludes. They do not limit the build
+to the named tools. The build stops on a name that is not a task and prints
+the valid names. A name that is not excluded is reported and ignored, so the
+same file works with every profile. The keys work only in Docker builds.
+
+Add these tools back together:
+
+- `sdkman` in both `software_tasks_include` and `config_tasks_include`,
+- `azurecli` and `az-account-switcher`.
+
 ## Turning tools off
 
 Use `software_tasks_exclude` and `config_tasks_exclude`. The names are listed
@@ -139,10 +182,11 @@ Set these as environment variables when you run `docker buildx bake`.
 | `NVIM_CONFIG` | empty | Directory with a local Neovim config. Outside the repository it also needs `--allow fs.read=<directory>`, see [Neovim config](#neovim-config). |
 | `ANSIBLE_TAGS` | empty | Passed as `--tags`. |
 | `ANSIBLE_SKIP_TAGS` | empty | Passed as `--skip-tags`. |
+| `PROFILE` | `full` | Extra settings file `docker/profile-<PROFILE>.yml`, see [Profiles](#profiles). Also sets the default `IMAGE`. |
 | `UBUNTU_VERSION` | `24.04` | Tag of the `ubuntu` base image. |
 | `USERNAME` | `dev` | User inside the image. |
 | `USER_UID` / `USER_GID` | `1000` / `1000` | IDs of that user. Set them to yours (`id -u`, `id -g`) if you bind-mount files. |
-| `IMAGE` | `proveasio:local` | Name of the loaded image. |
+| `IMAGE` | `proveasio:local`, or `proveasio:<PROFILE>` for other profiles | Name of the loaded image. |
 
 To see the resolved build definition without building, run
 `docker buildx bake --print`.

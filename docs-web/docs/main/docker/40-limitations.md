@@ -26,7 +26,9 @@ single exclude removes the path. `/usr` holds the Ubuntu packages, and
 `~/.local/lib` holds the Ansible that runs the build.
 
 To make the image smaller, exclude what you do not need. See
-[Turning tools off](./customize#turning-tools-off).
+[Turning tools off](./customize#turning-tools-off). The slim image leaves out
+the largest tools that nothing else needs and is about 5.7 GB. See
+[Slim image](./build#slim-image).
 
 ## Other limitations
 

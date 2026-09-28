@@ -7,6 +7,9 @@
 #   `latest`, `YYYY-MM-DD` and `sha-<short>`. `v*` tags publish `X.Y.Z`, `X.Y`
 #   and `sha-<short>` and leave `latest` alone. Everything else only builds
 #   and tests.
+# - The `image` job is a matrix over two profiles. `full` gets the tags above.
+#   `slim` (PROFILE=slim, docker/profile-slim.yml) gets `slim` instead of
+#   `latest` and a `-slim` suffix on the others.
 # - `sha-<short>` names the repository commit, not the image content.
 #   Scheduled runs rebuild the same commit with newer tool versions.
 # - Scheduled runs start on the default branch (develop), so the image job
@@ -101,15 +104,28 @@ jobs:
           echo "publish=$publish" >> "$GITHUB_OUTPUT"
 
   image:
-    name: "Build, test and publish"
+    name: "Build, test and publish (${{ matrix.profile }})"
     needs: plan
     if: needs.plan.outputs.build == 'true'
     runs-on: ubuntu-24.04
     timeout-minutes: 240
+    strategy:
+      # A failed slim build must not stop the full image from publishing.
+      fail-fast: false
+      matrix:
+        include:
+          - profile: full
+            suffix: ""
+            latest: latest
+          - profile: slim
+            suffix: "-slim"
+            latest: slim
     env:
       # timestamp() in docker-bake.hcl changes per call; one value per run
       # keeps the receipt step on the cached build.
       REFRESH: ${{ github.run_id }}-${{ github.run_attempt }}
+      # docker-bake.hcl reads PROFILE in both Bake steps below.
+      PROFILE: ${{ matrix.profile }}
     steps:
       - uses: actions/checkout@v7
         with:
@@ -138,11 +154,11 @@ jobs:
           flavor: |
             latest=false
           tags: |
-            type=raw,value=latest,enable=${{ needs.plan.outputs.publish == 'true' && !startsWith(github.ref, 'refs/tags/') }}
-            type=raw,value={{date 'YYYY-MM-DD'}},enable=${{ needs.plan.outputs.publish == 'true' && !startsWith(github.ref, 'refs/tags/') }}
-            type=semver,pattern={{version}}
-            type=semver,pattern={{major}}.{{minor}}
-            type=sha,prefix=sha-,format=short
+            type=raw,value=${{ matrix.latest }},enable=${{ needs.plan.outputs.publish == 'true' && !startsWith(github.ref, 'refs/tags/') }}
+            type=raw,value={{date 'YYYY-MM-DD'}}${{ matrix.suffix }},enable=${{ needs.plan.outputs.publish == 'true' && !startsWith(github.ref, 'refs/tags/') }}
+            type=semver,pattern={{version}},suffix=${{ matrix.suffix }}
+            type=semver,pattern={{major}}.{{minor}},suffix=${{ matrix.suffix }}
+            type=sha,prefix=sha-,suffix=${{ matrix.suffix }},format=short
 
       - name: Log in to Docker Hub
         if: needs.plan.outputs.publish == 'true'
@@ -179,7 +195,7 @@ jobs:
       - name: Version receipt summary
         run: |
           {
-            echo "### Versions in this image"
+            echo "### Versions in the $PROFILE image"
             echo
             echo '```yaml'
             cat out/current-versions.yml
@@ -188,5 +204,5 @@ jobs:
 
       - uses: actions/upload-artifact@v7
         with:
-          name: current-versions
+          name: current-versions-${{ matrix.profile }}
           path: out/current-versions.yml

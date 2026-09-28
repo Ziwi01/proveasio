@@ -1,6 +1,7 @@
 # Build definition for the Proveasio Docker image, used by local builds and CI.
 #
 #   docker buildx bake                          build, test and load proveasio:local
+#   PROFILE=slim docker buildx bake             the slim image, loaded as proveasio:slim
 #   GITHUB_TOKEN=... docker buildx bake         authenticate GitHub API version lookups
 #   REFRESH=dev docker buildx bake              keep the cached playbook layer
 #   docker buildx bake image receipt            also write ./out/current-versions.yml
@@ -38,12 +39,17 @@ variable "ANSIBLE_TAGS" {
 variable "ANSIBLE_SKIP_TAGS" {
   default = ""
 }
+# docker/profile-<PROFILE>.yml is merged unless PROFILE is "full".
+variable "PROFILE" {
+  default = "full"
+}
 # Directory with a local Neovim config. Empty means neovim_config_url is cloned.
 variable "NVIM_CONFIG" {
   default = ""
 }
+# proveasio:local for the full profile, proveasio:<PROFILE> for the others.
 variable "IMAGE" {
-  default = "proveasio:local"
+  default = PROFILE == "full" ? "proveasio:local" : "proveasio:${PROFILE}"
 }
 # Read from the environment; used to expand `~` in NVIM_CONFIG.
 variable "HOME" {
@@ -68,6 +74,7 @@ target "_common" {
     USER_GID          = USER_GID
     ANSIBLE_TAGS      = ANSIBLE_TAGS
     ANSIBLE_SKIP_TAGS = ANSIBLE_SKIP_TAGS
+    PROFILE           = PROFILE
   }
   contexts = NVIM_CONFIG == "" ? {} : {
     nvim-config = regex_replace(NVIM_CONFIG, "^~", HOME)

@@ -1,0 +1,23 @@
+# Slim image profile (PROFILE=slim). docker/render-overrides.sh merges it
+# after docker/profile.yml and before docker/overrides.yml; lists append.
+# It leaves out the largest tools that nothing else in the image needs.
+#
+# nvm, gvm and rvm stay: the default Neovim config installs Mason packages
+# with npm (yaml, json, bash and ansible language servers), go (gopls, delve
+# and other Go tools) and gem (solargraph, standardrb), and
+# mason-tool-installer retries missing packages on every Neovim start.
+# roles/software/tasks/ansible.yml also installs the Ansible language server
+# with nvm's npm.
+#
+# To add a tool back, list it in software_tasks_include (and
+# config_tasks_include for sdkman) in docker/overrides.yml.
+software_tasks_exclude:
+  - sdkman
+  - azurecli
+  - az-account-switcher
+  - rust
+  - puppet
+  - awscli
+# The config task writes ~/.sdkman/etc/config, which needs SDKMAN.
+config_tasks_exclude:
+  - sdkman

@@ -168,11 +168,17 @@ Other conventions: every `shell:` task sets `args.executable: /bin/bash` and sta
 `docker buildx bake` (repo root) builds `docker/Dockerfile` from `docker-bake.hcl`. The playbook
 runs inside the build; `.github/workflows/docker.yml` publishes it.
 
-- Inputs: `docker/profile.yml` (committed container defaults) merged with the gitignored
-  `docker/overrides.yml` by `docker/render-overrides.sh` (`yq *+`: maps merge, lists append).
+- Inputs, merged in this order by `docker/render-overrides.sh` (`yq *+`: maps merge, lists
+  append): `docker/profile.yml` (committed container defaults), `docker/profile-<PROFILE>.yml`
+  unless `PROFILE` is `full` (only `slim` is committed), and the gitignored
+  `docker/overrides.yml`. Then `software_tasks_include`/`config_tasks_include` from
+  `docker/overrides.yml` take names out of the exclude lists (Docker only; unknown names fail).
   The native `ansible/vars/overrides.yml` is excluded by `.dockerignore`. `render-overrides.sh`
   overwrites `ansible/vars/overrides.yml`, so it has the same `PROVEASIO_IMAGE_BUILD=1` opt-in
   as `cleanup.sh` below.
+- The slim profile keeps nvm, gvm and rvm: the default Neovim config installs Mason packages
+  with npm, go and gem, and mason-tool-installer retries missing ones on every start.
+  `software/ansible.yml` also needs nvm (npm installs the Ansible language server).
 - `docker/provision.sh` is the playbook step (bind-mounted with `docker/`, not in the image):
   render the overrides; stop when the tags or excludes leave out `software/packages`,
   `software/yq`, `software/zsh` or `config/zsh` (it asks `docker/test.sh --list --tags ...`);

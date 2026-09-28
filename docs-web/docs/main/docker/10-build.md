@@ -32,6 +32,27 @@ A build took about 15 minutes on a 16-core machine and produced an image of
 about 8.5 GB. The first build also compiles Python and installs Ansible, which
 adds about 5 minutes. Later builds reuse that layer.
 
+## Slim image
+
+The slim image leaves out SDKMAN (Java, Gradle, Groovy, Maven), Azure CLI,
+az-account-switcher, Rust, Puppet and AWS CLI:
+
+```shell
+PROFILE=slim docker buildx bake
+```
+
+It is loaded as `proveasio:slim` and is about 5.7 GB. It keeps nvm, gvm and
+rvm, because the default Neovim config installs language servers with npm, Go
+and gem, and Neovim would otherwise try to install them again on every start.
+The Java language server is installed but does not start, because the image
+has no Java.
+
+To add one of the left-out tools, see
+[Adding tools back](./customize#adding-tools-back). The list is in
+`docker/profile-slim.yml`.
+
+Build the images one at a time. Two builds at once need twice the memory.
+
 ## Getting the latest versions
 
 Every build runs the playbook again and resolves `latest` again, because
@@ -86,6 +107,7 @@ The project also publishes the image to Docker Hub:
 
 ```shell
 docker pull CHANGEME/proveasio:latest
+docker pull CHANGEME/proveasio:slim
 ```
 
 | Tag | Content |
@@ -95,6 +117,8 @@ docker pull CHANGEME/proveasio:latest
 | `X.Y.Z` | The build of a Proveasio release. |
 | `X.Y` | The build of the newest `X.Y.Z` release. |
 | `sha-<short>` | The repository commit the image was built from. The same commit can be built again later with newer tool versions, so this tag does not give you a fixed set of versions. Use a dated tag for that. |
+| `slim` | The newest slim build of `master`, rebuilt every week. See [Slim image](#slim-image). |
+| `YYYY-MM-DD-slim`, `X.Y.Z-slim`, `X.Y-slim`, `sha-<short>-slim` | The slim image for each tag above. |
 
 Each image contains the exact versions it was built with in
 `~/proveasio/current-versions.yml`.

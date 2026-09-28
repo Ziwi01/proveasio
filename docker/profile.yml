@@ -1,7 +1,9 @@
 # Container defaults for Docker image builds, in the same format as
-# ansible/vars/overrides.yml. docker/render-overrides.sh merges this file with
-# the optional, gitignored docker/overrides.yml: maps merge recursively and
-# lists are appended, so a user override cannot drop an entry from here.
+# ansible/vars/overrides.yml. docker/render-overrides.sh merges this file
+# first, then docker/profile-<PROFILE>.yml, then the optional, gitignored
+# docker/overrides.yml: maps merge recursively and lists are appended.
+# software_tasks_include and config_tasks_include in docker/overrides.yml
+# take names back out of the exclude lists.
 
 # Windows-only tools. win32yank.exe would also make Neovim configs that look
 # for it use it as the clipboard, which fails in a Linux container.
