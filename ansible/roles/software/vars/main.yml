@@ -147,6 +147,12 @@ docker_apt_packages:
   docker-ce: latest
   docker-compose-plugin: latest
   containerd.io: latest
+# Start and enable the Docker engine service after installing it.
+# Set to false where there is no init system (containers). To install only the
+# client there, set `docker-ce: absent`, `containerd.io: absent` and
+# `docker-ce-cli: latest` in `docker_apt_packages`. `absent` skips the package;
+# it does not remove one that is already installed.
+docker_manage_service: true
 # RVM / Ruby
 rvm1_rubies:
   - ruby-3.4.7

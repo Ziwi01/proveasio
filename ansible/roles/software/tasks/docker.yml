@@ -67,7 +67,7 @@
   changed_when: false
   args:
     executable: /bin/bash
-  loop: "{{ docker_apt_packages | dict2items }}"
+  loop: "{{ docker_apt_packages | dict2items | rejectattr('value', 'equalto', 'absent') | list }}"
   tags:
     - versions
 
@@ -95,3 +95,4 @@
     state: started
     enabled: true
     use: "{{ service_manager }}"
+  when: docker_manage_service | bool
