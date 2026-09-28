@@ -61,9 +61,10 @@ excluded because `common/save_version.yml` shells out to `yq` for every other to
 ## Cross-role coupling (software -> config)
 
 `config` reads things `software` defines. Concrete cases:
-- `config/tasks/sdkman.yml:7` uses `sdkman_dir` from `software/vars/main.yml:193`
-- `config/tasks/zsh.yml:8` uses `node_version` from `software/vars/main.yml:172`
-- `config/templates/zshrc.j2:120` uses `eza_version`, a **fact** set at runtime by
+- `config/tasks/sdkman.yml:7` uses `sdkman_dir` from `software/vars/main.yml:204`
+- `config/tasks/zsh.yml:8` uses `node_version` from `software/vars/main.yml:183`
+- `config/templates/zshrc.j2:129-134` uses `eza_version` in the eza FPATH block, which is
+  guarded by `{% if eza_version is defined %}`. `eza_version` is a **fact** set at runtime by
   `software/tasks/eza.yml`; `config/tasks/zsh.yml:16-30` greps `~/.local/opt/eza-*` as a
   fallback for `--tags config`-only runs
 
