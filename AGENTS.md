@@ -55,12 +55,15 @@ user's home, not Ansible code.
 
 **These do not exist — do not invent or "restore" them:** `npm run lint`, `npm run test`,
 any markdownlint runner, any Lua linter, `make`, `just`, `pytest`, pre-commit hooks.
-`.markdownlint.json` and `.luarc.json` are editor-only settings; the repo contains zero
-`.lua` files.
+`.markdownlint.json` and `.luarc.json` are editor-only settings. The only `.lua` file is
+`docker/nvim-install.lua`, and nothing lints it.
 
-The only functional test in the project is `.github/workflows/build.yml`: a full playbook
+There are two functional tests, both in CI. `.github/workflows/build.yml` is a full playbook
 run on a clean Ubuntu 24.04 runner, on push to `master` and weekly. It is destructive —
 never run the full playbook to "check" something on a real machine.
+`.github/workflows/docker.yml` runs the playbook inside the image build, then
+`docker/test.sh`; it has not run on GitHub yet. Locally, the smoke build (see "Docker
+image") is the non-destructive functional check.
 
 ## Architecture
 
@@ -128,14 +131,19 @@ Not everything resolves through GitHub: `kubectl` uses `dl.k8s.io/release/stable
 and pip tools use `state: latest` / `--upgrade` and read the version back, SDKMAN does not
 support `latest` at all, and a few entries are hard-pinned.
 
-## Adding software — four edits minimum
+## Adding software: five edits minimum
 
-1. `roles/software/tasks/<tool>.yml` — copy `hunk.yml` or `eza.yml`; they are the canonical shape.
+1. `roles/software/tasks/<tool>.yml`: copy `hunk.yml` or `eza.yml`; they are the canonical shape.
 2. Register in `roles/software/tasks/main.yml` with
    `when: "'<tool>' not in software_tasks_exclude"` and `tags: [software, versions, <tool>]`.
-3. Add the key to `github_packages` in `roles/software/vars/main.yml`. **Required** —
+3. Add the key to `github_packages` in `roles/software/vars/main.yml`. **Required**:
    `common/tasks/github_version.yml` looks up `github_packages[app]`.
-4. Update the docs (see below).
+4. Add `check_software_<tool>` (dashes become underscores) to `docker/test.sh`. **Required**:
+   the Docker build fails for any selected include without a check. Config includes need
+   `check_config_<name>` the same way. From the repo root,
+   `PROVEASIO_HOME="$PWD" bash docker/test.sh --coverage` lists missing checks without
+   building.
+5. Update the docs (see below).
 
 **The `app` naming trap.** Up to three spellings of the same tool coexist:
 
@@ -151,6 +159,37 @@ Other conventions: every `shell:` task sets `args.executable: /bin/bash` and sta
 `set -e -o pipefail`; version queries must use the injected `gh_curl` helper, never bare
 `curl`, or they lose authentication; task names are prefixed `"[Tool] ..."`.
 
+## Docker image
+
+`docker buildx bake` (repo root) builds `docker/Dockerfile` from `docker-bake.hcl`. The playbook
+runs inside the build; `.github/workflows/docker.yml` publishes it.
+
+- Inputs: `docker/profile.yml` (committed container defaults) merged with the gitignored
+  `docker/overrides.yml` by `docker/render-overrides.sh` (`yq *+`: maps merge, lists append).
+  The native `ansible/vars/overrides.yml` is excluded by `.dockerignore`. `render-overrides.sh`
+  overwrites `ansible/vars/overrides.yml`, so it has the same `PROVEASIO_IMAGE_BUILD=1` opt-in
+  as `cleanup.sh` below.
+- `docker/test.sh` runs in the `test` stage; `final` depends on it. It selects checks from the
+  includes in `software`/`config` `tasks/main.yml`, the effective excludes and the build tags.
+- `docker/nvim-install.lua` runs after the playbook and waits for Mason and treesitter installs.
+  nvim gets the PATH of an interactive zsh, so Mason's npm, go and gem packages install. A failed
+  package is logged, not fatal.
+- `docker/cleanup.sh` runs in the playbook layer. It must not delete paths the roles use as
+  "already installed" gates. It exits 2 unless `PROVEASIO_IMAGE_BUILD=1`, which the Dockerfile
+  sets on that one command. Never set it on a workstation.
+- `REFRESH` defaults to `timestamp()`, so every local build re-resolves `latest`. CI pins it
+  per run.
+- Verify Docker changes with `docker buildx bake --print` and a smoke build:
+  `ANSIBLE_TAGS=software_packages,yq,eza,zsh,neovim,neovim-config,docker IMAGE=proveasio:smoke docker buildx bake`.
+  It is the quick check (9 checks, about 5-7 minutes with cached bootstrap layers). Its 13
+  Mason failures are expected, because the tag set leaves out nvm, gvm and rvm.
+- On WSL, check free host memory before a build. A full build pushed WSL to its memory cap;
+  on a host that also runs other large programs, that can exhaust Windows memory and Windows
+  then shuts WSL down. The margin used so far: start only with at least 10 GB free physical
+  memory and 10 GB free commit on the Windows host. Check both (values in KB) with
+  `powershell.exe -Command "Get-CimInstance Win32_OperatingSystem | Select FreePhysicalMemory,FreeVirtualMemory"`.
+  No guard script is committed.
+
 ## Tags: what actually works
 
 Tags are attached twice — outer `tags:` select whether the dynamic `include_tasks` runs at
@@ -162,7 +201,9 @@ all, `apply.tags` stamp the tasks inside it. Only the outer ones can select.
 - `--tags software_packages` **does** work (it is on the outer `tags:` of `[Software] Install
   packages`). Anything else you add must go on the outer `tags:` to be selectable.
 - `--tags eza` also pulls in config's zsh task — deliberate, because `zshrc.j2` embeds the
-  eza version. Same for `zsh` → p10k.
+  eza version. Same for `zsh` → p10k. The reverse bites: `--skip-tags eza` also skips
+  `[Config] Configure zsh`, which leaves the default oh-my-zsh `.zshrc`, and makes the Docker
+  image tests fail. Leave eza out with `software_tasks_exclude` instead.
 - The `windows` role has **zero tags**. Subset it with `bundle_include` instead.
 - `ansible-playbook setup-ubuntu.yml --list-tags` is the source of truth; keep
   `docs-web/docs/main/customization/50-partial-run.md` in sync with it.
@@ -190,5 +231,5 @@ hand-maintained and uses the same `type(scope):` prefixes.
 ## Deeper context
 
 Serena memories hold the detail that does not belong in this file: `ansible-architecture`,
-`version-management`, `ci-and-verification`, `known-issues`. List and read them when a task
-goes beyond what is above.
+`version-management`, `ci-and-verification`, `known-issues`, `docker-image`. List and read
+them when a task goes beyond what is above.

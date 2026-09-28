@@ -1,0 +1,192 @@
+# Docker image: build, test and publish docker.io/CHANGEME/proveasio.
+#
+# - The image comes from docker-bake.hcl and docker/Dockerfile, the same files
+#   users build locally. docker/test.sh runs inside the build (`final` depends
+#   on `test`), so nothing is pushed unless every check passes.
+# - Pushes to master, the weekly schedule and manual runs on master publish
+#   `latest`, `YYYY-MM-DD` and `sha-<short>`. `v*` tags publish `X.Y.Z`, `X.Y`
+#   and `sha-<short>` and leave `latest` alone. Everything else only builds
+#   and tests.
+# - `sha-<short>` names the repository commit, not the image content.
+#   Scheduled runs rebuild the same commit with newer tool versions.
+# - Scheduled runs start on the default branch (develop), so the image job
+#   checks out master for them. They combine this file from develop with
+#   master's docker-bake.hcl and docker/, so a change to the Bake targets or
+#   output paths reaches scheduled runs only after a release.
+# - Repository settings: variable DOCKERHUB_USERNAME, secret DOCKERHUB_TOKEN
+#   (Docker Hub access token, Read & Write), and IMAGE_NAME below.
+# - secrets.GITHUB_TOKEN reaches the build as the GITHUB_TOKEN build secret
+#   for the GitHub API version lookups (1000 requests/hour per repository).
+name: "Docker image"
+
+on:
+  push:
+    branches: ["master", "develop"]
+    tags: ["v*"]
+  pull_request:
+    paths:
+      - "docker/**"
+      - "docker-bake.hcl"
+      - ".dockerignore"
+      - "ansible/**"
+      - "prepare-ubuntu.sh"
+      - ".github/workflows/docker.yml"
+  schedule:
+    - cron: "0 6 * * 5"
+  workflow_dispatch:
+
+env:
+  IMAGE_NAME: docker.io/CHANGEME/proveasio
+
+permissions:
+  contents: read
+
+# Scheduled runs publish master, so they join master's group, not develop's.
+concurrency:
+  group: docker-${{ github.event_name == 'schedule' && 'refs/heads/master' || github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
+jobs:
+  # `on.push.paths` would also filter master, so develop pushes are filtered
+  # here instead. Pull requests use `paths:` above.
+  plan:
+    name: "Decide what to run"
+    runs-on: ubuntu-latest
+    outputs:
+      build: ${{ steps.decide.outputs.build }}
+      publish: ${{ steps.decide.outputs.publish }}
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          fetch-depth: 0
+
+      - name: Decide
+        id: decide
+        env:
+          EVENT: ${{ github.event_name }}
+          REF: ${{ github.ref }}
+          BEFORE: ${{ github.event.before }}
+          SHA: ${{ github.sha }}
+        run: |
+          set -euo pipefail
+          build=true
+          publish=false
+          if [ "$EVENT" = push ]; then
+            case "$REF" in
+              refs/heads/master|refs/tags/v*) publish=true ;;
+              refs/heads/develop)
+                if [[ "$BEFORE" =~ ^0+$ ]] || ! git cat-file -e "${BEFORE}^{commit}" 2>/dev/null; then
+                  build=true
+                else
+                  # No pipe into `grep -q`: its early exit can SIGPIPE git diff
+                  # and fail the pipeline. Only "no image paths changed" skips.
+                  rc=0
+                  git diff --quiet "$BEFORE" "$SHA" -- docker docker-bake.hcl \
+                    .dockerignore ansible prepare-ubuntu.sh .github/workflows/docker.yml || rc=$?
+                  case "$rc" in
+                    0) build=false ;;
+                    1) build=true ;;
+                    *) echo "::warning::git diff exited $rc, building anyway"; build=true ;;
+                  esac
+                fi
+                ;;
+            esac
+          elif [ "$EVENT" = schedule ]; then
+            publish=true
+          elif [ "$EVENT" = workflow_dispatch ] && [ "$REF" = refs/heads/master ]; then
+            publish=true
+          fi
+          echo "build=$build publish=$publish"
+          echo "build=$build" >> "$GITHUB_OUTPUT"
+          echo "publish=$publish" >> "$GITHUB_OUTPUT"
+
+  image:
+    name: "Build, test and publish"
+    needs: plan
+    if: needs.plan.outputs.build == 'true'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 240
+    env:
+      # timestamp() in docker-bake.hcl changes per call; one value per run
+      # keeps the receipt step on the cached build.
+      REFRESH: ${{ github.run_id }}-${{ github.run_attempt }}
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          ref: ${{ github.event_name == 'schedule' && 'master' || '' }}
+
+      # The image is about 9 GB, and the playbook step peaks above 11 GB before
+      # its cleanup. A standard runner has no room for that and the build cache
+      # without this.
+      - name: Free disk space
+        run: |
+          df -h /
+          sudo rm -rf /usr/share/dotnet /usr/local/lib/android /opt/ghc /opt/hostedtoolcache/CodeQL
+          sudo docker image prune --all --force
+          df -h /
+
+      - uses: docker/setup-buildx-action@v4
+
+      - name: Image metadata
+        id: meta
+        uses: docker/metadata-action@v6
+        with:
+          images: ${{ env.IMAGE_NAME }}
+          # `git` reads the commit of the checkout (master on scheduled runs);
+          # `workflow` would report the develop commit that triggered the run.
+          context: ${{ github.event_name == 'schedule' && 'git' || 'workflow' }}
+          flavor: |
+            latest=false
+          tags: |
+            type=raw,value=latest,enable=${{ needs.plan.outputs.publish == 'true' && !startsWith(github.ref, 'refs/tags/') }}
+            type=raw,value={{date 'YYYY-MM-DD'}},enable=${{ needs.plan.outputs.publish == 'true' && !startsWith(github.ref, 'refs/tags/') }}
+            type=semver,pattern={{version}}
+            type=semver,pattern={{major}}.{{minor}}
+            type=sha,prefix=sha-,format=short
+
+      - name: Log in to Docker Hub
+        if: needs.plan.outputs.publish == 'true'
+        uses: docker/login-action@v4
+        with:
+          username: ${{ vars.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+      # Tests run inside this build. Non-publishing runs keep the result in
+      # the builder cache only.
+      - name: Build, test and push
+        uses: docker/bake-action@v7
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          source: .
+          files: |
+            ./docker-bake.hcl
+            cwd://${{ steps.meta.outputs.bake-file-tags }}
+            cwd://${{ steps.meta.outputs.bake-file-labels }}
+          targets: image
+          set: |
+            image.output=${{ needs.plan.outputs.publish == 'true' && 'type=registry' || 'type=cacheonly' }}
+
+      - name: Export version receipt
+        uses: docker/bake-action@v7
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          source: .
+          files: ./docker-bake.hcl
+          targets: receipt
+
+      - name: Version receipt summary
+        run: |
+          {
+            echo "### Versions in this image"
+            echo
+            echo '```yaml'
+            cat out/current-versions.yml
+            echo '```'
+          } >> "$GITHUB_STEP_SUMMARY"
+
+      - uses: actions/upload-artifact@v7
+        with:
+          name: current-versions
+          path: out/current-versions.yml

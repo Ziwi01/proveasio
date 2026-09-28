@@ -1,0 +1,26 @@
+# Container defaults for Docker image builds, in the same format as
+# ansible/vars/overrides.yml. docker/render-overrides.sh merges this file with
+# the optional, gitignored docker/overrides.yml: maps merge recursively and
+# lists are appended, so a user override cannot drop an entry from here.
+
+# Windows-only tools. win32yank.exe would also make Neovim configs that look
+# for it use it as the clipboard, which fails in a Linux container.
+software_tasks_exclude:
+  - w32yank
+  - wsl-notify-send
+
+# The AppImage needs FUSE, which containers do not have.
+neovim_package: tarball
+
+# No init system in a container. The image ships the Docker client and
+# plugins only; containers use the host engine through a mounted
+# /var/run/docker.sock.
+docker_manage_service: false
+docker_apt_packages:
+  docker-ce: absent
+  containerd.io: absent
+  docker-ce-cli: latest
+  docker-buildx-plugin: latest
+
+# A fresh image has no earlier config files worth backing up.
+config_files_backup: false

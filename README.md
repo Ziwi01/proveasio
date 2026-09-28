@@ -88,6 +88,8 @@ Below you can find brief summary of included tools and features. For more detail
 
 For detailed instructions see [documentation](https://ziwi01.github.io/proveasio)
 
+To build it as a Docker image instead, see [Docker image](https://ziwi01.github.io/proveasio/main/docker/build).
+
 ## Troubleshooting
 
 See [Troubleshooting](https://ziwi01.github.io/proveasio/main/troubleshooting)

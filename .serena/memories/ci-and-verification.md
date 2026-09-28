@@ -2,10 +2,10 @@
 
 Deeper detail behind the "Verifying your work" section of `AGENTS.md`.
 
-## Workflows (5 files, all in `.github/workflows/`)
+## Workflows (6 files, all in `.github/workflows/`)
 
-`lint.yml` is the only `pull_request`-triggered workflow; the other four run on push,
-schedule, tag or dispatch only.
+`lint.yml` and `docker.yml` are the only `pull_request`-triggered workflows; the other four
+run on push, schedule, tag or dispatch only.
 
 ### `build.yml` — "Build"
 - Triggers: push to `master`, weekly cron `0 6 * * 5`, `workflow_dispatch`
@@ -16,7 +16,7 @@ schedule, tag or dispatch only.
 - Then: force-push `latest` tag, generate changelog via `requarks/changelog-action@v1`,
   create prerelease via `ncipollo/release-action@v1.12.0`, auto-commit `CHANGELOG.md`
   with `stefanzweifel/git-auto-commit-action@v4`
-- **This is the only functional test in the project.** No linters run here.
+- **One of two functional tests**, with `docker.yml` (below). No linters run here.
 
 ### `build-26.yml` — "Build (26)"
 `workflow_dispatch` only. `ubuntu-26.04`, same two steps, no release plumbing. Forward-
@@ -26,8 +26,8 @@ looking LTS smoke test.
 - Triggers: push to **`develop`**, `workflow_dispatch`
 - `npm install` then `npm run build` in `docs-web`, upload `docs-web/build`, deploy via
   `actions/deploy-pages@v4`
-- **The only gate an agent can reproduce locally and the only one that can fail on a
-  normal change.**
+- Reproducible locally with the command below, like `lint.yml` (`cd ansible &&
+  ansible-lint`). The smoke build in `AGENTS.md` covers the image path.
 
 ### `release.yml` — "Release"
 Triggers on `v*` tags. Changelog + non-prerelease GitHub Release + prune old prereleases.
@@ -46,10 +46,20 @@ No build, no lint.
   but without them the log fills with "Unable to load module ..." warnings and module
   option validation is silently skipped.
 
+### `docker.yml` — "Docker image"
+- Triggers: push to `master`/`develop`, `v*` tags, `pull_request` (path-filtered), weekly
+  cron, `workflow_dispatch`. A `plan` job path-filters `develop` pushes.
+- Runs the playbook inside `docker buildx bake`, then `docker/test.sh` in the `test` stage;
+  publishes to Docker Hub only for pushes to `master`, manual runs on `master`, the
+  schedule, and `v*` tags.
+- **Has not run on GitHub yet.** Details in the `docker-image` memory. Locally, the smoke
+  build in `AGENTS.md` is the non-destructive functional check.
+
 ## What "done" actually means
 
 CI verifies three things: the playbook runs green on Ubuntu 24.04, the Docusaurus site
-builds, and `ansible/` passes ansible-lint. Nothing else is gated.
+builds, and `ansible/` passes ansible-lint. Nothing else is gated yet; `docker.yml` adds
+the image build and `docker/test.sh` once it runs on GitHub.
 
 ## Commands
 
@@ -72,8 +82,9 @@ the repo root was deleted — the two disagreed (111 findings vs 25) depending o
   `start build serve clear deploy swizzle write-translations write-heading-ids`)
 - No markdownlint binary, dependency, or workflow reference. `.markdownlint.json`
   (`{"line-length": false}`) is editor-only
-- No Lua linter. `.luarc.json` is a lua-language-server setting and the repo has **zero**
-  `.lua` files (the Neovim config lives in an external repo cloned by Ansible)
+- No Lua linter. `.luarc.json` is a lua-language-server setting. The only `.lua` file is
+  `docker/nvim-install.lua`, and nothing lints it (the Neovim config lives in an external
+  repo cloned by Ansible)
 - No `.pre-commit-config.yaml`, no `.editorconfig`, no installed git hooks
   (`.git/hooks/` has only the stock samples, `core.hooksPath` unset)
 - No husky, lint-staged, eslint, prettier, Makefile, Taskfile, justfile, tox, pytest
@@ -81,7 +92,7 @@ the repo root was deleted — the two disagreed (111 findings vs 25) depending o
 - `yamllint` happens to be installed but there is no `.yamllint` and no convention around
   it; ansible-lint bundles its own yamllint pass
 
-**ansible-lint is enforced by `lint.yml`** (see below).
+**ansible-lint is enforced by `lint.yml`** (see above).
 
 ## Docs site
 

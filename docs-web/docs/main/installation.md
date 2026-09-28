@@ -30,3 +30,7 @@ Assuming all the [requirements](./requirements) are met:
 :::note
 If either the preparation or installation steps are failing for you (#4 or #6), please see [Troubleshooting](./troubleshooting) section. If there is no answer for your problem, please create an Issue in Github.
 :::
+
+:::tip[Docker]
+To build Proveasio as a Docker image instead of installing it on this machine, see [Docker image](./docker/build).
+:::

@@ -1,3 +1,5 @@
 current-versions.yml
 Session.vim
 ansible/vars/overrides.yml
+docker/overrides.yml
+/out/

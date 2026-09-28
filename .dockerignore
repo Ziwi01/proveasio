@@ -1,0 +1,8 @@
+# Allowlist: the image build reads only these paths.
+*
+!ansible/
+!prepare-ubuntu.sh
+!docker/
+# Machine-local and generated files must never reach a build.
+ansible/vars/*overrides.yml*
+ansible/.ansible/

@@ -67,3 +67,11 @@
 - [x] feat(kubernetes): install docker, kubectl, k9s, kind
 - [x] feat(neovim): Install neovim-ruby-host for all rubies
 - [x] docs: add usage descriptions with videos and images in `Usages.md`
+- [ ] fix(neovim): `software/tasks/neovim.yml:11-16` passes a pipe to `ansible.builtin.command`, so the installed-version check never works and Neovim is reinstalled on every run
+- [ ] fix(nvm): `software/tasks/nvm.yml` installs with `creates:`, so nvm is never upgraded while `current-versions.yml` records the newly resolved version (native: installed 0.40.0, receipt 0.40.8)
+- [ ] fix(opencode): `software/tasks/opencode.yml:20` picks the AVX2 build from the build host's `/proc/cpuinfo`; the published Docker image can crash with SIGILL on CPUs without AVX2
+- [ ] fix(sdkman): `.zshrc` does not load SDKMAN, so `sdk`, `java`, `gradle`, `groovy`, `mvn` are not on the interactive PATH
+- [ ] chore(ci): `build.yml`'s weekly cron runs on the default branch `develop`, not `master`; confirm whether that is intended
+- [ ] fix(zsh): `source <(alias s=switch)` in `config/templates/zshrc.j2` defines the alias in a subshell, so `s` never exists; use `alias s=switch`
+- [ ] fix(zsh): `--skip-tags eza` (and `ANSIBLE_SKIP_TAGS=eza` in the Docker build) also skips `[Config] Configure zsh`, whose outer tags include `eza`, and leaves the default oh-my-zsh `.zshrc`
+- [ ] chore(docker): The Docker workflow's scheduled run checks out `master`, which has no `docker/` until the next release; publishing also needs the placeholders replaced (`CHANGEME` in `IMAGE_NAME`, `vars.DOCKERHUB_USERNAME`, `secrets.DOCKERHUB_TOKEN`). When publishing starts, also replace `CHANGEME` in `docs-web/docs/main/docker/10-build.md` and remove its "not published yet" note
