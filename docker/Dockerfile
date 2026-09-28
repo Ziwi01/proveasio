@@ -88,64 +88,14 @@ ARG REFRESH=manual
 ARG ANSIBLE_TAGS=""
 ARG ANSIBLE_SKIP_TAGS=""
 
+# docker/provision.sh renders the overrides, checks the tags, runs the
+# playbook, installs Mason tools and treesitter parsers, removes build
+# leftovers and warms zsh. docker/ is bind-mounted, so the scripts are not
+# part of the image.
 RUN --mount=type=bind,source=docker,target=/tmp/proveasio-docker \
     --mount=type=bind,from=nvim-config,target=/tmp/nvim-config \
     --mount=type=secret,id=GITHUB_TOKEN,env=GITHUB_TOKEN \
-    <<'EOF'
-set -euo pipefail
-echo "Proveasio build: REFRESH=${REFRESH} ANSIBLE_TAGS=${ANSIBLE_TAGS} ANSIBLE_SKIP_TAGS=${ANSIBLE_SKIP_TAGS}"
-sudo apt-get update
-sudo apt-get -y upgrade
-PROVEASIO_IMAGE_BUILD=1 bash /tmp/proveasio-docker/render-overrides.sh
-
-args=()
-if [ -n "${ANSIBLE_TAGS}" ]; then args+=(--tags "${ANSIBLE_TAGS}"); fi
-if [ -n "${ANSIBLE_SKIP_TAGS}" ]; then args+=(--skip-tags "${ANSIBLE_SKIP_TAGS}"); fi
-cd "$HOME/proveasio/ansible"
-# Ansible ignores ansible.cfg in a world-writable current directory, which is
-# what COPY produces from a checkout under /mnt/c. ANSIBLE_CONFIG always loads it.
-export ANSIBLE_CONFIG="$HOME/proveasio/ansible/ansible.cfg"
-ansible-playbook -i inventory.yml setup-ubuntu.yml "${args[@]}"
-
-# Mason and treesitter install in the background, so the role's headless
-# `nvim +q` can exit before they finish. nvim-install.lua starts them and
-# waits; it skips what the config does not use. It runs under pcall so that a
-# missing or broken helper fails the build instead of exiting 0.
-# Mason installs some packages with npm, go or gem. nvm, gvm and rvm put them
-# on PATH only in an interactive zsh, so nvim gets that PATH, read the way
-# docker/test.sh's use_zsh_path does. Mason sets GOBIN and GEM_HOME itself;
-# PATH is the only variable it needs from zsh.
-# GITHUB_TOKEN is only for the playbook's version lookups, so the zsh and nvim
-# commands below run without it (`env -u GITHUB_TOKEN`).
-app="$(yq -r '.neovim_config_appname // ""' vars/overrides.yml)"
-if [ -z "$app" ]; then app="$(yq -r '.neovim_config_appname' roles/config/vars/main.yml)"; fi
-if command -v nvim >/dev/null 2>&1 && [ -d "$HOME/.config/$app" ]; then
-  nvim_path=""
-  if [ -f "$HOME/.zshrc" ] && command -v zsh >/dev/null 2>&1; then
-    nvim_path="$(env -u GITHUB_TOKEN TERM=xterm-256color timeout 60 script -qec 'zsh -i -c "print -r -- \$PATH"' /dev/null </dev/null 2>/dev/null | tr -d '\r' | tail -n 1)" || nvim_path=""
-  fi
-  case "$nvim_path" in
-    */usr/bin*) ;;
-    *)
-      echo "WARNING: could not read PATH from zsh; nvim uses the build PATH, so Mason packages that need npm, go or gem fail" >&2
-      nvim_path="$PATH" ;;
-  esac
-  env -u GITHUB_TOKEN PATH="$nvim_path" NVIM_APPNAME="$app" timeout 1800 nvim --headless \
-    -c 'lua local ok, err = pcall(dofile, "/tmp/proveasio-docker/nvim-install.lua") if not ok then io.stderr:write("\n" .. tostring(err) .. "\n") vim.cmd("cquit 1") end' \
-    -c 'qa'
-fi
-
-PROVEASIO_IMAGE_BUILD=1 bash /tmp/proveasio-docker/cleanup.sh
-
-# The first interactive zsh start downloads gitstatusd for p10k and builds
-# caches. Doing it here lets containers start without network access.
-# p10k fetches gitstatusd before the first prompt, so the shell has to draw
-# one (`zsh -i -c exit` does not); `exit` on stdin then ends it.
-if [ -f "$HOME/.zshrc" ]; then
-  env -u GITHUB_TOKEN TERM=xterm-256color POWERLEVEL9K_DISABLE_CONFIGURATION_WIZARD=true \
-    timeout 300 script -qec 'zsh -i' /dev/null <<<'exit'
-fi
-EOF
+    PROVEASIO_IMAGE_BUILD=1 bash /tmp/proveasio-docker/provision.sh
 
 COPY --chown=${USER_UID}:${USER_GID} --chmod=0755 docker/test.sh /home/${USERNAME}/proveasio/docker/test.sh
 CMD ["zsh", "-l"]

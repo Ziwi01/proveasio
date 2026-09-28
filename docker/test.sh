@@ -5,12 +5,15 @@
 # stage depends on it) and by hand in a container:
 #   ~/proveasio/docker/test.sh                      run every selected check
 #   ~/proveasio/docker/test.sh --list               print the selected checks
+#   ~/proveasio/docker/test.sh --list --tags <t> --skip-tags <s>
+#                                                   print what these tags select
 #   ~/proveasio/docker/test.sh --only config/zsh    run one check (repeatable)
 #   ~/proveasio/docker/test.sh --coverage           fail if an include has no check
 #
 # Selection comes from the real inputs: every include in
 # roles/{software,config}/tasks/main.yml, minus the excludes in the effective
-# ansible/vars/overrides.yml, filtered by the tags in docker/build-info.env.
+# ansible/vars/overrides.yml, filtered by the tags in docker/build-info.env
+# (or by --tags/--skip-tags; docker/provision.sh uses those).
 # Each selected include needs a check_<role>_<name> function below (dashes
 # become underscores). A missing function counts as a failure.
 set -uo pipefail
@@ -371,24 +374,25 @@ role_includes() {
 
 excluded() { effective "${1}_tasks_exclude" "$1" '.[]' | grep -qxF -- "$2"; }
 
-# tags_select <outer tags>: mirrors --tags / --skip-tags on the include.
-# Ansible's special tags in --tags: `all` selects every include, `tagged`
-# every include with a tag (all of them here). --skip-tags matches literally.
+# tags_select <outer tags> <--tags value> <--skip-tags value>: mirrors
+# ansible-playbook --tags / --skip-tags on one include. Ansible's special tags
+# in --tags: `all` selects every include, `tagged` every include with a tag
+# (all of them here). --skip-tags matches literally. Empty means not passed.
 tags_select() {
-  local t hit=0
-  if [ -n "${ANSIBLE_TAGS:-}" ]; then
-    for t in ${ANSIBLE_TAGS//,/ }; do
+  local outer="$1" run="$2" skip="$3" t hit=0
+  if [ -n "$run" ]; then
+    for t in ${run//,/ }; do
       case "$t" in
         all) hit=1 ;;
-        tagged) if [ -n "$1" ]; then hit=1; fi ;;
-        *) if [[ ",$1," == *",$t,"* ]]; then hit=1; fi ;;
+        tagged) if [ -n "$outer" ]; then hit=1; fi ;;
+        *) if [[ ",$outer," == *",$t,"* ]]; then hit=1; fi ;;
       esac
     done
     [ "$hit" -eq 1 ] || return 1
   fi
-  if [ -n "${ANSIBLE_SKIP_TAGS:-}" ]; then
-    for t in ${ANSIBLE_SKIP_TAGS//,/ }; do
-      if [[ ",$1," == *",$t,"* ]]; then return 1; fi
+  if [ -n "$skip" ]; then
+    for t in ${skip//,/ }; do
+      if [[ ",$outer," == *",$t,"* ]]; then return 1; fi
     done
   fi
   return 0
@@ -436,15 +440,19 @@ use_zsh_path() {
 
 usage() {
   cat <<'EOF'
-Usage: docker/test.sh [--list] [--coverage] [--only <role>/<name>]...
-  --list      print the checks selected for this image and exit
-  --coverage  exit non-zero if any include in the roles has no check function
-  --only      run only the given check; repeatable
+Usage: docker/test.sh [--list [--tags <tags>] [--skip-tags <tags>]] [--coverage] [--only <role>/<name>]...
+  --list        print the checks selected for this image and exit
+  --tags        with --list: select as `ansible-playbook --tags` would, instead
+                of using docker/build-info.env
+  --skip-tags   with --list: the same for `--skip-tags`
+  --coverage    exit non-zero if any include in the roles has no check function
+  --only        run only the given check; repeatable
 EOF
 }
 
 main() {
-  local list_only=0 do_coverage=0 only=() selected=() role name tags item fn o lines
+  local list_only=0 do_coverage=0 tags_given=0 opt_tags="" opt_skip=""
+  local only=() selected=() role name tags item fn o lines
   while [ $# -gt 0 ]; do
     case "$1" in
       --list) list_only=1 ;;
@@ -452,6 +460,12 @@ main() {
       --only)
         [ $# -ge 2 ] || { echo "--only needs a value" >&2; exit 2; }
         only+=("$2"); shift ;;
+      --tags)
+        [ $# -ge 2 ] || { echo "--tags needs a value" >&2; exit 2; }
+        tags_given=1; opt_tags="$2"; shift ;;
+      --skip-tags)
+        [ $# -ge 2 ] || { echo "--skip-tags needs a value" >&2; exit 2; }
+        tags_given=1; opt_skip="$2"; shift ;;
       -h|--help) usage; exit 0 ;;
       *) echo "unknown argument: $1" >&2; usage >&2; exit 2 ;;
     esac
@@ -459,22 +473,36 @@ main() {
   done
 
   if [ "$do_coverage" -eq 1 ]; then coverage; exit $?; fi
+  if [ "$tags_given" -eq 1 ] && [ "$list_only" -eq 0 ]; then
+    echo "--tags and --skip-tags only work with --list" >&2
+    exit 2
+  fi
 
   ANSIBLE_TAGS=""
   ANSIBLE_SKIP_TAGS=""
-  # shellcheck source=/dev/null
-  if [ -f "$BUILD_INFO" ]; then source "$BUILD_INFO"; fi
+  if [ "$tags_given" -eq 1 ]; then
+    ANSIBLE_TAGS="$opt_tags"
+    ANSIBLE_SKIP_TAGS="$opt_skip"
+  elif [ -f "$BUILD_INFO" ]; then
+    # shellcheck source=/dev/null
+    source "$BUILD_INFO"
+  fi
 
   for role in "${ROLES[@]}"; do
     lines="$(role_includes "$role")" || exit 1
     while read -r name tags; do
       [ -n "$name" ] || continue
       excluded "$role" "$name" && continue
-      tags_select "$tags" || continue
+      tags_select "$tags" "$ANSIBLE_TAGS" "$ANSIBLE_SKIP_TAGS" || continue
       selected+=("$role/$name")
     done <<<"$lines"
   done
-  if [ ${#selected[@]} -eq 0 ]; then echo "# error: no checks selected" >&2; exit 1; fi
+  # Explicit tags may select nothing (provision.sh reports that itself); an
+  # image with nothing to check is an error.
+  if [ ${#selected[@]} -eq 0 ] && [ "$tags_given" -eq 0 ]; then
+    echo "# error: no checks selected" >&2
+    exit 1
+  fi
 
   if [ ${#only[@]} -gt 0 ]; then
     for o in "${only[@]}"; do
@@ -483,7 +511,10 @@ main() {
     selected=("${only[@]}")
   fi
 
-  if [ "$list_only" -eq 1 ]; then printf '%s\n' "${selected[@]}"; exit 0; fi
+  if [ "$list_only" -eq 1 ]; then
+    if [ ${#selected[@]} -gt 0 ]; then printf '%s\n' "${selected[@]}"; fi
+    exit 0
+  fi
 
   use_zsh_path
   local pass=0 failed=0

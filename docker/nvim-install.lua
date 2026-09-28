@@ -1,5 +1,5 @@
 -- Install the Mason tools and treesitter parsers of a Neovim config, and wait
--- for them to finish. docker/Dockerfile runs it in the playbook step with
+-- for them to finish. docker/provision.sh runs it in the playbook step with
 -- `dofile` inside `pcall`, so a missing file or a load error also fails:
 --   NVIM_APPNAME=<app> nvim --headless -c 'lua ... pcall(dofile, ...) ...' -c qa
 -- Configs start these installs in the background, so a plain headless start

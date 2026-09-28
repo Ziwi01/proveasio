@@ -1,14 +1,14 @@
 #!/usr/bin/env bash
 # Remove build leftovers from a Proveasio image.
 #
-# Runs at the end of the playbook RUN step in docker/Dockerfile. It has to run
+# docker/provision.sh runs it at the end of the playbook RUN step. It has to run
 # in that same step: files deleted in a later layer still take space in the
 # image. It never deletes a path the roles use to detect an existing install
 # (for example ~/.local/opt/<tool>-<version>, ~/.gvm/environments/<version>,
 # ~/.local/opt/nvm/nvm.sh), so the playbook can still be re-run in a container.
 #
 # It deletes package caches, apt lists and almost everything in /tmp, so it
-# refuses to run unless PROVEASIO_IMAGE_BUILD=1. docker/Dockerfile sets it.
+# refuses to run unless PROVEASIO_IMAGE_BUILD=1. docker/provision.sh sets it.
 # Never set it on a workstation.
 #
 # CLEANUP_SYSTEM=0 skips the parts that need sudo (apt lists, /tmp). It is used

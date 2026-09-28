@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # Build the effective ansible/vars/overrides.yml for a Docker image build.
 #
-# Runs in the playbook RUN step of docker/Dockerfile. Inputs are the committed
+# docker/provision.sh runs it in the playbook step. Inputs are the committed
 # docker/profile.yml and the optional, gitignored docker/overrides.yml (both
 # bind-mounted at DOCKER_DIR), plus the nvim-config build context at
 # NVIM_CONFIG_DIR. Maps merge recursively and lists are appended. The roles
@@ -9,7 +9,7 @@
 # defaults per key; every other variable replaces the role default.
 #
 # It overwrites ansible/vars/overrides.yml, so it refuses to run unless
-# PROVEASIO_IMAGE_BUILD=1. docker/Dockerfile sets it for this one command.
+# PROVEASIO_IMAGE_BUILD=1. docker/provision.sh sets it for this one command.
 # Never set it on a workstation: there it would replace your own overrides.
 set -euo pipefail
 
@@ -25,7 +25,6 @@ NVIM_CONFIG_DIR="${NVIM_CONFIG_DIR:-/tmp/nvim-config}"
 profile="$DOCKER_DIR/profile.yml"
 user_overrides="$DOCKER_DIR/overrides.yml"
 target="$PROVEASIO_HOME/ansible/vars/overrides.yml"
-build_info="$PROVEASIO_HOME/docker/build-info.env"
 
 if [ ! -f "$profile" ]; then
   echo "render-overrides: missing $profile" >&2
@@ -62,15 +61,8 @@ if [ -d "$NVIM_CONFIG_DIR" ]; then
   fi
 fi
 
-mkdir -p "$(dirname "$target")" "$(dirname "$build_info")"
+mkdir -p "$(dirname "$target")"
 printf '%s\n' "$merged" > "$target"
-
-{
-  printf 'ANSIBLE_TAGS=%q\n' "${ANSIBLE_TAGS:-}"
-  printf 'ANSIBLE_SKIP_TAGS=%q\n' "${ANSIBLE_SKIP_TAGS:-}"
-  printf 'REFRESH=%q\n' "${REFRESH:-}"
-  printf 'BUILD_DATE=%q\n' "$(date -u +%Y-%m-%dT%H:%M:%SZ)"
-} > "$build_info"
 
 echo "render-overrides: effective overrides ($target):"
 sed 's/^/  /' "$target"

@@ -59,8 +59,8 @@ When you exclude a software task that has a config task with the same name
 (`tmux`, `ccmux`, `sdkman`, `lazygit`, `ansible`), exclude the config task
 too. For `neovim`, exclude `neovim-config`.
 
-`packages`, `yq` and `zsh` cannot be excluded, as on a native run. The
-playbook stops at its first tasks when `docker/overrides.yml` excludes one.
+`packages`, `yq` and `zsh` cannot be excluded, as on a native run. The build
+stops before the playbook runs when `docker/overrides.yml` excludes one.
 
 The smoke tests read the same lists and skip what you excluded.
 
@@ -81,14 +81,13 @@ ANSIBLE_SKIP_TAGS=puppet,rvm docker buildx bake
 `--skip-tags` leaves out the tasks with those tags, and the smoke tests skip
 them too.
 
-Do not skip the tags `zsh` or `config`. Both skip the zsh configuration task,
-and the image tests then fail.
-
-`--tags` builds an image from scratch with only the selected tasks, so it has
-to include what those tasks depend on. For example, `ANSIBLE_TAGS=neovim`
-alone fails, because the version lookups need `curl` and `jq` from
-`software_packages`. Excludes are the better way to leave tools out. The tag
-list is in [Partial run](../customization/partial-run).
+`--tags` builds an image from scratch with only the selected tasks. A new
+image needs the package, yq and zsh tasks, including the zsh configuration.
+The build stops before the playbook runs when the tags leave one of them out,
+and names the missing tasks. For example, `ANSIBLE_TAGS=neovim` stops, and so
+does `ANSIBLE_SKIP_TAGS=config`, because it also skips the zsh configuration.
+Excludes are the better way to leave tools out. The tag list is in
+[Partial run](../customization/partial-run).
 
 ## Neovim config
 

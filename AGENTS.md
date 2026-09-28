@@ -173,14 +173,20 @@ runs inside the build; `.github/workflows/docker.yml` publishes it.
   The native `ansible/vars/overrides.yml` is excluded by `.dockerignore`. `render-overrides.sh`
   overwrites `ansible/vars/overrides.yml`, so it has the same `PROVEASIO_IMAGE_BUILD=1` opt-in
   as `cleanup.sh` below.
+- `docker/provision.sh` is the playbook step (bind-mounted with `docker/`, not in the image):
+  render the overrides; stop when the tags or excludes leave out `software/packages`,
+  `software/yq`, `software/zsh` or `config/zsh` (it asks `docker/test.sh --list --tags ...`);
+  write `docker/build-info.env`; apt upgrade; playbook; `nvim-install.lua`; `cleanup.sh`;
+  zsh warm-up.
 - `docker/test.sh` runs in the `test` stage; `final` depends on it. It selects checks from the
   includes in `software`/`config` `tasks/main.yml`, the effective excludes and the build tags.
 - `docker/nvim-install.lua` runs after the playbook and waits for Mason and treesitter installs.
   nvim gets the PATH of an interactive zsh, so Mason's npm, go and gem packages install. A failed
   package is logged, not fatal.
 - `docker/cleanup.sh` runs in the playbook layer. It must not delete paths the roles use as
-  "already installed" gates. It exits 2 unless `PROVEASIO_IMAGE_BUILD=1`, which the Dockerfile
-  sets on that one command. Never set it on a workstation.
+  "already installed" gates. It exits 2 unless `PROVEASIO_IMAGE_BUILD=1`. The Dockerfile sets
+  it on `provision.sh`, which unsets it and passes it only to `render-overrides.sh` and
+  `cleanup.sh`. Never set it on a workstation.
 - `REFRESH` defaults to `timestamp()`, so every local build re-resolves `latest`. CI pins it
   per run.
 - Verify Docker changes with `docker buildx bake --print` and a smoke build:
