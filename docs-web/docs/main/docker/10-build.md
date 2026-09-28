@@ -93,8 +93,8 @@ store, which works with the default `docker` buildx driver. A
 image, pull it first:
 
 ```shell
-docker pull CHANGEME/proveasio:latest
-BASE_IMAGE=CHANGEME/proveasio:latest IMAGE=proveasio:local \
+docker pull ziwi/proveasio:latest
+BASE_IMAGE=ziwi/proveasio:latest IMAGE=proveasio:local \
   ANSIBLE_TAGS=neovim,neovim-config docker buildx bake update
 ```
 
@@ -175,8 +175,8 @@ yourself as described above.
 The project also publishes the image to Docker Hub:
 
 ```shell
-docker pull CHANGEME/proveasio:latest
-docker pull CHANGEME/proveasio:slim
+docker pull ziwi/proveasio:latest
+docker pull ziwi/proveasio:slim
 ```
 
 | Tag | Content |

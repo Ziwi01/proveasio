@@ -229,7 +229,7 @@ WSL, bootstrap layers cached, GitHub API unauthenticated (smoke used 8 and slim 
   `type=cacheonly` on non-publishing runs.
 - Scheduled runs start on `develop` (default branch) and check out `master`, which has no
   `docker/` until the next release, so they fail until then.
-- Publishing needs `CHANGEME` in `IMAGE_NAME`, `vars.DOCKERHUB_USERNAME` and
-  `secrets.DOCKERHUB_TOKEN` set.
+- Publishing target is `docker.io/ziwi/proveasio`; `vars.DOCKERHUB_USERNAME` (`ziwi`) and
+  `secrets.DOCKERHUB_TOKEN` are set in the repository (2026-09-28).
 - At release, the `master` push and the `v*` tag both push `sha-<short>` from different
   concurrency groups; last one wins.
