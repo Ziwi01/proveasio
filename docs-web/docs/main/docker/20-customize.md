@@ -81,16 +81,8 @@ ANSIBLE_SKIP_TAGS=puppet,rvm docker buildx bake
 `--skip-tags` leaves out the tasks with those tags, and the smoke tests skip
 them too.
 
-Do not skip the tags `eza`, `zsh` or `config`. Each of them also skips the zsh
-configuration task, and the image tests then fail. That task has the `config`
-and `zsh` tags, and the `eza` tag as well, because `.zshrc` contains the eza
-version. To leave eza out, add it to `software_tasks_exclude` in
-`docker/overrides.yml` instead:
-
-```yaml
-software_tasks_exclude:
-  - eza
-```
+Do not skip the tags `zsh` or `config`. Both skip the zsh configuration task,
+and the image tests then fail.
 
 `--tags` builds an image from scratch with only the selected tasks, so it has
 to include what those tasks depend on. For example, `ANSIBLE_TAGS=neovim`

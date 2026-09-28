@@ -80,9 +80,9 @@ group of sub-roles is just task files inside one role's `tasks/`.
   dotfiles. **`windows`** is independent and shares nothing with the rest.
 - **Order is hard-wired**, not declared: `setup-ubuntu.yml:51,54` statically imports
   `software` then `config`. No role has `meta/main.yml`, so there are zero declared
-  dependencies. `config` reads variables and facts set by `software` — this only works
-  because `import_role` is static and keeps vars in play scope. A `--tags config`-only run
-  is a degraded mode; `config/tasks/zsh.yml:16-30` exists purely to paper over it.
+  dependencies. `config` reads variables set by `software` (`sdkman_dir`, `node_version`) —
+  this only works because `import_role` is static and keeps vars in play scope, so it also
+  works on `--tags config` runs.
 
 ## Variables and overrides — the most important non-obvious thing
 
@@ -200,10 +200,9 @@ all, `apply.tags` stamp the tasks inside it. Only the outer ones can select.
   resolution they depend on. Both work as `--skip-tags`; cleanup is reached via `--tags versions`.
 - `--tags software_packages` **does** work (it is on the outer `tags:` of `[Software] Install
   packages`). Anything else you add must go on the outer `tags:` to be selectable.
-- `--tags eza` also pulls in config's zsh task — deliberate, because `zshrc.j2` embeds the
-  eza version. Same for `zsh` → p10k. The reverse bites: `--skip-tags eza` also skips
-  `[Config] Configure zsh`, which leaves the default oh-my-zsh `.zshrc`, and makes the Docker
-  image tests fail. Leave eza out with `software_tasks_exclude` instead.
+- `--tags zsh` also selects config's zsh and p10k tasks (both carry the `zsh` tag), so
+  `--skip-tags zsh` skips all three. eza has no such coupling: its completion is linked to
+  `~/.zfunc/_eza`, so `--tags eza` does not touch `.zshrc` and `--skip-tags eza` skips only eza.
 - The `windows` role has **zero tags**. Subset it with `bundle_include` instead.
 - `ansible-playbook setup-ubuntu.yml --list-tags` is the source of truth; keep
   `docs-web/docs/main/customization/50-partial-run.md` in sync with it.

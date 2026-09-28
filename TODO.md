@@ -73,5 +73,4 @@
 - [ ] fix(sdkman): `.zshrc` does not load SDKMAN, so `sdk`, `java`, `gradle`, `groovy`, `mvn` are not on the interactive PATH
 - [ ] chore(ci): `build.yml`'s weekly cron runs on the default branch `develop`, not `master`; confirm whether that is intended
 - [ ] fix(zsh): `source <(alias s=switch)` in `config/templates/zshrc.j2` defines the alias in a subshell, so `s` never exists; use `alias s=switch`
-- [ ] fix(zsh): `--skip-tags eza` (and `ANSIBLE_SKIP_TAGS=eza` in the Docker build) also skips `[Config] Configure zsh`, whose outer tags include `eza`, and leaves the default oh-my-zsh `.zshrc`
 - [ ] chore(docker): The Docker workflow's scheduled run checks out `master`, which has no `docker/` until the next release; publishing also needs the placeholders replaced (`CHANGEME` in `IMAGE_NAME`, `vars.DOCKERHUB_USERNAME`, `secrets.DOCKERHUB_TOKEN`). When publishing starts, also replace `CHANGEME` in `docs-web/docs/main/docker/10-build.md` and remove its "not published yet" note

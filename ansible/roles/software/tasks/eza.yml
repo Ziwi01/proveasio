@@ -61,6 +61,21 @@
     state: link
     force: true
 
+# The zsh completion is linked to a fixed path, so .zshrc does not need the
+# eza version and the zsh config task does not need the `eza` tag.
+- name: "[EZA] Ensure ~/.zfunc exists for the completion file"
+  ansible.builtin.file:
+    path: "{{ ansible_facts['env']['HOME'] }}/.zfunc"
+    state: directory
+    mode: "0755"
+
+- name: "[EZA] Link {{ eza_version }} zsh completion to ~/.zfunc/_eza"
+  ansible.builtin.file:
+    src: "{{ ansible_facts['env']['HOME'] }}/.local/opt/eza-{{ eza_version }}/_eza"
+    dest: "{{ ansible_facts['env']['HOME'] }}/.zfunc/_eza"
+    state: link
+    force: true
+
 - name: "[EZA] Save used version"
   vars:
     app: eza
