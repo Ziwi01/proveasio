@@ -1,4 +1,4 @@
-# Docker image: build, test and publish docker.io/CHANGEME/proveasio.
+# Docker image: build, test and publish docker.io/ziwi/proveasio.
 #
 # - The image comes from docker-bake.hcl and docker/Dockerfile, the same files
 #   users build locally. docker/test.sh runs inside the build (`final` depends
@@ -39,7 +39,7 @@ on:
   workflow_dispatch:
 
 env:
-  IMAGE_NAME: docker.io/CHANGEME/proveasio
+  IMAGE_NAME: docker.io/ziwi/proveasio
 
 permissions:
   contents: read

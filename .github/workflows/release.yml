@@ -11,8 +11,9 @@ jobs:
     runs-on: "ubuntu-24.04"
 
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v7
         with:
+          ref: master
           fetch-depth: 0
 
       - name: Get previous tag
