@@ -8,6 +8,15 @@ on:
     - cron: "0 6 * * 5"
   workflow_dispatch:
 
+# Every trigger builds master: the checkout below always takes `master`.
+# Scheduled runs start on the default branch (develop), so github.ref_name is
+# `develop` there. The steps use BUILD_BRANCH instead: with ref_name, the
+# previous tag lookup failed ("malformed object name develop", as the clone has
+# no local develop branch), and the weekly run dropped the `[latest]` CHANGELOG
+# section and named the pre-release "develop".
+env:
+  BUILD_BRANCH: master
+
 jobs:
   ubuntu-24:
     name: "Build (Ubuntu 24)"
@@ -16,7 +25,7 @@ jobs:
     steps:
       - uses: actions/checkout@v7
         with:
-          ref: master
+          ref: ${{ env.BUILD_BRANCH }}
           fetch-depth: 0
 
       - name: Fix grub-efi-amd64 error
@@ -44,7 +53,8 @@ jobs:
       - name: Get previous tag
         id: previousTag
         run: |
-          name=$(git --no-pager tag --sort=creatordate --merged "${{ github.ref_name }}" | grep -v '^latest$' | tail -1)
+          set -euo pipefail
+          name=$(git --no-pager tag --sort=creatordate --merged "$BUILD_BRANCH" | grep -v '^latest$' | tail -1)
           echo "previousTag: $name"
           echo "previousTag=$name" >> "$GITHUB_ENV"
 
@@ -85,7 +95,7 @@ jobs:
           makeLatest: true
           tag: latest
           prerelease: true
-          name: ${{ github.ref_name }}
+          name: ${{ env.BUILD_BRANCH }}
           body: ${{ steps.changelog.outputs.changes }}
           token: ${{ github.token }}
 
@@ -133,7 +143,7 @@ jobs:
             echo "committed=false" >> "$GITHUB_OUTPUT"
             exit 0
           fi
-          git commit -m "docs: Update CHANGELOG for ${{ github.ref_name }}"
+          git commit -m "docs: Update CHANGELOG for $BUILD_BRANCH"
           git push origin develop
           echo "committed=true" >> "$GITHUB_OUTPUT"
 

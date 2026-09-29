@@ -72,7 +72,8 @@
   - The install now runs when `nvm --version` differs from `nvm_version`; install.sh upgrades the git checkout in place
 - [ ] fix(opencode): `software/tasks/opencode.yml:20` picks the AVX2 build from the build host's `/proc/cpuinfo`; the published Docker image can crash with SIGILL on CPUs without AVX2
 - [x] fix(sdkman): `.zshrc` does not load SDKMAN, so `sdk`, `java`, `gradle`, `groovy`, `mvn` are not on the interactive PATH
-- [ ] chore(ci): `build.yml`'s weekly cron runs on the default branch `develop`, not `master`; confirm whether that is intended
+- [x] chore(ci): `build.yml`'s weekly cron runs on the default branch `develop`, not `master`; confirm whether that is intended
+  - Building `master` is intended (the checkout pins it), but three steps used `github.ref_name` (`develop`): the previous tag lookup failed, the 2026-09-25 run dropped the `[latest]` CHANGELOG section (`fd06813`), and the pre-release was named "develop". Fixed with `BUILD_BRANCH: master`; unverified until the next scheduled run
 - [x] fix(neovim): The first Neovim start installs blink.cmp v2 from `main` (AstroNvim's `version = "^1"` is not loaded yet), which fails with "module 'blink.lib' not found" until `:AstroUpdate`
   - `config/neovim-config` runs `Lazy! update` once after a first install without a lockfile; `docker/test.sh` loads blink.cmp
 - [x] fix(docker): Containers get `TERM=xterm`, so the p10k prompt has no colors; the image sets `TERM=xterm-256color`
