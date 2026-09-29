@@ -45,15 +45,3 @@ git push
 
 echo 'git checkout develop'
 git checkout develop
-
-# echo 'Replace software/vars/main.yml with .latest-versions.yml'
-# yq -i eval-all '. as $item ireduce ({}; . * $item)' ${SCRIPT_DIR}/ansible/roles/software/vars/main.yml ${SCRIPT_DIR}/.latest-versions.yml
-#
-# echo 'git add'
-# git add .
-#
-# echo 'git commit'
-# git commit -a -m 'build: Set latest versions for development'
-#
-# echo 'git push'
-# git push

@@ -188,8 +188,6 @@ npm_default_packages:
 # Ansible
 ansible_pip_version: latest
 ansible_lint_pip_version: latest
-# LunarVIM
-lunarvim_remove: true
 # Azure CLI
 azurecli_apt_version: latest
 # AWS CLI

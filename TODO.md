@@ -51,11 +51,10 @@
     tags, dropped removed `~thefuck~`), plus a "Skip-only tags" section and a note that `setup-windows.yml`
     has no tags
 - [x] docs(vim): `docs-web/docs/usage/40-vim.md:385,391` show `setup-windows.yml --tags 'neovim,...'` — the windows playbook has no tags; should be `setup-ubuntu.yml`
-- [ ] chore(versions): Decide the fate of `.latest-versions.yml` — it is committed but read by nothing
-  - Its only consumers in `publish.sh:42-43` are commented out
-  - Drifted: still lists `bat` and `pip_packages.thefuck`; missing `bottom`, `dry`, `hunk`, `kubecolor`, `kubeswitch`, `pay_respects`, `rvm1_ansible`
-  - Either wire it back up or delete it and drop the reference in `docs-web/docs/main/download.md:20`
-- [ ] chore(software): Remove dead `software/tasks/lunarvim.yml` — comments only, not referenced from `main.yml`
+- [x] chore(versions): Decide the fate of `.latest-versions.yml` — it is committed but read by nothing
+  - Deleted, with the commented-out lines in `publish.sh` and the reference in `docs-web/docs/main/download.md`
+- [x] chore(software): Remove dead `software/tasks/lunarvim.yml` — comments only, not referenced from `main.yml`
+  - Also removed the unused `lunarvim_remove` variable
 - [x] Migrate to AstroNvim / uninstall LunarVim / use Neovim release
 - [x] install fswatch, ruby neovim-ruby-host, treesitter-cli, NPM neovim, gdu, bottom, NPM vscode-langservers-extracted
 - [x] fix(neovim): Mason errors when opening VIM for the first time after new installation.

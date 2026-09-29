@@ -21,7 +21,7 @@ git clone https://github.com/Ziwi01/proveasio.git ~/proveasio
 :::tip
 I recommend checking out `master` branch, then create your own branch (`git checkout -b my-branch`).
 
-You can then override some versions in `ansible/vars/overrides.yml` and set them to `latest` if you want to keep some of the software fresh. See `.latest-versions.yml` to see all available versions to override.
+You can then pin versions in `ansible/vars/overrides.yml`. The tools and their version keys are listed in `ansible/roles/software/vars/main.yml`, and `current-versions.yml` in the repository root shows the versions your last run installed.
 
 Also, this approach makes it easy to do other [customizations](../category/customizations)
 :::

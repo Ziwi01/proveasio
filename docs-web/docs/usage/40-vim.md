@@ -45,7 +45,7 @@ Some example plugins used in this config:
 - [christoomey/vim-tmux-navigator](https://github.com/christoomey/vim-tmux-navigator) - integrate movements between TMUX splits and VIM windows/splits
 - [towolf/vim-helm](https://github.com/towolf/vim-helm) - Helm files support
 - [kevinhwang91/nvim-bqf](https://github.com/kevinhwang91/nvim-bqf) - much better quickfix window
-- [wincent/ferret](https://github.com/wincent/ferret) - Search and replace for files in your project. To be used if Spectre doesn't work as expected (see LunarVim usage docs for details)
+- [wincent/ferret](https://github.com/wincent/ferret) - Search and replace for files in your project. To be used if Spectre doesn't work as expected (see the Spectre section below)
 - [roobert/search-replace.nvim](https://github.com/roobert/search-replace.nvim) - Better local search and replace
 
 There is also [AstroNvim community repository](https://github.com/AstroNvim/astrocommunity/tree/main), where you can find plugins tailored and configured for AstroNvim.
@@ -370,8 +370,6 @@ This is a plugin manager.
 Open Lazy window with `:Lazy`. From there you can list, debug, update/sync all the plugins.
 
 It is a good idea to update the plugins from time to time (with `s` or `i` from Lazy window).
-
-Along with plugin updates would be good to run LunarVim updates also (see below)
 
 ### Updates
 

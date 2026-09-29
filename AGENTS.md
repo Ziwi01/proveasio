@@ -120,16 +120,14 @@ Flow: `github_version.yml` resolves `<app>_version` (skipping the API call entir
 version is pinned) → `stat` gate on `~/.local/opt/<app>-<version>` → install into that
 versioned dir → forced symlink into `~/.local/bin` → `save_version.yml` → `cleanup_versions.yml`.
 
-Two files that are the opposite of what their names suggest:
+**`current-versions.yml`** is gitignored, generated, and **write-only** on native runs:
+nothing in the playbook reads it (`docker/test.sh` compares against it in the image). It is a
+per-machine receipt, written one key at a time by `yq`, never truncated, so it accumulates
+stale keys. Do not hand-edit it, and do not paste it wholesale into overrides.
+(`.latest-versions.yml`, a hand-maintained copy of the catalog that nothing read, was deleted.)
 
-- **`current-versions.yml`** — gitignored, generated, and **write-only**. Nothing reads it.
-  It is a per-machine receipt, written one key at a time by `yq`, never truncated, so it
-  accumulates stale keys. Do not hand-edit it, and do not paste it wholesale into overrides.
-- **`.latest-versions.yml`** — committed, hand-maintained, and read by **nothing**. Its only
-  consumers in `publish.sh` are commented out. It has drifted from the real catalog.
-
-`publish.sh` is a maintainer release script whose version-pinning half is commented out.
-Do not run it. All versions have been `latest` since 2.0.0.
+`publish.sh` is a maintainer release script. Do not run it. All versions have been `latest`
+since 2.0.0; pins go in `ansible/vars/overrides.yml`.
 
 Not everything resolves through GitHub: `kubectl` uses `dl.k8s.io/release/stable.txt`, apt
 and pip tools use `state: latest` / `--upgrade` and read the version back, SDKMAN does not
