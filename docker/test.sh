@@ -344,6 +344,13 @@ check_config_neovim_config() {
   fi
   lazy="$HOME/.local/share/$app/lazy"
   mason="$HOME/.local/share/$app/mason/packages"
+  # blink.cmp loads only on InsertEnter, so the start above does not load it.
+  # A checkout of the wrong major version fails here (see config/neovim-config).
+  if [ -d "$lazy/blink.cmp" ]; then
+    run_cmd env NVIM_APPNAME="$app" nvim --headless \
+      -c 'lua local ok, err = pcall(function() require("lazy").load({ plugins = { "blink.cmp" } }); require("blink.cmp") end) if not ok then io.stderr:write(tostring(err), "\n") vim.cmd("cquit 1") end' \
+      -c qa || return 1
+  fi
   DETAIL="$app"
   if [ -d "$lazy" ]; then DETAIL+=", $(find "$lazy" -mindepth 1 -maxdepth 1 | wc -l) lazy plugins"; fi
   if [ -d "$mason" ]; then DETAIL+=", $(find "$mason" -mindepth 1 -maxdepth 1 | wc -l) mason packages"; fi

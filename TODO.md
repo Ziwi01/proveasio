@@ -72,5 +72,7 @@
 - [ ] fix(opencode): `software/tasks/opencode.yml:20` picks the AVX2 build from the build host's `/proc/cpuinfo`; the published Docker image can crash with SIGILL on CPUs without AVX2
 - [ ] fix(sdkman): `.zshrc` does not load SDKMAN, so `sdk`, `java`, `gradle`, `groovy`, `mvn` are not on the interactive PATH
 - [ ] chore(ci): `build.yml`'s weekly cron runs on the default branch `develop`, not `master`; confirm whether that is intended
+- [x] fix(neovim): The first Neovim start installs blink.cmp v2 from `main` (AstroNvim's `version = "^1"` is not loaded yet), which fails with "module 'blink.lib' not found" until `:AstroUpdate`
+  - `config/neovim-config` runs `Lazy! update` once after a first install without a lockfile; `docker/test.sh` loads blink.cmp
 - [ ] fix(zsh): `source <(alias s=switch)` in `config/templates/zshrc.j2` defines the alias in a subshell, so `s` never exists; use `alias s=switch`
 - [ ] chore(docker): The Docker workflow's scheduled run checks out `master`, which has no `docker/` until the next release. When the first image is published, remove the "not published yet" note in `docs-web/docs/main/docker/10-build.md`

@@ -27,6 +27,17 @@
     mode: preserve
   when: neovim_config_source == 'local'
 
+# Checked before the first headless start, which creates both.
+- name: "[Neovim config] Check for installed plugins"
+  ansible.builtin.stat:
+    path: "{{ ansible_facts['env']['HOME'] }}/.local/share/{{ neovim_config_appname }}/lazy"
+  register: neovim_config_plugins
+
+- name: "[Neovim config] Check for a lockfile"
+  ansible.builtin.stat:
+    path: "{{ neovim_config_path }}/lazy-lock.json"
+  register: neovim_config_lockfile
+
 # Runs on every play by design: the headless launch drives lazy.nvim/Mason
 # plugin + LSP sync. There is no reliable "already up to date" signal to gate
 # on, so this is an accepted always-run task (changed_when:false keeps it from
@@ -35,6 +46,24 @@
   ansible.builtin.command: "nvim --headless +q"
   changed_when: false
   failed_when: false
+  environment:
+    PATH: "{{ ansible_facts['env']['HOME'] }}/.local/bin/:{{ ansible_facts['env']['PATH'] }}"
+    NVIM_APPNAME: "{{ neovim_config_appname }}"
+
+# On the first start the plugins that the config imports (AstroNvim) are not
+# installed yet, so their specs are missing while lazy.nvim installs the rest.
+# A plugin that only they give a `version` for is installed from its default
+# branch (blink.cmp: v2 from `main` instead of `^1`), and lazy.nvim does not
+# check it out again on later starts. One update with the full spec fixes the
+# checkouts. Skipped when the config ships a lockfile, which the first start
+# already follows.
+- name: "[Neovim config] Update plugins after the first install"
+  ansible.builtin.command: nvim --headless "+Lazy! update" +qa
+  changed_when: true
+  failed_when: false
+  when:
+    - not neovim_config_plugins.stat.exists
+    - not neovim_config_lockfile.stat.exists
   environment:
     PATH: "{{ ansible_facts['env']['HOME'] }}/.local/bin/:{{ ansible_facts['env']['PATH'] }}"
     NVIM_APPNAME: "{{ neovim_config_appname }}"
