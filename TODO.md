@@ -68,7 +68,8 @@
 - [x] feat(neovim): Install neovim-ruby-host for all rubies
 - [x] docs: add usage descriptions with videos and images in `Usages.md`
 - [ ] fix(neovim): `software/tasks/neovim.yml:11-16` passes a pipe to `ansible.builtin.command`, so the installed-version check never works and Neovim is reinstalled on every run
-- [ ] fix(nvm): `software/tasks/nvm.yml` installs with `creates:`, so nvm is never upgraded while `current-versions.yml` records the newly resolved version (native: installed 0.40.0, receipt 0.40.8)
+- [x] fix(nvm): `software/tasks/nvm.yml` installs with `creates:`, so nvm is never upgraded while `current-versions.yml` records the newly resolved version (native: installed 0.40.0, receipt 0.40.8)
+  - The install now runs when `nvm --version` differs from `nvm_version`; install.sh upgrades the git checkout in place
 - [ ] fix(opencode): `software/tasks/opencode.yml:20` picks the AVX2 build from the build host's `/proc/cpuinfo`; the published Docker image can crash with SIGILL on CPUs without AVX2
 - [ ] fix(sdkman): `.zshrc` does not load SDKMAN, so `sdk`, `java`, `gradle`, `groovy`, `mvn` are not on the interactive PATH
 - [ ] chore(ci): `build.yml`'s weekly cron runs on the default branch `develop`, not `master`; confirm whether that is intended

@@ -22,20 +22,34 @@
     path: "{{ ansible_facts['env']['HOME'] }}/.local/opt/nvm"
     mode: "0755"
 
-- name: "[NVM] Install NVM" # noqa no-changed-when
+- name: "[NVM] Get installed NVM version"
+  ansible.builtin.shell: |
+    set -e -o pipefail
+    . "{{ ansible_facts['env']['HOME'] }}/.local/opt/nvm/nvm.sh"
+    nvm --version
+  args:
+    executable: /bin/bash
+  register: nvm_installed_version
+  changed_when: false
+  failed_when: false
+
+# install.sh also upgrades: it fetches the tag into the existing git checkout
+# and keeps the installed Node versions.
+- name: "[NVM] Install or upgrade NVM to {{ nvm_version }}"
   ansible.builtin.shell: |
     set -e -o pipefail
     export NVM_DIR="{{ ansible_facts['env']['HOME'] }}/.local/opt/nvm"
     wget -qO- https://raw.githubusercontent.com/nvm-sh/nvm/v{{ nvm_version }}/install.sh | bash
   args:
     executable: /bin/bash
-    creates: "{{ ansible_facts['env']['HOME'] }}/.local/opt/nvm/nvm.sh"
   register: nvm_result
-  changed_when: "'already installed' not in nvm_result.stdout and 'skipped, since' not in nvm_result.stdout"
+  changed_when: true
+  when: nvm_installed_version.rc != 0 or nvm_installed_version.stdout | trim != nvm_version
 
-- name: "[NVM] Show NVM install" # noqa no-changed-when
+- name: "[NVM] Show NVM install"
   ansible.builtin.debug:
     var: nvm_result.stdout
+  when: nvm_result.stdout is defined
 
 - name: "[NVM] Install Node {{ node_version }}"
   ansible.builtin.shell: ". {{ ansible_facts['env']['HOME'] }}/.local/opt/nvm/nvm.sh; nvm install {{ node_version }} --default"
