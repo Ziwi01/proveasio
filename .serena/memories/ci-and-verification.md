@@ -17,6 +17,10 @@ run on push, schedule, tag or dispatch only.
   create prerelease via `ncipollo/release-action@v1.12.0`, auto-commit `CHANGELOG.md`
   with `stefanzweifel/git-auto-commit-action@v4`
 - **One of two functional tests**, with `docker.yml` (below). No linters run here.
+- Always builds `master` (`env.BUILD_BRANCH`). Scheduled runs start on `develop`, so
+  `github.ref_name` is `develop` there; the steps used it until 2026-09-29, which made the
+  previous-tag lookup fail (`malformed object name develop`), dropped the `[latest]` CHANGELOG
+  section (`fd06813`) and named the pre-release "develop". Now `BUILD_BRANCH`; unverified on GitHub.
 
 ### `build-26.yml` — "Build (26)"
 `workflow_dispatch` only. `ubuntu-26.04`, same two steps, no release plumbing. Forward-

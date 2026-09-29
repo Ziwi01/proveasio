@@ -156,6 +156,21 @@ zsh PATH has RVM's ruby without `GEM_HOME`, RVM warns). `script` is from `bsduti
   so containers start offline. `config/p10k` asserts it when `.zshrc` selects p10k.
 - Bootstrap installs `bsdextrautils` (hexdump for gvm); native gets it via recommends.
 - Mason/treesitter failures are logged, not fatal (depends on user config/registries).
+- `ENV TERM=xterm-256color` (build and update stages): with a TTY Docker sets `TERM=xterm`
+  (8 colors) unless the image sets TERM, and p10k then drops its 256-color prompt. Image ENV
+  beats Docker's default; `-e TERM` still wins (tested 2026-09-29).
+- `ENTRYPOINT /usr/local/bin/proveasio-entrypoint` (`docker/entrypoint.sh`, COPY'd, not
+  bind-mounted): warns on stderr when `$PWD` (unless `$HOME` or `/`) or `~/.ssh` is owned by
+  another non-root UID, then `exec "$@"`. `PROVEASIO_NO_UID_CHECK=1` silences it. The UID is
+  fixed at build time on purpose: a runtime `usermod` + `chown -R` of the 5-9 GB home would
+  copy it into the container layer on every start. Bake cannot read the host UID (no `id`
+  function, `UID` is not exported by bash/zsh), so docs pass `USER_UID=$(id -u)
+  USER_GID=$(id -g)` explicitly. Pre-built images are UID 1000.
+- First Neovim start: AstroNvim's `version = "^1"` for blink.cmp is not in the spec until
+  AstroNvim is installed, so lazy.nvim clones blink.cmp `main` (v2, needs `blink.lib`) and
+  never re-checks it. `config/neovim-config` runs `Lazy! update` once when neither the lazy
+  dir nor `lazy-lock.json` existed before the first start. `check_config_neovim_config`
+  loads blink.cmp explicitly (it is lazy-loaded on InsertEnter).
 
 ## Verify
 

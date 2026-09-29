@@ -71,13 +71,7 @@ in `docs-web/docs/main/customization/50-partial-run.md`.
 
 ## Dead code and drift
 
-- **`software/tasks/lunarvim.yml`** — 5 lines of comments, not referenced from `main.yml`.
-- **`.latest-versions.yml`** — committed, but its only consumers in `publish.sh:42-43` are
-  commented out. Nothing reads it. Drifted from `software/vars/main.yml`: still lists
-  `bat` (moved to `default_apt_packages`) and `pip_packages.thefuck` (replaced by
-  `pay_respects`); missing `bottom`, `dry`, `hunk`, `kubecolor`, `kubeswitch`,
-  `pay_respects`, `rvm1_ansible`. Updating it is inconsistently observed — commit
-  `854cceb` did, `6c212de` did not.
+- `software/tasks/lunarvim.yml` and `.latest-versions.yml` were deleted (2026-09-29).
 - **`current-versions.yml`** accumulates stale keys because it is written one key at a time
   and never truncated. The checked-out copy still has `astronvim_config_version`, renamed
   to `neovim_config_version` long ago. Both keys are present.
