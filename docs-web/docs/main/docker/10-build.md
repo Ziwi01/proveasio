@@ -21,12 +21,22 @@ its latest version unless you pin it.
 ```shell
 git clone https://github.com/Ziwi01/proveasio.git
 cd proveasio
-docker buildx bake
+USER_UID=$(id -u) USER_GID=$(id -g) docker buildx bake
 ```
 
 `docker buildx bake` reads `docker-bake.hcl` in the repository root. It builds
 the image, runs the smoke tests, and loads the result as `proveasio:local`.
 If a test fails, the build fails and no image is loaded.
+
+:::warning[Build with your user ID]
+The user `dev` inside the image gets the UID and GID from `USER_UID` and
+`USER_GID`, which default to 1000. They cannot change after the build. If
+they differ from yours, `dev` cannot write to the directories you mount, such
+as your project at `/workspace`, and ssh cannot read a mounted `~/.ssh`. The
+container prints a warning when it starts in that case. Pass your own IDs as
+above to every build, including updates. Bake cannot read them itself, so
+without them you get 1000. See [User ID](./run#user-id).
+:::
 
 A build took about 15 minutes on a 16-core machine and produced an image of
 about 8.5 GB. The first build also compiles Python and installs Ansible, which
@@ -38,7 +48,7 @@ The slim image leaves out SDKMAN (Java, Gradle, Groovy, Maven), Azure CLI,
 az-account-switcher, Rust, Puppet and AWS CLI:
 
 ```shell
-PROFILE=slim docker buildx bake
+PROFILE=slim USER_UID=$(id -u) USER_GID=$(id -g) docker buildx bake
 ```
 
 It is loaded as `proveasio:slim` and is about 5.7 GB. It keeps nvm, gvm and
@@ -112,6 +122,7 @@ An update:
   `neovim-config` in an image built from a local Neovim config.
 - does not upgrade the Ubuntu packages.
 - needs the `USERNAME`, `USER_UID` and `USER_GID` the base image was built with.
+  If you built it with `USER_UID=$(id -u) USER_GID=$(id -g)`, pass them again.
 - uses the `ansible/` and `docker/test.sh` of your checkout. A tool added to
   the checkout since the base build has to be in `ANSIBLE_TAGS`, or the update
   stops.
@@ -191,3 +202,9 @@ docker pull ziwi/proveasio:slim
 
 Each image contains the exact versions it was built with in
 `~/proveasio/current-versions.yml`.
+
+The user `dev` in the pre-built images has UID and GID 1000, the default of
+the first user on most Linux systems and in WSL. If `id -u` or `id -g` prints
+something else, build the image yourself with your IDs, or use it through a
+[devcontainer](./run#devcontainer), which can change the IDs for you. See
+[User ID](./run#user-id).

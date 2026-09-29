@@ -29,6 +29,8 @@ variable "UBUNTU_VERSION" {
 variable "USERNAME" {
   default = "dev"
 }
+# Bake cannot run `id`, and bash and zsh do not export UID, so the default
+# stays 1000. Pass USER_UID=$(id -u) USER_GID=$(id -g) to match your user.
 variable "USER_UID" {
   default = "1000"
 }

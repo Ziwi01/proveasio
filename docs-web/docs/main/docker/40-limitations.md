@@ -46,6 +46,9 @@ the largest tools that nothing else needs and is about 5.7 GB. See
   minutes and adds several hundred MB.
 - **No systemd.** Nothing runs as a service inside the container, including
   the Docker engine.
+- **The user ID is fixed at build time.** The user `dev` can only write to
+  mounted directories when its UID matches yours, and the pre-built images
+  use 1000. See [User ID](./run#user-id).
 - **ccmux notifications do nothing.** They are sent to Windows through the WSL
   bridge, which does not exist in a container.
 - **opencode and older CPUs.** The build picks the opencode binary for the

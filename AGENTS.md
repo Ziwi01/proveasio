@@ -195,6 +195,10 @@ runs inside the build; `.github/workflows/docker.yml` publishes it.
 - `docker/nvim-install.lua` runs after the playbook and waits for Mason and treesitter installs.
   nvim gets the PATH of an interactive zsh, so Mason's npm, go and gem packages install. A failed
   package is logged, not fatal.
+- The image sets `TERM=xterm-256color` (Docker's default `xterm` strips the p10k colors) and
+  an entrypoint (`docker/entrypoint.sh`) that warns when the working directory or `~/.ssh`
+  belongs to another UID. The UID/GID are fixed at build time; docs pass
+  `USER_UID=$(id -u) USER_GID=$(id -g)`. Do not add a runtime `chown` of the home.
 - `docker/cleanup.sh` runs in the playbook layer. It must not delete paths the roles use as
   "already installed" gates. It exits 2 unless `PROVEASIO_IMAGE_BUILD=1`. The Dockerfile sets
   it on `provision.sh`, which unsets it and passes it only to `render-overrides.sh` and

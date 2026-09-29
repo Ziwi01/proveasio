@@ -190,7 +190,7 @@ Set these as environment variables when you run `docker buildx bake`.
 | `PROFILE` | `full` | Extra settings file `docker/profile-<PROFILE>.yml`, see [Profiles](#profiles). Also sets the default `IMAGE`. |
 | `UBUNTU_VERSION` | `24.04` | Tag of the `ubuntu` base image. |
 | `USERNAME` | `dev` | User inside the image. |
-| `USER_UID` / `USER_GID` | `1000` / `1000` | IDs of that user. Set them to yours (`id -u`, `id -g`) if you bind-mount files. |
+| `USER_UID` / `USER_GID` | `1000` / `1000` | IDs of that user. Set them to yours (`$(id -u)`, `$(id -g)`), or `dev` cannot write to mounted directories. See [User ID](./run#user-id). |
 | `IMAGE` | `proveasio:local`, or `proveasio:<PROFILE>` for other profiles | Name of the loaded image. |
 | `BASE_IMAGE` | the value of `IMAGE` | Image the `update` target starts from. It has to be in the local image store. |
 

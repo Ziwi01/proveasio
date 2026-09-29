@@ -30,10 +30,14 @@ ARG DEBIAN_FRONTEND=noninteractive
 # asks whether to update once the image is 13 days old, and that prompt
 # breaks non-interactive zsh starts such as docker/test.sh. Rebuild the image
 # to update oh-my-zsh.
+# TERM: with a TTY, Docker sets TERM=xterm (8 colors) unless the image sets
+# it, and p10k then drops its 256-color prompt. `docker run -e TERM=...` still
+# overrides this.
 ENV LANG=en_US.UTF-8 \
     TZ=Etc/UTC \
     USER=${USERNAME} \
-    DISABLE_AUTO_UPDATE=true
+    DISABLE_AUTO_UPDATE=true \
+    TERM=xterm-256color
 SHELL ["/bin/bash", "-o", "pipefail", "-c"]
 
 # Root bootstrap: what the minimized base lacks, the locale, and the user.
@@ -107,11 +111,15 @@ RUN --mount=type=bind,source=docker,target=/tmp/proveasio-docker \
     PROVEASIO_IMAGE_BUILD=1 bash /tmp/proveasio-docker/provision.sh
 
 COPY --chown=${USER_UID}:${USER_GID} --chmod=0755 docker/test.sh /home/${USERNAME}/proveasio/docker/test.sh
+# Warns when the working directory or ~/.ssh belongs to another UID, then runs CMD.
+COPY --chmod=0755 docker/entrypoint.sh /usr/local/bin/proveasio-entrypoint
+ENTRYPOINT ["/usr/local/bin/proveasio-entrypoint"]
 CMD ["zsh", "-l"]
 
 # Update of an existing Proveasio image: the playbook with ANSIBLE_TAGS on
 # top of BASE_IMAGE. docker/provision.sh --update lists the checks. The base
-# image's user, ENV, SHELL and CMD carry over.
+# image's user, ENV and SHELL carry over; TERM, the entrypoint and CMD are set
+# again below.
 FROM ${BASE_IMAGE} AS update
 ARG USERNAME
 ARG USER_UID
@@ -129,6 +137,11 @@ RUN --mount=type=bind,source=docker,target=/tmp/proveasio-docker \
     --mount=type=secret,id=GITHUB_TOKEN,env=GITHUB_TOKEN \
     PROVEASIO_IMAGE_BUILD=1 bash /tmp/proveasio-docker/provision.sh --update
 COPY --chown=${USER_UID}:${USER_GID} --chmod=0755 docker/test.sh /home/${USERNAME}/proveasio/docker/test.sh
+# Also set here so that updating an image built before they existed adds them.
+ENV TERM=xterm-256color
+COPY --chmod=0755 docker/entrypoint.sh /usr/local/bin/proveasio-entrypoint
+ENTRYPOINT ["/usr/local/bin/proveasio-entrypoint"]
+CMD ["zsh", "-l"]
 
 # `build` for a new image, `update` for an update.
 FROM ${PROVISIONED} AS provisioned

@@ -74,5 +74,7 @@
 - [ ] chore(ci): `build.yml`'s weekly cron runs on the default branch `develop`, not `master`; confirm whether that is intended
 - [x] fix(neovim): The first Neovim start installs blink.cmp v2 from `main` (AstroNvim's `version = "^1"` is not loaded yet), which fails with "module 'blink.lib' not found" until `:AstroUpdate`
   - `config/neovim-config` runs `Lazy! update` once after a first install without a lockfile; `docker/test.sh` loads blink.cmp
+- [x] fix(docker): Containers get `TERM=xterm`, so the p10k prompt has no colors; the image sets `TERM=xterm-256color`
+- [x] docs(docker): Bind mounts need the image built with the user's UID/GID; build docs pass `USER_UID`/`USER_GID`, the entrypoint warns on a mismatch, and SSH key/agent mounts are documented
 - [ ] fix(zsh): `source <(alias s=switch)` in `config/templates/zshrc.j2` defines the alias in a subshell, so `s` never exists; use `alias s=switch`
 - [ ] chore(docker): The Docker workflow's scheduled run checks out `master`, which has no `docker/` until the next release. When the first image is published, remove the "not published yet" note in `docs-web/docs/main/docker/10-build.md`
