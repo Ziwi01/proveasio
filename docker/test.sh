@@ -234,6 +234,11 @@ check_software_sdkman() {
     esac
     # SDKMAN candidate versions carry a vendor suffix: 25.0.2-open -> 25.0.2
     run_sh "$init && $cmd" && expect_out "${ver%%-*}" || return 1
+    # The checks run with the PATH of an interactive zsh, so .zshrc has to load SDKMAN.
+    case "$(command -v "${cmd%% *}")" in
+      "$HOME/.sdkman/candidates/"*) ;;
+      *) fail "${cmd%% *} from SDKMAN is not on the PATH of an interactive zsh"; return 1 ;;
+    esac
   done
   DETAIL="$(effective sdkman_defaults software 'to_entries | map(.key + " " + .value) | join(", ")')"
 }

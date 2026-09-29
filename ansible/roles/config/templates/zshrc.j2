@@ -363,6 +363,12 @@ fi
 # Go version manager
 [[ -s "${HOME}/.gvm/scripts/gvm" ]] && . "${HOME}/.gvm/scripts/gvm"
 
+# SDKMAN puts the current java, gradle, groovy and mvn on PATH. SDKMAN wants
+# this near the end, but it has to come before RVM: RVM warns when PATH changes
+# after it.
+export SDKMAN_DIR="{{ sdkman_dir }}"
+[[ -s "${SDKMAN_DIR}/bin/sdkman-init.sh" ]] && source "${SDKMAN_DIR}/bin/sdkman-init.sh"
+
 # RVM
 # Add RVM to PATH for scripting. Make sure this is the last PATH variable change.
 export PATH="$PATH:$HOME/.rvm/bin"

@@ -55,6 +55,3 @@ the largest tools that nothing else needs and is about 5.7 GB. See
   CPU of the machine that builds the image. The pre-built image uses the AVX2
   build and can crash on CPUs without AVX2. Build the image on your own
   machine in that case.
-- **SDKMAN is not loaded by the shell.** As in a native install, run
-  `source ~/.sdkman/bin/sdkman-init.sh` before using `java`, `gradle`,
-  `groovy` or `mvn`.
