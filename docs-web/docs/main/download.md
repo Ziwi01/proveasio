@@ -4,6 +4,10 @@ sidebar_position: 3
 
 # Download
 
+:::tip[Docker]
+Instead downloading the repo and running the installation, you can try own a dockerized version, see [Docker image](./docker/build).
+:::
+
 Easiest way to start is to clone the repository:
 
 ```
