@@ -88,7 +88,8 @@ target "_common" {
     nvim-config = regex_replace(NVIM_CONFIG, "^~", HOME)
   }
   # Optional: without it the version lookups run unauthenticated.
-  secret = ["id=GITHUB_TOKEN,env=GITHUB_TOKEN"]
+  # CORP_CA is an optional root CA for TLS-intercepting proxies; empty when unset.
+  secret = ["id=GITHUB_TOKEN,env=GITHUB_TOKEN", "id=CORP_CA,env=CORP_CA"]
 }
 
 target "image" {

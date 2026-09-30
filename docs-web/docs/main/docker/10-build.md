@@ -176,6 +176,28 @@ The token reaches the build as a build secret and is not stored in the image.
 Pinned versions skip the API call entirely. See
 [Customize the build](./customize).
 
+## Corporate root CA
+
+If your network intercepts TLS (Zscaler and similar proxies), every HTTPS
+fetch inside the build fails with a certificate error: the image's trust store
+does not contain your organization's root CA. Export the root CA on the host
+and pass it as the `CORP_CA` build secret:
+
+```shell
+# RHEL: find the installed anchor (adjust the subject to your proxy vendor)
+for f in /etc/pki/ca-trust/source/anchors/*; do
+  openssl x509 -in "$f" -noout -subject 2>/dev/null | grep -qi zscaler && echo "$f"
+done
+export CORP_CA="$(cat <anchor-file>)"
+docker buildx bake
+```
+
+The secret reaches the build unstored in the image and is installed into the
+system trust store only when `CORP_CA` is set. Builds without it are unchanged.
+Keep it set for every build on that machine: the secret does not participate
+in the build cache, so a build without it can reuse a cached layer that never
+installed the CA.
+
 ## Pre-built image
 
 :::note

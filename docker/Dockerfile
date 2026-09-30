@@ -44,12 +44,18 @@ SHELL ["/bin/bash", "-o", "pipefail", "-c"]
 # Recommends are off for every apt install, including Ansible's apt tasks.
 # pkgconf, python3-packaging and bsdextrautils (hexdump, needed by gvm) are
 # listed because native Ubuntu gets them only through recommended packages.
-RUN <<'EOF'
+RUN --mount=type=secret,id=CORP_CA,env=CORP_CA <<'EOF'
 set -euo pipefail
 printf 'APT::Install-Recommends "false";\nAPT::Install-Suggests "false";\n' > /etc/apt/apt.conf.d/99-proveasio
 apt-get update
 apt-get install -y sudo git python3 python3-apt python3-packaging locales tzdata \
   ca-certificates curl wget pkgconf bsdextrautils
+# Optional corporate root CA for TLS-intercepting proxies. The secret is empty
+# when CORP_CA is unset, so builds without it are unchanged.
+if [ -n "${CORP_CA:-}" ]; then
+  printf '%s\n' "$CORP_CA" > /usr/local/share/ca-certificates/corp-ca.crt
+  update-ca-certificates
+fi
 ln -sf /usr/share/zoneinfo/Etc/UTC /etc/localtime
 locale-gen en_US.UTF-8
 if id ubuntu >/dev/null 2>&1; then userdel --remove ubuntu; fi
