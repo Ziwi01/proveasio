@@ -1,9 +1,13 @@
 # opencode - AI coding assistant
 # Source: https://github.com/anomalyco/opencode
 ---
-# Mirror the official installer's (opencode.ai/install) target selection so that
-# pinning a future release (e.g. a v2.x once its binaries are published) fetches
-# the correct asset instead of the hard-coded linux-x64 one:
+# OpenCode v2 is the default. v2 is not published as GitHub releases (only tags):
+# its version comes from the opencode.ai update service and its tarballs from
+# opencode.ai/files/bin. Pinning a 1.x version in `github_packages.opencode`
+# installs the legacy v1 from GitHub releases instead.
+#
+# Both lines use the same asset names. Mirror the official installer's
+# (opencode.ai/install) target selection:
 #   arch     x86_64 -> x64, aarch64 -> arm64
 #   baseline x64 CPUs without AVX2 need the -baseline build (default one SIGILLs)
 #   musl     Alpine / musl libc (Ubuntu is glibc, so normally a no-op)
@@ -37,12 +41,15 @@
   tags:
     - versions
 
-- name: "[opencode] Get Github URL for proper version"
+- name: "[opencode] Get download URL for proper version"
   vars:
     app: opencode
-    repo: anomalyco/opencode
-    version_query: gh_curl https://api.github.com/repos/anomalyco/opencode/releases/latest | jq .tag_name -r | cut -f2 -d'v'
-    github_uri: "v{{ opencode_version }}/{{ opencode_asset }}"
+    # `latest` resolves the newest v2 from the update service (not the GitHub API).
+    version_query: curl -fsSL https://opencode.ai/update/api/latest/cli/opencode | jq -r .version
+    artifact_url: >-
+      {{ ('https://github.com/anomalyco/opencode/releases/download/v' ~ opencode_version)
+         if opencode_version is version('2', '<')
+         else ('https://opencode.ai/files/bin/' ~ opencode_version) }}/{{ opencode_asset }}
   ansible.builtin.include_role:
     name: common
     tasks_from: github_version.yml
@@ -52,13 +59,16 @@
   tags:
     - versions
 
+# Check the binary, not the directory: a failed download leaves the directory
+# behind, and gating on it would skip the install on the next run, link a
+# missing binary and let cleanup delete the previous, working version.
 - name: "[opencode] Check if opencode {{ opencode_version }} is installed"
   ansible.builtin.stat:
-    path: "{{ ansible_facts['env']['HOME'] }}/.local/opt/opencode-{{ opencode_version }}"
-  register: opencode_dir
+    path: "{{ ansible_facts['env']['HOME'] }}/.local/opt/opencode-{{ opencode_version }}/opencode"
+  register: opencode_bin
 
 - name: "Installation"
-  when: not opencode_dir.stat.exists
+  when: not opencode_bin.stat.exists
   block:
     - name: "[opencode] Create directory in {{ ansible_facts['env']['HOME'] }}/.local/opt"
       ansible.builtin.file:
@@ -66,11 +76,18 @@
         state: directory
         mode: "0755"
 
+    # Downloads of the ~90 MB tarball from opencode.ai get reset part-way
+    # (seen in 2 of 3 tries behind a TLS-inspecting proxy; GitHub assets were
+    # not affected). get_url rejects the short file, so retrying is safe.
     - name: "[opencode] Download opencode {{ opencode_version }}"
       ansible.builtin.get_url:
         url: "{{ opencode_url }}"
         dest: "/tmp/opencode-{{ opencode_version }}.tar.gz"
         mode: "0755"
+      register: opencode_download
+      until: opencode_download is succeeded
+      retries: 5
+      delay: 3
 
     - name: "[opencode] Untar archive"
       ansible.builtin.unarchive:

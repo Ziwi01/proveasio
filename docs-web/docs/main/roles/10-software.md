@@ -24,7 +24,7 @@ Various tools:
 17. [yq](https://mikefarah.gitbook.io/yq/) - awesome terminal YAML parser (also JSON, XML etc.)
 18. [FX](https://github.com/antonmedv/fx) - terminal JSON viewer and processor
 19. [hunk](https://github.com/modem-dev/hunk) - terminal-based code review and diff viewer with syntax highlighting
-20. [opencode](https://github.com/anomalyco/opencode) - terminal-based AI coding agent
+20. [opencode](https://github.com/anomalyco/opencode) - terminal-based AI coding agent. Installs v2 by default; pin a 1.x version to keep v1 (see [Versions management](../customization/20-versions.md#opencode-v1-and-v2))
 21. [ccmux](https://github.com/epilande/ccmux) - run and track AI coding agents (opencode, Claude Code, Codex and more) in tmux, with live session states, a status sidebar and desktop notifications. Integrates with `opencode` out of the box and, on WSL, bridges notifications to Windows toasts via [wsl-notify-send](https://github.com/stuartleeks/wsl-notify-send)
 
 Development-related software:

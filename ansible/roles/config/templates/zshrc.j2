@@ -268,16 +268,26 @@ alias gst='git-fuzzy status'
 # browse opencode sessions across all project directories
 ocs() {
     emulate -L zsh
-    local db=$HOME/.local/share/opencode/opencode.db dw=42 row dir sid pv
+    local db=$HOME/.local/share/opencode/opencode.db dw=42 row dir sid pv sessions=session
 
     [[ -r $db ]] || { print -u2 "ocs: no db at $db"; return 1; }
 
-    pv='sqlite3 "'$db'" "select p.data ->> '\''text'\''
-            from part p join message m on m.id = p.message_id
-            where p.session_id = {2}
-              and p.data ->> '\''type'\'' = '\''text'\''
-              and m.data ->> '\''role'\'' = '\''user'\''
-            order by p.time_created limit 1;"'
+    # OpenCode v2 keeps sessions in `session_v2` and messages in `session_message`
+    # (it migrates v1 sessions there); v1 (pinned 1.x) uses `session`/`message`/`part`.
+    if [[ -n $(sqlite3 "$db" "select 1 from sqlite_master where type = 'table' and name = 'session_v2';") ]]; then
+        sessions=session_v2
+        pv='sqlite3 "'$db'" "select data ->> '\''text'\''
+                from session_message
+                where session_id = {2} and type = '\''user'\''
+                order by seq limit 1;"'
+    else
+        pv='sqlite3 "'$db'" "select p.data ->> '\''text'\''
+                from part p join message m on m.id = p.message_id
+                where p.session_id = {2}
+                  and p.data ->> '\''type'\'' = '\''text'\''
+                  and m.data ->> '\''role'\'' = '\''user'\''
+                order by p.time_created limit 1;"'
+    fi
 
     row=$(sqlite3 -separator $'\x1f' "$db" "
           select strftime('%Y-%m-%d %H:%M', s.time_updated/1000, 'unixepoch', 'localtime'),
@@ -285,7 +295,7 @@ ocs() {
                  coalesce(nullif(trim(s.title), ''), '(untitled)'),
                  s.id,
                  s.directory
-          from session s
+          from $sessions s
           where s.time_archived is null
           order by s.time_updated desc;" \
         | awk -F$'\x1f' -v dw=$dw '

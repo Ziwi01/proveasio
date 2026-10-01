@@ -69,7 +69,10 @@
 - [ ] fix(neovim): `software/tasks/neovim.yml:11-16` passes a pipe to `ansible.builtin.command`, so the installed-version check never works and Neovim is reinstalled on every run
 - [x] fix(nvm): `software/tasks/nvm.yml` installs with `creates:`, so nvm is never upgraded while `current-versions.yml` records the newly resolved version (native: installed 0.40.0, receipt 0.40.8)
   - The install now runs when `nvm --version` differs from `nvm_version`; install.sh upgrades the git checkout in place
-- [ ] fix(opencode): `software/tasks/opencode.yml:20` picks the AVX2 build from the build host's `/proc/cpuinfo`; the published Docker image can crash with SIGILL on CPUs without AVX2
+- [ ] fix(opencode): `software/tasks/opencode.yml:24` picks the AVX2 build from the build host's `/proc/cpuinfo`; the published Docker image can crash with SIGILL on CPUs without AVX2
+- [ ] fix(software): Most `software/tasks/*.yml` (incl. the canonical `eza.yml`/`hunk.yml`) gate the install on `~/.local/opt/<app>-<version>` existing, and create it before downloading. A failed download leaves the empty directory, so the next run skips the install, links a missing binary and `cleanup_versions.yml` deletes the working version. `opencode.yml` now checks the binary and retries the download; apply the same to the rest
+- [ ] fix(ccmux): Confirm the ccmux OpenCode plugin (`~/.config/opencode/plugin/ccmux.js`, written for v1) still reports session states with OpenCode v2, where sessions run in a background service instead of the TUI process
+- [ ] fix(neovim): The AstroNvim config pins opencode.nvim to v1.0.2 and drives `opencode --port` servers; OpenCode v2 has no `--port`, so it must move to opencode.nvim `main`
 - [x] fix(sdkman): `.zshrc` does not load SDKMAN, so `sdk`, `java`, `gradle`, `groovy`, `mvn` are not on the interactive PATH
 - [x] chore(ci): `build.yml`'s weekly cron runs on the default branch `develop`, not `master`; confirm whether that is intended
   - Building `master` is intended (the checkout pins it), but three steps used `github.ref_name` (`develop`): the previous tag lookup failed, the 2026-09-25 run dropped the `[latest]` CHANGELOG section (`fd06813`), and the pre-release was named "develop". Fixed with `BUILD_BRANCH: master`; unverified until the next scheduled run
