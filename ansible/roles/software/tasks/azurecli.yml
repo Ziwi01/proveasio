@@ -73,3 +73,91 @@
         - versions
   tags:
     - versions
+
+# kubelogin - Azure AD (Entra ID) credential plugin for kubectl, needed for AKS.
+# Installed here instead of with `az aks install-cli`, which fails behind
+# TLS-inspecting proxies whose root CA does not mark basicConstraints critical
+# (az's Python >= 3.13 sets VERIFY_X509_STRICT).
+# Source: https://github.com/Azure/kubelogin
+- name: "[kubelogin] Get Github URL for proper version"
+  vars:
+    app: kubelogin
+    repo: Azure/kubelogin
+    version_query: gh_curl https://api.github.com/repos/Azure/kubelogin/releases/latest | jq .tag_name -r | cut -f2 -d'v'
+    github_uri: "v{{ kubelogin_version }}/kubelogin-linux-amd64.zip"
+  ansible.builtin.include_role:
+    name: common
+    tasks_from: github_version.yml
+    apply:
+      tags:
+        - versions
+  tags:
+    - versions
+
+- name: "[kubelogin] Check if kubelogin {{ kubelogin_version }} is installed"
+  ansible.builtin.stat:
+    path: "{{ ansible_facts['env']['HOME'] }}/.local/opt/kubelogin-{{ kubelogin_version }}"
+  register: kubelogin_dir
+
+- name: "Installation"
+  when: not kubelogin_dir.stat.exists
+  block:
+    - name: "[kubelogin] Create directory in {{ ansible_facts['env']['HOME'] }}/.local/opt"
+      ansible.builtin.file:
+        path: "{{ ansible_facts['env']['HOME'] }}/.local/opt/kubelogin-{{ kubelogin_version }}"
+        state: directory
+        mode: "0755"
+
+    - name: "[kubelogin] Download kubelogin {{ kubelogin_version }}"
+      ansible.builtin.get_url:
+        url: "{{ kubelogin_url }}"
+        dest: "/tmp/kubelogin-{{ kubelogin_version }}.zip"
+        mode: "0644"
+
+    - name: "[kubelogin] Unzip archive"
+      ansible.builtin.unarchive:
+        src: "/tmp/kubelogin-{{ kubelogin_version }}.zip"
+        dest: "{{ ansible_facts['env']['HOME'] }}/.local/opt/kubelogin-{{ kubelogin_version }}"
+
+    - name: "[kubelogin] Cleanup zip file"
+      ansible.builtin.file:
+        path: "/tmp/kubelogin-{{ kubelogin_version }}.zip"
+        state: absent
+
+- name: "[kubelogin] Link {{ kubelogin_version }} binary to ~/.local/bin/kubelogin"
+  ansible.builtin.file:
+    src: "{{ ansible_facts['env']['HOME'] }}/.local/opt/kubelogin-{{ kubelogin_version }}/bin/linux_amd64/kubelogin"
+    dest: "{{ ansible_facts['env']['HOME'] }}/.local/bin/kubelogin"
+    state: link
+    force: true
+
+- name: "[kubelogin] Save used version"
+  vars:
+    app: kubelogin
+    target_version:
+      github_packages:
+        kubelogin: "{{ kubelogin_version }}"
+    yq_query: ".github_packages.kubelogin = \"{{ kubelogin_version }}\""
+  ansible.builtin.include_role:
+    name: common
+    tasks_from: save_version.yml
+    apply:
+      tags:
+        - versions
+  tags:
+    - versions
+
+- name: "[kubelogin] Cleanup old versions"
+  vars:
+    app: kubelogin
+    keep: "{{ kubelogin_version }}"
+  ansible.builtin.include_role:
+    name: common
+    tasks_from: cleanup_versions.yml
+    apply:
+      tags:
+        - versions
+        - cleanup
+  tags:
+    - versions
+    - cleanup

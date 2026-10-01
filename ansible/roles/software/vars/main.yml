@@ -101,6 +101,7 @@ github_packages:
   hunk: latest
   ccmux: latest
   wsl_notify_send: latest # WSL -> Windows notification bridge (used by ccmux)
+  kubelogin: latest # Installed by the azurecli task
 # How Neovim is installed: `appimage` (default) or `tarball`.
 # The AppImage needs FUSE. Use `tarball` where FUSE is not available,
 # for example in containers.

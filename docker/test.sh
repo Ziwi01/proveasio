@@ -290,7 +290,14 @@ check_software_puppet() {
 
 check_software_terraform()  { run_cmd terraform version && expect_receipt .github_packages.terraform; }
 check_software_terragrunt() { run_cmd terragrunt --version && expect_receipt .github_packages.terragrunt; }
-check_software_azurecli()   { run_cmd az version && expect_receipt .azurecli_apt_version deb; }
+check_software_azurecli() {
+  local az
+  run_cmd az version && expect_receipt .azurecli_apt_version deb || return 1
+  az="$DETAIL"
+  # kubelogin --version prints "git hash: v0.2.20/<sha>"; the receipt has no "v".
+  run_cmd kubelogin --version && expect_receipt .github_packages.kubelogin || return 1
+  DETAIL="az $az, kubelogin $DETAIL"
+}
 check_software_awscli()     { run_cmd aws --version && expect_out "aws-cli/" && DETAIL="$(cut -d' ' -f1 <<<"$OUT")"; }
 check_software_uv()         { run_cmd uv --version && expect_receipt .github_packages.uv; }
 check_software_opencode()   { run_cmd opencode --version && expect_receipt .github_packages.opencode; }
