@@ -71,7 +71,7 @@
   - The install now runs when `nvm --version` differs from `nvm_version`; install.sh upgrades the git checkout in place
 - [ ] fix(opencode): `software/tasks/opencode.yml:24` picks the AVX2 build from the build host's `/proc/cpuinfo`; the published Docker image can crash with SIGILL on CPUs without AVX2
 - [ ] fix(software): Most `software/tasks/*.yml` (incl. the canonical `eza.yml`/`hunk.yml`) gate the install on `~/.local/opt/<app>-<version>` existing, and create it before downloading. A failed download leaves the empty directory, so the next run skips the install, links a missing binary and `cleanup_versions.yml` deletes the working version. `opencode.yml` now checks the binary and retries the download; apply the same to the rest
-- [ ] fix(ccmux): Confirm the ccmux OpenCode plugin (`~/.config/opencode/plugin/ccmux.js`, written for v1) still reports session states with OpenCode v2, where sessions run in a background service instead of the TUI process
+- [ ] fix(ccmux): ccmux (<= 1.4.2) has no OpenCode v2 support. v2 rejects its v1 plugin, and runs plugins in the shared background service, outside any tmux pane, so ccmux's PID-to-pane lookup cannot work. `ccmux.yml` installs the plugin only when OpenCode is pinned to 1.x and removes it otherwise; re-enable it once ccmux supports v2
 - [ ] fix(neovim): The AstroNvim config pins opencode.nvim to v1.0.2 and drives `opencode --port` servers; OpenCode v2 has no `--port`, so it must move to opencode.nvim `main`
 - [x] fix(sdkman): `.zshrc` does not load SDKMAN, so `sdk`, `java`, `gradle`, `groovy`, `mvn` are not on the interactive PATH
 - [x] chore(ci): `build.yml`'s weekly cron runs on the default branch `develop`, not `master`; confirm whether that is intended

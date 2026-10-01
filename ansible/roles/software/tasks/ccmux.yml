@@ -48,6 +48,16 @@
 # JS plugin at ~/.config/opencode/plugin/ccmux.js that reports live session
 # state (working / idle / waiting) to the ccmux daemon.
 # See: https://github.com/epilande/ccmux#opencode
+#
+# The plugin only works with OpenCode v1 (pin `github_packages.opencode` to a
+# 1.x version). OpenCode v2 rejects it at startup ("Plugin must export a default
+# definition with an id and an effect or setup function"), and v2 runs plugins
+# in its shared background service, outside any tmux pane, so ccmux could not
+# map their PID to a pane anyway. With v2 the plugin is removed.
+- name: "[ccmux] Decide whether the OpenCode integration applies (OpenCode v1 only)"
+  ansible.builtin.set_fact:
+    ccmux_opencode_v1: "{{ (github_packages.opencode | default('latest') | string) is match('1\\.') }}"
+
 - name: "[ccmux] Check for OpenCode integration plugin"
   ansible.builtin.stat:
     path: "{{ ansible_facts['env']['HOME'] }}/.config/opencode/plugin/ccmux.js"
@@ -58,7 +68,15 @@
     cmd: "{{ ansible_facts['env']['HOME'] }}/.local/bin/ccmux setup --agent opencode"
   register: ccmux_opencode_setup
   changed_when: true
-  when: not ccmux_dir.stat.exists or not ccmux_opencode_plugin.stat.exists
+  when:
+    - ccmux_opencode_v1 | bool
+    - not ccmux_dir.stat.exists or not ccmux_opencode_plugin.stat.exists
+
+- name: "[ccmux] Remove OpenCode integration plugin (OpenCode v2 cannot load it)"
+  ansible.builtin.file:
+    path: "{{ ansible_facts['env']['HOME'] }}/.config/opencode/plugin/ccmux.js"
+    state: absent
+  when: not ccmux_opencode_v1 | bool
 
 # Zsh completions. Generated once here (instead of `eval "$(ccmux completion
 # zsh)"` at every shell startup) to keep shell startup fast and avoid console

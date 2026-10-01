@@ -102,7 +102,7 @@ Uses: [ccmux](https://github.com/epilande/ccmux)
 
 When you run multiple AI coding agents (`opencode`, Claude Code, Codex and others) across tmux panes, it gets hard to track which one is idle, working, or waiting for you. [ccmux](https://github.com/epilande/ccmux) discovers the agents already running in your panes and shows their live state, so you can jump straight to the one that needs attention.
 
-It works with your existing workflow - you don't change how you launch agents. `opencode` integration is set up automatically (a plugin is dropped into `~/.config/opencode/plugin/ccmux.js`), so its sessions report their state out of the box.
+It works with your existing workflow - you don't change how you launch agents. When `opencode` is pinned to v1, its integration is set up automatically (a plugin is dropped into `~/.config/opencode/plugin/ccmux.js`), so its sessions report their state out of the box. ccmux does not support OpenCode v2 (the default) yet: v2 cannot load that plugin and runs its sessions in a background service outside the tmux pane, so the plugin is removed and OpenCode v2 sessions get no live state from ccmux.
 
 The following keybindings are configured:
 

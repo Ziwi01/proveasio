@@ -70,7 +70,7 @@ Below you can find brief summary of included tools and features. For more detail
 - AI coding agents:
 
   - [opencode](https://github.com/anomalyco/opencode) - terminal-based AI coding agent
-  - [ccmux](https://github.com/epilande/ccmux) - run and track AI coding agents in TMUX: live session states, a status sidebar/popup picker, and desktop notifications (bridged to Windows toasts on WSL via [wsl-notify-send](https://github.com/stuartleeks/wsl-notify-send)). Integrates with `opencode` out of the box.
+  - [ccmux](https://github.com/epilande/ccmux) - run and track AI coding agents in TMUX: live session states, a status sidebar/popup picker, and desktop notifications (bridged to Windows toasts on WSL via [wsl-notify-send](https://github.com/stuartleeks/wsl-notify-send)). Integrates with `opencode` v1 (pinned 1.x); ccmux does not support OpenCode v2 yet.
 
 - Languages support (with version management):
 
