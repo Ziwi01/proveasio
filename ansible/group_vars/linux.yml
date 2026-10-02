@@ -2,3 +2,7 @@
 ansible_connection: local
 ansible_host: localhost
 ansible_python_interpreter: "/usr/bin/python3"
+# sudo-rs (Ubuntu's default sudo since 25.10) wraps the `-p` prompt, so ansible-core
+# before 2.22 never sees the password prompt and -K fails. Use classic sudo when installed.
+# Drop once a stable ansible-core ships https://github.com/ansible/ansible/pull/86964
+ansible_become_exe: "{{ '/usr/bin/sudo.ws' if '/usr/bin/sudo.ws' is file else 'sudo' }}"

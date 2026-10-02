@@ -17,6 +17,10 @@ ansible-playbook -i inventory.yml setup-ubuntu.yml -K         # -K is mandatory,
 - **`-K` is mandatory.** `ansible.cfg` deliberately does *not* set `become_ask_pass`: without a
   TTY it prompts, warns about echoed input, and silently accepts an empty password. CI gets away
   without `-K` only because runners have passwordless sudo.
+- **`ansible_become_exe` in `group_vars/linux.yml` picks `/usr/bin/sudo.ws` when present.**
+  sudo-rs (default `sudo` since Ubuntu 25.10) wraps the `-p` prompt, and ansible-core < 2.22
+  never matches it, so `-K` fails with a correct password. 24.04 has no `sudo.ws`, hence the
+  `is file` fallback. Remove once a stable ansible-core ships ansible/ansible#86964.
 - `-i inventory.yml` is **optional** — `ansible.cfg:3` sets `inventory = inventory.yml`. Every doc
   and both workflows still pass it explicitly; keep doing so for clarity.
 

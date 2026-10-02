@@ -17,6 +17,7 @@
   - Options: gate the build on a real `pes_version` change (compare saved SHA) instead of `pes_clone.changed`; drop `force: true` or exclude vendored files; add `changed_when` to the rake task
   - Note: external `rvm1-ansible` role's "Install rvm installer" also reports `changed` (third-party, out of scope)
 - [ ] docs(gita): Describe `gita` usage and example
+- [ ] chore(ansible): Remove `ansible_become_exe` sudo.ws workaround from `group_vars/linux.yml` once a stable ansible-core ships https://github.com/ansible/ansible/pull/86964 (sudo-rs prompt)
 - [x] fix(windows): `windows/tasks/main.yml:14` included `enterntainment.yml` (typo, double `n`) — actual file is `entertainment.yml`
   - `bundle_include.entertainment` defaults to `true` (`windows/vars/main.yml:10`), so the play failed for everyone
   - Dynamic `include_tasks`, so `--syntax-check` did not catch it — but `ansible-lint` did, as `load-failure[filenotfounderror]`

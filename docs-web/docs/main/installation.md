@@ -29,6 +29,10 @@ Assuming all the [requirements](./requirements) are met:
    cd ~/proveasio/ansible; ansible-playbook -i inventory.yml setup-ubuntu.yml -K
    ```
 
+   :::note[Ubuntu 25.10 and newer]
+   These releases use `sudo-rs` as `sudo`, and Ansible does not recognize its password prompt, so `-K` fails even with the correct password. Proveasio uses the classic sudo (`/usr/bin/sudo.ws`) when it is installed. If it is missing, install it with `sudo apt install sudo`.
+   :::
+
 8. After successful installation (green summary of versions installed), reload you terminal.
 
 :::note
