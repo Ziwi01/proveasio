@@ -45,7 +45,8 @@
   vars:
     app: opencode
     # `latest` resolves the newest v2 from the update service (not the GitHub API).
-    version_query: curl -fsSL https://opencode.ai/update/api/latest/cli/opencode | jq -r .version
+    # The service intermittently answers 500 (Cloudflare error 1101), so retry.
+    version_query: curl -fsSL --retry 5 --retry-delay 2 --retry-all-errors https://opencode.ai/update/api/latest/cli/opencode | jq -r .version
     artifact_url: >-
       {{ ('https://github.com/anomalyco/opencode/releases/download/v' ~ opencode_version)
          if opencode_version is version('2', '<')
