@@ -65,8 +65,7 @@ github_packages:
 
 v2 reads and migrates the v1 sessions in `~/.local/share/opencode/opencode.db`.
 [`ocs`](../../usage/20-terminal.md#browse-opencode-sessions-with-ocs) works with
-both. The [ccmux](../../usage/30-tmux.md) OpenCode integration works only with
-v1, so it is installed only when you pin a 1.x version.
+both.
 
 ## GitHub API rate limits
 
