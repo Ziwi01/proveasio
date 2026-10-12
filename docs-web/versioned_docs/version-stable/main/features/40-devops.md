@@ -10,5 +10,6 @@ There is some pre-installed DevOps-related software:
 - [Terraform](https://github.com/hashicorp/terraform) - infrastructure as code tool
 - [Terragrunt](https://github.com/gruntwork-io/terragrunt) - wrapper for Terraform to deal with multiple environments
 - [Azure CLI](https://learn.microsoft.com/en-us/cli/azure/) with [az-account-switcher](https://github.com/abij/az-account-switcher) - CLI interface for Azure management
+  - [kubelogin](https://github.com/Azure/kubelogin) - Entra ID credential plugin for `kubectl`, needed for AKS clusters. Installed with Azure CLI.
 - [AWS CLI](https://github.com/aws/aws-cli) - CLI interface to interact with AWS
 

@@ -87,7 +87,7 @@ An opencode session is tied to the directory it was started from. Running `openc
 - `ESC` aborts without launching anything
 
 :::note[Where the data comes from]
-Sessions live in `~/.local/share/opencode/opencode.db`. `ocs` only reads it — it never writes. Archived sessions are hidden.
+Sessions live in `~/.local/share/opencode/opencode.db`. `ocs` only reads it — it never writes. Archived sessions are hidden. It reads the v2 tables when they exist (v2 migrates v1 sessions into them) and the v1 tables otherwise, so it works with both versions.
 :::
 
 <details>

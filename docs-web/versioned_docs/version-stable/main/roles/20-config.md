@@ -21,9 +21,11 @@ config_tasks_exclude:
 
 See [excluding code](../customization/excludes) for details.
 
+`zsh` is required. The playbook stops at the start if `config_tasks_exclude`
+lists it.
+
 Available configs excludes:
 
-- zsh
 - p10k
 - tmux
 - sdkman

@@ -1,0 +1,8 @@
+position: 7.5
+label: 'Docker image'
+collapsible: true
+className: red
+link:
+  type: generated-index
+  title: Docker image
+  description: Build Proveasio as a Docker image, customize the build, and run it as a dev shell or devcontainer.

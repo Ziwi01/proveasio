@@ -19,10 +19,12 @@ software_tasks_exclude:
   - azurecli # do not install azurecli
   - puppet # do not install Puppet
 config_tasks_exclude:
-  - zsh # do not configure ZSH
+  - tmux # do not configure tmux
 ```
 
 For full list of exclude options, see [software](../roles/software) or [config](../roles/config) role description.
+
+`packages`, `yq` and `zsh` in `software_tasks_exclude`, and `zsh` in `config_tasks_exclude`, are required. The playbook stops at the start when an overrides file excludes one of them.
 
 ## Old versions cleanup
 

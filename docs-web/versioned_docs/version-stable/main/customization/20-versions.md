@@ -49,6 +49,24 @@ about.
 Please also note, that not every software version supports `latest`. Some need to be set explicitly. See `ansible/roles/software/vars/main.yml` for all static vars.
 :::
 
+## opencode v1 and v2
+
+`latest` installs **opencode v2**. v2 is not published as GitHub releases, so
+its version comes from the opencode.ai update service and the binary from
+`opencode.ai/files/bin` (this needs no GitHub API call). Pinning a v2 version
+works the same way.
+
+To stay on **v1**, pin a 1.x version. It is then downloaded from GitHub releases:
+
+```yaml
+github_packages:
+  opencode: "1.18.34"
+```
+
+v2 reads and migrates the v1 sessions in `~/.local/share/opencode/opencode.db`.
+[`ocs`](../../usage/20-terminal.md#browse-opencode-sessions-with-ocs) works with
+both.
+
 ## GitHub API rate limits
 
 With versions set to `latest`, each run queries the GitHub API to resolve the newest release for ~30+ tools. **Unauthenticated** GitHub API requests are limited to **60 per hour** (shared across everyone on your public IP), so running the playbook a few times in a row can exhaust it and fail with:
