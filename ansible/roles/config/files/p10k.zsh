@@ -1591,6 +1591,19 @@
   # really need it.
   typeset -g POWERLEVEL9K_DISABLE_HOT_RELOAD=true
 
+  # No Nerd Font (PROVEASIO_NERD_FONTS=0, see ~/.zshrc): use icons that common fonts have.
+  # `compatible` still uses Powerline glyphs for the separators, so replace them too.
+  if [[ $PROVEASIO_NERD_FONTS == 0 ]]; then
+    typeset -g POWERLEVEL9K_MODE=compatible
+    typeset -g POWERLEVEL9K_LEFT_SUBSEGMENT_SEPARATOR='%244F|'
+    typeset -g POWERLEVEL9K_RIGHT_SUBSEGMENT_SEPARATOR='%244F|'
+    typeset -g POWERLEVEL9K_LEFT_SEGMENT_SEPARATOR=
+    typeset -g POWERLEVEL9K_RIGHT_SEGMENT_SEPARATOR=
+    typeset -g POWERLEVEL9K_LEFT_PROMPT_FIRST_SEGMENT_START_SYMBOL=
+    typeset -g POWERLEVEL9K_RIGHT_PROMPT_LAST_SEGMENT_END_SYMBOL=
+    typeset -g POWERLEVEL9K_VCS_BRANCH_ICON=
+  fi
+
   # If p10k is already loaded, reload configuration.
   # This works even with POWERLEVEL9K_DISABLE_HOT_RELOAD=true.
   (( ! $+functions[p10k] )) || p10k reload

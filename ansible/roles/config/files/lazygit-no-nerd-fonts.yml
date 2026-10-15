@@ -1,0 +1,3 @@
+# Merged over config.yml when PROVEASIO_NERD_FONTS=0 (see LG_CONFIG_FILE in ~/.zshrc)
+gui:
+  nerdFontsVersion: ""

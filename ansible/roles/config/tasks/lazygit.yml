@@ -14,3 +14,12 @@
   ansible.builtin.include_role:
     name: common
     tasks_from: config_file.yml
+
+- name: "[Config][Lazygit] Configure lazygit-no-nerd-fonts.yml"
+  vars:
+    app: lazygit
+    source_file: lazygit-no-nerd-fonts.yml
+    target_file: "{{ ansible_facts['env']['HOME'] }}/.config/lazygit/lazygit-no-nerd-fonts.yml"
+  ansible.builtin.include_role:
+    name: common
+    tasks_from: config_file.yml

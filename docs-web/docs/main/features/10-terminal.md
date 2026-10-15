@@ -10,6 +10,8 @@ Terminal is ZSH-based, configured with [Oh-my-ZSH](https://github.com/ohmyzsh/oh
 </details>
 <br />
 
+The prompt uses [Nerd Fonts](https://www.nerdfonts.com/) icons. Without such a font, see [No Nerd Font](../customization/variables#no-nerd-font).
+
 There are couple of useful plugins installed there (you can find them in `ansible/roles/config/templates/zshrc.j2`), which provide for example:
 
 - syntax highlighting

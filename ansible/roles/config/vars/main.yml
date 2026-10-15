@@ -18,6 +18,12 @@ config_files_overwrite: true
 # Backup config files on every
 config_files_backup: true
 
+# Default for PROVEASIO_NERD_FONTS, written to ~/.zshrc. Set to false when the
+# terminal has no Nerd Font: p10k, tmux, lazygit, eza and the Neovim config
+# then use plain glyphs. PROVEASIO_NERD_FONTS set in the environment wins
+# (for example `docker run -e PROVEASIO_NERD_FONTS=0`).
+nerd_fonts: true
+
 # Neovim config
 neovim_config_url: https://github.com/Ziwi01/astronvim.git
 neovim_config_version: main

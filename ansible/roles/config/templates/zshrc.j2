@@ -8,6 +8,10 @@ fi
 # If you come from bash you might have to change your $PATH.
 export PATH=$PATH:$HOME/.local/bin:$HOME/bin:/usr/local/bin
 
+# 0: the terminal has no Nerd Font. p10k, tmux, lazygit, eza and the Neovim
+# config read this. Set by the nerd_fonts variable, or in the environment.
+export PROVEASIO_NERD_FONTS="${PROVEASIO_NERD_FONTS:-{{ 1 if nerd_fonts | bool else 0 }}}"
+
 # Path to your oh-my-zsh installation.
 export ZSH="${HOME}/.oh-my-zsh"
 
@@ -337,7 +341,7 @@ fi
 zstyle ':completion:*:git-checkout:*' sort false                              # disable sort when completing `git checkout`
 zstyle ':completion:*:descriptions' format '[%d]'                             # set descriptions format to enable group support
 zstyle ':completion:*' list-colors ${(s.:.)LS_COLORS}                         # set list-colors to enable filename colorizing
-zstyle ':fzf-tab:complete:cd:*' fzf-preview 'exa -1 --color=always $realpath' # preview directory's content with exa when completing cd
+zstyle ':fzf-tab:complete:cd:*' fzf-preview 'eza -1 --color=always $realpath' # preview directory's content with eza when completing cd
 zstyle ':fzf-tab:*' switch-group ',' '.'                                      # switch group using `,` and `.`
 
 # Easy load TMUX sessions from tmuxp
@@ -357,12 +361,21 @@ alias top=htop
 export MANPAGER="sh -c 'col -bx | batcat -l man -p'"
 export ANSIBLE_TRANSFORM_INVALID_GROUP_CHARS=ignore
 
+# Lazygit merges the files in LG_CONFIG_FILE. It fails when one is missing.
+if [[ $PROVEASIO_NERD_FONTS == 0 && -f ~/.config/lazygit/config.yml && -f ~/.config/lazygit/lazygit-no-nerd-fonts.yml ]]; then
+  export LG_CONFIG_FILE="${HOME}/.config/lazygit/config.yml,${HOME}/.config/lazygit/lazygit-no-nerd-fonts.yml"
+fi
+
 # To customize prompt, run `p10k configure` or edit ~/.p10k.zsh.
 [[ ! -f ~/.p10k.zsh ]] || source ~/.p10k.zsh
 
 # EZA
 if command -v eza &>/dev/null; then
-  alias eza='eza --group-directories-first --icons --color=always -a --git'
+  if [[ $PROVEASIO_NERD_FONTS == 0 ]]; then
+    alias eza='eza --group-directories-first --color=always -a --git'
+  else
+    alias eza='eza --group-directories-first --icons --color=always -a --git'
+  fi
   alias ls='eza'
   alias ll='eza -l'
 fi

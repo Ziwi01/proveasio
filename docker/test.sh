@@ -106,6 +106,22 @@ expect_receipt() {
   expect_out "$v"
 }
 
+# zsh_var <value> <name>: sets OUT to a variable of an interactive zsh started
+# with PROVEASIO_NERD_FONTS=<value>, or without it when <value> is empty.
+# Started the way use_zsh_path does it.
+zsh_var() {
+  local fonts=(env -u PROVEASIO_NERD_FONTS)
+  [ -z "$1" ] || fonts+=("PROVEASIO_NERD_FONTS=$1")
+  OUT="$("${fonts[@]}" timeout 60 script -qec "zsh -i -c 'print -r -- \"\${$2}\"'" /dev/null </dev/null 2>/dev/null \
+    | tr -d '\r' | tail -n 1)"
+}
+
+# nerd_fonts_default <on> <off>: prints <on> or <off> for the effective
+# nerd_fonts, the PROVEASIO_NERD_FONTS default that config/zsh writes.
+nerd_fonts_default() {
+  if [ "$(effective nerd_fonts config)" = false ]; then printf '%s' "$2"; else printf '%s' "$1"; fi
+}
+
 expect_file() { [ -e "$1" ] || fail "missing $1"; }
 expect_exec() { [ -x "$1" ] || fail "missing or not executable: $1"; }
 expect_nonempty_dir() { [ -n "$(ls -A "$1" 2>/dev/null)" ] || fail "missing or empty directory: $1"; }
@@ -329,6 +345,12 @@ check_config_p10k() {
       || fail "gitstatusd missing in ~/.cache/gitstatus (p10k would download it on first start)" || return 1
     gsd="$(compgen -G "$HOME/.cache/gitstatus/gitstatusd-*" | head -n 1)"
     DETAIL="${gsd##*/}"
+    zsh_var "" POWERLEVEL9K_MODE
+    [ "$OUT" = "$(nerd_fonts_default nerdfont-complete compatible)" ] \
+      || fail "POWERLEVEL9K_MODE is '$OUT' with PROVEASIO_NERD_FONTS unset" || return 1
+    zsh_var 0 POWERLEVEL9K_MODE
+    [ "$OUT" = compatible ] \
+      || fail "POWERLEVEL9K_MODE is '$OUT' with PROVEASIO_NERD_FONTS=0" || return 1
   fi
 }
 
@@ -371,7 +393,17 @@ check_config_neovim_config() {
 
 check_config_sdkman()   { expect_file "$HOME/.sdkman/etc/config"; }
 check_config_git()      { run_cmd git config --global user.name && expect_out "$(effective git config '.name')"; }
-check_config_lazygit()  { expect_file "$HOME/.config/lazygit/config.yml"; }
+check_config_lazygit() {
+  local plain="$HOME/.config/lazygit/lazygit-no-nerd-fonts.yml"
+  expect_file "$HOME/.config/lazygit/config.yml" || return 1
+  expect_file "$plain" || return 1
+  [ -f "$HOME/.zshrc" ] || return 0
+  zsh_var 0 LG_CONFIG_FILE
+  [ "$OUT" = "$HOME/.config/lazygit/config.yml,$plain" ] \
+    || fail "LG_CONFIG_FILE is '$OUT' with PROVEASIO_NERD_FONTS=0" || return 1
+  zsh_var 1 LG_CONFIG_FILE
+  [ -z "$OUT" ] || fail "LG_CONFIG_FILE is '$OUT' with PROVEASIO_NERD_FONTS=1"
+}
 check_config_ansible()  { expect_file "$HOME/.ansible-lint"; }
 # ------------------------------------------------------------- end of checks
 
