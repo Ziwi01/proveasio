@@ -387,6 +387,12 @@
 
     local res
 
+    # Arrows for PROVEASIO_NERD_FONTS=0 (see the end of this file).
+    local behind='⇣' ahead='⇡' push_behind='⇠' push_ahead='⇢' ellipsis='…'
+    if [[ $PROVEASIO_NERD_FONTS == 0 ]]; then
+      behind='<' ahead='>' push_behind='<-' push_ahead='->' ellipsis='..'
+    fi
+
     if [[ -n $VCS_STATUS_LOCAL_BRANCH ]]; then
       local branch=${(V)VCS_STATUS_LOCAL_BRANCH}
       # If local branch name is at most 32 characters long, show it in full.
@@ -405,7 +411,7 @@
       # If tag name is at most 32 characters long, show it in full.
       # Otherwise show the first 12 … the last 12.
       # Tip: To always show tag name in full without truncation, delete the next line.
-      (( $#tag > 32 )) && tag[13,-13]="…"  # <-- this line
+      (( $#tag > 32 )) && tag[13,-13]="$ellipsis"  # <-- this line
       res+="${meta}#${clean}${tag//\%/%%}"
     fi
 
@@ -420,15 +426,15 @@
     fi
 
     # ⇣42 if behind the remote.
-    (( VCS_STATUS_COMMITS_BEHIND )) && res+=" ${clean}⇣${VCS_STATUS_COMMITS_BEHIND}"
+    (( VCS_STATUS_COMMITS_BEHIND )) && res+=" ${clean}${behind}${VCS_STATUS_COMMITS_BEHIND}"
     # ⇡42 if ahead of the remote; no leading space if also behind the remote: ⇣42⇡42.
     (( VCS_STATUS_COMMITS_AHEAD && !VCS_STATUS_COMMITS_BEHIND )) && res+=" "
-    (( VCS_STATUS_COMMITS_AHEAD  )) && res+="${clean}⇡${VCS_STATUS_COMMITS_AHEAD}"
+    (( VCS_STATUS_COMMITS_AHEAD  )) && res+="${clean}${ahead}${VCS_STATUS_COMMITS_AHEAD}"
     # ⇠42 if behind the push remote.
-    (( VCS_STATUS_PUSH_COMMITS_BEHIND )) && res+=" ${clean}⇠${VCS_STATUS_PUSH_COMMITS_BEHIND}"
+    (( VCS_STATUS_PUSH_COMMITS_BEHIND )) && res+=" ${clean}${push_behind}${VCS_STATUS_PUSH_COMMITS_BEHIND}"
     (( VCS_STATUS_PUSH_COMMITS_AHEAD && !VCS_STATUS_PUSH_COMMITS_BEHIND )) && res+=" "
     # ⇢42 if ahead of the push remote; no leading space if also behind: ⇠42⇢42.
-    (( VCS_STATUS_PUSH_COMMITS_AHEAD  )) && res+="${clean}⇢${VCS_STATUS_PUSH_COMMITS_AHEAD}"
+    (( VCS_STATUS_PUSH_COMMITS_AHEAD  )) && res+="${clean}${push_ahead}${VCS_STATUS_PUSH_COMMITS_AHEAD}"
     # *42 if have stashes.
     (( VCS_STATUS_STASHES        )) && res+=" ${clean}*${VCS_STATUS_STASHES}"
     # 'merge' if the repo is in an unusual state.
@@ -1591,17 +1597,27 @@
   # really need it.
   typeset -g POWERLEVEL9K_DISABLE_HOT_RELOAD=true
 
-  # No Nerd Font (PROVEASIO_NERD_FONTS=0, see ~/.zshrc): use icons that common fonts have.
-  # `compatible` still uses Powerline glyphs for the separators, so replace them too.
+  # No Nerd Font (PROVEASIO_NERD_FONTS=0, see ~/.zshrc): ASCII icons and box drawing only.
+  # Fonts without Nerd Font icons often also lack ❯, ✔, ▓ and similar, which show as squares.
+  # `my_git_formatter` above picks its arrows the same way.
   if [[ $PROVEASIO_NERD_FONTS == 0 ]]; then
-    typeset -g POWERLEVEL9K_MODE=compatible
+    typeset -g POWERLEVEL9K_MODE=ascii
     typeset -g POWERLEVEL9K_LEFT_SUBSEGMENT_SEPARATOR='%244F|'
     typeset -g POWERLEVEL9K_RIGHT_SUBSEGMENT_SEPARATOR='%244F|'
     typeset -g POWERLEVEL9K_LEFT_SEGMENT_SEPARATOR=
     typeset -g POWERLEVEL9K_RIGHT_SEGMENT_SEPARATOR=
     typeset -g POWERLEVEL9K_LEFT_PROMPT_FIRST_SEGMENT_START_SYMBOL=
     typeset -g POWERLEVEL9K_RIGHT_PROMPT_LAST_SEGMENT_END_SYMBOL=
+    typeset -g POWERLEVEL9K_LEFT_PROMPT_LAST_SEGMENT_END_SYMBOL=
+    typeset -g POWERLEVEL9K_RIGHT_PROMPT_FIRST_SEGMENT_START_SYMBOL=
+    typeset -g POWERLEVEL9K_MULTILINE_FIRST_PROMPT_GAP_CHAR='─'
     typeset -g POWERLEVEL9K_VCS_BRANCH_ICON=
+    typeset -g POWERLEVEL9K_PROMPT_CHAR_{OK,ERROR}_VIINS_CONTENT_EXPANSION='>'
+    typeset -g POWERLEVEL9K_PROMPT_CHAR_{OK,ERROR}_VICMD_CONTENT_EXPANSION='<'
+    typeset -g POWERLEVEL9K_PROMPT_CHAR_{OK,ERROR}_VIOWR_CONTENT_EXPANSION='^'
+    typeset -g POWERLEVEL9K_STATUS_{OK,OK_PIPE}_VISUAL_IDENTIFIER_EXPANSION='ok'
+    typeset -g POWERLEVEL9K_STATUS_{ERROR,ERROR_SIGNAL,ERROR_PIPE}_VISUAL_IDENTIFIER_EXPANSION='x'
+    typeset -g POWERLEVEL9K_TIMEWARRIOR_CONTENT_EXPANSION='${P9K_CONTENT:0:24}${${P9K_CONTENT:24}:+..}'
   fi
 
   # If p10k is already loaded, reload configuration.

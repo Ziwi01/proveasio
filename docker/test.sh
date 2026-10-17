@@ -9,6 +9,9 @@
 #                                                   print what these tags select
 #   ~/proveasio/docker/test.sh --only config/zsh    run one check (repeatable)
 #   ~/proveasio/docker/test.sh --coverage           fail if an include has no check
+#   SCREEN_DUMP=<dir> ~/proveasio/docker/test.sh --only config/neovim-config
+#                                                   also save the screens that the
+#                                                   no-Nerd-Font checks capture
 #
 # Selection comes from the real inputs: every include in
 # roles/{software,config}/tasks/main.yml, minus the excludes in the effective
@@ -120,6 +123,53 @@ zsh_var() {
 # nerd_fonts, the PROVEASIO_NERD_FONTS default that config/zsh writes.
 nerd_fonts_default() {
   if [ "$(effective nerd_fonts config)" = false ]; then printf '%s' "$2"; else printf '%s' "$1"; fi
+}
+
+# Characters allowed on screen with PROVEASIO_NERD_FONTS=0: ASCII, box drawing
+# and the check mark. Terminal fonts without Nerd Font icons often lack the
+# rest (block eighths like ▏, ❯, Powerline glyphs) and show a square instead.
+NO_NERD_FONT_ALLOWED='\x00-\x7F\x{2500}-\x{257F}\x{2713}'
+
+# plain_screen <view> <wait regex> <keys> <cmd...>: runs cmd in a tmux pane
+# with PROVEASIO_NERD_FONTS=0 and appends the characters outside
+# NO_NERD_FONT_ALLOWED to BAD as "<view>: <chars>". Waits up to 30s until the
+# pane matches the regex (best effort: a view that never matches is still
+# checked), then types keys literally (may be empty; $'\r' is Enter).
+# Needs SCREEN_DIR as the working directory.
+BAD=""
+plain_screen() {
+  local view="$1" wait="$2" keys="$3" i pane chars
+  shift 3
+  local t=(tmux -L proveasio-test -f /dev/null)
+  env PROVEASIO_NERD_FONTS=0 "${t[@]}" new-session -d -x 200 -y 50 -s s -c "$SCREEN_DIR" \
+    -e PROVEASIO_NERD_FONTS=0 "$@" || { BAD+="$view: tmux failed; "; return 0; }
+  "${t[@]}" set -g status off
+  for ((i = 0; i < 60; i++)); do
+    pane="$("${t[@]}" capture-pane -p -t s 2>/dev/null)"
+    LC_ALL=C.UTF-8 grep -qE -- "$wait" <<<"$pane" && break
+    sleep 0.5
+  done
+  if [ -n "$keys" ]; then
+    "${t[@]}" send-keys -t s -l -- "$keys"
+  fi
+  sleep 3
+  pane="$("${t[@]}" capture-pane -p -t s 2>/dev/null)"
+  "${t[@]}" kill-server 2>/dev/null
+  [ -z "${SCREEN_DUMP:-}" ] || printf '%s\n' "$pane" >"$SCREEN_DUMP/$view"
+  chars="$(LC_ALL=C.UTF-8 grep -oP "[^$NO_NERD_FONT_ALLOWED]" <<<"$pane" | sort -u \
+    | while read -r c; do printf '%s(U+%04X) ' "$c" "'$c"; done)"
+  [ -z "$chars" ] || BAD+="$view: $chars; "
+}
+
+# screen_dir_setup: SCREEN_DIR, a git repository with a committed and then
+# changed YAML file, so git, YAML and indent views have something to show.
+screen_dir_setup() {
+  SCREEN_DIR="$(mktemp -d /tmp/proveasio-screen.XXXXXX)" || return 1
+  printf 'environments:\n  prod:\n    values:\n      - ./prod.yaml\n  qa:\n    values:\n      - ./qa.yaml\n' >"$SCREEN_DIR/e.yaml"
+  git -C "$SCREEN_DIR" init -q
+  git -C "$SCREEN_DIR" add e.yaml
+  git -C "$SCREEN_DIR" -c user.name=test -c user.email=test@test commit -qm init
+  printf '  dev:\n    values: []\n' >>"$SCREEN_DIR/e.yaml"
 }
 
 expect_file() { [ -e "$1" ] || fail "missing $1"; }
@@ -346,11 +396,18 @@ check_config_p10k() {
     gsd="$(compgen -G "$HOME/.cache/gitstatus/gitstatusd-*" | head -n 1)"
     DETAIL="${gsd##*/}"
     zsh_var "" POWERLEVEL9K_MODE
-    [ "$OUT" = "$(nerd_fonts_default nerdfont-complete compatible)" ] \
+    [ "$OUT" = "$(nerd_fonts_default nerdfont-complete ascii)" ] \
       || fail "POWERLEVEL9K_MODE is '$OUT' with PROVEASIO_NERD_FONTS unset" || return 1
     zsh_var 0 POWERLEVEL9K_MODE
-    [ "$OUT" = compatible ] \
+    [ "$OUT" = ascii ] \
       || fail "POWERLEVEL9K_MODE is '$OUT' with PROVEASIO_NERD_FONTS=0" || return 1
+    command -v tmux >/dev/null || return 0
+    screen_dir_setup || fail "cannot create a test directory" || return 1
+    BAD=""
+    # A background job and a failed command show the jobs and status segments.
+    plain_screen prompt 'proveasio-screen' $'sleep 60 & false\r' zsh -i
+    rm -rf "$SCREEN_DIR"
+    [ -z "$BAD" ] || fail "squares without a Nerd Font: $BAD"
   fi
 }
 
@@ -388,6 +445,24 @@ check_config_neovim_config() {
   DETAIL="$app"
   if [ -d "$lazy" ]; then DETAIL+=", $(find "$lazy" -mindepth 1 -maxdepth 1 | wc -l) lazy plugins"; fi
   if [ -d "$mason" ]; then DETAIL+=", $(find "$mason" -mindepth 1 -maxdepth 1 | wc -l) mason packages"; fi
+  # Only a config that reads PROVEASIO_NERD_FONTS (the default one does) can
+  # be expected to draw without a Nerd Font.
+  if command -v tmux >/dev/null && grep -rqs PROVEASIO_NERD_FONTS "$HOME/.config/$app"; then
+    screen_dir_setup || fail "cannot create a test directory" || return 1
+    BAD=""
+    local nv=(env NVIM_APPNAME="$app" nvim)
+    # The winbar breadcrumbs (environments > prod) need the YAML server and a
+    # cursor move. Pickers and :Lazy open once the editor is up.
+    plain_screen file 'yamlls' 'jk' "${nv[@]}" +4 e.yaml
+    plain_screen cmdline 'environments' ':' "${nv[@]}" e.yaml
+    plain_screen neo-tree 'File.*Bufs' "" "${nv[@]}" e.yaml -c Neotree
+    plain_screen picker 'environments' $':lua Snacks.picker.recent()\r' "${nv[@]}" e.yaml
+    plain_screen grep 'environments' $':lua Snacks.picker.grep()\r' "${nv[@]}" e.yaml
+    plain_screen lazy 'environments' $':lua require("lazy").home()\r' "${nv[@]}" e.yaml
+    rm -rf "$SCREEN_DIR"
+    [ -z "$BAD" ] || fail "squares without a Nerd Font: $BAD" || return 1
+    DETAIL+=", 6 views without a Nerd Font"
+  fi
   return 0
 }
 
