@@ -72,6 +72,19 @@ The image sets `TERM=xterm-256color`, because Docker would otherwise set
 `xterm`, which has 8 colors, and the zsh prompt would lose its colors. If your
 terminal needs another value, pass it with `-e TERM`.
 
+## No Nerd Font
+
+The prompt, tmux, Neovim, lazygit and `ls` show
+[Nerd Fonts](https://www.nerdfonts.com/) icons. When your terminal has no such
+font, turn them off when you start the container:
+
+```shell
+docker run -it --rm -e PROVEASIO_NERD_FONTS=0 proveasio:local
+```
+
+To make it the image default, set `nerd_fonts: false` in `docker/overrides.yml`
+before building. See [No Nerd Font](../customization/variables#no-nerd-font).
+
 ## Keeping state
 
 Everything outside mounted directories is lost when the container stops. To

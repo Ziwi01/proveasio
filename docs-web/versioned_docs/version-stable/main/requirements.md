@@ -6,7 +6,7 @@ sidebar_position: 4
 
 When using either plain Ubuntu or WSL2:
 
-- Any terminal using any iconic font (like [Nerd Fonts](https://www.nerdfonts.com/)) - there is a sample font (FiraCode Nerd Font) in this repository in `ansible/roles/windows/files/fonts`
+- Any terminal. A font with [Nerd Fonts](https://www.nerdfonts.com/) icons is recommended - there is a sample font (FiraCode Nerd Font) in this repository in `ansible/roles/windows/files/fonts`. Without one, turn the icons off with [`nerd_fonts`](./customization/variables#no-nerd-font)
 
 If using Windows with WSL2 Ubuntu also ensure:
 
