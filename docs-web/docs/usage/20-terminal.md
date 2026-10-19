@@ -239,7 +239,7 @@ The `lazygit` config adds shortcuts that use [OpenCode](https://opencode.ai) to 
 | --- | --- | --- |
 | Files | `Ctrl+A` | Generate a commit message (subject and body) for the staged changes into the commit draft. Press `c` to review, edit and commit it. |
 | Files | `Alt+A` | Same, subject only. |
-| Files | `Alt+S` | Split changes into commits by functionality: the staged changes if anything is staged, otherwise all changes including untracked files. Shows the plan first: `y` creates the commits, `e` edits the plan in your editor, `r` regenerates it, `n` aborts. If a commit fails, HEAD and the index are restored. |
+| Files | `Alt+S` | Split changes into commits by functionality: the staged changes if anything is staged, otherwise all changes including untracked files. Shows the plan first: `y` creates the commits, `v` opens the proposed commits in Neovim's [Diffview](https://github.com/sindrets/diffview.nvim) (commit list, files, side-by-side diffs; close it with `:DiffviewClose` to return; falls back to `git log -p` when Diffview is missing), `e` edits the plan in your editor, `r` regenerates it, `n` aborts. If a commit fails, HEAD and the index are restored. |
 | Commits | `Ctrl+A` | Reword the selected commit with a generated subject and body. Press `r` to adjust it, `z` to undo. |
 | Commits | `Alt+A` | Reword only the subject and keep the existing body. |
 

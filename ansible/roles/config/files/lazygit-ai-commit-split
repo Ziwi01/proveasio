@@ -5,9 +5,9 @@ Meant to run from lazygit's Files view with `output: terminal`.
 
 Scope: the staged changes if anything is staged, otherwise all changes
 including untracked files (computed in a temporary index, so the real index is
-untouched until you confirm). The plan is shown for review ([y]es / [e]dit /
-[r]egenerate / [n]o) before anything is committed; if creating the commits
-fails midway, HEAD and the index are restored.
+untouched until you confirm). The plan is shown for review ([y]es / [v]iew diffs
+in Diffview / [e]dit / [r]egenerate / [n]o) before anything is committed; if
+creating the commits fails midway, HEAD and the index are restored.
 
 Env: AI_COMMIT_SPLIT_MODEL (default github-copilot/claude-sonnet-5.5),
      AI_COMMIT_SPLIT_MAX_DIFF_BYTES (default 300000),
@@ -224,20 +224,48 @@ def validate(plan: list[Commit], units: dict[str, Unit]) -> list[str]:
     return errors
 
 
-def dry_run(plan: list[Commit], files: list[FileDiff], target_tree: str, tmp: str) -> list[str]:
-    """Apply every commit in order to a scratch index; the result must equal the target tree."""
+def dry_run(plan: list[Commit], files: list[FileDiff], target_tree: str, tmp: str) -> tuple[list[str], str | None]:
+    """Apply every commit in order to a scratch index; the result must equal the target tree.
+
+    Also records each step as a dangling preview commit (no ref, no hooks, nothing
+    checked out) and returns the tip, so the plan can be reviewed in Diffview.
+    """
     env = {**os.environ, "GIT_INDEX_FILE": os.path.join(tmp, "dryrun.index")}
     git("read-tree", "HEAD", env=env)
+    parent = git("rev-parse", "HEAD").strip()
     for n, c in enumerate(plan, 1):
         patch = os.path.join(tmp, "dryrun.patch")
         with open(patch, "w", encoding="utf-8", errors="surrogateescape") as fh:
             fh.write(build_patch(files, set(c.ids)))
         p = subprocess.run(["git", "apply", "--cached", patch], env=env, capture_output=True)
         if p.returncode != 0:
-            return [f"commit {n}: its hunks do not apply in this order: {p.stderr.decode(*ENC).strip()}"]
+            return [f"commit {n}: its hunks do not apply in this order: {p.stderr.decode(*ENC).strip()}"], None
+        msg = os.path.join(tmp, "dryrun.msg")
+        with open(msg, "w", encoding="utf-8") as fh:
+            fh.write(c.message + "\n")
+        tree = git("write-tree", env=env).strip()
+        parent = git("commit-tree", tree, "-p", parent, "-F", msg).strip()
     if git("write-tree", env=env).strip() != target_tree:
-        return ["applying all commits does not reproduce the original changes"]
-    return []
+        return ["applying all commits does not reproduce the original changes"], None
+    return [], parent
+
+
+def view_plan(tip: str) -> None:
+    """Review the preview commits in Diffview; fall back to `git log -p` in a pager."""
+    rng = f"HEAD..{tip}"
+    nvim = shutil.which("nvim")
+    if nvim:
+        rc = subprocess.run([
+            nvim,
+            "-c", "autocmd User DiffviewViewClosed ++once qa!",
+            "-c", "lua if not pcall(require, 'diffview') then vim.cmd('cquit 3') end",
+            "-c", f"DiffviewFileHistory --range={rng} --reverse",
+        ]).returncode
+        if rc != 3:
+            return
+        print(f"{YELLOW}diffview.nvim is not available; showing the commits with git log instead.{RESET}")
+    pretty = " | diff-so-fancy" if shutil.which("diff-so-fancy") else ""
+    subprocess.run(["sh", "-c", f'git log --reverse --stat -p --color=always "$1"{pretty} | less -R', "sh", rng])
 
 
 PLAN_HELP = """\
@@ -430,11 +458,12 @@ def run() -> None:
         plan = generate()
         while True:
             problems = validate(plan, units)
+            tip = None
             if not problems:
-                problems = dry_run(plan, files, target_tree, tmp)
+                problems, tip = dry_run(plan, files, target_tree, tmp)
             show(plan, units, scope, problems)
             options = "[e]dit plan, [r]egenerate, [n]o/abort" if problems else \
-                "[y]es create commits, [e]dit plan, [r]egenerate, [n]o/abort"
+                "[y]es create commits, [v]iew diffs, [e]dit plan, [r]egenerate, [n]o/abort"
             try:
                 answer = input(f"{BOLD}{options}: {RESET}").strip().lower()
             except EOFError:
@@ -443,7 +472,9 @@ def run() -> None:
                 create_commits(plan, files, target_tree, tmp)
                 print(f"{GREEN}Created {len(plan)} commit(s).{RESET}")
                 return
-            if answer == "e":
+            if answer == "v" and tip:
+                view_plan(tip)
+            elif answer == "e":
                 edited = edit_plan(plan, units, tmp)
                 if edited is None:
                     print("Plan is empty: aborted, nothing changed.")
