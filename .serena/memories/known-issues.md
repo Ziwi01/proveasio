@@ -12,6 +12,14 @@ roles avoid this by using `include_vars` (18). Workaround: `--extra-vars` (22) o
 role vars directly. *Confidence: high — precedence reproduced in an isolated test playbook.
 End-to-end WinRM run not performed.*
 
+## Gotchas
+
+**`cleanup_versions.yml` prefix collision.** It finds `~/.local/opt/<app>-*`, so a tool whose
+on-disk dir starts with another tool's `<app>-` gets deleted by that tool's cleanup. `helm`
+cleanup (`helm-*`) would remove `helm-unittest-*`; that is why helm-unittest installs into
+`~/.local/opt/helm_unittest-<v>` (cleanup `app: helm_unittest`). Check new tool names against
+existing prefixes.
+
 ## Fixed
 
 **`enterntainment.yml` typo — FIXED.** `windows/tasks/main.yml` now includes
