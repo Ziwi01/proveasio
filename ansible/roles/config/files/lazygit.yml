@@ -20,3 +20,34 @@ customCommands:
     context: 'remoteBranches'
     output: terminal
     description: 'Diff this branch with current branch'
+  # AI commit helpers (scripts in ~/.config/lazygit/scripts, opencode agents
+  # commit-msg and commit-split in ~/.config/opencode/agents).
+  - key: '<ctrl+a>'
+    command: '"$HOME/.config/lazygit/scripts/ai-commit-msg" staged'
+    context: 'files'
+    output: none
+    loadingText: 'Generating commit message...'
+    description: 'AI: generate commit message (subject + body) into draft, then press c'
+  - key: '<alt+a>'
+    command: '"$HOME/.config/lazygit/scripts/ai-commit-msg" staged --subject-only'
+    context: 'files'
+    output: none
+    loadingText: 'Generating commit subject...'
+    description: 'AI: generate commit subject into draft, then press c'
+  - key: '<alt+s>'
+    command: '"$HOME/.config/lazygit/scripts/ai-commit-split"'
+    context: 'files'
+    output: terminal
+    description: 'AI: split changes (staged, else all) into commits by functionality'
+  - key: '<ctrl+a>'
+    command: '"$HOME/.config/lazygit/scripts/ai-commit-msg" reword {{.SelectedCommit.Hash}}'
+    context: 'commits'
+    output: none
+    loadingText: 'Rewording commit with AI message...'
+    description: 'AI: reword commit (subject + body); r to edit, z to undo'
+  - key: '<alt+a>'
+    command: '"$HOME/.config/lazygit/scripts/ai-commit-msg" reword --subject-only {{.SelectedCommit.Hash}}'
+    context: 'commits'
+    output: none
+    loadingText: 'Rewording commit subject with AI...'
+    description: 'AI: reword commit subject only (keeps body); r to edit, z to undo'

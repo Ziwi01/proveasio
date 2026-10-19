@@ -470,8 +470,14 @@ check_config_sdkman()   { expect_file "$HOME/.sdkman/etc/config"; }
 check_config_git()      { run_cmd git config --global user.name && expect_out "$(effective git config '.name')"; }
 check_config_lazygit() {
   local plain="$HOME/.config/lazygit/lazygit-no-nerd-fonts.yml"
+  local s="$HOME/.config/lazygit/scripts" a="$HOME/.config/opencode/agents"
   expect_file "$HOME/.config/lazygit/config.yml" || return 1
   expect_file "$plain" || return 1
+  expect_exec "$s/ai-commit-msg" && run_cmd bash -n "$s/ai-commit-msg" || return 1
+  # ast.parse rather than py_compile: no __pycache__ left in the scripts dir.
+  expect_exec "$s/ai-commit-split" \
+    && run_cmd python3 -c 'import ast, sys; ast.parse(open(sys.argv[1]).read())' "$s/ai-commit-split" || return 1
+  expect_file "$a/commit-msg.md" && expect_file "$a/commit-split.md" || return 1
   [ -f "$HOME/.zshrc" ] || return 0
   zsh_var 0 LG_CONFIG_FILE
   [ "$OUT" = "$HOME/.config/lazygit/config.yml,$plain" ] \

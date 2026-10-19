@@ -1,10 +1,13 @@
 # Configure LazyGIT
 # Source: https://github.com/jesseduffield/lazygit
-- name: "[Config][Lazygit] Ensure lazygit config directory"
+- name: "[Config][Lazygit] Ensure lazygit config directories"
   ansible.builtin.file:
-    path: "{{ ansible_facts['env']['HOME'] }}/.config/lazygit"
+    path: "{{ item }}"
     state: directory
     mode: '0755'
+  loop:
+    - "{{ ansible_facts['env']['HOME'] }}/.config/lazygit"
+    - "{{ ansible_facts['env']['HOME'] }}/.config/lazygit/scripts"
 
 - name: "[Config][Lazygit] Configure config.yml"
   vars:
@@ -23,3 +26,30 @@
   ansible.builtin.include_role:
     name: common
     tasks_from: config_file.yml
+# AI commit helpers bound in config.yml (customCommands). They call `opencode run`
+# with the agents below; opencode, jq and python3 are only needed when used.
+- name: "[Config][Lazygit] Install AI commit scripts into ~/.config/lazygit/scripts"
+  ansible.builtin.copy:
+    src: "lazygit-{{ item }}"
+    dest: "{{ ansible_facts['env']['HOME'] }}/.config/lazygit/scripts/{{ item }}"
+    mode: '0755'
+  loop:
+    - ai-commit-msg
+    - ai-commit-split
+
+# Only these two agent files are managed; the rest of ~/.config/opencode
+# (opencode.jsonc, other agents) is left alone.
+- name: "[Config][Lazygit] Ensure ~/.config/opencode/agents directory"
+  ansible.builtin.file:
+    path: "{{ ansible_facts['env']['HOME'] }}/.config/opencode/agents"
+    state: directory
+    mode: '0755'
+
+- name: "[Config][Lazygit] Install opencode agents used by the AI commit scripts"
+  ansible.builtin.copy:
+    src: "opencode-agent-{{ item }}.md"
+    dest: "{{ ansible_facts['env']['HOME'] }}/.config/opencode/agents/{{ item }}.md"
+    mode: '0644'
+  loop:
+    - commit-msg
+    - commit-split

@@ -1,0 +1,195 @@
+#!/usr/bin/env bash
+# Generate a commit message with opencode (agent: commit-msg) for lazygit.
+#
+#   ai-commit-msg staged [--subject-only]
+#       Writes the message for the staged changes into lazygit's pending
+#       commit draft; press `c` afterwards to review/edit and commit.
+#   ai-commit-msg reword [--subject-only] <commit>
+#       Rewrites the message of <commit>. With --subject-only only the subject
+#       is replaced and the existing body is kept.
+#
+# Env: AI_COMMIT_MODEL (default github-copilot/claude-haiku-4.5),
+#      AI_COMMIT_MAX_DIFF_BYTES (default 200000), AI_COMMIT_TIMEOUT (default 120s).
+set -euo pipefail
+
+MODEL="${AI_COMMIT_MODEL:-github-copilot/claude-haiku-4.5}"
+MAX_DIFF_BYTES="${AI_COMMIT_MAX_DIFF_BYTES:-200000}"
+TIMEOUT="${AI_COMMIT_TIMEOUT:-120}"
+
+die() {
+  echo "ai-commit-msg: $*" >&2
+  exit 1
+}
+
+usage() {
+  die "usage: ai-commit-msg staged [--subject-only] | reword [--subject-only] <commit>"
+}
+
+for bin in git jq opencode timeout; do
+  command -v "$bin" >/dev/null || die "'$bin' not found in PATH"
+done
+
+mode="${1:-}"
+[[ $# -gt 0 ]] && shift
+subject_only=0
+if [[ "${1:-}" == "--subject-only" ]]; then
+  subject_only=1
+  shift
+fi
+
+git rev-parse --git-dir >/dev/null 2>&1 || die "not inside a git repository"
+
+tmp="$(mktemp -d "${TMPDIR:-/tmp}/ai-commit-msg.XXXXXX")"
+
+# Delete the opencode session created by `generate` (if any) so they don't pile
+# up, then remove the temp dir. Best effort: cleanup errors are ignored.
+cleanup() {
+  local sid
+  if [[ -s "$tmp/out.json" ]]; then
+    sid="$(jq -r 'first(.sessionID // empty)' "$tmp/out.json" 2>/dev/null | head -n 1 || true)"
+    if [[ "$sid" == ses* ]]; then
+      timeout 15 opencode session delete "$sid" >/dev/null 2>&1 || true
+    fi
+  fi
+  rm -rf "$tmp"
+}
+trap cleanup EXIT
+
+# Truncate the diff in $1 to MAX_DIFF_BYTES; prints a note when truncated.
+truncate_diff() {
+  local size
+  size="$(wc -c <"$1")"
+  if ((size > MAX_DIFF_BYTES)); then
+    head -c "$MAX_DIFF_BYTES" "$1" >"$1.cut"
+    mv "$1.cut" "$1"
+    echo " The diff was truncated to the first ${MAX_DIFF_BYTES} bytes; the --stat summary at the top covers all files."
+  fi
+}
+
+# Runs opencode on the diff file $1 and prints the generated message.
+generate() {
+  local diff_file="$1" note="$2" prompt text msg
+  if ((subject_only)); then
+    prompt="Write only the commit subject line (no body) for the attached diff.${note}"
+  else
+    prompt="Write the full commit message (subject and body) for the attached diff.${note}"
+  fi
+
+  if ! timeout "$TIMEOUT" opencode run --agent commit-msg --model "$MODEL" \
+    --title "lazygit commit message" --format json -f "$diff_file" "$prompt" \
+    >"$tmp/out.json" 2>"$tmp/err.txt"; then
+    local err
+    err="$(jq -r 'select(.type=="error") | .error.message' "$tmp/out.json" 2>/dev/null || true)"
+    die "opencode run failed: ${err:-$(tail -n 5 "$tmp/err.txt")}"
+  fi
+
+  text="$(jq -r 'select(.type=="text") | .part.text' "$tmp/out.json")"
+  msg="$(printf '%s\n' "$text" | awk '
+    !f && /<commit>/ { f = 1; sub(/.*<commit>/, "") }
+    f && /<\/commit>/ { sub(/<\/commit>.*/, ""); print; done = 1; exit }
+    f { print }
+    END { if (!done) exit 1 }
+  ' | sed -e 's/[[:space:]]*$//' | sed -e '/./,$!d')" ||
+    die "model reply had no <commit>...</commit> block: $(printf '%s' "$text" | head -c 300)"
+
+  [[ -n "$msg" ]] || die "model returned an empty message"
+  [[ "$msg" != *'```'* ]] || die "model reply contained a code fence: $msg"
+  if ((subject_only)); then
+    msg="$(printf '%s\n' "$msg" | head -n 1)"
+  fi
+  printf '%s\n' "$msg"
+}
+
+subject_of() { printf '%s\n' "$1" | head -n 1; }
+# Body: everything after the subject, without the separating blank lines.
+body_of() { printf '%s\n' "$1" | tail -n +2 | sed -e '/./,$!d'; }
+
+cmd_staged() {
+  [[ $# -eq 0 ]] || usage
+  git diff --cached --quiet && die "nothing staged"
+
+  {
+    git diff --cached --no-color --no-ext-diff --stat
+    echo
+    git diff --cached --no-color --no-ext-diff
+  } >"$tmp/changes.diff"
+  local note msg subject body draft
+  note="$(truncate_diff "$tmp/changes.diff")"
+  msg="$(generate "$tmp/changes.diff" "$note")"
+  subject="$(subject_of "$msg")"
+  body="$(body_of "$msg")"
+
+  # lazygit's draft format: summary and description joined by a single newline.
+  draft="$(git rev-parse --git-dir)/LAZYGIT_PENDING_COMMIT"
+  if [[ -n "$body" ]]; then
+    printf '%s\n%s' "$subject" "$body" >"$draft"
+  else
+    printf '%s' "$subject" >"$draft"
+  fi
+}
+
+cmd_reword() {
+  [[ $# -eq 1 ]] || usage
+  local sha head git_dir parents
+  sha="$(git rev-parse --verify --quiet "$1^{commit}")" || die "not a commit: $1"
+  head="$(git rev-parse HEAD)"
+  git_dir="$(git rev-parse --git-dir)"
+
+  [[ -d "$git_dir/rebase-merge" || -d "$git_dir/rebase-apply" ]] && die "a rebase is already in progress"
+  git merge-base --is-ancestor "$sha" "$head" || die "commit is not on the checked-out branch"
+  parents="$(git rev-list --parents -n 1 "$sha" | wc -w)"
+  ((parents <= 2)) || die "refusing to reword a merge commit"
+  if [[ "$sha" != "$head" && -n "$(git rev-list --merges "$sha..$head")" ]]; then
+    die "merge commits exist above this commit; reword it manually"
+  fi
+
+  git show --no-color --no-ext-diff --stat --patch --format= "$sha" >"$tmp/changes.diff"
+  local note msg
+  note="$(truncate_diff "$tmp/changes.diff")"
+  msg="$(generate "$tmp/changes.diff" "$note")"
+
+  if ((subject_only)); then
+    local old_body
+    old_body="$(git log -1 --format=%b "$sha" | sed -e '/./,$!d')"
+    [[ -n "$old_body" ]] && msg="$msg"$'\n\n'"$old_body"
+  fi
+  printf '%s\n' "$msg" >"$tmp/msg"
+
+  if [[ "$sha" == "$head" ]]; then
+    # --only without paths: amend the message only, leave staged changes alone.
+    git commit --amend --only --quiet -F "$tmp/msg"
+    return
+  fi
+
+  local base=("$sha^")
+  ((parents == 1)) && base=(--root)
+
+  # Stash manually instead of --autostash so the index (staged vs unstaged)
+  # is restored too.
+  local stashed=0
+  if ! git diff --quiet || ! git diff --cached --quiet; then
+    git stash push --quiet -m "ai-commit-msg reword" || die "git stash failed"
+    stashed=1
+  fi
+
+  # The selected commit is the first todo line; mark it for reword and let the
+  # "editor" drop in the generated message.
+  local rc=0
+  GIT_SEQUENCE_EDITOR="sed -i -e '1s/^\(pick\|p\) /reword /'" \
+    GIT_EDITOR="cp '$tmp/msg'" \
+    git rebase -i --quiet "${base[@]}" >/dev/null || rc=$?
+
+  if ((rc != 0)); then
+    git rebase --abort >/dev/null 2>&1 || true
+  fi
+  if ((stashed)); then
+    git stash pop --index --quiet || die "reword done but 'git stash pop --index' failed; your changes are in the stash"
+  fi
+  ((rc == 0)) || die "git rebase failed; rebase aborted"
+}
+
+case "$mode" in
+  staged) cmd_staged "$@" ;;
+  reword) cmd_reword "$@" ;;
+  *) usage ;;
+esac

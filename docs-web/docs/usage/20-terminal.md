@@ -231,6 +231,20 @@ All above commands and aliases can be run through [`lazygit`](https://github.com
   </div>
 </details>
 
+#### AI commits in Lazygit
+
+The `lazygit` config adds shortcuts that use [OpenCode](https://opencode.ai) to write commit messages. They need `opencode` (logged in to a provider), `jq` and `python3`. Every OpenCode session they create is deleted afterwards.
+
+| View | Key | Action |
+| --- | --- | --- |
+| Files | `Ctrl+A` | Generate a commit message (subject and body) for the staged changes into the commit draft. Press `c` to review, edit and commit it. |
+| Files | `Alt+A` | Same, subject only. |
+| Files | `Alt+S` | Split changes into commits by functionality: the staged changes if anything is staged, otherwise all changes including untracked files. Shows the plan first: `y` creates the commits, `e` edits the plan in your editor, `r` regenerates it, `n` aborts. If a commit fails, HEAD and the index are restored. |
+| Commits | `Ctrl+A` | Reword the selected commit with a generated subject and body. Press `r` to adjust it, `z` to undo. |
+| Commits | `Alt+A` | Reword only the subject and keep the existing body. |
+
+Models can be changed with environment variables: `AI_COMMIT_MODEL` (messages, default `github-copilot/claude-haiku-4.5`) and `AI_COMMIT_SPLIT_MODEL` (splitting, default `github-copilot/claude-sonnet-5.5`).
+
 ## Languages
 
 ### Python

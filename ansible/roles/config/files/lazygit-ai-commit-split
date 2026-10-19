@@ -1,0 +1,473 @@
+#!/usr/bin/env python3
+"""Split changes into commits by functionality with opencode (agent: commit-split).
+
+Meant to run from lazygit's Files view with `output: terminal`.
+
+Scope: the staged changes if anything is staged, otherwise all changes
+including untracked files (computed in a temporary index, so the real index is
+untouched until you confirm). The plan is shown for review ([y]es / [e]dit /
+[r]egenerate / [n]o) before anything is committed; if creating the commits
+fails midway, HEAD and the index are restored.
+
+Env: AI_COMMIT_SPLIT_MODEL (default github-copilot/claude-sonnet-5.5),
+     AI_COMMIT_SPLIT_MAX_DIFF_BYTES (default 300000),
+     AI_COMMIT_SPLIT_TIMEOUT (seconds, default 300).
+"""
+
+from __future__ import annotations
+
+import json
+import os
+import re
+import shutil
+import subprocess
+import sys
+import tempfile
+from dataclasses import dataclass, field
+
+MODEL = os.environ.get("AI_COMMIT_SPLIT_MODEL", "github-copilot/claude-sonnet-5.5")
+MAX_DIFF_BYTES = int(os.environ.get("AI_COMMIT_SPLIT_MAX_DIFF_BYTES", "300000"))
+TIMEOUT = int(os.environ.get("AI_COMMIT_SPLIT_TIMEOUT", "300"))
+
+ENC = ("utf-8", "surrogateescape")
+BOLD, DIM, RED, GREEN, YELLOW, RESET = "\033[1m", "\033[2m", "\033[31m", "\033[32m", "\033[33m", "\033[0m"
+
+
+class Die(Exception):
+    pass
+
+
+def git(*args: str, env: dict | None = None, check: bool = True) -> str:
+    p = subprocess.run(["git", *args], env=env, capture_output=True)
+    if check and p.returncode != 0:
+        raise Die(f"git {' '.join(args)} failed: {p.stderr.decode(*ENC).strip()}")
+    return p.stdout.decode(*ENC)
+
+
+def git_ok(*args: str) -> bool:
+    return subprocess.run(["git", *args], capture_output=True).returncode == 0
+
+
+# --------------------------------------------------------------------------- diff
+
+
+@dataclass
+class FileDiff:
+    header: str
+    hunks: list[str]
+    path: str
+    kind: str | None  # set when the file can only move as a whole
+    ids: list[str] = field(default_factory=list)  # one per hunk, or one for the whole file
+
+
+@dataclass
+class Unit:
+    id: str
+    file: FileDiff
+    hunk: int | None  # index into file.hunks, None for whole-file units
+
+    def label(self) -> str:
+        if self.hunk is None:
+            return f"{self.file.path} ({self.file.kind})"
+        at = self.file.hunks[self.hunk].splitlines()[0]
+        at = at if len(at) <= 70 else at[:67] + "..."
+        return f"{self.file.path} {at}"
+
+
+def path_of(header: str) -> str:
+    for prefix in ("+++ b/", "--- a/", "rename to ", "copy to "):
+        m = re.search(rf"^{re.escape(prefix)}(.*)$", header, re.M)
+        if m:
+            return m.group(1).strip().strip('"')
+    first = header.splitlines()[0]
+    m = re.match(r'diff --git "?a/(.*?)"? "?b/', first)
+    return m.group(1) if m else first
+
+
+def kind_of(header: str, hunks: list[str]) -> str | None:
+    checks = [
+        (r"^new file mode", "new file"),
+        (r"^deleted file mode", "deleted"),
+        (r"^rename from", "renamed"),
+        (r"^copy from", "copied"),
+        (r"^GIT binary patch|^Binary files", "binary"),
+        (r"^old mode", "mode change"),
+    ]
+    for pattern, kind in checks:
+        if re.search(pattern, header, re.M):
+            return kind
+    return None if hunks else "no content"
+
+
+def parse_diff(text: str) -> tuple[list[FileDiff], dict[str, Unit]]:
+    raw: list[tuple[list[str], list[list[str]]]] = []
+    for line in text.splitlines(keepends=True):
+        if line.startswith("diff --git "):
+            raw.append(([line], []))
+        elif not raw:
+            continue
+        elif line.startswith("@@"):
+            raw[-1][1].append([line])
+        elif raw[-1][1]:
+            raw[-1][1][-1].append(line)
+        else:
+            raw[-1][0].append(line)
+
+    files: list[FileDiff] = []
+    units: dict[str, Unit] = {}
+    n = 0
+    for header_lines, hunk_lines in raw:
+        header = "".join(header_lines)
+        hunks = ["".join(h) for h in hunk_lines]
+        f = FileDiff(header, hunks, path_of(header), kind_of(header, hunks))
+        files.append(f)
+        if f.kind is not None:
+            n += 1
+            f.ids.append(f"H{n}")
+            units[f"H{n}"] = Unit(f"H{n}", f, None)
+        else:
+            for i in range(len(hunks)):
+                n += 1
+                f.ids.append(f"H{n}")
+                units[f"H{n}"] = Unit(f"H{n}", f, i)
+    return files, units
+
+
+def annotate(files: list[FileDiff]) -> str:
+    out = []
+    for f in files:
+        if f.kind is not None:
+            out.append(f"[{f.ids[0]}] {f.path} ({f.kind}, whole file)\n")
+            header = f.header.split("GIT binary patch")[0]
+            out.append(header + "".join(f.hunks))
+        else:
+            out.append(f.header)
+            for uid, hunk in zip(f.ids, f.hunks):
+                out.append(f"[{uid}]\n{hunk}")
+    return "".join(out)
+
+
+def build_patch(files: list[FileDiff], ids: set[str]) -> str:
+    out = []
+    for f in files:
+        if f.kind is not None:
+            if f.ids[0] in ids:
+                out.append(f.header + "".join(f.hunks))
+            continue
+        chosen = [h for uid, h in zip(f.ids, f.hunks) if uid in ids]
+        if chosen:
+            out.append(f.header + "".join(chosen))
+    return "".join(out)
+
+
+# --------------------------------------------------------------------------- plan
+
+
+@dataclass
+class Commit:
+    message: str
+    ids: list[str]
+
+    @property
+    def subject(self) -> str:
+        return self.message.splitlines()[0] if self.message.strip() else ""
+
+
+def normalize_id(raw) -> str:
+    s = str(raw).strip().strip("[]").upper()
+    return f"H{s}" if s.isdigit() else s
+
+
+def plan_from_ai(text: str) -> list[Commit]:
+    m = re.search(r"<plan>(.*?)</plan>", text, re.S)
+    if not m:
+        raise Die(f"model reply had no <plan>...</plan> block:\n{text[:800]}")
+    body = m.group(1).strip()
+    body = re.sub(r"^```(?:json)?\s*|\s*```$", "", body)
+    try:
+        data = json.loads(body)
+    except json.JSONDecodeError as e:
+        raise Die(f"model plan is not valid JSON ({e}):\n{body[:800]}")
+    if not isinstance(data, list):
+        raise Die("model plan is not a JSON list")
+    plan = []
+    for item in data:
+        if not isinstance(item, dict):
+            raise Die(f"unexpected plan entry: {item!r}")
+        subject = str(item.get("subject", "")).strip()
+        body_text = str(item.get("body", "") or "").strip()
+        message = subject + (f"\n\n{body_text}" if body_text else "")
+        plan.append(Commit(message, [normalize_id(h) for h in item.get("hunks", [])]))
+    return plan
+
+
+def validate(plan: list[Commit], units: dict[str, Unit]) -> list[str]:
+    errors = []
+    if not plan:
+        return ["the plan has no commits"]
+    seen: dict[str, int] = {}
+    for n, c in enumerate(plan, 1):
+        if not c.subject.strip():
+            errors.append(f"commit {n}: empty subject")
+        if not c.ids:
+            errors.append(f"commit {n}: no hunks")
+        for uid in c.ids:
+            if uid not in units:
+                errors.append(f"commit {n}: unknown hunk {uid}")
+            elif uid in seen:
+                errors.append(f"{uid} is used in commits {seen[uid]} and {n}")
+            else:
+                seen[uid] = n
+    missing = [u for u in units if u not in seen]
+    if missing:
+        errors.append(f"hunks not assigned to any commit: {' '.join(missing)}")
+    return errors
+
+
+def dry_run(plan: list[Commit], files: list[FileDiff], target_tree: str, tmp: str) -> list[str]:
+    """Apply every commit in order to a scratch index; the result must equal the target tree."""
+    env = {**os.environ, "GIT_INDEX_FILE": os.path.join(tmp, "dryrun.index")}
+    git("read-tree", "HEAD", env=env)
+    for n, c in enumerate(plan, 1):
+        patch = os.path.join(tmp, "dryrun.patch")
+        with open(patch, "w", encoding="utf-8", errors="surrogateescape") as fh:
+            fh.write(build_patch(files, set(c.ids)))
+        p = subprocess.run(["git", "apply", "--cached", patch], env=env, capture_output=True)
+        if p.returncode != 0:
+            return [f"commit {n}: its hunks do not apply in this order: {p.stderr.decode(*ENC).strip()}"]
+    if git("write-tree", env=env).strip() != target_tree:
+        return ["applying all commits does not reproduce the original changes"]
+    return []
+
+
+PLAN_HELP = """\
+# Edit the commit plan, then save and quit. Lines starting with '#' are ignored.
+# Each commit starts with a line '=== commit', followed by the message
+# (subject, blank line, body) and a final 'hunks:' line listing hunk IDs.
+# Every hunk must be used exactly once. Delete everything to abort.
+#
+# Hunks:
+"""
+
+
+def plan_to_text(plan: list[Commit], units: dict[str, Unit]) -> str:
+    lines = [PLAN_HELP]
+    lines += [f"#   {u.id:<5} {u.label()}\n" for u in units.values()]
+    for c in plan:
+        lines.append(f"\n=== commit\n{c.message}\n\nhunks: {' '.join(c.ids)}\n")
+    return "".join(lines)
+
+
+def plan_from_text(text: str) -> list[Commit]:
+    body = "\n".join(line for line in text.splitlines() if not line.startswith("#"))
+    plan = []
+    for block in re.split(r"^=== commit\s*$", body, flags=re.M)[1:]:
+        lines = block.splitlines()
+        ids: list[str] = []
+        msg_lines = []
+        for line in lines:
+            if line.startswith("hunks:"):
+                ids = [normalize_id(x) for x in line[len("hunks:"):].replace(",", " ").split()]
+            else:
+                msg_lines.append(line.rstrip())
+        message = "\n".join(msg_lines).strip("\n")
+        plan.append(Commit(message, ids))
+    return plan
+
+
+# --------------------------------------------------------------------------- opencode
+
+
+def ask_ai(annotated: str, tmp: str) -> list[Commit]:
+    diff_file = os.path.join(tmp, "changes.diff")
+    with open(diff_file, "w", encoding="utf-8", errors="replace") as fh:
+        fh.write(annotated)
+    prompt = "Split the attached numbered diff into commits by functionality and reply with the plan."
+    cmd = ["opencode", "run", "--agent", "commit-split", "--model", MODEL, "--title", "lazygit commit split",
+           "--format", "json", "-f", diff_file, prompt]
+    rc: int | None
+    try:
+        p = subprocess.run(cmd, capture_output=True, stdin=subprocess.DEVNULL, timeout=TIMEOUT)
+        out, err, rc = p.stdout, p.stderr, p.returncode
+    except subprocess.TimeoutExpired as e:
+        out, err, rc = e.stdout or b"", e.stderr or b"", None
+
+    events = []
+    for line in out.decode(*ENC).splitlines():
+        try:
+            events.append(json.loads(line))
+        except json.JSONDecodeError:
+            pass
+    sid = next((e["sessionID"] for e in events if isinstance(e, dict) and e.get("sessionID")), None)
+    if sid:  # best effort: don't let these sessions pile up
+        try:
+            subprocess.run(["opencode", "session", "delete", sid], capture_output=True,
+                           stdin=subprocess.DEVNULL, timeout=15)
+        except (subprocess.TimeoutExpired, OSError):
+            pass
+
+    if rc is None:
+        raise Die(f"opencode timed out after {TIMEOUT}s")
+    if rc != 0:
+        errors = [e.get("error", {}).get("message", "") for e in events if e.get("type") == "error"]
+        raise Die("opencode run failed: " + ("; ".join(filter(None, errors)) or err.decode(*ENC).strip()[-500:]))
+    text = "".join(e["part"]["text"] for e in events if e.get("type") == "text" and "part" in e)
+    return plan_from_ai(text)
+
+
+# --------------------------------------------------------------------------- ui
+
+
+def show(plan: list[Commit], units: dict[str, Unit], scope: str, problems: list[str]) -> None:
+    print(f"\n{BOLD}Scope:{RESET} {scope}\n")
+    for n, c in enumerate(plan, 1):
+        print(f"{BOLD}{YELLOW}Commit {n}/{len(plan)}:{RESET} {BOLD}{c.subject}{RESET}")
+        for line in c.message.splitlines()[1:]:
+            if line.strip():
+                print(f"    {DIM}{line}{RESET}")
+        for uid in c.ids:
+            label = units[uid].label() if uid in units else "(unknown)"
+            print(f"    {GREEN}{uid:<5}{RESET} {label}")
+        print()
+    if problems:
+        print(f"{RED}{BOLD}Problems with this plan:{RESET}")
+        for p in problems:
+            print(f"  {RED}- {p}{RESET}")
+        print()
+
+
+def edit_plan(plan: list[Commit], units: dict[str, Unit], tmp: str) -> list[Commit] | None:
+    path = os.path.join(tmp, "plan.txt")
+    with open(path, "w", encoding="utf-8") as fh:
+        fh.write(plan_to_text(plan, units))
+    editor = git("var", "GIT_EDITOR").strip() or "vi"
+    subprocess.run(["sh", "-c", f'{editor} "$@"', editor, path])
+    with open(path, encoding="utf-8") as fh:
+        new = plan_from_text(fh.read())
+    return new or None
+
+
+def pause() -> None:
+    if sys.stdin.isatty():
+        try:
+            input("Press Enter to return to lazygit...")
+        except EOFError:
+            pass
+
+
+# --------------------------------------------------------------------------- apply
+
+
+def create_commits(plan: list[Commit], files: list[FileDiff], target_tree: str, tmp: str) -> None:
+    start = git("rev-parse", "HEAD").strip()
+    index_path = os.path.abspath(git("rev-parse", "--git-path", "index").strip())
+    backup = os.path.join(tmp, "index.orig")
+    shutil.copy2(index_path, backup)
+    try:
+        for n, c in enumerate(plan, 1):
+            patch = os.path.join(tmp, f"commit{n}.patch")
+            msg = os.path.join(tmp, f"commit{n}.msg")
+            with open(patch, "w", encoding="utf-8", errors="surrogateescape") as fh:
+                fh.write(build_patch(files, set(c.ids)))
+            with open(msg, "w", encoding="utf-8") as fh:
+                fh.write(c.message + "\n")
+            git("read-tree", "HEAD")
+            git("apply", "--cached", patch)
+            print(f"{BOLD}Creating commit {n}/{len(plan)}:{RESET} {c.subject}")
+            if subprocess.run(["git", "commit", "--quiet", "-F", msg]).returncode != 0:
+                raise Die(f"git commit failed for commit {n}")
+    except (Die, KeyboardInterrupt) as e:
+        subprocess.run(["git", "reset", "--soft", "--quiet", start])
+        shutil.copy2(backup, index_path)
+        reason = str(e) or "interrupted"
+        raise Die(f"{reason}\nRolled back: HEAD is {start[:10]} again and the index is restored.")
+    if git("rev-parse", "HEAD^{tree}").strip() != target_tree:
+        print(f"{YELLOW}Note: the final tree differs from the original changes (a hook may have modified files).{RESET}")
+
+
+# --------------------------------------------------------------------------- main
+
+
+def run() -> None:
+    top = git("rev-parse", "--show-toplevel").strip()
+    os.chdir(top)
+    if not git_ok("rev-parse", "--verify", "--quiet", "HEAD"):
+        raise Die("the repository has no commits yet")
+    for ref in ("MERGE_HEAD", "CHERRY_PICK_HEAD", "REVERT_HEAD"):
+        if git_ok("rev-parse", "--verify", "--quiet", ref):
+            raise Die(f"{ref} exists: finish or abort the merge/cherry-pick/revert first")
+    for d in ("rebase-merge", "rebase-apply"):
+        if os.path.isdir(git("rev-parse", "--git-path", d).strip()):
+            raise Die("a rebase is in progress")
+
+    with tempfile.TemporaryDirectory(prefix="ai-commit-split.") as tmp:
+        env = None
+        if git_ok("diff", "--cached", "--quiet"):
+            scope = "all changes (nothing was staged), including untracked files"
+            scope_index = os.path.join(tmp, "scope.index")
+            shutil.copy2(git("rev-parse", "--git-path", "index").strip(), scope_index)
+            env = {**os.environ, "GIT_INDEX_FILE": scope_index}
+            git("add", "-A", env=env)
+        else:
+            scope = "staged changes only"
+        target_tree = git("write-tree", env=env).strip()
+        diff = git("-c", "core.quotePath=false", "diff", "--cached", "--no-color", "--no-ext-diff",
+                   "--no-textconv", "--no-relative", "--binary", "--full-index", "-M", "-U1",
+                   "--src-prefix=a/", "--dst-prefix=b/", "HEAD", env=env)
+        if not diff.strip():
+            raise Die("there are no changes to commit")
+
+        files, units = parse_diff(diff)
+        annotated = annotate(files)
+        if len(annotated.encode(*ENC)) > MAX_DIFF_BYTES:
+            raise Die(f"the changes are too large ({len(annotated)} bytes > {MAX_DIFF_BYTES}); "
+                      "stage a subset first or raise AI_COMMIT_SPLIT_MAX_DIFF_BYTES")
+
+        def generate() -> list[Commit]:
+            print(f"Asking {MODEL} to split {len(units)} hunks in {len(files)} files...", flush=True)
+            return ask_ai(annotated, tmp)
+
+        plan = generate()
+        while True:
+            problems = validate(plan, units)
+            if not problems:
+                problems = dry_run(plan, files, target_tree, tmp)
+            show(plan, units, scope, problems)
+            options = "[e]dit plan, [r]egenerate, [n]o/abort" if problems else \
+                "[y]es create commits, [e]dit plan, [r]egenerate, [n]o/abort"
+            try:
+                answer = input(f"{BOLD}{options}: {RESET}").strip().lower()
+            except EOFError:
+                answer = "n"
+            if answer == "y" and not problems:
+                create_commits(plan, files, target_tree, tmp)
+                print(f"{GREEN}Created {len(plan)} commit(s).{RESET}")
+                return
+            if answer == "e":
+                edited = edit_plan(plan, units, tmp)
+                if edited is None:
+                    print("Plan is empty: aborted, nothing changed.")
+                    return
+                plan = edited
+            elif answer == "r":
+                plan = generate()
+            elif answer in ("n", "q"):
+                print("Aborted, nothing changed.")
+                return
+
+
+def main() -> int:
+    try:
+        run()
+        return 0
+    except Die as e:
+        print(f"\n{RED}ai-commit-split: {e}{RESET}", file=sys.stderr)
+        pause()
+        return 1
+    except KeyboardInterrupt:
+        print("\nAborted, nothing changed.")
+        return 130
+
+
+if __name__ == "__main__":
+    sys.exit(main())

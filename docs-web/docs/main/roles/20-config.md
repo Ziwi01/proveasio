@@ -6,7 +6,7 @@ This role is mostly configs management. It will apply configuration for:
 - Tmux (`~/.tmux.conf`)
 - GIT config (`~/.gitconfig`)
 - thefuck (`~/.config/thefuck/settings.py`)
-- LazyGIT (`~/.config/lazygit/config.yml`)
+- LazyGIT (`~/.config/lazygit/config.yml`, AI commit scripts in `~/.config/lazygit/scripts/` and the `commit-msg`/`commit-split` agents in `~/.config/opencode/agents/` - see [LazyGit AI commits](../../usage/terminal#ai-commits-in-lazygit))
 - ansible-lint (`~/.ansible-lint`)
 - SDKMAN (`~/.sdkman/etc/config`)
 - ccmux (`~/.config/ccmux/ccmux.json`)
