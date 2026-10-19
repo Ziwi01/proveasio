@@ -7,7 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 
 
-## [latest] - 2026-10-16
+
+## [latest] - 2026-10-19
 ### :boom: BREAKING CHANGES
 - due to [`824bfc9`](https://github.com/Ziwi01/proveasio/commit/824bfc9793a2020e0dffc6abbd88cd7e92918127) - Make packages, yq and zsh required *(commit by [@Ziwi01](https://github.com/Ziwi01))*:
 
@@ -27,6 +28,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - [`4334479`](https://github.com/Ziwi01/proveasio/commit/433447991d89c0b057bbc2fc8c043bf7f23b101f) - **docker**: Warn about UID mismatches, keep prompt colors and document SSH mounts *(commit by [@Ziwi01](https://github.com/Ziwi01))*
 - [`69576ca`](https://github.com/Ziwi01/proveasio/commit/69576ca9d20e3bd58572d6b327821d21a04b41f5) - **azcli**: Add kubelogin *(commit by [@Ziwi01](https://github.com/Ziwi01))*
 - [`ceadb72`](https://github.com/Ziwi01/proveasio/commit/ceadb7242f7308d14cb9c09aed750e4d27551654) - **opencode**: Add support for Opencode v2 *(commit by [@Ziwi01](https://github.com/Ziwi01))*
+- [`c34a47c`](https://github.com/Ziwi01/proveasio/commit/c34a47c26a305a575417fb3b73bf0a22a306e002) - Add support for disabling glyphs and icons for use in remote sessions *(commit by [@Ziwi01](https://github.com/Ziwi01))*
+- [`cfd6676`](https://github.com/Ziwi01/proveasio/commit/cfd6676ad5dd073e7128c5290e9dbe3d1813d34e) - Better support for no nerd fonts *(commit by [@Ziwi01](https://github.com/Ziwi01))*
 
 ### :bug: Bug Fixes
 - [`bcb76e3`](https://github.com/Ziwi01/proveasio/commit/bcb76e32e48c2b469d2ff1422b48a7cc14faad8b) - **zsh**: Keep .zshrc working when tools are excluded *(commit by [@Ziwi01](https://github.com/Ziwi01))*
