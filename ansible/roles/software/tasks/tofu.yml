@@ -1,0 +1,87 @@
+# OpenTofu - open source fork of Terraform
+# Sources:
+#   - https://opentofu.org/
+#   - https://github.com/opentofu/opentofu
+---
+- name: "[tofu] Get Github URL for proper version"
+  vars:
+    app: tofu
+    repo: opentofu/opentofu
+    version_query: gh_curl https://api.github.com/repos/opentofu/opentofu/releases/latest | jq .tag_name -r | cut -f2 -d'v'
+    github_uri: "v{{ tofu_version }}/tofu_{{ tofu_version }}_linux_amd64.tar.gz"
+  ansible.builtin.include_role:
+    name: common
+    tasks_from: github_version.yml
+    apply:
+      tags:
+        - versions
+  tags:
+    - versions
+
+- name: "[tofu] Check if tofu {{ tofu_version }} is installed"
+  ansible.builtin.stat:
+    path: "{{ ansible_facts['env']['HOME'] }}/.local/opt/tofu-{{ tofu_version }}"
+  register: tofu_dir
+
+- name: "Installation"
+  when: not tofu_dir.stat.exists
+  block:
+    - name: "[tofu] Create directory in {{ ansible_facts['env']['HOME'] }}/.local/opt"
+      ansible.builtin.file:
+        path: "{{ ansible_facts['env']['HOME'] }}/.local/opt/tofu-{{ tofu_version }}"
+        state: directory
+        mode: "0755"
+
+    - name: "[tofu] Download tofu {{ tofu_version }}"
+      ansible.builtin.get_url:
+        url: "{{ tofu_url }}"
+        dest: "/tmp/tofu-{{ tofu_version }}.tar.gz"
+        mode: "0755"
+
+    - name: "[tofu] Untar archive"
+      ansible.builtin.unarchive:
+        src: "/tmp/tofu-{{ tofu_version }}.tar.gz"
+        dest: "{{ ansible_facts['env']['HOME'] }}/.local/opt/tofu-{{ tofu_version }}"
+
+    - name: "[tofu] Cleanup tar.gz file"
+      ansible.builtin.file:
+        path: "/tmp/tofu-{{ tofu_version }}.tar.gz"
+        state: absent
+
+- name: "[tofu] Link {{ tofu_version }} binary to ~/.local/bin/tofu"
+  ansible.builtin.file:
+    src: "{{ ansible_facts['env']['HOME'] }}/.local/opt/tofu-{{ tofu_version }}/tofu"
+    dest: "{{ ansible_facts['env']['HOME'] }}/.local/bin/tofu"
+    state: link
+    force: true
+
+- name: "[tofu] Save used version"
+  vars:
+    app: tofu
+    target_version:
+      github_packages:
+        tofu: "{{ tofu_version }}"
+    yq_query: ".github_packages.tofu = \"{{ tofu_version }}\""
+  ansible.builtin.include_role:
+    name: common
+    tasks_from: save_version.yml
+    apply:
+      tags:
+        - versions
+  tags:
+    - versions
+
+- name: "[tofu] Cleanup old versions"
+  vars:
+    app: tofu
+    keep: "{{ tofu_version }}"
+  ansible.builtin.include_role:
+    name: common
+    tasks_from: cleanup_versions.yml
+    apply:
+      tags:
+        - versions
+        - cleanup
+  tags:
+    - versions
+    - cleanup

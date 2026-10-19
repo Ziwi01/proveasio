@@ -1,0 +1,85 @@
+# kubeconform - Kubernetes manifests validator
+# Source: https://github.com/yannh/kubeconform
+---
+- name: "[kubeconform] Get Github URL for proper version"
+  vars:
+    app: kubeconform
+    repo: yannh/kubeconform
+    version_query: gh_curl https://api.github.com/repos/yannh/kubeconform/releases/latest | jq .tag_name -r | cut -f2 -d'v'
+    github_uri: "v{{ kubeconform_version }}/kubeconform-linux-amd64.tar.gz"
+  ansible.builtin.include_role:
+    name: common
+    tasks_from: github_version.yml
+    apply:
+      tags:
+        - versions
+  tags:
+    - versions
+
+- name: "[kubeconform] Check if kubeconform {{ kubeconform_version }} is installed"
+  ansible.builtin.stat:
+    path: "{{ ansible_facts['env']['HOME'] }}/.local/opt/kubeconform-{{ kubeconform_version }}"
+  register: kubeconform_dir
+
+- name: "Installation"
+  when: not kubeconform_dir.stat.exists
+  block:
+    - name: "[kubeconform] Create directory in {{ ansible_facts['env']['HOME'] }}/.local/opt"
+      ansible.builtin.file:
+        path: "{{ ansible_facts['env']['HOME'] }}/.local/opt/kubeconform-{{ kubeconform_version }}"
+        state: directory
+        mode: "0755"
+
+    - name: "[kubeconform] Download kubeconform {{ kubeconform_version }}"
+      ansible.builtin.get_url:
+        url: "{{ kubeconform_url }}"
+        dest: "/tmp/kubeconform-{{ kubeconform_version }}.tar.gz"
+        mode: "0755"
+
+    - name: "[kubeconform] Untar archive"
+      ansible.builtin.unarchive:
+        src: "/tmp/kubeconform-{{ kubeconform_version }}.tar.gz"
+        dest: "{{ ansible_facts['env']['HOME'] }}/.local/opt/kubeconform-{{ kubeconform_version }}"
+
+    - name: "[kubeconform] Cleanup tar.gz file"
+      ansible.builtin.file:
+        path: "/tmp/kubeconform-{{ kubeconform_version }}.tar.gz"
+        state: absent
+
+- name: "[kubeconform] Link {{ kubeconform_version }} binary to ~/.local/bin/kubeconform"
+  ansible.builtin.file:
+    src: "{{ ansible_facts['env']['HOME'] }}/.local/opt/kubeconform-{{ kubeconform_version }}/kubeconform"
+    dest: "{{ ansible_facts['env']['HOME'] }}/.local/bin/kubeconform"
+    state: link
+    force: true
+
+- name: "[kubeconform] Save used version"
+  vars:
+    app: kubeconform
+    target_version:
+      github_packages:
+        kubeconform: "{{ kubeconform_version }}"
+    yq_query: ".github_packages.kubeconform = \"{{ kubeconform_version }}\""
+  ansible.builtin.include_role:
+    name: common
+    tasks_from: save_version.yml
+    apply:
+      tags:
+        - versions
+  tags:
+    - versions
+
+- name: "[kubeconform] Cleanup old versions"
+  vars:
+    app: kubeconform
+    keep: "{{ kubeconform_version }}"
+  ansible.builtin.include_role:
+    name: common
+    tasks_from: cleanup_versions.yml
+    apply:
+      tags:
+        - versions
+        - cleanup
+  tags:
+    - versions
+    - cleanup

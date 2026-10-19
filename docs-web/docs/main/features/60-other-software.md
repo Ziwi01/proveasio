@@ -12,5 +12,10 @@
 - [opencode](https://github.com/anomalyco/opencode) - terminal-based AI coding agent (v2; v1 can be pinned)
 - [ccmux](https://github.com/epilande/ccmux) - run and track AI coding agents in tmux (live session states, sidebar, desktop notifications)
 - [wsl-notify-send](https://github.com/stuartleeks/wsl-notify-send) - bridge desktop notifications from WSL to Windows toasts (used by ccmux)
+- [shellcheck](https://github.com/koalaman/shellcheck) - static analysis for shell scripts
+- [OpenTofu](https://github.com/opentofu/opentofu) - open source fork of Terraform (`tofu`)
+- [kubeconform](https://github.com/yannh/kubeconform) - Kubernetes manifests validator
+- [dyff](https://github.com/homeport/dyff) - diff tool for YAML files
+- [helm-unittest](https://github.com/helm-unittest/helm-unittest) - unit tests for Helm charts (Helm plugin, `helm unittest`)
 
 And more...

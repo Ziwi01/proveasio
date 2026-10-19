@@ -45,6 +45,7 @@ For particular functionality (`software` + `config`) below tags are available:
 - diff-so-fancy
 - docker
 - dry
+- dyff
 - eza
 - fd
 - fx
@@ -54,10 +55,12 @@ For particular functionality (`software` + `config`) below tags are available:
 - gita
 - gvm
 - helm
+- helm-unittest
 - hunk
 - k9s
 - kind
 - kubecolor
+- kubeconform
 - kubectl
 - kubeswitch
 - lazygit
@@ -73,10 +76,12 @@ For particular functionality (`software` + `config`) below tags are available:
 - rust
 - rvm
 - sdkman
+- shellcheck
 - software_packages
 - terraform
 - terragrunt
 - tmux
+- tofu
 - uv
 - w32yank
 - wsl-notify-send

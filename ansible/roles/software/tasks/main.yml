@@ -350,6 +350,20 @@
     - versions
     - helm
 
+# helm-unittest - Helm plugin for chart unit tests (needs helm)
+- name: "[Software] Install helm-unittest"
+  ansible.builtin.include_tasks:
+    file: helm-unittest.yml
+    apply:
+      tags:
+        - software
+        - helm-unittest
+  when: "'helm-unittest' not in software_tasks_exclude"
+  tags:
+    - software
+    - versions
+    - helm-unittest
+
 # ZSH
 - name: "[Software] Install zsh"
   ansible.builtin.include_tasks:
@@ -455,6 +469,34 @@
     - software
     - versions
     - k9s
+
+# kubeconform - Kubernetes manifests validator
+- name: "[Software] Install kubeconform"
+  ansible.builtin.include_tasks:
+    file: kubeconform.yml
+    apply:
+      tags:
+        - software
+        - kubeconform
+  when: "'kubeconform' not in software_tasks_exclude"
+  tags:
+    - software
+    - versions
+    - kubeconform
+
+# dyff - diff tool for YAML files
+- name: "[Software] Install dyff"
+  ansible.builtin.include_tasks:
+    file: dyff.yml
+    apply:
+      tags:
+        - software
+        - dyff
+  when: "'dyff' not in software_tasks_exclude"
+  tags:
+    - software
+    - versions
+    - dyff
 
 # Ruby Version Manager
 - name: "[Software] Install Ruby Version Manager"
@@ -594,6 +636,20 @@
     - versions
     - terragrunt
 
+# OpenTofu - open source fork of Terraform
+- name: "[Software] Install OpenTofu"
+  ansible.builtin.include_tasks:
+    file: tofu.yml
+    apply:
+      tags:
+        - software
+        - tofu
+  when: "'tofu' not in software_tasks_exclude"
+  tags:
+    - software
+    - versions
+    - tofu
+
 - name: "[Software] Azure CLI"
   ansible.builtin.include_tasks:
     file: azurecli.yml
@@ -661,6 +717,20 @@
     - software
     - versions
     - hunk
+
+# ShellCheck - static analysis for shell scripts
+- name: "[Software] Install shellcheck"
+  ansible.builtin.include_tasks:
+    file: shellcheck.yml
+    apply:
+      tags:
+        - software
+        - shellcheck
+  when: "'shellcheck' not in software_tasks_exclude"
+  tags:
+    - software
+    - versions
+    - shellcheck
 
 # wsl-notify-send - Bridge WSL desktop notifications to Windows toasts (used by ccmux)
 - name: "[Software] Install wsl-notify-send"

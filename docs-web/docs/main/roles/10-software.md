@@ -37,6 +37,14 @@ Development-related software:
 6. [SDKMAN](https://sdkman.io/) - Manage multiple versions of groovy/java and other JDKs/SDKs.
 7. [pyenv](https://github.com/pyenv/pyenv) - Python version manager not to mess system python
 8. [pyenv-virtualenv](https://github.com/pyenv/pyenv-virtualenv) - Python virtual environment manager to have separate environments with different packages for projects using same Python version
+9. [ShellCheck](https://github.com/koalaman/shellcheck) - static analysis for shell scripts (latest GitHub release, newer than the Ubuntu package)
+
+Infrastructure and Kubernetes tools:
+
+1. [OpenTofu](https://github.com/opentofu/opentofu) (`tofu`) - open source fork of Terraform
+2. [kubeconform](https://github.com/yannh/kubeconform) - Kubernetes manifests validator
+3. [dyff](https://github.com/homeport/dyff) - diff tool for YAML files, with Kubernetes-aware output
+4. [helm-unittest](https://github.com/helm-unittest/helm-unittest) - unit tests for Helm charts (`helm unittest`). Installed as a Helm plugin, so it needs `helm`. The plugin is linked into `helm_plugins_dir` (default `~/.local/share/helm/plugins`). A `helm-unittest` plugin installed there by other means (for example `helm plugin install`) is removed and replaced.
 
 Also, common useful packages, like `tree` (directory tree), `jq`/`yq` (JSON/YAML parser) and many others.
 
@@ -75,6 +83,7 @@ Available software excludes:
 - az-account-switcher
 - zoxide
 - helm
+- helm-unittest
 - w32yank
 - tmux
 - docker
@@ -82,6 +91,8 @@ Available software excludes:
 - kubecolor
 - kind
 - k9s
+- kubeconform
+- dyff
 - rvm
 - sdkman
 - nvm
@@ -92,10 +103,12 @@ Available software excludes:
 - puppet
 - terraform
 - terragrunt
+- tofu
 - azurecli
 - awscli
 - uv
 - opencode
 - hunk
+- shellcheck
 - wsl-notify-send
 - ccmux

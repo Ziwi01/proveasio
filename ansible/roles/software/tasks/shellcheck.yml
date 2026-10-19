@@ -1,0 +1,88 @@
+# ShellCheck - static analysis tool for shell scripts
+# Installed from GitHub releases, because the Ubuntu package lags behind.
+# Source: https://github.com/koalaman/shellcheck
+---
+- name: "[shellcheck] Get Github URL for proper version"
+  vars:
+    app: shellcheck
+    repo: koalaman/shellcheck
+    version_query: gh_curl https://api.github.com/repos/koalaman/shellcheck/releases/latest | jq .tag_name -r | cut -f2 -d'v'
+    github_uri: "v{{ shellcheck_version }}/shellcheck-v{{ shellcheck_version }}.linux.x86_64.tar.gz"
+  ansible.builtin.include_role:
+    name: common
+    tasks_from: github_version.yml
+    apply:
+      tags:
+        - versions
+  tags:
+    - versions
+
+- name: "[shellcheck] Check if shellcheck {{ shellcheck_version }} is installed"
+  ansible.builtin.stat:
+    path: "{{ ansible_facts['env']['HOME'] }}/.local/opt/shellcheck-{{ shellcheck_version }}"
+  register: shellcheck_dir
+
+- name: "Installation"
+  when: not shellcheck_dir.stat.exists
+  block:
+    - name: "[shellcheck] Create directory in {{ ansible_facts['env']['HOME'] }}/.local/opt"
+      ansible.builtin.file:
+        path: "{{ ansible_facts['env']['HOME'] }}/.local/opt/shellcheck-{{ shellcheck_version }}"
+        state: directory
+        mode: "0755"
+
+    - name: "[shellcheck] Download shellcheck {{ shellcheck_version }}"
+      ansible.builtin.get_url:
+        url: "{{ shellcheck_url }}"
+        dest: "/tmp/shellcheck-{{ shellcheck_version }}.tar.gz"
+        mode: "0755"
+
+    - name: "[shellcheck] Untar archive"
+      ansible.builtin.unarchive:
+        src: "/tmp/shellcheck-{{ shellcheck_version }}.tar.gz"
+        dest: "{{ ansible_facts['env']['HOME'] }}/.local/opt/shellcheck-{{ shellcheck_version }}"
+        extra_opts:
+          - "--strip-components=1"
+
+    - name: "[shellcheck] Cleanup tar.gz file"
+      ansible.builtin.file:
+        path: "/tmp/shellcheck-{{ shellcheck_version }}.tar.gz"
+        state: absent
+
+- name: "[shellcheck] Link {{ shellcheck_version }} binary to ~/.local/bin/shellcheck"
+  ansible.builtin.file:
+    src: "{{ ansible_facts['env']['HOME'] }}/.local/opt/shellcheck-{{ shellcheck_version }}/shellcheck"
+    dest: "{{ ansible_facts['env']['HOME'] }}/.local/bin/shellcheck"
+    state: link
+    force: true
+
+- name: "[shellcheck] Save used version"
+  vars:
+    app: shellcheck
+    target_version:
+      github_packages:
+        shellcheck: "{{ shellcheck_version }}"
+    yq_query: ".github_packages.shellcheck = \"{{ shellcheck_version }}\""
+  ansible.builtin.include_role:
+    name: common
+    tasks_from: save_version.yml
+    apply:
+      tags:
+        - versions
+  tags:
+    - versions
+
+- name: "[shellcheck] Cleanup old versions"
+  vars:
+    app: shellcheck
+    keep: "{{ shellcheck_version }}"
+  ansible.builtin.include_role:
+    name: common
+    tasks_from: cleanup_versions.yml
+    apply:
+      tags:
+        - versions
+        - cleanup
+  tags:
+    - versions
+    - cleanup

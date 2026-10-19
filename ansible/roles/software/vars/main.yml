@@ -102,6 +102,13 @@ github_packages:
   ccmux: latest
   wsl_notify_send: latest # WSL -> Windows notification bridge (used by ccmux)
   kubelogin: latest # Installed by the azurecli task
+  dyff: latest
+  kubeconform: latest
+  helm_unittest: latest # Helm plugin, linked into helm_plugins_dir
+  shellcheck: latest
+  tofu: latest # OpenTofu
+# Helm plugins directory (`helm env HELM_PLUGINS`). helm-unittest is linked here.
+helm_plugins_dir: "{{ ansible_facts['env']['HOME'] }}/.local/share/helm/plugins"
 # How Neovim is installed: `appimage` (default) or `tarball`.
 # The AppImage needs FUSE. Use `tarball` where FUSE is not available,
 # for example in containers.

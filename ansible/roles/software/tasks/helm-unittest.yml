@@ -1,0 +1,108 @@
+# helm-unittest - unit tests for Helm charts, installed as a Helm plugin
+# Source: https://github.com/helm-unittest/helm-unittest
+#
+# The release archive is a complete plugin (plugin.yaml and binary), so it is
+# unpacked into ~/.local/opt and the versioned directory is linked into the
+# Helm plugins directory. `helm plugin install` is not used: it runs a network
+# install hook. The directory prefix is `helm_unittest`, not `helm-unittest`:
+# the helm task cleans up every `helm-*` directory in ~/.local/opt.
+---
+- name: "[helm-unittest] Get Github URL for proper version"
+  vars:
+    app: helm_unittest
+    repo: helm-unittest/helm-unittest
+    version_query: gh_curl https://api.github.com/repos/helm-unittest/helm-unittest/releases/latest | jq .tag_name -r | cut -f2 -d'v'
+    github_uri: "v{{ helm_unittest_version }}/helm-unittest-linux-amd64-{{ helm_unittest_version }}.tgz"
+  ansible.builtin.include_role:
+    name: common
+    tasks_from: github_version.yml
+    apply:
+      tags:
+        - versions
+  tags:
+    - versions
+
+- name: "[helm-unittest] Check if helm-unittest {{ helm_unittest_version }} is installed"
+  ansible.builtin.stat:
+    path: "{{ ansible_facts['env']['HOME'] }}/.local/opt/helm_unittest-{{ helm_unittest_version }}"
+  register: helm_unittest_dir
+
+- name: "Installation"
+  when: not helm_unittest_dir.stat.exists
+  block:
+    - name: "[helm-unittest] Create directory in {{ ansible_facts['env']['HOME'] }}/.local/opt"
+      ansible.builtin.file:
+        path: "{{ ansible_facts['env']['HOME'] }}/.local/opt/helm_unittest-{{ helm_unittest_version }}"
+        state: directory
+        mode: "0755"
+
+    - name: "[helm-unittest] Download helm-unittest {{ helm_unittest_version }}"
+      ansible.builtin.get_url:
+        url: "{{ helm_unittest_url }}"
+        dest: "/tmp/helm-unittest-{{ helm_unittest_version }}.tgz"
+        mode: "0755"
+
+    - name: "[helm-unittest] Untar archive"
+      ansible.builtin.unarchive:
+        src: "/tmp/helm-unittest-{{ helm_unittest_version }}.tgz"
+        dest: "{{ ansible_facts['env']['HOME'] }}/.local/opt/helm_unittest-{{ helm_unittest_version }}"
+
+    - name: "[helm-unittest] Cleanup tgz file"
+      ansible.builtin.file:
+        path: "/tmp/helm-unittest-{{ helm_unittest_version }}.tgz"
+        state: absent
+
+- name: "[helm-unittest] Ensure Helm plugins directory exists"
+  ansible.builtin.file:
+    path: "{{ helm_plugins_dir }}"
+    state: directory
+    mode: "0755"
+
+- name: "[helm-unittest] Check for an existing plugin directory"
+  ansible.builtin.stat:
+    path: "{{ helm_plugins_dir }}/helm-unittest"
+  register: helm_unittest_plugin
+
+- name: "[helm-unittest] Remove plugin installed outside Proveasio (e.g. helm plugin install)"
+  ansible.builtin.file:
+    path: "{{ helm_plugins_dir }}/helm-unittest"
+    state: absent
+  when: helm_unittest_plugin.stat.isdir | default(false)
+
+- name: "[helm-unittest] Link {{ helm_unittest_version }} plugin to {{ helm_plugins_dir }}/helm-unittest"
+  ansible.builtin.file:
+    src: "{{ ansible_facts['env']['HOME'] }}/.local/opt/helm_unittest-{{ helm_unittest_version }}"
+    dest: "{{ helm_plugins_dir }}/helm-unittest"
+    state: link
+    force: true
+
+- name: "[helm-unittest] Save used version"
+  vars:
+    app: helm_unittest
+    target_version:
+      github_packages:
+        helm_unittest: "{{ helm_unittest_version }}"
+    yq_query: ".github_packages.helm_unittest = \"{{ helm_unittest_version }}\""
+  ansible.builtin.include_role:
+    name: common
+    tasks_from: save_version.yml
+    apply:
+      tags:
+        - versions
+  tags:
+    - versions
+
+- name: "[helm-unittest] Cleanup old versions"
+  vars:
+    app: helm_unittest
+    keep: "{{ helm_unittest_version }}"
+  ansible.builtin.include_role:
+    name: common
+    tasks_from: cleanup_versions.yml
+    apply:
+      tags:
+        - versions
+        - cleanup
+  tags:
+    - versions
+    - cleanup

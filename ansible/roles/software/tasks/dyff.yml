@@ -1,0 +1,85 @@
+# dyff - diff tool for YAML files
+# Source: https://github.com/homeport/dyff
+---
+- name: "[dyff] Get Github URL for proper version"
+  vars:
+    app: dyff
+    repo: homeport/dyff
+    version_query: gh_curl https://api.github.com/repos/homeport/dyff/releases/latest | jq .tag_name -r | cut -f2 -d'v'
+    github_uri: "v{{ dyff_version }}/dyff_{{ dyff_version }}_linux_amd64.tar.gz"
+  ansible.builtin.include_role:
+    name: common
+    tasks_from: github_version.yml
+    apply:
+      tags:
+        - versions
+  tags:
+    - versions
+
+- name: "[dyff] Check if dyff {{ dyff_version }} is installed"
+  ansible.builtin.stat:
+    path: "{{ ansible_facts['env']['HOME'] }}/.local/opt/dyff-{{ dyff_version }}"
+  register: dyff_dir
+
+- name: "Installation"
+  when: not dyff_dir.stat.exists
+  block:
+    - name: "[dyff] Create directory in {{ ansible_facts['env']['HOME'] }}/.local/opt"
+      ansible.builtin.file:
+        path: "{{ ansible_facts['env']['HOME'] }}/.local/opt/dyff-{{ dyff_version }}"
+        state: directory
+        mode: "0755"
+
+    - name: "[dyff] Download dyff {{ dyff_version }}"
+      ansible.builtin.get_url:
+        url: "{{ dyff_url }}"
+        dest: "/tmp/dyff-{{ dyff_version }}.tar.gz"
+        mode: "0755"
+
+    - name: "[dyff] Untar archive"
+      ansible.builtin.unarchive:
+        src: "/tmp/dyff-{{ dyff_version }}.tar.gz"
+        dest: "{{ ansible_facts['env']['HOME'] }}/.local/opt/dyff-{{ dyff_version }}"
+
+    - name: "[dyff] Cleanup tar.gz file"
+      ansible.builtin.file:
+        path: "/tmp/dyff-{{ dyff_version }}.tar.gz"
+        state: absent
+
+- name: "[dyff] Link {{ dyff_version }} binary to ~/.local/bin/dyff"
+  ansible.builtin.file:
+    src: "{{ ansible_facts['env']['HOME'] }}/.local/opt/dyff-{{ dyff_version }}/dyff"
+    dest: "{{ ansible_facts['env']['HOME'] }}/.local/bin/dyff"
+    state: link
+    force: true
+
+- name: "[dyff] Save used version"
+  vars:
+    app: dyff
+    target_version:
+      github_packages:
+        dyff: "{{ dyff_version }}"
+    yq_query: ".github_packages.dyff = \"{{ dyff_version }}\""
+  ansible.builtin.include_role:
+    name: common
+    tasks_from: save_version.yml
+    apply:
+      tags:
+        - versions
+  tags:
+    - versions
+
+- name: "[dyff] Cleanup old versions"
+  vars:
+    app: dyff
+    keep: "{{ dyff_version }}"
+  ansible.builtin.include_role:
+    name: common
+    tasks_from: cleanup_versions.yml
+    apply:
+      tags:
+        - versions
+        - cleanup
+  tags:
+    - versions
+    - cleanup

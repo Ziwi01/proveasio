@@ -226,6 +226,10 @@ check_software_az_account_switcher() {
 
 check_software_zoxide()    { run_cmd zoxide --version && expect_receipt .github_packages.zoxide; }
 check_software_helm()      { run_cmd helm version --short && expect_receipt .github_packages.helm; }
+# untt has no version flag; helm plugin list prints the plugin.yaml version.
+check_software_helm_unittest() {
+  run_cmd helm plugin list && expect_out unittest && expect_receipt .github_packages.helm_unittest
+}
 
 check_software_zsh() {
   local p
@@ -276,6 +280,8 @@ check_software_kubectl()   { run_cmd kubectl version --client && expect_receipt 
 check_software_kubecolor() { run_cmd kubecolor --kubecolor-version && expect_receipt .github_packages.kubecolor; }
 check_software_kind()      { run_cmd kind version && expect_receipt .github_packages.kind; }
 check_software_k9s()       { run_cmd k9s version -s && expect_receipt .github_packages.k9s; }
+check_software_kubeconform() { run_cmd kubeconform -v && expect_receipt .github_packages.kubeconform; }
+check_software_dyff()      { run_cmd dyff version && expect_receipt .github_packages.dyff; }
 
 check_software_rvm() {
   local rvm='source "$HOME/.rvm/scripts/rvm"' ruby
@@ -356,6 +362,7 @@ check_software_puppet() {
 
 check_software_terraform()  { run_cmd terraform version && expect_receipt .github_packages.terraform; }
 check_software_terragrunt() { run_cmd terragrunt --version && expect_receipt .github_packages.terragrunt; }
+check_software_tofu()       { run_cmd tofu version && expect_receipt .github_packages.tofu; }
 check_software_azurecli() {
   local az
   run_cmd az version && expect_receipt .azurecli_apt_version deb || return 1
@@ -368,6 +375,7 @@ check_software_awscli()     { run_cmd aws --version && expect_out "aws-cli/" && 
 check_software_uv()         { run_cmd uv --version && expect_receipt .github_packages.uv; }
 check_software_opencode()   { run_cmd opencode --version && expect_receipt .github_packages.opencode; }
 check_software_hunk()       { run_cmd hunk --version && expect_receipt .github_packages.hunk; }
+check_software_shellcheck() { run_cmd shellcheck --version && expect_receipt .github_packages.shellcheck; }
 check_software_ccmux()      { run_cmd ccmux --version && expect_receipt .github_packages.ccmux; }
 
 check_config_zsh() {
