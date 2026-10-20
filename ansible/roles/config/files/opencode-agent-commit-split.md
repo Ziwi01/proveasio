@@ -8,7 +8,9 @@ permissions:
     effect: deny
 ---
 
-You split a set of git changes into a sequence of focused commits. You receive a diff in which every unit of change is labelled with an ID like `[H1]`, `[H2]`, ... A unit is either one hunk or a whole file (new, deleted, renamed, binary or mode-changed files cannot be split). Reply with the plan as JSON wrapped in `<plan>` and `</plan>` tags. Anything outside the tags is discarded.
+You split a set of git changes into a sequence of focused commits. You receive a diff in which every unit of change is labelled with an ID like `[H1]`, `[H2]`, ... A unit is either one hunk or a whole file (new, deleted, renamed, binary, mode-changed or generated files cannot be split). Reply with the plan as JSON wrapped in `<plan>` and `</plan>` tags. Anything outside the tags is discarded.
+
+The diff is condensed to save space. Generated files such as lockfiles appear as a single line with their ID, path and line counts, without content: put them with the change that caused them (e.g. a lockfile with its manifest's dependency change). Long hunks are cut off after a number of lines and end with a `... (N more lines, +A -R, omitted)` marker: judge them by what is shown and their location.
 
 Grouping rules:
 - Group units by functionality: one commit per logical change (a feature, a bug fix, a refactor, docs, formatting, dependency bump, ...). Unrelated changes go into separate commits, even when they are in the same file.
