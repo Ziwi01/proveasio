@@ -13,7 +13,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 
 
-## [latest] - 2026-10-19
+
+## [latest] - 2026-10-20
 ### :boom: BREAKING CHANGES
 - due to [`824bfc9`](https://github.com/Ziwi01/proveasio/commit/824bfc9793a2020e0dffc6abbd88cd7e92918127) - Make packages, yq and zsh required *(commit by [@Ziwi01](https://github.com/Ziwi01))*:
 
@@ -35,6 +36,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - [`ceadb72`](https://github.com/Ziwi01/proveasio/commit/ceadb7242f7308d14cb9c09aed750e4d27551654) - **opencode**: Add support for Opencode v2 *(commit by [@Ziwi01](https://github.com/Ziwi01))*
 - [`c34a47c`](https://github.com/Ziwi01/proveasio/commit/c34a47c26a305a575417fb3b73bf0a22a306e002) - Add support for disabling glyphs and icons for use in remote sessions *(commit by [@Ziwi01](https://github.com/Ziwi01))*
 - [`cfd6676`](https://github.com/Ziwi01/proveasio/commit/cfd6676ad5dd073e7128c5290e9dbe3d1813d34e) - Better support for no nerd fonts *(commit by [@Ziwi01](https://github.com/Ziwi01))*
+- [`685d8e6`](https://github.com/Ziwi01/proveasio/commit/685d8e6e14cad7489527b0108f462dd7822a1a5f) - **lazygit**: Add AI commit message and split helpers *(commit by [@Ziwi01](https://github.com/Ziwi01))*
+- [`dd03603`](https://github.com/Ziwi01/proveasio/commit/dd0360352d4e4d81d62c169cd805477d4494c547) - **software**: Add shellcheck, tofu, kubeconform, dyff and helm-unittest *(commit by [@Ziwi01](https://github.com/Ziwi01))*
+- [`88f45f3`](https://github.com/Ziwi01/proveasio/commit/88f45f36254844c004387753bd1ea669c0b93d31) - **lazygit**: Add Diffview review of proposed commit split *(commit by [@Ziwi01](https://github.com/Ziwi01))*
+- [`4bd34ab`](https://github.com/Ziwi01/proveasio/commit/4bd34abb257df7062dbabc7e40a865add0f5bbc6) - **software**: Add argocd and argonaut *(commit by [@Ziwi01](https://github.com/Ziwi01))*
+- [`e7664b8`](https://github.com/Ziwi01/proveasio/commit/e7664b86aede0cdc78c1182e9a2ec35f5471d6fa) - **software**: Add curlie *(commit by [@Ziwi01](https://github.com/Ziwi01))*
+- [`5060d7e`](https://github.com/Ziwi01/proveasio/commit/5060d7ed28a0611ed3183ae9b50d33f65321bd3c) - **ccmux**: Auto-start daemon and improve plugin detection *(commit by [@Ziwi01](https://github.com/Ziwi01))*
 
 ### :bug: Bug Fixes
 - [`bcb76e3`](https://github.com/Ziwi01/proveasio/commit/bcb76e32e48c2b469d2ff1422b48a7cc14faad8b) - **zsh**: Keep .zshrc working when tools are excluded *(commit by [@Ziwi01](https://github.com/Ziwi01))*
@@ -50,6 +57,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - [`8dd0857`](https://github.com/Ziwi01/proveasio/commit/8dd08577815c8e5e8a970d35f1285d395281935f) - **sudo**: Force sudo-ws, since ansible-core not yet supports sudo-rs *(commit by [@Ziwi01](https://github.com/Ziwi01))*
 - [`e5877a1`](https://github.com/Ziwi01/proveasio/commit/e5877a15aa3d4ce1cae3b5c164efbb6711465cd5) - **ccmux**: Drop OpenCode v1-only workaround, ccmux 1.4.3 supports v2 *(commit by [@Ziwi01](https://github.com/Ziwi01))*
 - [`b681da9`](https://github.com/Ziwi01/proveasio/commit/b681da921702998c319c984a2b5023413aef1fb9) - **opencode**: Retry version lookup when opencode.ai answers 500 *(commit by [@Ziwi01](https://github.com/Ziwi01))*
+- [`2370413`](https://github.com/Ziwi01/proveasio/commit/237041305438062f098553e51a7ab1fa83cdbf53) - **prepare**: Make pyenv bootstrap robust and rerunnable *(commit by [@Ziwi01](https://github.com/Ziwi01))*
 
 ### :wrench: Chores
 - [`7a1da91`](https://github.com/Ziwi01/proveasio/commit/7a1da916db96508a05257669184c70677266a39b) - **opencode**: Better support for installing Opencode v2 *(commit by [@Ziwi01](https://github.com/Ziwi01))*
