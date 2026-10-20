@@ -4,19 +4,19 @@
 
 Uses: [Zoxide](https://github.com/ajeetdsouza/zoxide)
 
-After you've visited any directory (with plain `cd <dir>`, or just `<dir>`) you can easily go back to any directory using `z <pattern>`.
+After you visit a directory (with `cd <dir>`, or just `<dir>`), you can jump back to it from anywhere with `z <pattern>`.
 
 For example:
 
-To go back to `/home/user/projects/ansible`, use something like `z ansible` or `z ans` or similar
+To go back to `/home/user/projects/ansible`, use `z ansible`, `z ans` or similar.
 
-`z` will go to first directory matching the pattern. If there are more directories with `ansible` and you want to go to some other one, use `z <pattern> <TAB>`, which will open a fuzzy finder. See example below.
+`z` goes to the best match (zoxide ranks directories by how often and how recently you visited them). When several directories match and you want another one, type `z <pattern> <TAB>` to pick from a fuzzy finder, or run `zi` for an interactive search.
 
 <details>
   <summary><b>Example:</b> Zoxide fuzzy find</summary>
-  <div align="center">
-    <img src="https://ziwi01.github.io/proveasio/assets/zoxide-ff.gif" />
-  </div>
+
+![zoxide ff](/assets/zoxide-ff.gif)
+
 </details>
 
 ## Find and open files with `fd` and `fzf`
@@ -26,49 +26,51 @@ Uses:
 - [fd](https://github.com/sharkdp/fd)
 - [fzf](https://github.com/junegunn/fzf)
 
-Replace your `find` command with that
+Use `fd <pattern>` instead of `find . -name '*<pattern>*'`. It is faster, ignores files listed in `.gitignore`, and has simpler syntax (`fd -e yml` finds YAML files, `fd -H` includes hidden files).
 
-Easily find files with preview using `bfind` alias (uses `fzf`):
+To find files with a preview, use the `bfind` alias (fzf with a `bat` preview):
 
 <details>
   <summary><b>Example:</b> Search file with `bfind`</summary>
-  <div align="center">
-    <img src="https://ziwi01.github.io/proveasio/assets/bfind.png" />
-  </div>
+
+![bfind](/assets/bfind.png)
+
 </details>
 <br />
 
-You can scroll the file preview using `SHIFT+up` and `SHIFT+down`
+Scroll the preview with <kbd>Shift</kbd>+<kbd>↑</kbd> and <kbd>Shift</kbd>+<kbd>↓</kbd>.
 
-To find files the same way as above and then edit them with VIM, use `vimfind`
+To find a file the same way and open it in Neovim, use `vimfind`.
 
-To go into a directory using fuzzy search, try `<Alt>+t` or `cd **<TAB>`
+The fzf key bindings work in any command line:
+
+- <kbd>Ctrl</kbd>+<kbd>t</kbd> - insert the path of a file picked with fzf
+- <kbd>Alt</kbd>+<kbd>c</kbd> - `cd` into a directory picked with fzf
+- `cd **<TAB>`, `vim **<TAB>` - fuzzy completion for the argument; with `fzf-tab`, plain <kbd>Tab</kbd> completion also opens in fzf
 
 ## Browse command history
 
-Just use good old `CTRL+r`. You will be presented with fuzzy finder to look for a command.
+Press <kbd>Ctrl</kbd>+<kbd>r</kbd> to search your command history with fzf. If you already typed part of a command, the search starts with that text.
 
-You can also start typing something and then hit `CTRL+r`, then it will search for the text already put.
+While you type, `zsh-autosuggestions` shows the last matching command in grey; press <kbd>→</kbd> to accept it.
 
 ## View files with `bat`
 
-`cat` is an alias to `bat` and by default shows line numbers, has syntax highlight and pipes long outputs through a pager.
+`cat` is an alias for `bat` (`batcat` on Ubuntu). It shows line numbers, highlights the syntax and pages long output.
 
-If you need plain output (for copying purposes for example), use `cat -p <file>`. To also disable paging, use `cat -pp <file>`
+For plain output (for example to copy it), use `cat -p <file>`. To also turn paging off, use `cat -pp <file>`. `man` pages are also shown through `bat`.
 
-See `man bat` if you want more options.
-
-If you want to use old unaliased cat, use `\cat`
+See `man batcat` for more options. To run the real `cat`, use `\cat`.
 
 ## Better tail
 
-There is an alias `btail <file>`, which will use BAT as tail command. This gives better output format and some syntax highlighting.
+`btail <file>` follows a file like `tail -f` and highlights it as a log with `bat`.
 
 <details>
   <summary><b>Example:</b> Tail with `btail`</summary>
-  <div align="center">
-    <img src="https://ziwi01.github.io/proveasio/assets/btail.png" />
-  </div>
+
+![btail](/assets/btail.png)
+
 </details>
 
 ## Browse opencode sessions with `ocs`
@@ -117,104 +119,107 @@ Sessions live in `~/.local/share/opencode/opencode.db`. `ocs` only reads it — 
 
 Uses: [pay-respects](https://github.com/iffse/pay-respects)
 
-Misspelling a command is a real pain in the ass. Here comes the solution. When you misspell a command, try hitting `f` (and Enter).
+When a command fails because of a typo or a missing option, type `f` and press <kbd>Enter</kbd>. `pay-respects` suggests the corrected command. This is handy with git, for example after `git push` on a new branch that has no upstream yet.
 
-`pay-respects` will try to correct this command for you. This is handy especially in git commands, for example if you want to push new branch to the remote
+You can add your own rules in a TOML file, see the [pay-respects repository](https://github.com/iffse/pay-respects).
 
-You can add your own rules easily in TOML file - see the repository for details.
+## Docker and Kubernetes
 
-## Docker/Kubernetes
+The Docker engine runs as a systemd service. Check it with `systemctl status docker`. (In the [Docker image](../main/docker/30-run.md#docker-inside-the-container) there is no engine; mount the host's socket instead.)
 
-Docker is installed and available for use. Confirm it with `systemctl status docker` :)
-
-For Kubernetes management from CLI there is a [`kubectl`](https://kubernetes.io/docs/reference/kubectl/kubectl/). For GUI management use [`k9s`](https://k9scli.io/)
-
-To setup a local kubernetes cluster for development purposes you can use [`kind create cluster`](https://kind.sigs.k8s.io/) which will quickly provision new cluster in Docker.
+For `kubectl`, `k9s`, `kind`, Helm and the other Kubernetes tools, see [Kubernetes](./50-kubernetes.md).
 
 ## Keychain ssh-agent
 
-When using SSH keys with a password we can either input the password every time the key is used (pull, push, fetch etc.) or use `ssh-agent` to persist password for this session.
+With a passphrase-protected SSH key, you either type the passphrase every time the key is used (pull, push, fetch) or load the key into `ssh-agent` for the session.
 
-To go further, [`keychain`](https://www.funtoo.org/Funtoo:Keychain) lets you persist the password accross terminal logins until the machine is restarted.
+[`keychain`](https://www.funtoo.org/Funtoo:Keychain) goes further: it keeps one agent running across terminal logins until the machine (or WSL) restarts.
 
-Use:
-
-```ssh
-eval `keychain --eval --agents ssh <key1> <keyN>`
+```shell
+eval "$(keychain --eval --agents ssh id_ed25519)"
 ```
 
-If you only have `id_rsa`, you can ommit passing key(s). Keychain will prompt you for all the passwords for those keys and will persist them across logins (you still need to run above command on new terminal, but it won't prompt you for password). To always call it, add it to `~/.zshrc`
+List the key files from `~/.ssh` you want to load (for example `id_ed25519 id_rsa`). The first time, keychain asks for the passphrases. In later terminals the same command reuses the running agent without asking. To load the keys in every terminal, add the line to `~/.zshrc` (note that the config role manages that file, see [Own config files](../main/customization/30-config-files.md)).
 
 ## Grep with ripgrep
 
 Uses: [ripgrep](https://github.com/BurntSushi/ripgrep)
 
-Instead of `grep`, use `rg`. Its super fast and easy to use.
+Use `rg <pattern>` instead of `grep -r`. It searches recursively by default, skips files in `.gitignore`, and is much faster.
 
-The search will be recursive by default, can use regex and lots more. See its [GUIDE.md](https://github.com/BurntSushi/ripgrep/blob/master/GUIDE.md) if you need more advanced usage.
+```shell
+rg 'github_packages' ansible/        # search a directory
+rg -t yaml 'become: true'            # only YAML files
+rg -l TODO                           # list matching files only
+rg -uu 'secret'                      # include hidden and ignored files
+```
+
+See the [ripgrep guide](https://github.com/BurntSushi/ripgrep/blob/master/GUIDE.md) for more.
 
 ## List directories/files with git status
 
 There are two commands to use for this:
 
-`k`: Looks like `ls -la`, but gives indication on which files/directories have beed modified from Git perspective.
+`ls` (eza) shows the Git status of each file in its own column.
+
+`k` looks like `ls -la`, but marks the files and directories that Git sees as modified.
 
 <details>
   <summary><b>Example:</b> List files with `k`</summary>
-  <div align="center">
-    <img src="https://ziwi01.github.io/proveasio/assets/terminal-k.png" />
-  </div>
+
+![terminal k](/assets/terminal-k.png)
+
 </details>
 <br />
 
-`lsg`: Gives simple, yet more verbose information about what changed (both directory-wise and file-wise)
+`lsg` gives simple, but more verbose information about what changed, for directories and files.
 
 <details>
   <summary><b>Example:</b> List files with `lsg`</summary>
-  <div align="center">
-    <img src="https://ziwi01.github.io/proveasio/assets/terminal-lsg.png" />
-  </div>
+
+![terminal lsg](/assets/terminal-lsg.png)
+
 </details>
 
 ## Git related
 
-Git used from terminal has some tweaks, including aliases, new commands/functions for branch checkout and git status.
+The shell has the aliases of the oh-my-zsh `git` plugin (`gst`, `gco`, `gp` and many more) and a few functions of its own. When you type a command that has an alias, `you-should-use` reminds you of it.
 
-For lots of git commands there are aliases. If you use a command which is aliased, the terminal will remind you that you can use an alias instead.
-
-Aliases below are just helpers in case something needs to be done from terminal directly. Personally I don't use them very often, instead I use LazyGit (invoked from Vim) - see [Lazygit](#lazygit).
+The aliases help when you work from the terminal directly. For most Git work I use lazygit from Neovim, see [lazygit](#lazygit).
 
 ### Checkout branches
 
-`gco` - function alias for `git checkout`. Will show a list of available branches in a fuzzy search so you can pick it from the list. You can also use `gco <branch>` to checkout to specific branch without fuzzing :)
+`gco` picks a branch (local or remote, newest first, with a log preview) in fzf and checks it out. A remote branch gets a local tracking branch. `gco <branch>` checks out without searching. `gb` shows the same picker and prints the branch name, for use in other commands: `git diff $(gb)`.
 
 <details>
   <summary><b>Example:</b> Checkout new branch</summary>
-  <div align="center">
-    <img src="https://ziwi01.github.io/proveasio/assets/git-checkout.png" />
-  </div>
+
+![git checkout](/assets/git-checkout.png)
+
 </details>
 
 ### Status
 
-`gst` - function alias for `git status` - browse through changed files (with preview). From this view you can also stage/unstage files for commit, edit and run a commit.
+`gst` runs `git-fuzzy status`: browse the changed files with a diff preview. From this view you can also stage and unstage files, edit them and commit.
 
 <details>
   <summary><b>Example:</b> Checking git status</summary>
-  <div align="center">
-    <img src="https://ziwi01.github.io/proveasio/assets/git-status.png" />
-  </div>
+
+![git status](/assets/git-status.png)
+
 </details>
 
 ### Log
 
-`glo` - function alias for `git log`. Runs fuzzy search to browse a commit list, with a preview window of this commit on the right side. You can scroll the preview with `Shift+up/down`.
+`glo` runs `git-fuzzy log`: search the commit list, with a preview of the selected commit on the right. Scroll the preview with <kbd>Shift</kbd>+<kbd>↑</kbd>/<kbd>↓</kbd>.
+
+`gd` runs `git-fuzzy diff` the same way for the working tree changes (or `gd <branch>` against a branch).
 
 ### Clone
 
 `gcl <remote_url>` - plain alias for `git clone <remote_url>`
 
-### Origin
+### Remotes
 
 - `grrm <origin_name>` - `git remote remove <origin_name>`
 - `gra <origin_name> <origin_url>` - `git remote add <origin_name> <origin_url>`
@@ -222,13 +227,13 @@ Aliases below are just helpers in case something needs to be done from terminal 
 
 ### LazyGit
 
-All above commands and aliases can be run through [`lazygit`](https://github.com/jesseduffield/lazygit) GUI for managing Git. It has lots of features, which makes Git interactions a breeze, even the painful, complicated ones. You can run it from terminal, but most of my usage comes from within Vim - see [Vim section](./vim).
+[lazygit](https://github.com/jesseduffield/lazygit) is a terminal UI for Git that makes even complicated operations (interactive rebase, cherry-picks, partial staging) easy. Run `lazygit` in a repository, or open it from Neovim, see [lazygit from Neovim](./40-vim.md#lazygit-from-vim).
 
 <details>
   <summary><b>Example:</b> Lazy Git interface</summary>
-  <div align="center">
-    <img src="https://ziwi01.github.io/proveasio/assets/lazygit.png" />
-  </div>
+
+![lazygit](/assets/lazygit.png)
+
 </details>
 
 #### AI commits in Lazygit
@@ -245,37 +250,56 @@ The `lazygit` config adds shortcuts that use [OpenCode](https://opencode.ai) to 
 
 Models can be changed with environment variables: `AI_COMMIT_MODEL` (messages, default `github-copilot/claude-haiku-4.5`) and `AI_COMMIT_SPLIT_MODEL` (splitting, default `github-copilot/claude-sonnet-5.5`).
 
+To keep large change sets within the model's limits, `Alt+S` sends a condensed diff: generated files (lockfiles such as `package-lock.json`, minified assets, and files marked `linguist-generated` in `.gitattributes`) appear as a one-line summary and stay whole in a single commit, and hunks are cut off after `AI_COMMIT_SPLIT_MAX_HUNK_LINES` lines (default `60`, `0` disables it). The commits themselves always contain the full changes. If the condensed diff is still larger than `AI_COMMIT_SPLIT_MAX_DIFF_BYTES` (default `400000`), stage a subset first.
+
 ## Languages
 
 ### Python
 
-By default, Python gets installed using [`pyenv`](https://github.com/pyenv/pyenv) manager for mulitple Python versions. It gets pretty recent version (check with `pyenv versions`). All PIP packages, which get installed during ansible run are installed in that default Python environment, so system Python is intact.
+Python is installed with the [`pyenv`](https://github.com/pyenv/pyenv) version manager, in a recent version (check with `pyenv versions`). The pip packages from the playbook are installed into that Python, so the system Python stays untouched.
 
 :::tip
 You can install new Python versions with `pyenv install <python_version>`. List available versions with `pyenv install -l`.
 :::
 
-To change running version:
+To change the Python version:
 
-- for current shell session: `pyenv shell <version>`
-- to change default: `pyenv global <version>`
-- to change version whenever you are in current directory, use `pyenv local <version>`
+- for the current shell: `pyenv shell <version>`
+- as the default: `pyenv global <version>`
+- for a directory (writes `.python-version`): `pyenv local <version>`
+
+Virtual environments with `pyenv-virtualenv`:
+
+```shell
+pyenv virtualenv 3.14.0 myproject   # create
+pyenv local myproject               # activate it whenever you are in this directory
+```
+
+For projects, [uv](https://docs.astral.sh/uv/) is often faster and simpler. It creates the virtual environment and the lock file for you:
+
+```shell
+uv init myproject && cd myproject
+uv add requests           # add a dependency to pyproject.toml and .venv
+uv run python main.py     # run inside the project environment
+uvx ruff check .          # run a tool without installing it
+```
 
 ### Go
 
-Automatic installation of Go is done using [`GVM`](https://github.com/moovweb/gvm) - Go Version Manager. By default `go1.20.4` gets installed (at the time of writing).
+Go is installed with [GVM](https://github.com/moovweb/gvm) (Go Version Manager). The default version is set by `go_default` in `ansible/roles/software/vars/main.yml`.
 
 :::tip
-You can install more Go versions either manually (`gvm install <version>`) or you can add/set your prefered version(s) in `ansible/vars/overrides.yml` (and run the automation):
-:::
+Install more Go versions by hand (`gvm install <version>`), or list them in `ansible/vars/overrides.yml` and run the playbook with `--tags gvm`:
 
 ```yaml
 go_versions:
-  - go1.20.4
-go_default: go1.20.4
+  - go1.26.1
+  # - <another version from `gvm listall`>
+go_default: go1.26.1
 ```
 
-Note that `go_default` value must be in `go_versions` :)
+`go_default` must be one of `go_versions`.
+:::
 
 - list installed Go versions: `gvm list`
 - list all available Go versions: `gvm listall`
@@ -286,21 +310,40 @@ Note that `go_default` value must be in `go_versions` :)
 
 ### Ruby
 
-Ruby is managed through [`rvm`](https://github.com/rvm/rvm) (Ruby enVironment Manager). By default, fairly recent version of Ruby is installed (check with `rvm list`).
+Ruby is managed by [`rvm`](https://github.com/rvm/rvm) (Ruby enVironment Manager). The Rubies in `rvm1_rubies` are installed (check with `rvm list`).
 
 :::tip
-You can install new Rubies with `rvm install <ruby_version>` (if no version is passed, latest available will be installed), get the list of all available versions with `rvm list known`
+Install more Rubies with `rvm install <ruby_version>`; list the available versions with `rvm list known`.
 
-To switch used version, run `rvm use <version>`. To make it default for your shell, add `--default` switch.
+To switch the version, run `rvm use <version>`. To make it the default, add `--default`.
 :::
+
+### Node
+
+Node is managed by [nvm](https://github.com/nvm-sh/nvm). nvm loads on its first use, so the shell starts fast; the default Node is on the `PATH` right away.
+
+- list installed versions: `nvm list`
+- install a version: `nvm install 24` or `nvm install --lts`
+- switch: `nvm use <version>`; make it the default: `nvm alias default <version>`
+- per project: put the version in `.nvmrc` and run `nvm use`
+
+The global npm packages from `npm_default_packages` are installed for the default Node.
+
+### Rust
+
+Rust is installed with `rustup`:
+
+- update the toolchain: `rustup update`
+- install a tool from crates.io: `cargo install <crate>`
+- new project: `cargo new myproject`
 
 ### Java/Gradle/Groovy
 
-All those three languages (and more) are managed by [SDKMAN!](https://sdkman.io/) manager.
+Java, Gradle, Groovy, Maven and many other JVM tools are managed by [SDKMAN!](https://sdkman.io/).
 
-- list installation candidates: `sdk list` or simply `list`.
+- list installation candidates: `sdk list`
 - list available versions for candidate: `sdk list <candidate>`. Candidate can be for example: java, groovy, gradle.
 - install candidate version: `sdk install <candidate> <version>`
 - use particular version: `sdk use <candidate> <version>`
 - check currently used candidate version: `sdk current <candidate>`
-- to have automatic version change whenever you enter a directory, you need to place there `.sdkmanrc` file. You can do that by running `sdk env init` inside a directory, and it will create `.sdkmanrc` file with current java used. You can add more `key=value` pairs, for each SDK candidate (e.g `groovy=<my_version>` or other)
+- to pin versions per project, run `sdk env init` in the project directory. It creates `.sdkmanrc` with the current Java; add a `key=value` line for each other candidate (for example `groovy=<version>`). Run `sdk env` there to switch to those versions.

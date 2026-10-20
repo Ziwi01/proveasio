@@ -1,17 +1,22 @@
 # `config`
 
-This role is mostly configs management. It will apply configuration for:
+This role lays down the configuration files. Each row is one task file in `ansible/roles/config/tasks/`; its name is the tag and the `config_tasks_exclude` name.
 
-- ZSH/powerlevel10k theme (`~/.zshrc` / `~/.p10k.zsh`)
-- Tmux (`~/.tmux.conf`)
-- GIT config (`~/.gitconfig`)
-- thefuck (`~/.config/thefuck/settings.py`)
-- LazyGIT (`~/.config/lazygit/config.yml`, AI commit scripts in `~/.config/lazygit/scripts/` and the `commit-msg`/`commit-split` agents in `~/.config/opencode/agents/` - see [LazyGit AI commits](../../usage/terminal#ai-commits-in-lazygit))
-- ansible-lint (`~/.ansible-lint`)
-- SDKMAN (`~/.sdkman/etc/config`)
-- ccmux (`~/.config/ccmux/ccmux.json`)
+| Name | Files |
+|---|---|
+| `zsh` (required) | `~/.zshrc`, from `ansible/roles/config/templates/zshrc.j2` |
+| `p10k` | `~/.p10k.zsh` (powerlevel10k prompt) |
+| `tmux` | `~/.tmux.conf`, the tmux plugins, `~/.local/bin/tmux-default-session-name`, and `~/.tmuxp/default_session.yaml` when `~/.tmuxp` is empty |
+| `git` | `~/.gitconfig`, from `ansible/roles/config/templates/gitconfig.j2` (uses the `git.name` and `git.mail` variables) |
+| `lazygit` | `~/.config/lazygit/config.yml`, `lazygit-no-nerd-fonts.yml`, the AI commit scripts in `~/.config/lazygit/scripts/` and the `commit-msg`/`commit-split` agents in `~/.config/opencode/agents/`. See [AI commits in lazygit](../../usage/20-terminal.md#ai-commits-in-lazygit). |
+| `neovim-config` | The Neovim config in `~/.config/<neovim_config_appname>` (default `~/.config/astronvim`), cloned from `neovim_config_url` or copied from a local directory. See [Own config files](../customization/30-config-files.md). |
+| `ansible` | `~/.ansible-lint` |
+| `sdkman` | `~/.sdkman/etc/config` |
+| `ccmux` | `~/.config/ccmux/ccmux.json` and `~/.local/bin/ccmux-wsl-notify` |
 
-If you want to exclude particular component configuration, you can add an array of sections, for example:
+`zsh` is required. The playbook stops at the start if `config_tasks_exclude` lists it.
+
+To leave out the configuration of some components, list them in `ansible/vars/overrides.yml`:
 
 ```yaml
 config_tasks_exclude:
@@ -19,26 +24,14 @@ config_tasks_exclude:
   - tmux
 ```
 
-See [excluding code](../customization/excludes) for details.
-
-`zsh` is required. The playbook stops at the start if `config_tasks_exclude`
-lists it.
-
-Available configs excludes:
-
-- p10k
-- tmux
-- sdkman
-- git
-- lazygit
-- neovim-config
-- ansible
-- ccmux
+See [Excluding code](../customization/40-excludes.md) for details.
 
 ## Backups
 
-By default, a configuration file is backed up in `~/.configs_backup`, in form of `<app>-<filename>-<date>`, whenever Proveasio actually changes it (unchanged files are not re-backed up).
+Before Proveasio changes a configuration file, it saves a copy in `~/.configs_backup`, named `<app>-<filename>-<date>`. Files that do not change are not backed up again.
 
-To disable taking backups, set:
+To turn backups off, set:
 
-`config_files_backup: false`
+```yaml
+config_files_backup: false
+```

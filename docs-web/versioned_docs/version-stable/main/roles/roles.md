@@ -1,18 +1,20 @@
 ---
-sidebar_position: 6
+sidebar_position: 9
 ---
 
 # Ansible roles
 
-This project is mostly based on [Ansible](https://www.ansible.com/). Below are the implementation details. You can browse through the configuration/task files to get a grip on what's going on exactly.
+Proveasio is a set of [Ansible](https://www.ansible.com/) roles. This section describes what each role does. To see exactly what happens, read the task files.
 
-There are 2 essential roles:
+There are four roles:
 
-- `software` - installs everything that needs to be installed
-- `config` - configures everything that needs to be configured
+- [`software`](./10-software.md) - installs the tools.
+- [`config`](./20-config.md) - lays down the configuration files (dotfiles). It runs after `software`.
+- `common` - internal helper tasks used by the other two (version lookups, saving versions, config files with backups, cleanup of old versions). It never runs on its own.
+- `windows` - the experimental Windows setup, run by `setup-windows.yml`. See [Windows automation](../windows/20-automated.md).
 
-Each role has their main configuration in `ansible/roles/<role>/vars/main.yml`. Also, their tasks are gathered in `ansible/roles/<role>/tasks/main.yml`. It is good idea to take a peek on all the .yml files in `tasks/` directories also. For detailed description of how those things work together, see [Usages](../../usage/about). To override any variable(s), please use `ansible/vars/overrides.yml` - see [Customizations](../../category/customizations).
+`setup-ubuntu.yml` runs `software`, then `config`.
 
-:::note
-There is also `common` role, to keep internal helper tasks.
-:::
+Each role has its settings in `ansible/roles/<role>/vars/main.yml` and its task list in `ansible/roles/<role>/tasks/main.yml`; every included tool has its own task file next to it.
+
+To change a setting, do not edit `vars/main.yml`. Set the variable in `ansible/vars/overrides.yml`, see [Customizations](../../category/customizations).

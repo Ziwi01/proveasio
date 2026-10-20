@@ -1,120 +1,112 @@
 # `software`
 
-This role will install all necessary things to have the terminal pretty and useful.
+This role installs the tools. Each row below is one task file in `ansible/roles/software/tasks/`. Its name is both the **tag** (`--tags <name>`, see [Run particular code](../customization/50-partial-run.md)) and the **exclude name** (`software_tasks_exclude`, see [Excluding code](../customization/40-excludes.md)).
 
-Various tools:
+Most tools are downloaded from their GitHub releases into `~/.local/opt/<tool>-<version>` and linked into `~/.local/bin`. Old versions are removed afterwards, see [Cleaning up old versions](../customization/45-cleanup.md).
 
-1. ZSH shell based on [Oh-my-ZSH](https://github.com/ohmyzsh/ohmyzsh) framework, with [powerlevel10k](https://github.com/romkatv/powerlevel10k) theme, and some custom plugins.
-2. [EZA](https://github.com/eza-community/eza) - modern replacement for `ls` with icons, colours, Git integration and ZSH completions. Aliased as `ls` and `ll`.
-3. [LS with GIT status](https://github.com/gerph/ls-with-git-status) - list files/directories with GIT info
-3. [FZF Fuzzy finder](https://github.com/junegunn/fzf) - insane speed fuzzy finder with milion usage scenarios
-4. [Diff-so-fancy](https://github.com/so-fancy/diff-so-fancy) - alternate GIT DIFF presentation
-5. [Git fuzzy](https://github.com/bigH/git-fuzzy.git) - managing GIT commands using FZF
-6. [Gita](https://github.com/nosarthur/gita) - managing multiple GIT repositories at once (add groups, execute git or shell commands for those groups etc.)
-7. [pay-respects](https://github.com/iffse/pay-respects) - corrects errors in previous console commands
-8. [BAT](https://github.com/sharkdp/bat) - (much) better CAT
-9. [Zoxide](https://github.com/ajeetdsouza/zoxide) - traverse directories with ease (also with FZF)
-10. [Helm](https://github.com/helm/helm) - Kubernetes 'package manager'
-11. [Ripgrep](https://github.com/BurntSushi/ripgrep) - `grep` on steroids. Blazing fast, easy to use
-12. [fd](https://github.com/sharkdp/fd) - `find` alternative, much faster
-13. [htop](https://htop.dev/) - process viewer, prettier `top` alternative
-14. [TMUX](https://github.com/tmux/tmux) - terminal multiplexer
-15. [LazyGIT](https://github.com/jesseduffield/lazygit) - GIT wrapper for both terminal and VIM
-16. [keychain](https://www.funtoo.org/Funtoo:Keychain) - ssh-agent wrapper to keep SSH keys across terminal logins
-17. [yq](https://mikefarah.gitbook.io/yq/) - awesome terminal YAML parser (also JSON, XML etc.)
-18. [FX](https://github.com/antonmedv/fx) - terminal JSON viewer and processor
-19. [hunk](https://github.com/modem-dev/hunk) - terminal-based code review and diff viewer with syntax highlighting
-20. [opencode](https://github.com/anomalyco/opencode) - terminal-based AI coding agent. Installs v2 by default; pin a 1.x version to keep v1 (see [Versions management](../customization/20-versions.md#opencode-v1-and-v2))
-21. [ccmux](https://github.com/epilande/ccmux) - run and track AI coding agents (opencode, Claude Code, Codex and more) in tmux, with live session states, a status sidebar and desktop notifications. Integrates with `opencode` out of the box and, on WSL, bridges notifications to Windows toasts via [wsl-notify-send](https://github.com/stuartleeks/wsl-notify-send)
-22. [curlie](https://github.com/rs/curlie) - `curl` frontend with HTTPie-style output. Accepts all `curl` options
+## Required
 
-Development-related software:
+These cannot be excluded. The playbook stops at the start if `software_tasks_exclude` lists one of them.
 
-1. [Neovim](https://github.com/neovim/neovim) - more handsome VIM brother
-2. [AstroNvim](https://astronvim.com/) - Neovim IDE-like extension with awesome plugins/configurations included out of the box
-3. [RVM](https://rvm.io/) (Ruby enVironment Manager, installed using [rvm1-ansible-role](https://github.com/rvm/rvm1-ansible)), along with Ruby `3.1.3`
-4. [PDK](https://puppet.com/try-puppet/puppet-development-kit/) (Puppet Development Kit)
-5. [NVM](https://github.com/nvm-sh/nvm) (Node Version Manager) with latest LTS Node version (by default). Among all - dependency for LunarVIM installation
-6. [SDKMAN](https://sdkman.io/) - Manage multiple versions of groovy/java and other JDKs/SDKs.
-7. [pyenv](https://github.com/pyenv/pyenv) - Python version manager not to mess system python
-8. [pyenv-virtualenv](https://github.com/pyenv/pyenv-virtualenv) - Python virtual environment manager to have separate environments with different packages for projects using same Python version
-9. [ShellCheck](https://github.com/koalaman/shellcheck) - static analysis for shell scripts (latest GitHub release, newer than the Ubuntu package)
+| Name | Installs |
+|---|---|
+| `packages` | Ubuntu packages from `default_apt_packages`: `tree`, `htop`, `jq`, `bat`, `gh`, `gdu`, `keychain`, `sqlite3`, build tools and more. Tag: `software_packages`. |
+| `yq` | [yq](https://mikefarah.gitbook.io/yq/) - YAML, JSON and XML processor. The playbook itself uses it. |
+| `zsh` | [oh-my-zsh](https://github.com/ohmyzsh/ohmyzsh) plugins from `omz_plugins` and the [powerlevel10k](https://github.com/romkatv/powerlevel10k) theme |
 
-Infrastructure and Kubernetes tools:
+## Shell and terminal
 
-1. [OpenTofu](https://github.com/opentofu/opentofu) (`tofu`) - open source fork of Terraform
-2. [kubeconform](https://github.com/yannh/kubeconform) - Kubernetes manifests validator
-3. [dyff](https://github.com/homeport/dyff) - diff tool for YAML files, with Kubernetes-aware output
-4. [helm-unittest](https://github.com/helm-unittest/helm-unittest) - unit tests for Helm charts (`helm unittest`). Installed as a Helm plugin, so it needs `helm`. The plugin is linked into `helm_plugins_dir` (default `~/.local/share/helm/plugins`). A `helm-unittest` plugin installed there by other means (for example `helm plugin install`) is removed and replaced.
-5. [Argo CD CLI](https://github.com/argoproj/argo-cd) (`argocd`) - command line client for Argo CD, with ZSH completions
-6. [Argonaut](https://github.com/darksworm/argonaut) - terminal UI for Argo CD. It uses the session saved by `argocd login`
+| Name | Installs |
+|---|---|
+| `tmux` | [tmux](https://github.com/tmux/tmux), built from source, with the [tpm](https://github.com/tmux-plugins/tpm) plugin manager |
+| `fzf` | [fzf](https://github.com/junegunn/fzf) - fuzzy finder |
+| `zoxide` | [zoxide](https://github.com/ajeetdsouza/zoxide) - jump to visited directories |
+| `eza` | [eza](https://github.com/eza-community/eza) - modern `ls`, aliased as `ls` and `ll`, with zsh completion |
+| `ripgrep` | [ripgrep](https://github.com/BurntSushi/ripgrep) - fast recursive grep |
+| `fd` | [fd](https://github.com/sharkdp/fd) - fast `find` alternative |
+| `fx` | [fx](https://github.com/antonmedv/fx) - terminal JSON viewer |
+| `pay-respects` | [pay-respects](https://github.com/iffse/pay-respects) - corrects the previous command |
+| `bottom` | [bottom](https://github.com/ClementTsang/bottom) (`btm`) - system monitor |
+| `curlie` | [curlie](https://github.com/rs/curlie) - `curl` frontend with HTTPie-style output; accepts all `curl` options |
+| `shellcheck` | [ShellCheck](https://github.com/koalaman/shellcheck) - static analysis for shell scripts (latest release, newer than the Ubuntu package) |
+| `w32yank` | [win32yank](https://github.com/equalsraf/win32yank) - Windows clipboard for Neovim on WSL |
 
-Also, common useful packages, like `tree` (directory tree), `jq`/`yq` (JSON/YAML parser) and many others.
+## Git
 
-In `ansible/roles/software/vars/main.yml` file, you can find everything that can be configured in terms of software. See [Configuration customizations](../../category/customizations) for details.
+| Name | Installs |
+|---|---|
+| `git` | Latest [Git](https://git-scm.com/) from the [git-core PPA](https://launchpad.net/~git-core/+archive/ubuntu/ppa) |
+| `lazygit` | [lazygit](https://github.com/jesseduffield/lazygit) - terminal UI for Git |
+| `diff-so-fancy` | [diff-so-fancy](https://github.com/so-fancy/diff-so-fancy) - readable diffs |
+| `git-fuzzy` | [git-fuzzy](https://github.com/bigH/git-fuzzy) - Git commands in fzf |
+| `gita` | [Gita](https://github.com/nosarthur/gita) - run commands on groups of repositories |
+| `lsg` | [ls-with-git-status](https://github.com/gerph/ls-with-git-status) - `ls` with Git status |
+| `hunk` | [hunk](https://github.com/modem-dev/hunk) - terminal code review and diff viewer |
 
-To disable installation of anything, you can add an array in your overrides file, for example:
+## Editor
 
-```
+| Name | Installs |
+|---|---|
+| `neovim` | [Neovim](https://github.com/neovim/neovim), as an AppImage or a tarball (`neovim_package`). The config is installed by the [config role](./20-config.md). |
+
+## Languages and version managers
+
+| Name | Installs |
+|---|---|
+| `nvm` | [NVM](https://github.com/nvm-sh/nvm) with the latest LTS Node (`node_version`) and the npm packages from `npm_default_packages` |
+| `gvm` | [GVM](https://github.com/moovweb/gvm) with the Go versions from `go_versions` |
+| `rvm` | [RVM](https://rvm.io/) (with [rvm1-ansible](https://github.com/rvm/rvm1-ansible)) and the Rubies from `rvm1_rubies` (default `ruby-3.4.7`) |
+| `sdkman` | [SDKMAN!](https://sdkman.io/) with Java, Gradle, Groovy and Maven (`sdkman_install_packages`) |
+| `rust` | [Rust](https://www.rust-lang.org/) with `rustup` and Cargo |
+| `uv` | [uv](https://github.com/astral-sh/uv) - Python package and project manager |
+| `ansible` | Ansible and ansible-lint (pip), and the Ansible Language Server (npm, needs `nvm`) |
+| `puppet` | `puppet` and `puppet-lint` gems for the Rubies in `puppet_rubies`, [PDK](https://www.puppet.com/docs/pdk/latest/pdk.html) and [Puppet Editor Services](https://github.com/puppetlabs/puppet-editor-services) (needs `rvm`) |
+
+Python itself is installed by `prepare-ubuntu.sh` with [pyenv](https://github.com/pyenv/pyenv) and [pyenv-virtualenv](https://github.com/pyenv/pyenv-virtualenv), not by this role.
+
+## Containers and Kubernetes
+
+| Name | Installs |
+|---|---|
+| `docker` | [Docker](https://www.docker.com/) engine and the Compose plugin from Docker's APT repository (`docker_apt_packages`). With `docker_manage_service: false` and `docker-ce: absent` it installs only the client. |
+| `dry` | [dry](https://github.com/moncho/dry) - terminal UI for Docker |
+| `kubectl` | [kubectl](https://kubernetes.io/docs/reference/kubectl/), latest stable from `dl.k8s.io` |
+| `kubecolor` | [kubecolor](https://github.com/kubecolor/kubecolor) - colorized `kubectl` (aliased as `kubectl`) |
+| `kubeswitch` | [kubeswitch](https://github.com/danielfoehrKn/kubeswitch) (`switch`) - switch contexts and namespaces |
+| `kind` | [kind](https://kind.sigs.k8s.io/) - local Kubernetes clusters in Docker |
+| `k9s` | [k9s](https://github.com/derailed/k9s) - terminal UI for Kubernetes |
+| `helm` | [Helm](https://github.com/helm/helm) - Kubernetes package manager |
+| `helm-unittest` | [helm-unittest](https://github.com/helm-unittest/helm-unittest) - unit tests for Helm charts (`helm unittest`). A Helm plugin, so it needs `helm`. It is linked into `helm_plugins_dir` (default `~/.local/share/helm/plugins`); a `helm-unittest` plugin installed there by other means is replaced. |
+| `kubeconform` | [kubeconform](https://github.com/yannh/kubeconform) - Kubernetes manifest validator |
+| `dyff` | [dyff](https://github.com/homeport/dyff) - YAML diff with Kubernetes-aware output |
+| `argocd` | [Argo CD CLI](https://github.com/argoproj/argo-cd) with zsh completion |
+| `argonaut` | [Argonaut](https://github.com/darksworm/argonaut) - terminal UI for Argo CD; uses the session saved by `argocd login` |
+
+## Infrastructure as code and cloud
+
+| Name | Installs |
+|---|---|
+| `terraform` | [Terraform](https://github.com/hashicorp/terraform) |
+| `tofu` | [OpenTofu](https://github.com/opentofu/opentofu) |
+| `terragrunt` | [Terragrunt](https://github.com/gruntwork-io/terragrunt) |
+| `azurecli` | [Azure CLI](https://learn.microsoft.com/en-us/cli/azure/) and [kubelogin](https://github.com/Azure/kubelogin) |
+| `az-account-switcher` | [az-account-switcher](https://github.com/abij/az-account-switcher) (`az-switch`) |
+| `awscli` | [AWS CLI](https://github.com/aws/aws-cli) v2 |
+
+## AI coding agents
+
+| Name | Installs |
+|---|---|
+| `opencode` | [opencode](https://github.com/anomalyco/opencode) - terminal AI coding agent. Installs v2 by default; pin a 1.x version to keep v1 (see [opencode v1 and v2](../customization/20-versions.md#opencode-v1-and-v2)). |
+| `ccmux` | [ccmux](https://github.com/epilande/ccmux) - run and track AI coding agents (opencode, Claude Code, Codex and more) in tmux, with live session states, a sidebar and desktop notifications |
+| `wsl-notify-send` | [wsl-notify-send](https://github.com/stuartleeks/wsl-notify-send) - bridges ccmux notifications to Windows toasts on WSL |
+
+## Configuration
+
+Everything this role can configure is in `ansible/roles/software/vars/main.yml`. Override it in `ansible/vars/overrides.yml`, see [Customizations](../../category/customizations). For example, to skip some tools:
+
+```yaml
 software_tasks_exclude:
   - azurecli
   - puppet
 ```
-
-See [excluding code](../customization/excludes) for details.
-
-`packages`, `yq` and `zsh` are required. The playbook stops at the start if
-`software_tasks_exclude` lists one of them.
-
-Available software excludes:
-
-- fx
-- git
-- ripgrep
-- fd
-- eza
-- lsg
-- fzf
-- diff-so-fancy
-- git-fuzzy
-- dry
-- lazygit
-- gita
-- bottom
-- pay-respects
-- kubeswitch
-- az-account-switcher
-- zoxide
-- helm
-- helm-unittest
-- w32yank
-- tmux
-- docker
-- kubectl
-- kubecolor
-- kind
-- k9s
-- kubeconform
-- dyff
-- argocd
-- argonaut
-- rvm
-- sdkman
-- nvm
-- rust
-- gvm
-- ansible
-- neovim
-- puppet
-- terraform
-- terragrunt
-- tofu
-- azurecli
-- awscli
-- uv
-- opencode
-- hunk
-- curlie
-- shellcheck
-- wsl-notify-send
-- ccmux

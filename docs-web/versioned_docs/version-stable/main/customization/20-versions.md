@@ -1,28 +1,24 @@
 # Versions management
 
-:::warning[Latest defaults]
-Please note that all software versions since 2.0.0 are set to 'latest'.
-
-If you need to have particular software version static, add it to [overrides.yml](./variables)
-
-This change ensure seamless support for both Ubuntu 22 and 24
+:::info[Latest by default]
+Since Proveasio 2.0.0, every tool version defaults to `latest`. To keep a tool on a particular version, pin it in [overrides.yml](./10-variables.md).
 :::
 
 After every ansible run, it prints all the versions which were installed/updated.
 
-Also, it saves/updates them in `./current-versions.yml`. This file is added to `.gitignore`, so it is not versioned.
+It also writes them to `current-versions.yml` in the repository root. The file is in `.gitignore`. It is a record of what was installed on this machine; the playbook never reads it, and it keeps keys of tools you no longer install. Do not edit it.
 
 <details>
   <summary><b>Example:</b> Versions output</summary>
-  <div align="center">
-    <img src="https://ziwi01.github.io/proveasio/assets/versions.png" />
-  </div>
+
+![versions](/assets/versions.png)
+
 </details>
 <br />
 
-If you use `master` branch (which has all the versions set to `latest`), and you want stability for particular component, you can copy any of those outputs and add them to your `ansible/vars/overrides.yml` so this version will be used for any subsequent runs.
+To keep a component stable, copy its version from that output into `ansible/vars/overrides.yml`. Later runs then install that version. Copy only the versions you want to pin, not the whole file.
 
-:::note[Overriding one version in a group]
+::::note[Overriding one version in a group]
 You only need to set the packages you actually want to pin. Version catalogs
 (`github_packages`, `pip_packages`, `docker_apt_packages`) in your
 `ansible/vars/overrides.yml` are **merged on top of the defaults**, so any
@@ -46,8 +42,8 @@ happens; you can safely trim your `overrides.yml` down to just the pins you care
 about.
 :::
 
-Please also note, that not every software version supports `latest`. Some need to be set explicitly. See `ansible/roles/software/vars/main.yml` for all static vars.
-:::
+Not every tool supports `latest`. SDKMAN candidates, Ruby gems and a few others need an explicit version. See `ansible/roles/software/vars/main.yml`.
+::::
 
 ## opencode v1 and v2
 

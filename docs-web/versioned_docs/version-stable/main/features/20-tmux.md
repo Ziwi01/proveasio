@@ -4,9 +4,9 @@
 
 <details>
   <summary><b>Example:</b> TMUX splits</summary>
-  <div align="center">
-    <img src="https://ziwi01.github.io/proveasio/assets/tmux-overview.png" />
-  </div>
+
+![tmux overview](/assets/tmux-overview.png)
+
 </details>
 
 Custom modifications in `roles/config/files/tmux.conf` include:

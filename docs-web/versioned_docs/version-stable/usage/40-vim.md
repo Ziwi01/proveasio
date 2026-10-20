@@ -1,14 +1,10 @@
 # Neovim
 
-Neovim is installed by default and used as a default editor.
+Neovim is the default editor (`EDITOR`), aliased as `vim`. The default config is [Ziwi01/astronvim](https://github.com/Ziwi01/astronvim), built on the [AstroNvim](https://docs.astronvim.com) distribution. This page describes that config.
 
-## Changing Neovim config
+## Changing the Neovim config
 
-By default, I clone my personal Neovim config, which is using [AstroNvim](https://docs.astronvim.com) Neovim distribution.
-
-You can use your own config - either entirely different, or you can fork my config and tailor it to your needs.
-
-Neovim config is defined in variables as below:
+You can use your own config, either a completely different one or a fork of the default. These variables select it:
 
 ```yaml
 neovim_config_url: https://github.com/Ziwi01/astronvim.git
@@ -16,261 +12,202 @@ neovim_config_version: main
 neovim_config_appname: astronvim
 ```
 
-The config will be cloned into `$HOME/.config/{{ neovim_config_appname }}`
+The config is cloned into `~/.config/<neovim_config_appname>`, and `NVIM_APPNAME` is set to the same name, so it does not collide with a config in `~/.config/nvim`. To use a local directory instead of a repository, see [Own config files](../main/customization/30-config-files.md).
 
-## AstroNvim
+## Basics
 
-Inside Vim, the main key (leader key) is `<Space>` - most of the shortucts start with that.
+The leader key is <kbd>Space</kbd>, written `<Space>` below. Most shortcuts start with it.
+
+Press `<Space>` (or any other key that starts a mapping) and wait: [which-key](https://github.com/folke/which-key.nvim) shows every mapping that continues from there. Search all mappings with `<Space>fk`.
+
+Language support (language servers, formatters, linters, Treesitter parsers) comes from AstroNvim's language packs for Ansible, Bash, Docker, Go, Helm, Java, JSON, Lua, Markdown, Python, Ruby, Terraform and YAML. [Mason](https://github.com/mason-org/mason.nvim) installs the servers on the first start; check them with `:Mason`.
 
 ### Plugins
 
-:::note
-Below list is not comprehensive - it needs to be updated with all used plugins description
-:::
+The full list is in [community.lua](https://github.com/Ziwi01/astronvim/blob/main/lua/community.lua) (plugins from the [AstroNvim community repository](https://github.com/AstroNvim/astrocommunity)) and the [plugins directory](https://github.com/Ziwi01/astronvim/tree/main/lua/plugins). Some of the most useful:
 
-Some example plugins used in this config:
+| Plugin | What it does |
+|---|---|
+| [neo-tree](https://github.com/nvim-neo-tree/neo-tree.nvim) | File browser (`<Space>e`) |
+| [snacks.nvim](https://github.com/folke/snacks.nvim) picker | Find files, text, buffers, keymaps (`<Space>f…`) |
+| [lazygit.nvim](https://github.com/kdheepak/lazygit.nvim), [vim-fugitive](https://github.com/tpope/vim-fugitive), [diffview.nvim](https://github.com/sindrets/diffview.nvim), [gv.vim](https://github.com/junegunn/gv.vim), [git-blame.nvim](https://github.com/f-person/git-blame.nvim) | Git, see [Git](#git) |
+| [codediff.nvim](https://github.com/esmuellert/codediff.nvim), [vim-dirdiff](https://github.com/will133/vim-dirdiff) | Diff files and directories |
+| [grug-far.nvim](https://github.com/MagicDuck/grug-far.nvim), [ferret](https://github.com/wincent/ferret) | Search and replace across files |
+| [leap.nvim](https://github.com/ggandor/leap.nvim) | Jump anywhere on the screen (`s`, `S`) |
+| [vim-tmux-navigator](https://github.com/christoomey/vim-tmux-navigator) | Move between Neovim splits and tmux panes with <kbd>Alt</kbd>+arrows |
+| [trouble.nvim](https://github.com/folke/trouble.nvim) | Diagnostics, references and quickfix lists (`<Space>x…`) |
+| [nvim-bqf](https://github.com/kevinhwang91/nvim-bqf) | Better quickfix window with previews |
+| [goto-preview](https://github.com/rmagatti/goto-preview) | Show a definition in a floating window (`gpd`) instead of jumping to it |
+| [vim-easy-align](https://github.com/junegunn/vim-easy-align) | Align text on a character |
+| [auto-save.nvim](https://github.com/okuuva/auto-save.nvim) | Saves files automatically |
+| [vim-illuminate](https://github.com/RRethy/vim-illuminate) | Highlights other uses of the word under the cursor |
+| [telescope-zoxide](https://github.com/jvgrootveld/telescope-zoxide) | Jump to a zoxide directory (`<Space>z`) |
+| [opencode.nvim](https://github.com/NickvanDyke/opencode.nvim), [CodeCompanion](https://github.com/olimorris/codecompanion.nvim), [copilot.lua](https://github.com/zbirenbaum/copilot.lua) | AI assistants, see [AI agents](./80-ai.md#ai-in-neovim) |
 
-- [nanotee/zoxide.vim](https://github.com/nanotee/zoxide.vim) - Zoxide inside VIM: `:Zi` or `:Z <query>`.For Zoxide descrption see above for Zoxide description
-- [will133/vim-dirdiff](https://github.com/will133/vim-dirdiff) - Diff directories. (`:DirDiff <dir1> <dir2>`)
-- [Sid0fc/mkdx](https://github.com/SidOfc/mkdx) - Markdown support
-- [junegunn/fzf](https://github.com/junegunn/fzf) and [junegunn/fzf.vim](https://github.com/junegunn/fzf.vim) - FZF integration in VIM
-- [tpope/fugitive](https://github.com/tpope/vim-fugitive) - Git wrapper, execute any Git command from VIM
-- [kdheepak/lazygit.nvim](https://github.com/kdheepak/lazygit.nvim) - Neovim integration with awesome GIT wrapper (LazyGIT). See `software` role description for details.
-- [mhinz/vim-signify](https://github.com/mhinz/vim-signify) - shows GIT info about modified/added/removed lines
-- [f-person/git-blame.nvim](https://github.com/f-person/git-blame.nvim) - show Git blame in-line virtual text.
-- [junegunn/gv](https://github.com/junegunn/gv.vim) - show git commits graph
-- [rmagatti/goto-preview](https://github.com/rmagatti/goto-preview) - do not jump around the definition in new tabs/buffers - show floating preview window and edit it there, close the preview. Being on top of searched function: `gpd` (for definition).
-- [auto-save.nvim](https://github.com/Pocco81/auto-save.nvim) - exactly what the name suggests.
-- [preservim/vimux](https://github.com/preservim/vimux) - integrate neovim with TMUX - run commands in splits easily (@TODO: Add keymappings)
-- [christoomey/vim-tmux-navigator](https://github.com/christoomey/vim-tmux-navigator) - integrate movements between TMUX splits and VIM windows/splits
-- [towolf/vim-helm](https://github.com/towolf/vim-helm) - Helm files support
-- [kevinhwang91/nvim-bqf](https://github.com/kevinhwang91/nvim-bqf) - much better quickfix window
-- [wincent/ferret](https://github.com/wincent/ferret) - Search and replace for files in your project. To be used if Spectre doesn't work as expected (see the Spectre section below)
-- [roobert/search-replace.nvim](https://github.com/roobert/search-replace.nvim) - Better local search and replace
-
-There is also [AstroNvim community repository](https://github.com/AstroNvim/astrocommunity/tree/main), where you can find plugins tailored and configured for AstroNvim.
-
-I use couple of them as they provide seamless integration with AstroNvim ecosystem. For the whole list of plugins used see [community.lua](https://github.com/Ziwi01/astronvim/blob/main/lua/community.lua) file.
-
-See below examples of community plugins used:
-
-- [folke/trouble.nvim](https://github.com/folke/trouble.nvim) - Toggle diagnostic windows and browse through them (`<Space>t` will list options to open)
-- [jvgrootveld/telescope-zoxide](https://github.com/jvgrootveld/telescope-zoxide) - Use Zoxide inside vim
-- [ggandor/leap.nvim](https://github.com/ggandor/leap.nvim) - Jump around the buffer like crazy
-- [nvim-pack/nvim-spectre](https://github.com/nvim-pack/nvim-spectre) - Search and replace like on other IDEs
-- [sindrets/diffview.nvim](https://github.com/sindrets/diffview.nvim) - great GIT diff plugin for comparing file tree with particular revision(s) or browse file/selection history
-- [esmuellert/codediff.nvim](https://github.com/esmuellert/codediff.nvim) - VSCode-style diff viewer; also powers directory diffing straight from the file browser (see [Diff directories](#diff-directories))
-- [RRethy/vim-illuminate](https://github.com/RRethy/vim-illuminate) - highlight all the words that the cursor is on right now. Handy for typo spotting.
-
-### Keymappings
-
-Uses: [nvim-whichkey](https://github.com/folke/which-key.nvim)
-
-After hitting `<Space>` (or a key from which a keymap starts), the popup will show available keymaps which begin with the key you pressed. You can customize those keybindings, add new, remove etc. - see whichkey docs.
-
-To get the whole list of keymaps you can browse them with `:Telescope keymaps`
+## Files and buffers
 
 ### File browser
 
-Uses: [NeoTree](https://github.com/nvim-neo-tree/neo-tree.nvim)
+Uses: [neo-tree](https://github.com/nvim-neo-tree/neo-tree.nvim)
 
-Toggle file browser with `<Space>e`. The root of the tree will be set to the project of the current file (project is any parent directory with `.git`, `node_modules` etc.).
+Toggle the file browser with `<Space>e`. Its root is the project of the current file (the nearest parent directory with `.git`, `node_modules` and similar).
 
-You can change focus from the tree to file with `<Alt>+<arrows>`.
+Move the focus between the tree and the file with <kbd>Alt</kbd>+arrows.
 
-Useful shortcuts:
+Useful keys:
 
-- `?`: open help
-- `<Enter>`: go into/open directory, open file
-- `.`: go into directory and make it root.
-- `P`: preview file (open buffer, but don't focus on it. Any other `<TAB>` will use the same buffer)
-- `<Backspace>`: go up the directory tree
-- `z`: fold all nodes
-- `<Shift+F>`: find files in directory
-- `s`: Open file in vertical split. Useful to compare two files - open in split, close the tree (`<Space>e`), and compare: `:windo diffthis`
-- `gm`: mark the directory under the cursor as the diff source (press again to un-mark). See [Diff directories](#diff-directories)
-- `gd`: diff the directory under the cursor against the marked source. See [Diff directories](#diff-directories)
+- `?`: help
+- <kbd>Enter</kbd>: open a file, expand or collapse a directory
+- `.`: make the directory under the cursor the root
+- <kbd>Backspace</kbd>: go up one directory
+- `P`: preview the file without focusing it
+- `z`: collapse all nodes
+- `H`: show or hide hidden files
+- `a`, `d`, `r`, `c`, `m`: add, delete, rename, copy, move
+- `s`: open the file in a vertical split. To compare two files, open the second one in a split, close the tree (`<Space>e`) and run `:windo diffthis`
+- `gm`: mark the directory under the cursor as the diff source (press again to unmark). See [Diff directories](#diff-directories)
+- `gd`: diff the directory under the cursor against the marked source
 
-### Switch buffers around
+### Find files and text
 
-You can switch around opened buffers with `<Shift>H` (left) or `<Shift>L` (right).
+- `<Space>ff`: find files in the project
+- `<Space>fF`: find files, including hidden and ignored ones
+- `<Space>fw`: search text in the project (live grep with ripgrep); `<Space>fW` includes hidden files
+- `<Space>fo`: recently opened files
+- `<Space>fb`: open buffers
+- `<Space>fk`: keymaps
+- `<Space>z`: jump to a directory known to [zoxide](./20-terminal.md#traverse-directories-with-zoxide)
 
-Also you can pick the buffer from a fuzzy search with `<Space>bf`. From this view, `<Enter>` will just open the file, but `<Ctrl>+<Shift>+v` will open that buffer in a vertical split.
+In a picker, <kbd>Ctrl</kbd>+<kbd>v</kbd> opens the selection in a vertical split and <kbd>Ctrl</kbd>+<kbd>s</kbd> in a horizontal one.
 
-### Jump to last opened buffer
+### Switch buffers
 
-Use `<C-6>` to jump between last edited place (buffer).
+Open files are shown as tabs at the top. Move between them with `H` (left) and `L` (right), or pick one with `<Space>fb`.
 
-### Close opened buffers
+<kbd>Ctrl</kbd>+<kbd>6</kbd> jumps back to the previous buffer.
 
-To close the buffer you are in: `<Space>c`.
+### Close buffers
 
-You can also close all buffers except the one you're in:
+- `<Space>c`: close the current buffer
+- `<Space>bc`: close all buffers except the current one
+- `<Space>bl` / `<Space>br`: close all buffers to the left / right
+- `<Space>bD`: pick a buffer to close (the tabs show letters; press one)
 
-- `<Space>bh`: close all buffers to the left
-- `<Space>bl`: close all buffers to the right
-- `<Space>bD`: pick a buffer to close (buffer icons will turn into letters, pick one to close that buffer)
+### Splits
 
-### Diff opened buffer to current file
+Move between splits, and on to tmux panes, with <kbd>Alt</kbd>+arrows. Resize splits with <kbd>Ctrl</kbd>+arrows.
 
-1. Open a buffer in split:
-1. `<Space>fb`: find buffer
-1. Select buffer, `<Ctrl>+<Shift>+v`: Open in split
-1. (if opened) Close NeoTree: `<Space>e`
-1. `:windo diffthis`: start diff
+## Diffs
 
-To close the diff either close any buffer with `<Space>q`
+### Diff an open buffer with the current file
 
-To only stop the diff: `:diffoff`
+1. `<Space>fb`: find the other buffer.
+1. <kbd>Ctrl</kbd>+<kbd>v</kbd>: open it in a vertical split.
+1. Close neo-tree if it is open (`<Space>e`).
+1. `:windo diffthis`: start the diff.
 
-In the diff window you can use below to jump around:
+`:diffoff` stops the diff; closing either buffer (`<Space>c`) also ends it.
 
-- `]c`: jump to next change
-- `[c`: jump to previous change
+In the diff:
 
-Or apply changes between windows:
-
-- `:diffput`: put this change in adjacent window
-- `:diffget`: get this change from adjacent window
-
-Of course, switch focus between windows with `<Alt>+<arrows>`
+- `]c` / `[c`: next / previous change
+- `:diffput` / `:diffget`: put this change into the other window / get it from there
 
 ### Diff directories
 
-There are two ways to diff two directories: straight from the [file browser](#file-browser) using CodeDiff (recommended), or with DirDiff.
+There are two ways to diff two directories: from the [file browser](#file-browser) with CodeDiff (recommended), or with DirDiff.
 
-#### From Neo-Tree (CodeDiff)
+#### From neo-tree (CodeDiff)
 
-Uses [CodeDiff](https://github.com/esmuellert/codediff.nvim)
+Uses: [CodeDiff](https://github.com/esmuellert/codediff.nvim)
 
-You can compare two directories directly from the [NeoTree](#file-browser) file browser, without typing any paths:
+1. Open neo-tree (`<Space>e`) and go to the first directory.
+1. With the cursor on it, press `gm` to mark it as the **diff source**. A dimmed `(diff source)` tag appears next to it, like the `(copied)`/`(cut)` markers.
+1. Move to the second directory and press `gd`.
 
-1. Open NeoTree (`<Space>e`) and browse to the first directory.
-1. With the cursor on that directory, press `gm` to mark it as the **diff source**. The directory gets a dimmed `(diff source)` tag next to it (just like the `(copied)`/`(cut)` clipboard markers).
-1. Move the cursor to the second directory and press `gd` to diff it against the marked source.
+A CodeDiff explorer lists every file that differs between the two directories. Press <kbd>Enter</kbd> on a file to open its side-by-side diff.
 
-This opens a CodeDiff explorer listing every file that differs between the two directories. Press `<Enter>` on a file to open its side-by-side diff.
-
-Notes:
-
-- `gm` toggles the mark: press it again on the already-marked directory to un-mark it.
+- `gm` toggles the mark: press it again on the marked directory to unmark it.
 - `gd` clears the mark after opening the diff.
-- Both `gm` and `gd` only work on directory nodes. Running them on a file, or `gd` with no source marked, shows a warning.
+- Both work only on directories. On a file, or `gd` with no source marked, they show a warning.
 
 #### With DirDiff
 
-Uses [DirDiff](https://github.com/will133/vim-dirdiff)
+Uses: [DirDiff](https://github.com/will133/vim-dirdiff)
 
-To diff two directories, ensure you are not in NvimTree window, and run: `:DirDiff <dir1> <dir2>`.
-
-This will open a directory diff window
+Outside the neo-tree window, run `:DirDiff <dir1> <dir2>`.
 
 <details>
   <summary><b>Example:</b> Diff directories</summary>
-  <div align="center">
-    <img src="https://ziwi01.github.io/proveasio/assets/vim-dirdiff.png" />
-  </div>
+
+![vim dirdiff](/assets/vim-dirdiff.png)
+
 </details>
 <br />
 
-In the DirDiff view you can:
+In the DirDiff view:
 
-- exclude files with `x`. Useful for example for `.git` pattern. After excluding run `u` to update the diff
-- open diff with `<Enter>`
-- sync the changes with `s`. The editor will ask you which changes to accept ('A' or 'B')
-- to sync multiple files at once, select them with `<Shift>v`, then press `s` to sync.
+- `x`: exclude files matching a pattern (for example `.git`), then `u` to update the diff
+- <kbd>Enter</kbd>: open the diff of a file
+- `s`: sync the changes; DirDiff asks which side to keep (`A` or `B`)
+- to sync several files at once, select them with `V`, then press `s`
 
-### Search and replace
+## Search and replace
 
-There are couple of methods to do search and replace, each of them has its pros and cons.
+### In the current file
 
-#### Locally
+Use Neovim's substitute command:
 
-Uses: [roobert/search-replace.nvim](https://github.com/roobert/search-replace.nvim)
+```vim
+:%s/<pattern>/<replacement>/gc
+```
 
-**TODO**: update this
+`g` replaces every match in a line, `c` asks before each one (`y`/`n`/`a`/`q`). Select lines with `V` first and press `:` to limit it to the selection. The pattern is a Vim regex: escape `(`, `)`, `{` and `+` to use them as groups and quantifiers, or start the pattern with `\v` to make them special without escaping.
 
-To replace text locally, run:
+### In the project: grug-far
 
-`<Space>ro`
+Uses: [grug-far.nvim](https://github.com/MagicDuck/grug-far.nvim)
 
-It will open a pattern/replace snippet (`:%s/<pattern>/<replacement>/gcI`)
+grug-far opens a buffer with fields for the search, the replacement, file filters and flags, and shows the matches live below them (it uses ripgrep).
 
-This will replace every occurence of `<pattern>` in a current file to `<replacement>`. Pattern can be a regex, including groups etc.
-:::note[Caveat]
-In above example, some characters, like braces, needs to be escaped in the pattern
-:::
+- `<Space>ss`: search and replace in the whole project
+- `<Space>sf`: in the current file
+- `<Space>se`: in files with the current file's extension
+- `<Space>sw`: replace the word under the cursor
+- `<Space>s` in visual mode: search for the selection
 
-You can also replace text in a selection:
+Edit the fields like normal text. In the results, delete lines (`dd`) to leave those matches out. Press `,r` (`<localleader>r`) to replace and `g?` to see all keys. Close the buffer with `:q`.
 
-- select lines of text with `<Shift>v`
-- hit `<C-s>`
-
-Thanks to the plugin listed above, the replacement will happen for each occurence at a time, asking you if you want to apply the replacement or not (`y/n/a/q/l`).
-
-To quickly replace the word under a cursor: `<Space>rw`
-
-To see what selections are available under current cursor: `<Space>rs`
-
-You can also run the replacement for all opened buffers: `<Space>rb`
-
-#### Spectre
-
-Uses: [nvim-spectre](https://github.com/nvim-pack/nvim-spectre)
-
-To replace particular occurences in a whole project, run `:Spectre`.
-
-Inside Spectre, go into input mode (`i`) and type the search string. After going to normal mode (`ESC`) it will search for it.
-
-Each line represents an occurence finding. You can exclude the paticular occurence with `dd` on the object. You can also do it on on the whole file.
-
-To replace, run `<Space>R`.
-
-To see more context of the occurence, you can type `<Space>q`, which send highligted occurences to quickfix window with a preview. Close the quickfix window again with `<Space>q`
-
-To close Spectre, run `:q`.
-
-In the example below, there is a search for 'lazygit' with replacement for `WorkingGIT`, excluding file `ansible/roles/software/vars/main.yml`, and the search findings are opened in a quickfix preview window
-
-<details>
-  <summary><b>Example:</b> Spectre search</summary>
-  <div align="center">
-    <img src="https://ziwi01.github.io/proveasio/assets/vim-spectre.png" />
-  </div>
-</details>
-
-#### Ferret
+### In the project: Ferret
 
 Uses: [Ferret](https://github.com/wincent/ferret)
 
-This is another search and replace tool. It is easier to use. I use it as a fallback replace engine when Spectre fails (happens sometimes) or does not support it (see [Multiline replace](#multiline-replace)) or when I need to replace occurences in currently opened buffers. See Ferret README for more usages.
+Ferret works on the quickfix list, which makes it handy when you want to review every match first, and for multiline replacements.
 
-Basic flow should be to first search for occurences with `<Space>a`. This will fill up a quickfix window (with preview) of all findings. You can delete any occurence you don't want to replace with `dd`.
+1. `<Space>sa`: search (`:Ack`). The matches go to the quickfix window, with a preview.
+1. Remove the matches you want to keep unchanged with `dd`.
+1. `<Space>sr`: replace in the remaining matches (`:Acks`).
 
-After quickfix list is ready, run `<Space>r` to run replacement pattern.
-
-Unlike Spectre, there is no preview of how the replacement wil look like.
+`<Space>sA` searches for the word under the cursor. Ferret shows no preview of the result before replacing.
 
 <details>
   <summary><b>Example:</b> Ferret search</summary>
-  <div align="center">
-    <img src="https://ziwi01.github.io/proveasio/assets/vim-ferret.png" />
-  </div>
+
+![vim ferret](/assets/vim-ferret.png)
+
 </details>
 <br />
 
-##### Multiline replace
+#### Multiline replace
 
-Spectre does not support it, but with Ferret you can replace a string with multiline string using `\r` in the substition part.
-
-For example to replace:
+With Ferret, `\r` in the replacement inserts a line break. For example, to turn:
 
 ```yaml
 text:
   replace: under
 ```
 
-to:
+into:
 
 ```yaml
 text:
@@ -279,122 +216,74 @@ text:
     newkey2: value
 ```
 
-1. Search for string: `<Space>a`, search for `(.*)(replace:\ under)`. Brackets here are already regex groups. Space must be escaped.
-2. Above will show you search results. Evaluate them (you can remove entries with `dd`)
-3. Replace: `<Space>r`, insert replacement string: `\1\2\r\1newkey:\r\1  newkey2: value`. Here `\1` is whitespace before the key (first regex group), `\2` is for old key. `\r` is newline.
+1. Search with `<Space>sa` for `(.*)(replace:\ under)`. The parentheses are regex groups; the space must be escaped.
+2. Check the results and remove the ones you want to keep with `dd`.
+3. Replace with `<Space>sr` and the replacement `\1\2\r\1newkey:\r\1  newkey2: value`. `\1` is the indentation (first group), `\2` the old key, and `\r` a line break.
 
-### Open recent file
-
-In any buffer you can hit `<Space>fo` to open the same window.
-
-### Find text
-
-To dynamically find text in entire project, run `<Space>fw`. To include hidden files, run `<Space>fW`. This will open a fuzzy window with file list and a preview.
-
-You can also used Spectre/Ferret (see above).
-
-### Find files
-
-To dynamically find files in a project, run `<Space>ff`. This will open a fuzzy search window
-
-To find files in a particular directory, open NeoTree (`F`)
+## Moving around
 
 ### Jumping
 
 Uses: [leap.nvim](https://github.com/ggandor/leap.nvim)
 
-To jump around your buffer you can use `s` (leap forward) or `S` (leap backward).
+Press `s` (forward) or `S` (backward), then the first two characters of the place you want to go. Leap labels the matches; press the label to jump there.
 
-After S is pressed you need to provide two characters, for where you want jump, and then a character highlighted by `leap`
+For example, to jump to the word `Preview` further down, press `s`, `Pr` and the label shown there.
 
-For example: to jump to `Preview` link below, from this place, press `s` followed by `Pr` and the third character which will be highlighted there.
+This works from insert mode too: press <kbd>Ctrl</kbd>+<kbd>o</kbd>, then `s` or `S`.
 
-You can also jump from insert mode! Press `<Ctrl>+O` while in insert mode, then `s` or `S`, following the pattern (like above) and you are where you wanna be.
+### Markdown
 
-See plugin docs for details.
+Uses: [mkdx](https://github.com/SidOfc/mkdx), [vim-table-mode](https://github.com/dhruvasagar/vim-table-mode), [markdown-plus.nvim](https://github.com/yousefhadder/markdown-plus.nvim)
 
-#### Navigation
-
-TODO: Update below shortcuts
-
-<!-- - `gd` (over a link): go to definition (list where the link was used) -->
-<!-- - `<Space>j` (over a link): jump to header. Go back with with double backtick ` `` `. -->
-
-- `]]`: go to next header. `<Plug>Markdown_MoveToNextHeader`
-- `[[`: go to previous header. Contrast with `]h`. `<Plug>Markdown_MoveToPreviousHeader`
-
-#### Editing
-
-TODO: Add plugin for ToC support
-
-<!-- #### ToC -->
-<!---->
-<!-- To navigate a markdown file base on table of contents, run `:Toc` to open vertical split. `:Toch` to open horizontal split instead. Close the window with `<Space>q` when active. (reminder: navigate between windows with `<Alt><arrows>`) -->
-<!---->
-<!-- To automatically generate Toc based on the headers, run `:InsertToc` (bulleted list), or `:InsertNToc` (numbered list). An optional argument can be used to specify how many levels of headers to display in the table of content, e.g., to display up to and including h3, use `:InsertToc 3` -->
-
-### Resize/pick splits
-
-Navigation through splits is as easy as `<Alt><arrows>`. This includes Tmux panes also (so you can go out of Vim to other Tmux pane basically).
-
-To resize Vim windows, use `<Ctrl>+<arrows>`
+- `]]` / `[[`: next / previous heading
+- `:TableModeToggle`: format Markdown tables as you type
+- the rendered view ([markview.nvim](https://github.com/OXY2DEV/markview.nvim)) shows headings, lists and tables formatted in the buffer
 
 ### Align text
 
 Uses: [EasyAlign](https://github.com/junegunn/vim-easy-align)
 
-You can align any text with any character (for example align everything with `=` or `:`).
+Select the lines (for example with `V`) and run `:EasyAlign <char>`, for example `:EasyAlign =` or `:EasyAlign :`. More examples are in the [EasyAlign demo](https://github.com/junegunn/vim-easy-align?tab=readme-ov-file#demo).
 
-Simply select the text (probably visually with `<Shift>v`), and run `:EasyAlign <char>`, e.g `:EasyAlign =`
-
-More usages can be found in [demo](https://github.com/junegunn/vim-easy-align?tab=readme-ov-file#demo)
-
-### Commands with Vimux
+### Run commands in tmux with Vimux
 
 Uses: [Vimux](https://github.com/preservim/vimux)
 
-Vimux is an integration layer for terminal (runs a terminal in Vim). See basic usage in above link.
+Vimux runs shell commands in a tmux pane next to Neovim, for example tests or linters, without leaving the editor:
 
-I intend to use it for running tests (rspec, linting, custom verifications), integrating it with fzf and adding some useful shortucts for re-running previous commands, run against current file or for current project
+```vim
+:VimuxRunCommand "ansible-lint"
+:VimuxRunLastCommand
+:VimuxCloseRunner
+```
 
-:::note[TODO]
-Finish Vimux integration.
-:::
+## Plugins and updates
 
-### Plugin management
+Uses: [lazy.nvim](https://github.com/folke/lazy.nvim)
 
-Uses: [Lazy.nvim](https://github.com/folke/lazy.nvim)
+`:Lazy` opens the plugin manager. From there you can list, debug and update the plugins (`U` updates, `S` syncs). Update them from time to time.
 
-This is a plugin manager.
-
-Open Lazy window with `:Lazy`. From there you can list, debug, update/sync all the plugins.
-
-It is a good idea to update the plugins from time to time (with `s` or `i` from Lazy window).
-
-### Updates
-
-For plugin updates please see above.
-
-The recommended way is to update AstroNvim using this repository.
-
-Update everything (all software, config files etc.):
+The playbook updates the config and the plugins too. To update everything:
 
 ```shell
+cd ~/proveasio/ansible
 ansible-playbook -i inventory.yml setup-ubuntu.yml -K
 ```
 
-Or update Neovim config only:
+or only Neovim and its config:
 
 ```shell
 ansible-playbook -i inventory.yml setup-ubuntu.yml -K --tags 'neovim,neovim-config'
 ```
 
-Manual updates can be done instead of running ansible:
+Inside Neovim:
 
-- `:AstroUpdate`: will update astroNvim core and core plugins. After update often you need to run `:Lazy update`
-- `:TSUpdateSync`: will update Treesitter parsers
+- `:AstroUpdate`: update AstroNvim and its plugins
+- `:TSUpdate`: update the Treesitter parsers
+- `:MasonUpdate`, then `:Mason` and `U`: update the language servers and tools
 
-### GIT
+## Git
 
 Uses:
 
@@ -404,9 +293,9 @@ Uses:
 - [f-person/git-blame.nvim](https://github.com/f-person/git-blame.nvim)
 - [junegunn/gv](https://github.com/junegunn/gv.vim)
 
-See below git related operations from inside Vim.
+Git operations from inside Neovim:
 
-#### Diff current changes
+### Diff current changes
 
 To quickly preview current GIT changes, use fugitives `:Gvdiff` or `<Space>gd`. This will open a vertical split with all the local modifications.
 
@@ -426,7 +315,7 @@ Diffview opens in separate tab, you can switch the tab(s) with `gt` (next tab) a
 
 To close it, use `:DiffviewClose` or simply `:tabc`
 
-#### Diff another branch
+### Diff another branch
 
 To open a nice diff between your local and other branch, run `:DiffviewOpen <branch_name>`. You can hit `<TAB>` before entering branch name so it will list available branches.
 
@@ -440,12 +329,12 @@ To get changes only for this file, compared to another branch, you can use `:Gvd
 
 <details>
   <summary><b>Example:</b> Diffview another branch</summary>
-  <div align="center">
-    <img src="https://ziwi01.github.io/proveasio/assets/vim-diffview.png" />
-  </div>
+
+![vim diffview](/assets/vim-diffview.png)
+
 </details>
 
-#### Diff current file with different file on another branch
+### Diff current file with different file on another branch
 
 Sometimes you need to diff a file you're working on, with different branch, but on different branch the file has either different name, or is located elsewhere.
 
@@ -453,19 +342,19 @@ To do this, run:
 
 `:Gvdiff <branch_name>:<relative_file_path>`
 
-#### Conflicts resolve
+### Conflicts resolve
 
 If you get any conflicts after the merge, you can run `:DiffviewOpen`, which will show conflicts at the top, and it will use a 3-way diff (3 windows split: with current branch changes, final output and with incoming branch changes).
 
-For simple conflict resolve you can also use Lazygit (see [Lazygit section](./vim#lazygit-from-vim))
+For simple conflict resolve you can also use Lazygit (see [lazygit from Vim](#lazygit-from-vim))
 
-#### Checkout branch
+### Checkout branch
 
 Quickly checkout any branch with `<Space>gb`. Checkout to specific commit with `<Space>gc`. Checkout specific commit for current file with `<Space>gC`
 
 Alternatively you can also checkout with `:G checkout <branch>`
 
-#### Git blame
+### Git blame
 
 Basically git blame shows as a 'shadowed' text when you cycle through lines in normal mode.
 
@@ -481,7 +370,7 @@ From this view, you can run `g?` to show help of what you can do, like:
 - `p`: jump to patch in preview window
 - `-`: reblame at commit
 
-#### File history
+### File history
 
 To get all files history, enter `:DiffviewFileHistory`
 
@@ -502,25 +391,25 @@ Alternatively, you can use `:GV` to browse all commits (`<Enter>` to preview thi
 
 <details>
   <summary><b>Example:</b> File history with Diffview</summary>
-  <div align="center">
-    <img src="https://ziwi01.github.io/proveasio/assets/vim-diffview-history.png" />
-  </div>
+
+![vim diffview history](/assets/vim-diffview-history.png)
+
 </details>
 <br />
 <details>
   <summary><b>Example:</b> File history with GV</summary>
-  <div align="center">
-    <img src="https://ziwi01.github.io/proveasio/assets/vim-gv.png" />
-  </div>
+
+![vim gv](/assets/vim-gv.png)
+
 </details>
 
-#### Reload file after checkout
+### Reload file after checkout
 
-Sometimes when you have a file opened in a buffer and you checkout to another branch (e.g from lazygit), the file does not get reloaded automatically. There are some indications that changes occured (in left gutter panel in form of `|` sign).
+Sometimes when you have a file opened in a buffer and you checkout to another branch (e.g from lazygit), the file does not get reloaded automatically. There are some indications that changes occurred (in left gutter panel in form of `|` sign).
 
 To reload checked out changes, type `:e`.
 
-#### Lazygit from Vim
+### Lazygit from Vim
 
 Uses: [Lazygit](https://github.com/jesseduffield/lazygit)
 
@@ -532,10 +421,10 @@ Basic usage:
 - quit it with `q`
 - browse through windows (Status/Files/Branches/Commits) with left and right arrows
 - browse through tabs in particular window with `[` and `]` (like for branches windows it would cycle through Local Branches, Remotes, Tags)
-- whenever you are in any view, hit `x` to get the available shortucts/commands for current context. You can just `<Enter>` to execute them
+- whenever you are in any view, hit `x` to get the available shortcuts/commands for current context. You can just `<Enter>` to execute them
 - (branches view) `<Space>` to checkout branch
 - (branches view) `p` to pull, `P` to push, `f` on particular branch to fetch it.
-- (files view) `a` to stage all, `<Space>` to stage selected, `c` to commit, `A` to ammend previous commit
+- (files view) `a` to stage all, `<Space>` to stage selected, `c` to commit, `A` to amend previous commit
 
 Lazygit supports conflicts resolving: when there is a conflict, you can browse through conflicted hunks, `<Enter>` them and select which version you want with up/down arrow keys. Then `<Space>` to select either hunk.
 

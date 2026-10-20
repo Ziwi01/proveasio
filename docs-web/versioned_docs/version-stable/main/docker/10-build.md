@@ -63,6 +63,56 @@ To add one of the left-out tools, see
 
 Build the images one at a time. Two builds at once need twice the memory.
 
+## Full and slim compared
+
+What each image contains, next to a native install. The full image is about
+8.5 GB and the slim image about 5.7 GB (measured with the defaults; sizes
+change with the tool versions). Both images are built from
+`docker/profile.yml`; the slim image also applies `docker/profile-slim.yml`.
+
+✅ included · ⚠️ included with a limitation · ❌ not included
+
+| | Native install | Full image | Slim image |
+|---|:---:|:---:|:---:|
+| **Shell:** zsh, oh-my-zsh, powerlevel10k, fzf, zoxide, eza, bat, ripgrep, fd, pay-respects | ✅ | ✅ | ✅ |
+| **Terminal:** tmux with plugins, tmuxp | ✅ | ✅ | ✅ |
+| **Data and system tools:** jq, yq, fx, curlie, htop, bottom, gdu, ShellCheck, keychain | ✅ | ✅ | ✅ |
+| **Git:** git, lazygit (with AI commits), diff-so-fancy, git-fuzzy, gita, lsg, hunk, gh | ✅ | ✅ | ✅ |
+| **Neovim** with the AstroNvim-based config and language servers | ✅ AppImage | ✅ tarball | ⚠️ tarball [^java] |
+| **Python** (pyenv, pyenv-virtualenv, uv) | ✅ | ✅ | ✅ |
+| **Node** (nvm, LTS) | ✅ | ✅ | ✅ |
+| **Go** (gvm) | ✅ | ✅ | ✅ |
+| **Ruby** (rvm) | ✅ | ✅ | ✅ |
+| **Ansible**, ansible-lint, Ansible language server | ✅ | ✅ | ✅ |
+| **Java, Gradle, Groovy, Maven** (SDKMAN!) | ✅ | ✅ | ❌ |
+| **Rust** (rustup, Cargo) | ✅ | ✅ | ❌ |
+| **Puppet:** gems, PDK, Puppet Editor Services | ✅ | ✅ | ❌ |
+| **Docker** | ✅ engine and client | ⚠️ client only [^docker] | ⚠️ client only [^docker] |
+| **dry**, **kind** | ✅ | ⚠️ need the host engine [^docker] | ⚠️ need the host engine [^docker] |
+| **Kubernetes:** kubectl, kubecolor, kubeswitch, k9s, Helm, helm-unittest, kubeconform, dyff, Argo CD CLI, Argonaut | ✅ | ✅ | ✅ |
+| **IaC:** Terraform, OpenTofu, Terragrunt | ✅ | ✅ | ✅ |
+| **Azure CLI**, kubelogin, az-account-switcher | ✅ | ✅ | ❌ |
+| **AWS CLI** | ✅ | ✅ | ❌ |
+| **opencode** | ✅ | ⚠️ AVX2 build [^opencode] | ⚠️ AVX2 build [^opencode] |
+| **ccmux** | ✅ | ⚠️ no notifications [^wsl] | ⚠️ no notifications [^wsl] |
+| **win32yank**, **wsl-notify-send** | ✅ [^wsl] | ❌ | ❌ |
+| **Config file backups** in `~/.configs_backup` | ✅ | ❌ | ❌ |
+
+[^java]: The Java language server is installed by the Neovim config, but it
+    does not start, because the slim image has no Java.
+[^docker]: The images have the Docker client, Compose and Buildx, but no
+    engine. Mount the host's socket, see
+    [Docker inside the container](./run#docker-inside-the-container).
+[^opencode]: The build picks the opencode binary for the CPU of the build
+    machine. The pre-built images can crash on CPUs without AVX2, see
+    [Limitations](./limitations#other-limitations).
+[^wsl]: win32yank and wsl-notify-send are Windows tools. Natively they are
+    installed on any Ubuntu, but only do something on WSL. ccmux sends its
+    notifications through wsl-notify-send.
+
+To build an image with a different selection, see
+[Customize the build](./customize).
+
 ## Getting the latest versions
 
 Every build runs the playbook again and resolves `latest` again, because

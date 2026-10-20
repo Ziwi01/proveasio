@@ -1,12 +1,14 @@
 # Own config files
 
-As described in [`config role`](../roles/config) section, there are certain configuration files which are part of this automation. In order to keep your personal configuration in those files, there are two options:
+The [config role](../roles/20-config.md) manages several configuration files. To keep your own changes in them, there are two options:
 
-1. (not recommended) Disable particular config file(s) management sections in `ansible/vars/overrides.yml` using `config_tasks_exclude: []`. This will prevent running config for it. For list of sections, see respective `ansible/roles/config/tasks/main.yml`. You cannot exclude `zsh`, because it is required. To keep your own `.zshrc`, use option 2 and change `ansible/roles/config/templates/zshrc.j2` in your branch.
-2. (**recommended**) I personally suggest to checkout a local branch in this repository (`git checkout -b my-branch`), modify any configuration file(s) in `ansible/roles/config/files` and/or `ansible/roles/config/templates` and commit them. When you want to update changes, just merge release tag (or `master`) to your branch when needed. That way, you can have both your own modifications to the file, and possible upcoming improvements/features which will come with those files. In case of confilcts, you can either choose your own piece of config, or the incoming one, or both.
+1. **Recommended:** create your own branch of this repository (`git checkout -b my-branch`), change the files in `ansible/roles/config/files` and `ansible/roles/config/templates`, and commit them. To get updates, merge `master` (or a release tag) into your branch. You keep your changes and still receive improvements to the same files; on a conflict, pick your version, the incoming one, or both.
+2. **Not recommended:** stop Proveasio from managing a file by listing its section in `config_tasks_exclude` in `ansible/vars/overrides.yml` (the names are in the [config role](../roles/20-config.md)). The file then never gets updates. `zsh` cannot be excluded, because it is required; to keep your own `.zshrc`, use option 1 and change `ansible/roles/config/templates/zshrc.j2`.
+
+Whichever you choose, a file that Proveasio changes is first backed up to `~/.configs_backup`, see [Backups](../roles/20-config.md#backups).
 
 :::note[Neovim config]
-Neovim config (based on AstroNvim) has its own repository. You can fork it and modify it, or use your own config entirely. For details see [Neovim usage section](../../usage/vim).
+The Neovim config (based on AstroNvim) has its own repository. Fork it and change it, or use a different config entirely. For details see [Neovim usage](../../usage/40-vim.md).
 
 To use your own repository, set `neovim_config_url` and `neovim_config_version` in `ansible/vars/overrides.yml`. To use a directory on your machine instead, set:
 
