@@ -26,6 +26,7 @@ Various tools:
 19. [hunk](https://github.com/modem-dev/hunk) - terminal-based code review and diff viewer with syntax highlighting
 20. [opencode](https://github.com/anomalyco/opencode) - terminal-based AI coding agent. Installs v2 by default; pin a 1.x version to keep v1 (see [Versions management](../customization/20-versions.md#opencode-v1-and-v2))
 21. [ccmux](https://github.com/epilande/ccmux) - run and track AI coding agents (opencode, Claude Code, Codex and more) in tmux, with live session states, a status sidebar and desktop notifications. Integrates with `opencode` out of the box and, on WSL, bridges notifications to Windows toasts via [wsl-notify-send](https://github.com/stuartleeks/wsl-notify-send)
+22. [curlie](https://github.com/rs/curlie) - `curl` frontend with HTTPie-style output. Accepts all `curl` options
 
 Development-related software:
 
@@ -37,6 +38,16 @@ Development-related software:
 6. [SDKMAN](https://sdkman.io/) - Manage multiple versions of groovy/java and other JDKs/SDKs.
 7. [pyenv](https://github.com/pyenv/pyenv) - Python version manager not to mess system python
 8. [pyenv-virtualenv](https://github.com/pyenv/pyenv-virtualenv) - Python virtual environment manager to have separate environments with different packages for projects using same Python version
+9. [ShellCheck](https://github.com/koalaman/shellcheck) - static analysis for shell scripts (latest GitHub release, newer than the Ubuntu package)
+
+Infrastructure and Kubernetes tools:
+
+1. [OpenTofu](https://github.com/opentofu/opentofu) (`tofu`) - open source fork of Terraform
+2. [kubeconform](https://github.com/yannh/kubeconform) - Kubernetes manifests validator
+3. [dyff](https://github.com/homeport/dyff) - diff tool for YAML files, with Kubernetes-aware output
+4. [helm-unittest](https://github.com/helm-unittest/helm-unittest) - unit tests for Helm charts (`helm unittest`). Installed as a Helm plugin, so it needs `helm`. The plugin is linked into `helm_plugins_dir` (default `~/.local/share/helm/plugins`). A `helm-unittest` plugin installed there by other means (for example `helm plugin install`) is removed and replaced.
+5. [Argo CD CLI](https://github.com/argoproj/argo-cd) (`argocd`) - command line client for Argo CD, with ZSH completions
+6. [Argonaut](https://github.com/darksworm/argonaut) - terminal UI for Argo CD. It uses the session saved by `argocd login`
 
 Also, common useful packages, like `tree` (directory tree), `jq`/`yq` (JSON/YAML parser) and many others.
 
@@ -75,6 +86,7 @@ Available software excludes:
 - az-account-switcher
 - zoxide
 - helm
+- helm-unittest
 - w32yank
 - tmux
 - docker
@@ -82,6 +94,10 @@ Available software excludes:
 - kubecolor
 - kind
 - k9s
+- kubeconform
+- dyff
+- argocd
+- argonaut
 - rvm
 - sdkman
 - nvm
@@ -92,10 +108,13 @@ Available software excludes:
 - puppet
 - terraform
 - terragrunt
+- tofu
 - azurecli
 - awscli
 - uv
 - opencode
 - hunk
+- curlie
+- shellcheck
 - wsl-notify-send
 - ccmux
