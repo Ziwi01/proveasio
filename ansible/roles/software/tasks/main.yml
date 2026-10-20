@@ -498,6 +498,34 @@
     - versions
     - dyff
 
+# argocd - Argo CD command line interface
+- name: "[Software] Install argocd"
+  ansible.builtin.include_tasks:
+    file: argocd.yml
+    apply:
+      tags:
+        - software
+        - argocd
+  when: "'argocd' not in software_tasks_exclude"
+  tags:
+    - software
+    - versions
+    - argocd
+
+# argonaut - terminal UI for Argo CD (uses the argocd CLI login config)
+- name: "[Software] Install argonaut"
+  ansible.builtin.include_tasks:
+    file: argonaut.yml
+    apply:
+      tags:
+        - software
+        - argonaut
+  when: "'argonaut' not in software_tasks_exclude"
+  tags:
+    - software
+    - versions
+    - argonaut
+
 # Ruby Version Manager
 - name: "[Software] Install Ruby Version Manager"
   ansible.builtin.include_tasks:

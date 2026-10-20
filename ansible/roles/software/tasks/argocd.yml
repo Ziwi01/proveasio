@@ -1,0 +1,95 @@
+# argocd - Argo CD command line interface
+# Source: https://github.com/argoproj/argo-cd
+---
+- name: "[argocd] Get Github URL for proper version"
+  vars:
+    app: argocd
+    repo: argoproj/argo-cd
+    version_query: gh_curl https://api.github.com/repos/argoproj/argo-cd/releases/latest | jq .tag_name -r | cut -f2 -d'v'
+    github_uri: "v{{ argocd_version }}/argocd-linux-amd64"
+  ansible.builtin.include_role:
+    name: common
+    tasks_from: github_version.yml
+    apply:
+      tags:
+        - versions
+  tags:
+    - versions
+
+- name: "[argocd] Check if argocd {{ argocd_version }} is installed"
+  ansible.builtin.stat:
+    path: "{{ ansible_facts['env']['HOME'] }}/.local/opt/argocd-{{ argocd_version }}"
+  register: argocd_dir
+
+- name: "Installation"
+  when: not argocd_dir.stat.exists
+  block:
+    - name: "[argocd] Create directory in {{ ansible_facts['env']['HOME'] }}/.local/opt"
+      ansible.builtin.file:
+        path: "{{ ansible_facts['env']['HOME'] }}/.local/opt/argocd-{{ argocd_version }}"
+        state: directory
+        mode: "0755"
+
+    - name: "[argocd] Download argocd {{ argocd_version }}"
+      ansible.builtin.get_url:
+        url: "{{ argocd_url }}"
+        dest: "{{ ansible_facts['env']['HOME'] }}/.local/opt/argocd-{{ argocd_version }}/argocd"
+        mode: "0755"
+
+- name: "[argocd] Link {{ argocd_version }} binary to ~/.local/bin/argocd"
+  ansible.builtin.file:
+    src: "{{ ansible_facts['env']['HOME'] }}/.local/opt/argocd-{{ argocd_version }}/argocd"
+    dest: "{{ ansible_facts['env']['HOME'] }}/.local/bin/argocd"
+    state: link
+    force: true
+
+# Zsh completion. Written to ~/.zfunc (already on fpath in ~/.zshrc) instead of
+# `source <(argocd completion zsh)` at every shell startup.
+- name: "[argocd] Generate zsh completion script"
+  ansible.builtin.command:
+    cmd: "{{ ansible_facts['env']['HOME'] }}/.local/opt/argocd-{{ argocd_version }}/argocd completion zsh"
+  register: argocd_completion
+  changed_when: false
+
+- name: "[argocd] Ensure ~/.zfunc exists for the completion file"
+  ansible.builtin.file:
+    path: "{{ ansible_facts['env']['HOME'] }}/.zfunc"
+    state: directory
+    mode: "0755"
+
+- name: "[argocd] Install zsh completion into ~/.zfunc/_argocd"
+  ansible.builtin.copy:
+    dest: "{{ ansible_facts['env']['HOME'] }}/.zfunc/_argocd"
+    content: "{{ argocd_completion.stdout }}\n"
+    mode: "0644"
+
+- name: "[argocd] Save used version"
+  vars:
+    app: argocd
+    target_version:
+      github_packages:
+        argocd: "{{ argocd_version }}"
+    yq_query: ".github_packages.argocd = \"{{ argocd_version }}\""
+  ansible.builtin.include_role:
+    name: common
+    tasks_from: save_version.yml
+    apply:
+      tags:
+        - versions
+  tags:
+    - versions
+
+- name: "[argocd] Cleanup old versions"
+  vars:
+    app: argocd
+    keep: "{{ argocd_version }}"
+  ansible.builtin.include_role:
+    name: common
+    tasks_from: cleanup_versions.yml
+    apply:
+      tags:
+        - versions
+        - cleanup
+  tags:
+    - versions
+    - cleanup

@@ -45,6 +45,8 @@ Infrastructure and Kubernetes tools:
 2. [kubeconform](https://github.com/yannh/kubeconform) - Kubernetes manifests validator
 3. [dyff](https://github.com/homeport/dyff) - diff tool for YAML files, with Kubernetes-aware output
 4. [helm-unittest](https://github.com/helm-unittest/helm-unittest) - unit tests for Helm charts (`helm unittest`). Installed as a Helm plugin, so it needs `helm`. The plugin is linked into `helm_plugins_dir` (default `~/.local/share/helm/plugins`). A `helm-unittest` plugin installed there by other means (for example `helm plugin install`) is removed and replaced.
+5. [Argo CD CLI](https://github.com/argoproj/argo-cd) (`argocd`) - command line client for Argo CD, with ZSH completions
+6. [Argonaut](https://github.com/darksworm/argonaut) - terminal UI for Argo CD. It uses the session saved by `argocd login`
 
 Also, common useful packages, like `tree` (directory tree), `jq`/`yq` (JSON/YAML parser) and many others.
 
@@ -93,6 +95,8 @@ Available software excludes:
 - k9s
 - kubeconform
 - dyff
+- argocd
+- argonaut
 - rvm
 - sdkman
 - nvm

@@ -1,0 +1,85 @@
+# argonaut - terminal UI for Argo CD
+# Source: https://github.com/darksworm/argonaut
+---
+- name: "[argonaut] Get Github URL for proper version"
+  vars:
+    app: argonaut
+    repo: darksworm/argonaut
+    version_query: gh_curl https://api.github.com/repos/darksworm/argonaut/releases/latest | jq .tag_name -r | cut -f2 -d'v'
+    github_uri: "v{{ argonaut_version }}/argonaut-{{ argonaut_version }}-linux-amd64.tar.gz"
+  ansible.builtin.include_role:
+    name: common
+    tasks_from: github_version.yml
+    apply:
+      tags:
+        - versions
+  tags:
+    - versions
+
+- name: "[argonaut] Check if argonaut {{ argonaut_version }} is installed"
+  ansible.builtin.stat:
+    path: "{{ ansible_facts['env']['HOME'] }}/.local/opt/argonaut-{{ argonaut_version }}"
+  register: argonaut_dir
+
+- name: "Installation"
+  when: not argonaut_dir.stat.exists
+  block:
+    - name: "[argonaut] Create directory in {{ ansible_facts['env']['HOME'] }}/.local/opt"
+      ansible.builtin.file:
+        path: "{{ ansible_facts['env']['HOME'] }}/.local/opt/argonaut-{{ argonaut_version }}"
+        state: directory
+        mode: "0755"
+
+    - name: "[argonaut] Download argonaut {{ argonaut_version }}"
+      ansible.builtin.get_url:
+        url: "{{ argonaut_url }}"
+        dest: "/tmp/argonaut-{{ argonaut_version }}.tar.gz"
+        mode: "0755"
+
+    - name: "[argonaut] Untar archive"
+      ansible.builtin.unarchive:
+        src: "/tmp/argonaut-{{ argonaut_version }}.tar.gz"
+        dest: "{{ ansible_facts['env']['HOME'] }}/.local/opt/argonaut-{{ argonaut_version }}"
+
+    - name: "[argonaut] Cleanup tar.gz file"
+      ansible.builtin.file:
+        path: "/tmp/argonaut-{{ argonaut_version }}.tar.gz"
+        state: absent
+
+- name: "[argonaut] Link {{ argonaut_version }} binary to ~/.local/bin/argonaut"
+  ansible.builtin.file:
+    src: "{{ ansible_facts['env']['HOME'] }}/.local/opt/argonaut-{{ argonaut_version }}/argonaut"
+    dest: "{{ ansible_facts['env']['HOME'] }}/.local/bin/argonaut"
+    state: link
+    force: true
+
+- name: "[argonaut] Save used version"
+  vars:
+    app: argonaut
+    target_version:
+      github_packages:
+        argonaut: "{{ argonaut_version }}"
+    yq_query: ".github_packages.argonaut = \"{{ argonaut_version }}\""
+  ansible.builtin.include_role:
+    name: common
+    tasks_from: save_version.yml
+    apply:
+      tags:
+        - versions
+  tags:
+    - versions
+
+- name: "[argonaut] Cleanup old versions"
+  vars:
+    app: argonaut
+    keep: "{{ argonaut_version }}"
+  ansible.builtin.include_role:
+    name: common
+    tasks_from: cleanup_versions.yml
+    apply:
+      tags:
+        - versions
+        - cleanup
+  tags:
+    - versions
+    - cleanup

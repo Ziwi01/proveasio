@@ -282,6 +282,8 @@ check_software_kind()      { run_cmd kind version && expect_receipt .github_pack
 check_software_k9s()       { run_cmd k9s version -s && expect_receipt .github_packages.k9s; }
 check_software_kubeconform() { run_cmd kubeconform -v && expect_receipt .github_packages.kubeconform; }
 check_software_dyff()      { run_cmd dyff version && expect_receipt .github_packages.dyff; }
+check_software_argocd()    { run_cmd argocd version --client --short && expect_receipt .github_packages.argocd; }
+check_software_argonaut()  { run_cmd argonaut --version && expect_receipt .github_packages.argonaut; }
 
 check_software_rvm() {
   local rvm='source "$HOME/.rvm/scripts/rvm"' ruby
