@@ -1,30 +1,204 @@
 /**
- * Any CSS included here will be global. The classic template
- * bundles Infima by default. Infima is a CSS framework designed to
- * work well for content-centric websites.
+ * Global styles. Docusaurus bundles Infima; the variables below override it.
+ * Colors come from the Proveasio logo: blue primary, magenta and cyan accents.
  */
 
-/* You can override the default Infima variables here. */
 :root {
-  --ifm-color-primary: #2e8555;
-  --ifm-color-primary-dark: #29784c;
-  --ifm-color-primary-darker: #277148;
-  --ifm-color-primary-darkest: #205d3b;
-  --ifm-color-primary-light: #33925d;
-  --ifm-color-primary-lighter: #359962;
-  --ifm-color-primary-lightest: #3cad6e;
-  --ifm-code-font-size: 95%;
-  --docusaurus-highlighted-code-line-bg: rgba(0, 0, 0, 0.1);
+  --ifm-color-primary: #2563eb;
+  --ifm-color-primary-dark: #1d4ed8;
+  --ifm-color-primary-darker: #1e47c4;
+  --ifm-color-primary-darkest: #1e3a8a;
+  --ifm-color-primary-light: #3b76f0;
+  --ifm-color-primary-lighter: #4b82f2;
+  --ifm-color-primary-lightest: #7aa3f6;
+
+  --pv-accent-magenta: #d9268c;
+  --pv-accent-cyan: #06b6d4;
+  --pv-surface: #f6f8fc;
+  --pv-border: rgba(15, 23, 42, 0.08);
+  --pv-radius: 12px;
+
+  --ifm-font-family-base: 'Inter Variable', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+  --ifm-font-family-monospace: 'JetBrains Mono Variable', ui-monospace, SFMono-Regular, Menlo, monospace;
+  --ifm-heading-font-weight: 700;
+  --ifm-line-height-base: 1.7;
+  --ifm-code-font-size: 90%;
+  --ifm-code-border-radius: 6px;
+  --ifm-global-radius: 8px;
+  --ifm-navbar-height: 3.75rem;
+  --ifm-container-width-xl: 1440px;
+  --docusaurus-highlighted-code-line-bg: rgba(37, 99, 235, 0.1);
 }
 
-/* For readability concerns, you should choose a lighter palette in dark mode. */
-[data-theme='dark'] {
-  --ifm-color-primary: #25c2a0;
-  --ifm-color-primary-dark: #21af90;
-  --ifm-color-primary-darker: #1fa588;
-  --ifm-color-primary-darkest: #1a8870;
-  --ifm-color-primary-light: #29d5b0;
-  --ifm-color-primary-lighter: #32d8b4;
-  --ifm-color-primary-lightest: #4fddbf;
-  --docusaurus-highlighted-code-line-bg: rgba(0, 0, 0, 0.3);
+html[data-theme='dark'] {
+  --ifm-color-primary: #5b9bff;
+  --ifm-color-primary-dark: #3b87ff;
+  --ifm-color-primary-darker: #2b7dff;
+  --ifm-color-primary-darkest: #0062f5;
+  --ifm-color-primary-light: #7bafff;
+  --ifm-color-primary-lighter: #8bb9ff;
+  --ifm-color-primary-lightest: #bad5ff;
+
+  --ifm-background-color: #0d1117;
+  --ifm-background-surface-color: #111722;
+  --pv-surface: #151c28;
+  --pv-border: rgba(148, 163, 184, 0.14);
+  --docusaurus-highlighted-code-line-bg: rgba(91, 155, 255, 0.15);
+}
+
+/* Navbar: translucent with a blur, thin border instead of a shadow */
+.navbar {
+  backdrop-filter: saturate(180%) blur(12px);
+  background-color: color-mix(in srgb, var(--ifm-background-color) 82%, transparent);
+  border-bottom: 1px solid var(--pv-border);
+  box-shadow: none;
+}
+
+.navbar__title {
+  font-weight: 800;
+  letter-spacing: 0.02em;
+}
+
+.navbar__logo {
+  height: 2.1rem;
+}
+
+.header-github-link::before {
+  content: '';
+  display: flex;
+  width: 24px;
+  height: 24px;
+  background-color: var(--ifm-navbar-link-color);
+  mask: url("data:image/svg+xml,%3Csvg viewBox='0 0 24 24' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M12 .297c-6.63 0-12 5.373-12 12 0 5.303 3.438 9.8 8.205 11.385.6.113.82-.258.82-.577 0-.285-.01-1.04-.015-2.04-3.338.724-4.042-1.61-4.042-1.61C4.422 18.07 3.633 17.7 3.633 17.7c-1.087-.744.084-.729.084-.729 1.205.084 1.838 1.236 1.838 1.236 1.07 1.835 2.809 1.305 3.495.998.108-.776.417-1.305.76-1.605-2.665-.3-5.466-1.332-5.466-5.93 0-1.31.465-2.38 1.235-3.22-.135-.303-.54-1.523.105-3.176 0 0 1.005-.322 3.3 1.23.96-.267 1.98-.399 3-.405 1.02.006 2.04.138 3 .405 2.28-1.552 3.285-1.23 3.285-1.23.645 1.653.24 2.873.12 3.176.765.84 1.23 1.91 1.23 3.22 0 4.61-2.805 5.625-5.475 5.92.42.36.81 1.096.81 2.22 0 1.606-.015 2.896-.015 3.286 0 .315.21.69.825.57C20.565 22.092 24 17.592 24 12.297c0-6.627-5.373-12-12-12'/%3E%3C/svg%3E") no-repeat center / contain;
+}
+
+.header-github-link:hover::before {
+  background-color: var(--ifm-color-primary);
+}
+
+/* Sidebar: rounded "pill" for the active item */
+.menu__link {
+  border-radius: 6px;
+  font-size: 0.93rem;
+}
+
+.menu__link--active:not(.menu__link--sublist) {
+  background-color: color-mix(in srgb, var(--ifm-color-primary) 14%, transparent);
+  font-weight: 600;
+}
+
+/* Headings */
+.markdown h1:first-child {
+  font-size: 2.4rem;
+  letter-spacing: -0.02em;
+}
+
+.markdown h2 {
+  margin-top: 2.5rem;
+  padding-bottom: 0.3rem;
+  border-bottom: 1px solid var(--pv-border);
+}
+
+/* Code blocks */
+.theme-code-block {
+  border-radius: var(--pv-radius);
+  border: 1px solid var(--pv-border);
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04);
+}
+
+/* Keyboard keys: <kbd>Ctrl</kbd>+<kbd>b</kbd> */
+kbd {
+  display: inline-block;
+  min-width: 1.6em;
+  padding: 0.1em 0.45em;
+  font-family: var(--ifm-font-family-monospace);
+  font-size: 0.82em;
+  line-height: 1.4;
+  text-align: center;
+  color: var(--ifm-font-color-base);
+  background: var(--pv-surface);
+  border: 1px solid var(--pv-border);
+  border-bottom-width: 3px;
+  border-radius: 6px;
+  box-shadow: none;
+}
+
+/* Tables: rounded border and zebra rows; full width on desktop. On narrow
+   screens Infima's display: block keeps them horizontally scrollable. */
+.markdown table {
+  border-collapse: separate;
+  border-spacing: 0;
+  border: 1px solid var(--pv-border);
+  border-radius: var(--pv-radius);
+}
+
+@media (min-width: 997px) {
+  .markdown table {
+    display: table;
+    width: 100%;
+    overflow: hidden;
+  }
+}
+
+.markdown table thead tr {
+  background: var(--pv-surface);
+}
+
+.markdown table th {
+  text-align: left;
+  font-weight: 600;
+}
+
+.markdown table th,
+.markdown table td {
+  border: none;
+  border-bottom: 1px solid var(--pv-border);
+}
+
+.markdown table tr:last-child td {
+  border-bottom: none;
+}
+
+.markdown table tbody tr:nth-child(2n) {
+  background-color: color-mix(in srgb, var(--pv-surface) 60%, transparent);
+}
+
+/* Admonitions: card style with a colored left edge */
+.theme-admonition {
+  border-radius: var(--pv-radius);
+  border: 1px solid var(--pv-border);
+  border-left-width: 4px;
+  box-shadow: none;
+}
+
+/* Collapsible examples (<details>) */
+.markdown details {
+  border-radius: var(--pv-radius);
+  border: 1px solid var(--pv-border);
+  background: var(--pv-surface);
+  --docusaurus-details-decoration-color: var(--ifm-color-primary);
+}
+
+.markdown img {
+  border-radius: 8px;
+}
+
+.markdown details img {
+  display: block;
+  margin: 0.5rem auto;
+}
+
+/* Tabs */
+.tabs__item {
+  border-radius: 8px 8px 0 0;
+}
+
+.tabs-container {
+  margin-bottom: 1.5rem;
+}
+
+/* Footer */
+.footer--dark {
+  --ifm-footer-background-color: #0a0e14;
+  border-top: 1px solid rgba(148, 163, 184, 0.14);
 }

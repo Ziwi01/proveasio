@@ -8,8 +8,8 @@ import {themes as prismThemes} from 'prism-react-renderer';
 
 /** @type {import('@docusaurus/types').Config} */
 const config = {
-  title: 'Proveasio docs',
-  tagline: 'Documentation website for Proveasio project',
+  title: 'Proveasio',
+  tagline: 'Provision your environment with ease',
   favicon: 'img/favicon.ico',
 
   // Set the production url of your site here
@@ -22,6 +22,13 @@ const config = {
   projectName: 'proveasio', // Usually your repo name.
 
   onBrokenLinks: 'throw',
+
+  future: {
+    v4: {
+      removeLegacyPostBuildHeadAttribute: true,
+    },
+    faster: true,
+  },
 
   markdown: {
     hooks: {
@@ -37,6 +44,8 @@ const config = {
     locales: ['en'],
   },
 
+  clientModules: ['./src/fonts.js'],
+
   presets: [
     [
       'classic',
@@ -45,6 +54,10 @@ const config = {
         docs: {
           sidebarPath: './sidebars.js',
           routeBasePath: '/',
+          editUrl: 'https://github.com/Ziwi01/proveasio/edit/develop/docs-web/',
+          // versioned_docs are regenerated at release time; edit the current docs instead
+          editCurrentVersion: true,
+          showLastUpdateTime: true,
           versions: {
             current: {
               label: 'develop',
@@ -74,14 +87,22 @@ const config = {
   themeConfig:
     /** @type {import('@docusaurus/preset-classic').ThemeConfig} */
     ({
-      // Replace with your project's social card
-      image: 'img/docusaurus-social-card.jpg',
+      image: 'assets/proveasio-logo.png',
+      metadata: [
+        {name: 'keywords', content: 'ansible, ubuntu, wsl2, dotfiles, zsh, tmux, neovim, devops, docker'},
+      ],
+      docs: {
+        sidebar: {
+          hideable: true,
+          autoCollapseCategories: true,
+        },
+      },
       navbar: {
-        title: 'Proveasio docs',
+        title: 'Proveasio',
         hideOnScroll: true,
         logo: {
-          alt: 'Logo',
-          src: 'img/logo.svg',
+          alt: 'Proveasio logo',
+          src: 'img/logo.png',
         },
         items: [
           {
@@ -97,24 +118,53 @@ const config = {
             label: 'Usage',
           },
           {
-            href: 'https://github.com/Ziwi01/proveasio',
-            label: 'GitHub',
-            position: 'right',
-          },
-          {
             type: 'docsVersionDropdown',
             position: 'right',
             dropdownActiveClassDisabled: true,
+          },
+          {
+            href: 'https://github.com/Ziwi01/proveasio',
+            position: 'right',
+            className: 'header-github-link',
+            'aria-label': 'GitHub repository',
           },
         ],
       },
       footer: {
         style: 'dark',
+        links: [
+          {
+            title: 'Docs',
+            items: [
+              {label: 'Requirements', to: '/main/requirements'},
+              {label: 'Installation', to: '/main/installation'},
+              {label: 'Docker image', to: '/main/docker/build'},
+              {label: 'Troubleshooting', to: '/main/troubleshooting'},
+            ],
+          },
+          {
+            title: 'Usage',
+            items: [
+              {label: 'Terminal', to: '/usage/terminal'},
+              {label: 'Tmux', to: '/usage/tmux'},
+              {label: 'Neovim', to: '/usage/vim'},
+            ],
+          },
+          {
+            title: 'Project',
+            items: [
+              {label: 'GitHub', href: 'https://github.com/Ziwi01/proveasio'},
+              {label: 'Releases', href: 'https://github.com/Ziwi01/proveasio/releases'},
+              {label: 'Issues', href: 'https://github.com/Ziwi01/proveasio/issues'},
+            ],
+          },
+        ],
         copyright: `Copyright © ${new Date().getFullYear()} Ziwi. Built with Docusaurus.`,
       },
       prism: {
-        theme: prismThemes.github,
-        darkTheme: prismThemes.dracula,
+        theme: prismThemes.oneLight,
+        darkTheme: prismThemes.oneDark,
+        additionalLanguages: ['bash', 'hcl', 'lua', 'powershell', 'toml', 'ini', 'docker'],
       },
       colorMode: {
         defaultMode: 'dark',
