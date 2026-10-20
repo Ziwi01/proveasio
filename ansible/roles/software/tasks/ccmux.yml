@@ -45,20 +45,24 @@
     force: true
 
 # OpenCode integration: `ccmux setup --agent opencode` drops an auto-discovered
-# JS plugin at ~/.config/opencode/plugin/ccmux.js that reports live session
-# state (working / idle / waiting) to the ccmux daemon.
+# JS plugin that reports live session state (working / idle / waiting) to the
+# ccmux daemon. The plugin path is ccmux's business (it moved from
+# plugin/ccmux.js to plugins/ccmux/tui.js), so ask `ccmux setup --status`
+# instead of stat-ing a file, and reinstall when the plugin version differs.
 # See: https://github.com/epilande/ccmux#opencode
-- name: "[ccmux] Check for OpenCode integration plugin"
-  ansible.builtin.stat:
-    path: "{{ ansible_facts['env']['HOME'] }}/.config/opencode/plugin/ccmux.js"
-  register: ccmux_opencode_plugin
+- name: "[ccmux] Check OpenCode integration status"
+  ansible.builtin.command:
+    cmd: "{{ ansible_facts['env']['HOME'] }}/.local/bin/ccmux setup --status"
+  register: ccmux_setup_status
+  changed_when: false
 
 - name: "[ccmux] Install OpenCode integration (ccmux setup --agent opencode)"
   ansible.builtin.command:
     cmd: "{{ ansible_facts['env']['HOME'] }}/.local/bin/ccmux setup --agent opencode"
   register: ccmux_opencode_setup
   changed_when: true
-  when: not ccmux_dir.stat.exists or not ccmux_opencode_plugin.stat.exists
+  when: >-
+    ("opencode: installed (plugin v" ~ ccmux_version) not in ccmux_setup_status.stdout
 
 # Zsh completions. Generated once here (instead of `eval "$(ccmux completion
 # zsh)"` at every shell startup) to keep shell startup fast and avoid console
