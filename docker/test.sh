@@ -377,6 +377,8 @@ check_software_awscli()     { run_cmd aws --version && expect_out "aws-cli/" && 
 check_software_uv()         { run_cmd uv --version && expect_receipt .github_packages.uv; }
 check_software_opencode()   { run_cmd opencode --version && expect_receipt .github_packages.opencode; }
 check_software_hunk()       { run_cmd hunk --version && expect_receipt .github_packages.hunk; }
+# `curlie --version` is passed to curl; `curlie version` prints curlie's own.
+check_software_curlie()     { run_cmd curlie version && expect_receipt .github_packages.curlie; }
 check_software_shellcheck() { run_cmd shellcheck --version && expect_receipt .github_packages.shellcheck; }
 check_software_ccmux()      { run_cmd ccmux --version && expect_receipt .github_packages.ccmux; }
 

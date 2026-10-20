@@ -17,5 +17,8 @@
 - [kubeconform](https://github.com/yannh/kubeconform) - Kubernetes manifests validator
 - [dyff](https://github.com/homeport/dyff) - diff tool for YAML files
 - [helm-unittest](https://github.com/helm-unittest/helm-unittest) - unit tests for Helm charts (Helm plugin, `helm unittest`)
+- [Argo CD CLI](https://github.com/argoproj/argo-cd) - command line client for Argo CD (`argocd`)
+- [Argonaut](https://github.com/darksworm/argonaut) - terminal UI for Argo CD
+- [curlie](https://github.com/rs/curlie) - `curl` frontend with HTTPie-style output
 
 And more...

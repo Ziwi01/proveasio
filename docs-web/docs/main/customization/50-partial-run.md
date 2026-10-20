@@ -44,6 +44,7 @@ For particular functionality (`software` + `config`) below tags are available:
 - azurecli
 - bottom
 - ccmux
+- curlie
 - diff-so-fancy
 - docker
 - dry

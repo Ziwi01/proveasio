@@ -1,0 +1,85 @@
+# curlie - curl frontend with the ease of use of HTTPie
+# Source: https://github.com/rs/curlie
+---
+- name: "[curlie] Get Github URL for proper version"
+  vars:
+    app: curlie
+    repo: rs/curlie
+    version_query: gh_curl https://api.github.com/repos/rs/curlie/releases/latest | jq .tag_name -r | cut -f2 -d'v'
+    github_uri: "v{{ curlie_version }}/curlie_{{ curlie_version }}_linux_amd64.tar.gz"
+  ansible.builtin.include_role:
+    name: common
+    tasks_from: github_version.yml
+    apply:
+      tags:
+        - versions
+  tags:
+    - versions
+
+- name: "[curlie] Check if curlie {{ curlie_version }} is installed"
+  ansible.builtin.stat:
+    path: "{{ ansible_facts['env']['HOME'] }}/.local/opt/curlie-{{ curlie_version }}"
+  register: curlie_dir
+
+- name: "Installation"
+  when: not curlie_dir.stat.exists
+  block:
+    - name: "[curlie] Create directory in {{ ansible_facts['env']['HOME'] }}/.local/opt"
+      ansible.builtin.file:
+        path: "{{ ansible_facts['env']['HOME'] }}/.local/opt/curlie-{{ curlie_version }}"
+        state: directory
+        mode: "0755"
+
+    - name: "[curlie] Download curlie {{ curlie_version }}"
+      ansible.builtin.get_url:
+        url: "{{ curlie_url }}"
+        dest: "/tmp/curlie-{{ curlie_version }}.tar.gz"
+        mode: "0755"
+
+    - name: "[curlie] Untar archive"
+      ansible.builtin.unarchive:
+        src: "/tmp/curlie-{{ curlie_version }}.tar.gz"
+        dest: "{{ ansible_facts['env']['HOME'] }}/.local/opt/curlie-{{ curlie_version }}"
+
+    - name: "[curlie] Cleanup tar.gz file"
+      ansible.builtin.file:
+        path: "/tmp/curlie-{{ curlie_version }}.tar.gz"
+        state: absent
+
+- name: "[curlie] Link {{ curlie_version }} binary to ~/.local/bin/curlie"
+  ansible.builtin.file:
+    src: "{{ ansible_facts['env']['HOME'] }}/.local/opt/curlie-{{ curlie_version }}/curlie"
+    dest: "{{ ansible_facts['env']['HOME'] }}/.local/bin/curlie"
+    state: link
+    force: true
+
+- name: "[curlie] Save used version"
+  vars:
+    app: curlie
+    target_version:
+      github_packages:
+        curlie: "{{ curlie_version }}"
+    yq_query: ".github_packages.curlie = \"{{ curlie_version }}\""
+  ansible.builtin.include_role:
+    name: common
+    tasks_from: save_version.yml
+    apply:
+      tags:
+        - versions
+  tags:
+    - versions
+
+- name: "[curlie] Cleanup old versions"
+  vars:
+    app: curlie
+    keep: "{{ curlie_version }}"
+  ansible.builtin.include_role:
+    name: common
+    tasks_from: cleanup_versions.yml
+    apply:
+      tags:
+        - versions
+        - cleanup
+  tags:
+    - versions
+    - cleanup

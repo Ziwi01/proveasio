@@ -107,6 +107,9 @@ github_packages:
   helm_unittest: latest # Helm plugin, linked into helm_plugins_dir
   shellcheck: latest
   tofu: latest # OpenTofu
+  argocd: latest # Argo CD CLI
+  argonaut: latest # Argo CD terminal UI
+  curlie: latest
 # Helm plugins directory (`helm env HELM_PLUGINS`). helm-unittest is linked here.
 helm_plugins_dir: "{{ ansible_facts['env']['HOME'] }}/.local/share/helm/plugins"
 # How Neovim is installed: `appimage` (default) or `tarball`.

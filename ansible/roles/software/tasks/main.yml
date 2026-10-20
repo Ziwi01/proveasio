@@ -746,6 +746,20 @@
     - versions
     - hunk
 
+# curlie - curl frontend with the ease of use of HTTPie
+- name: "[Software] Install curlie"
+  ansible.builtin.include_tasks:
+    file: curlie.yml
+    apply:
+      tags:
+        - software
+        - curlie
+  when: "'curlie' not in software_tasks_exclude"
+  tags:
+    - software
+    - versions
+    - curlie
+
 # ShellCheck - static analysis for shell scripts
 - name: "[Software] Install shellcheck"
   ansible.builtin.include_tasks:
