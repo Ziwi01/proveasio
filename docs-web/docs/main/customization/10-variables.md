@@ -1,13 +1,37 @@
 # Overriding variables
 
-To override anything, you can set any variable you want in `ansible/vars/overrides.yml`.
+Set any variable in `ansible/vars/overrides.yml` to override its default. The file is in `.gitignore`, so it stays on your machine. Examples are in `ansible/vars/README.md`.
 
-Above file is added to `.gitignore`, so it won't be versioned.
-
-See possible variables in:
+The variables and their defaults are in:
 
 - `ansible/roles/software/vars/main.yml`
 - `ansible/roles/config/vars/main.yml`
+
+Do not change the defaults in those files; set the variable in `overrides.yml` instead. The roles load it with a higher precedence than their own `vars/main.yml`.
+
+:::note[Merging]
+A variable in `overrides.yml` replaces the default **completely**. The exceptions are the version catalogs `github_packages`, `pip_packages` and `docker_apt_packages`: they are merged key by key, so you only list the tools you pin. See [Versions management](./20-versions.md).
+
+To add to a list such as `npm_default_packages` or `rvm1_rubies`, copy the default list and extend it.
+:::
+
+Commonly changed variables:
+
+| Variable | Default | Effect |
+|---|---|---|
+| `git.name`, `git.mail` | | Your git identity in `~/.gitconfig` |
+| `software_tasks_exclude`, `config_tasks_exclude` | `[]` | Tools and configs to leave out, see [Excluding code](./40-excludes.md) |
+| `github_packages` | `latest` for all | Version pins, see [Versions management](./20-versions.md) |
+| `github_api_token` | unset | Token for the GitHub API, see [GitHub API rate limits](./20-versions.md#github-api-rate-limits) |
+| `nerd_fonts` | `true` | Icons in the prompt, tmux, Neovim, lazygit and `ls`, see below |
+| `neovim_package` | `appimage` | `tarball` where FUSE is missing |
+| `neovim_config_url`, `neovim_config_version` | Ziwi01/astronvim, `main` | Neovim config repository, see [Own config files](./30-config-files.md) |
+| `node_version` | `lts/jod` | Default Node version (nvm) |
+| `go_versions`, `go_default` | `go1.26.1` | Go versions (gvm) |
+| `rvm1_rubies` | `ruby-3.4.7` | Ruby versions (rvm) |
+| `sdkman_install_packages`, `sdkman_defaults` | Java, Gradle, Groovy, Maven | SDKMAN candidates and their default versions |
+| `cleanup_old_versions` | `true` | Remove old versions from `~/.local/opt`, see [Cleaning up old versions](./45-cleanup.md) |
+| `config_files_backup` | `true` | Back up config files before changing them |
 
 ## No Nerd Font
 

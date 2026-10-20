@@ -103,9 +103,11 @@ cleanup_old_versions_exclude:
 ```
 
 :::note[Neovim]
-Neovim is intentionally left out of the automatic cleanup because it uses a
-different on-disk layout (a shared `neovim-nightly` directory holding the
-downloaded appimages). Its old artifacts are not removed automatically.
+Neovim is not cleaned up automatically. Each release is installed into its own
+`~/.local/opt/neovim-<version>` directory (nightly builds into
+`~/.local/opt/neovim-nightly`), and the old release directories stay. Remove
+the ones you no longer need by hand; `~/.local/bin/nvim` shows which one is in
+use (`readlink -f ~/.local/bin/nvim`).
 :::
 
 :::tip

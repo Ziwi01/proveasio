@@ -109,7 +109,7 @@ jobs:
           set -euo pipefail
           {
             echo '---'
-            echo 'sidebar_position: 9'
+            echo 'sidebar_position: 11'
             echo 'title: Changelog'
             echo 'format: md'
             echo '---'

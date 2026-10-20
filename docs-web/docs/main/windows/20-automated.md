@@ -1,46 +1,44 @@
 # Automated
 
 :::danger
-This is just experimental feature, it is not tested thoroughly, use at your own risk (with some feedback if you do, please)
+This is experimental and not tested thoroughly. Use it at your own risk, and please report how it went.
 :::
 
-This is an initial automation for setting up Windows, which includes the steps from [Windows manual setup](./manual) and some more things, like installing software I commonly use.
+This automates the [Windows manual setup](./10-manual.md) and installs Windows software I commonly use. Ansible runs from WSL and configures Windows over WinRM.
 
 ## prepare-windows.ps1
 
-Download this repository somewhere on Windows.
+Download this repository somewhere on Windows. The script `prepare-windows.ps1`:
 
-There is a script `prepare-windows.ps1`, which will:
+- installs WSL with Ubuntu 24.04,
+- enables WinRM with CredSSP authentication, so Ansible in WSL can configure Windows,
+- installs the [Chocolatey](https://chocolatey.org/) package manager.
 
-- Install WSL with Ubuntu 24.04.
-- Enable WinRM protocol with CredSSP authentication transport (to be able to run Ansible from WSL2 to configure Windows)
-- Install [Chocolatey](https://chocolatey.org/) package manager to install software
-
-It must be run as Administrator from `cmd` or `powershell`.
+Run it as Administrator from `cmd` or PowerShell.
 
 ## prepare-ubuntu.sh
 
-After `prepare-windows.ps1` is run, login to Ubuntu WSL and also [download](../download) this repo.
+Then open Ubuntu and [download](../download.md) the repository there as well.
 
-Before running below script, ensure your WSL distro is using `systemd`. See [Requirements](../requirements)
+Check that the distribution runs `systemd`, see [Requirements](../requirements.md#wsl2).
 
-From Ubuntu, in repo root, run `sudo ./prepare-ubuntu.sh` - this will update the system and install required Ansible packages.
+In the repository root, run `sudo ./prepare-ubuntu.sh`. It updates the system and installs Python and Ansible.
 
 ## setup-windows.yml
 
-This is the main playbook to setup Windows.
+This playbook sets up Windows.
 
-1. Create `ansible/vars/overrides.yml` and set `win_username` to your windows User. See `ansible/vars/README.md` for example
-2. Investigate `ansible/roles/windows/tasks/main.yml` and review all other tasks in that directory to see what would be done
-    1. `common.yml` will install common software packages, like 7Zip, Firefox, BitWarden etc.
-    2. `dev.yml` will install GIT, Windows Terminal, IntelliJ, VSCode, Docker Desktop, Postman
-    3. `context_menu.yml` will clean up context menu from things added by some of the packages above
-    4. `terminal.yml` will install FiraCode font and apply custom settings for Windows Terminal
-    5. `entertainment.yml` will install additional software, like Spotify, VLC, Discord etc.
+1. Note your Windows user name. You pass it as `win_username` when you run the playbook (see below).
+2. Read `ansible/roles/windows/tasks/main.yml` and the other task files in that directory to see what they change:
+    1. `common.yml` installs common software, like 7-Zip, Firefox and Bitwarden.
+    2. `dev.yml` installs Git, Windows Terminal, IntelliJ, VS Code, Docker Desktop and Postman.
+    3. `context_menu.yml` removes the context menu entries some of these packages add.
+    4. `terminal.yml` installs the FiraCode font and applies settings to Windows Terminal.
+    5. `entertainment.yml` installs Spotify, VLC, Discord and similar.
 
-You can switch off the whole sections from #2 by adding to `vars/overrides.yml` (change `true` to `false` to exclude):
+To skip whole sections, set them to `false` in `bundle_include`. Because of the problem described below, pass it with `-e` as JSON, for example `-e '{"bundle_include": {"common": true, "dev": true, "terminal": true, "entertainment": false, "context_menu": true}}'`. The defaults are:
 
-```
+```yaml
 bundle_include:
   common: true
   dev: true
@@ -50,14 +48,20 @@ bundle_include:
 ```
 
 :::tip
-Instead of excluding whole section, you can also modify its task directly (e.g `ansible/roles/windows/tasks/entertainment.yml`) and just comment out/remove particular things you don't want to be installed
+To skip single packages instead of a whole section, remove them from the task file in your own branch (for example `ansible/roles/windows/tasks/entertainment.yml`).
 :::
 
-After everything is prepared, you can run (from `ansible/` dir):
+Then run, from the `ansible/` directory:
 
 ```shell
-ansible-playbook -i inventory.yml setup-windows.yml -k
+ansible-playbook -i inventory.yml setup-windows.yml -k -e win_username=<your-windows-user>
 ```
 
-It will prompt for your Windows password. If the terminal hangs during an execution for more than couple minutes, just break it (`<C-c>`) and run again. This is because Chocolatey installations from WSL Ansible can get clogged up sometimes (not sure why this happens).
+`-k` asks for your Windows password.
+
+:::warning[`win_username` in overrides.yml has no effect]
+`setup-windows.yml` loads `ansible/vars/overrides.yml` with a lower precedence than the role's own variables, so a `win_username` set there is ignored and the default (`Jimmy`) is used. Pass it with `-e` as above until this is fixed. The same applies to every other `windows` role variable, including `bundle_include`.
+:::
+
+If the run hangs for more than a few minutes, stop it with <kbd>Ctrl</kbd>+<kbd>c</kbd> and run it again. Chocolatey installations started from Ansible in WSL sometimes get stuck.
 

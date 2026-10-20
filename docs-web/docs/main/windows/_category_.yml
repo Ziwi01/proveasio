@@ -1,4 +1,3 @@
-position: 5
+position: 4
 label: 'Windows setup'
 collapsible: true
-className: red

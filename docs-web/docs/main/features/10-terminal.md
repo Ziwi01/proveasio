@@ -4,15 +4,15 @@ Terminal is ZSH-based, configured with [Oh-my-ZSH](https://github.com/ohmyzsh/oh
 
 <details>
   <summary><b>Example:</b> Terminal commandline</summary>
-  <div align="center">
-    <img src="https://ziwi01.github.io/proveasio/assets/terminal_preview.png" />
-  </div>
+
+![terminal preview](/assets/terminal_preview.png)
+
 </details>
 <br />
 
 The prompt uses [Nerd Fonts](https://www.nerdfonts.com/) icons. Without such a font, see [No Nerd Font](../customization/variables#no-nerd-font).
 
-There are couple of useful plugins installed there (you can find them in `ansible/roles/config/templates/zshrc.j2`), which provide for example:
+The plugins are listed in `ansible/roles/config/templates/zshrc.j2` (`omz_plugins` in `ansible/roles/software/vars/main.yml` lists the ones cloned from GitHub). They provide, for example:
 
 - syntax highlighting
 - commands autocompletion (based on history and/or completion scripts)
@@ -22,4 +22,7 @@ There are couple of useful plugins installed there (you can find them in `ansibl
 - easily traversing through **visited** directories (using [zoxide](https://github.com/ajeetdsouza/zoxide))
 - correct your commands automatically with [pay-respects](https://github.com/iffse/pay-respects)
 - finding files with FZF
-- Windows clipboard support - also works from VIM (copying in VIM makes it available in Windows clipboard)
+- `cat` with syntax highlighting ([bat](https://github.com/sharkdp/bat)) and `ls` with icons and Git status ([eza](https://github.com/eza-community/eza))
+- Windows clipboard support on WSL ([win32yank](https://github.com/equalsraf/win32yank)): text copied in Neovim lands in the Windows clipboard
+
+See [Terminal usage](../../usage/20-terminal.md) for the commands and key bindings.

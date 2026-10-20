@@ -1,43 +1,43 @@
 ---
-sidebar_position: 3
+sidebar_position: 5
 ---
 
 # Download
 
 :::tip[Docker]
-Instead downloading the repo and running the installation, you can try own a dockerized version, see [Docker image](./docker/build).
+Instead of downloading the repository and running the installation, you can try the Docker version, see [Docker image](./docker/10-build.md).
 :::
 
-Easiest way to start is to clone the repository:
+The easiest way to start is to clone the repository:
 
-```
+```shell
 git clone https://github.com/Ziwi01/proveasio.git ~/proveasio
 ```
 
-- `master` branch contains rather stable updates from develop (documentation, new tested plugins, fixes). By default, versions are set to `latest`. This branch is tested weekly to ensure the installation works as expected.
-- `develop` branch. It contains all recent changes/features **and** sometimes in-progress testing features. Also documentation updates and so on. Use it if you want to see what's cookin.
-- tags are equivalent of the releases published in Github. They should be stable, but there is no guarantee after some time.
+- `master` holds the tested changes from `develop`: documentation, new tools, fixes. All versions default to `latest`. CI runs the full installation on this branch every week.
+- `develop` holds all recent changes, sometimes including features still being tested. Use it to try what is coming next.
+- Tags match the [GitHub releases](https://github.com/Ziwi01/proveasio/releases). They were stable when released, but the `latest` versions they install change over time.
 
 :::tip
-I recommend checking out `master` branch, then create your own branch (`git checkout -b my-branch`).
+Check out `master`, then create your own branch (`git checkout -b my-branch`).
 
-You can then pin versions in `ansible/vars/overrides.yml`. The tools and their version keys are listed in `ansible/roles/software/vars/main.yml`, and `current-versions.yml` in the repository root shows the versions your last run installed.
+Pin versions in `ansible/vars/overrides.yml`. The tools and their version keys are in `ansible/roles/software/vars/main.yml`, and `current-versions.yml` in the repository root lists the versions your last run installed.
 
-Also, this approach makes it easy to do other [customizations](../category/customizations)
+A branch of your own also makes other [customizations](../category/customizations) easy to keep.
 :::
 
 ## Releases
 
-This project publishes [releases](https://github.com/Ziwi01/proveasio/releases) (sometimes).
+The project publishes [releases](https://github.com/Ziwi01/proveasio/releases) from time to time.
 
-You can download newest release, unpack it and use it. However, you loose the ability to track your changes and easily update/merge new incoming updates so it is recommended to use git repository/own branch.
-
-I personally recommend cloning the repository instead of downloading the release.
+You can download a release and unpack it. You then lose the easy way to track your changes and to merge new updates, so cloning the repository is recommended.
 
 ## Updating
 
-If you use `master` or `develop` branch, just run `git pull` to have the latest changes. Be aware that your local changes might conflict, so you will need t o resolve that
+On `master` or `develop`, run `git pull` to get the latest changes. If you changed files locally, you may need to resolve conflicts.
 
-If you use your own branch, run `git fetch` and then merge `master` or `develop` to your branch (beeing on our branch: `git merge master`)
+On your own branch, run `git fetch` and merge `master` or `develop` into it (on your branch: `git merge origin/master`).
 
-If using the release tarball, you need to download/checkout new version and migrate your previous changes to new structure. Not fun.
+With a release tarball, you have to download the new version and move your changes into it by hand.
+
+Then run the playbook again, see [Installation](./installation.md).

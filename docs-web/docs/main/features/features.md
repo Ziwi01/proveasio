@@ -4,6 +4,6 @@ sidebar_position: 2
 
 # Features
 
-In this section you can find brief summary of included tools and features. For more details for each tool, see the [software role](../roles/software) section and take a look at the links there.
+A short summary of the included tools and features. The complete list of tools, with their tag and exclude names, is in the [software role](../roles/10-software.md).
 
-For usage scenarios with examples (screenshots, videos), see [Usages](../../usage/10-about.md).
+For usage scenarios with examples and screenshots, see [Usage](../../usage/10-about.md).

@@ -1,29 +1,28 @@
 # Manual
 
-0. If you don't have WSL installed, you need to install it with: `wsl --install` executed from administrative `cmd` or `powershell` terminal. See [windows docs](https://learn.microsoft.com/en-us/windows/wsl/install#install-wsl-command)
+1. If WSL is not installed, install it from an administrator `cmd` or PowerShell with `wsl --install`. See the [Microsoft docs](https://learn.microsoft.com/en-us/windows/wsl/install#install-wsl-command).
 
-1. Install Ubuntu 24.04, execute from Powershell (Administrator):
+2. Install Ubuntu 24.04 or 26.04. From PowerShell (as Administrator):
 
-   ```shell
-   wsl.exe --install -d 'Ubuntu-24.04'
-   wsl.exe --set-default 'Ubuntu-24.04'
+   ```powershell
+   wsl.exe --list --online             # shows the exact distribution names
+   wsl.exe --install -d Ubuntu-24.04   # or Ubuntu-26.04
+   wsl.exe --set-default Ubuntu-24.04
    ```
 
-   For details, see [Microsoft WSL installation docs](https://docs.microsoft.com/en-us/windows/wsl/install)
+3. Check that `systemd` runs in the distribution: `systemctl is-system-running` should print `running` or `degraded`. New Ubuntu installs enable it by default. If it does not, add these lines to `/etc/wsl.conf`:
 
-2. Enable `systemd` in your distribution: Add these lines to `/etc/wsl.conf`:
-
-   ```
+   ```ini
    [boot]
    systemd=true
    ```
 
-   Then restart WSL from Windows `cmd`: `wsl --shutdown`. After next login it should have systemd configured. For more information see [windows docs for systemd](https://devblogs.microsoft.com/commandline/systemd-support-is-now-available-in-wsl/)
+   Then restart WSL from Windows with `wsl --shutdown`. See [systemd support in WSL](https://learn.microsoft.com/en-us/windows/wsl/systemd).
 
-3. (optionally) Install FiraCode nerd fonts (the ones I use are in `ansible/roles/windows/files/fonts`, if you need, download [all FiraCode Nerd fonts](https://github.com/ryanoasis/nerd-fonts/releases/download/v2.3.3/FiraCode.zip) and use whichever you want) 
-4. (optionally) Install [Microsoft Terminal](https://github.com/microsoft/terminal) and configure this Terminals Ubuntu profile with `FiraCode NF` nerd font (Settings -> Ubuntu-24.04 -> Appearance -> Font Face). You can check `ansible/roles/windows/templates/settings.json.j2` for settings reference with useful overrides.
+4. (optional) Install a [Nerd Font](https://www.nerdfonts.com/font-downloads). The FiraCode Nerd Font I use is in `ansible/roles/windows/files/fonts`; the [latest FiraCode release](https://github.com/ryanoasis/nerd-fonts/releases/latest) has all variants.
 
-In points #3 and #4 specific font+terminal duo is just a suggestion (I use them personally) - you can use any terminal of your choice and any font supporting iconic fonts (like [Nerd Fonts](https://www.nerdfonts.com/) - please note that not all fonts have the same amount of glyphs/icons. FiraCode has lots of them. Remember to configure you terminal to use your font!
+5. (optional) Install [Windows Terminal](https://github.com/microsoft/terminal) and set the font of its Ubuntu profile to the Nerd Font (Settings → Ubuntu → Appearance → Font face). `ansible/roles/windows/templates/settings.json.j2` has my settings for reference.
 
-Thats it, you can move to [Installation](../installation)
+Any terminal and any Nerd Font work; steps 4 and 5 are only my suggestion. Fonts differ in how many icons they include, and FiraCode has a lot. Without a Nerd Font, turn the icons off with [`nerd_fonts: false`](../customization/10-variables.md#no-nerd-font).
 
+Then continue with [Installation](../installation.md).

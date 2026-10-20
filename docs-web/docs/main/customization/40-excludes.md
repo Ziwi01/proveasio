@@ -2,17 +2,18 @@
 
 ## Ad-hoc
 
-You can disable whole functionalities during ansible run using `--skip-tags`, for example:
+To leave something out of a single run, use `--skip-tags` (from the `ansible/` directory):
 
 ```shell
 ansible-playbook -i inventory.yml setup-ubuntu.yml --skip-tags "software" -K
+ansible-playbook -i inventory.yml setup-ubuntu.yml --skip-tags "puppet,azurecli" -K
 ```
 
-See [ansible roles](../roles) section for full list.
+The tags are listed in [Run particular code](./50-partial-run.md).
 
 ## Permanent
 
-To exclude certain parts of ansible code for every subsequent runs, you can add to your `ansible/vars/overrides.yml` which sections you want to exclude:
+To leave something out of every run, list it in `ansible/vars/overrides.yml`:
 
 ```yaml
 software_tasks_exclude:
@@ -22,7 +23,9 @@ config_tasks_exclude:
   - tmux # do not configure tmux
 ```
 
-For full list of exclude options, see [software](../roles/software) or [config](../roles/config) role description.
+The names are listed in the [software](../roles/10-software.md) and [config](../roles/20-config.md) roles.
+
+Excluding a tool does not uninstall it if an earlier run installed it. When you exclude a software task that has a config task of the same name (`tmux`, `ccmux`, `sdkman`, `lazygit`, `ansible`), exclude the config task too; for `neovim`, exclude `neovim-config`.
 
 `packages`, `yq` and `zsh` in `software_tasks_exclude`, and `zsh` in `config_tasks_exclude`, are required. The playbook stops at the start when an overrides file excludes one of them.
 

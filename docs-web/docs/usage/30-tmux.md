@@ -1,100 +1,114 @@
 # Tmux
 
-[Tmux](https://github.com/tmux/tmux) is a terminal multiplexer, which helps working with mulitple terminals, using panes (splits) and windows. Because it is running on top of the terminal itself, there some neat features which will work even during remote sessions (ssh), like buffer text extract (see below).
+[Tmux](https://github.com/tmux/tmux) is a terminal multiplexer: it runs several terminals in panes (splits) and windows, and keeps them running when you detach. Because it runs on top of the terminal, some features work on remote (SSH) sessions too, like extracting text from the buffer (see below).
 
-TMUX prefix is set to `<C-b>` (ctrl+b) - everything after that is a tmux shortcut/command.
+The tmux prefix is <kbd>Ctrl</kbd>+<kbd>b</kbd>, written `<C-b>` below. Press it, release it, then press the key of the command.
 
 ## Basic commands
 
-- `tmux new` - start new TMUX session. Tip: Start with this command whenever you start new terminal :)
+- `tmux new` - start a new session (auto-numbered sessions are named `Default`, `Default-1`, ...). `tmux new -s <name>` names it, `tmux attach` reattaches.
+- `<C-b>d` - detach; the session keeps running
 - `<C-b>?` - help, list all available shortcuts
 - `<C-b>c` - new window
-- `<C-b>%` - split window vertically
-- `<C-b>"` - split window horizontally
+- `<C-b>%` - split side by side (the new pane opens in the current directory)
+- `<C-b>"` - split top and bottom
 - `<C-b><arrows>` - move between panes. *Easier alternative*: `<Alt>+<arrows>` (includes moving between Vim splits)
-- `<C-b><C+<arrows>>` - resize panes
-- `<C-b>xy` - kill pane
+- `<C-b>` then <kbd>Ctrl</kbd>+arrows - resize panes
+- `<C-b>z` - zoom the current pane in and out
+- `<C-b>x`, then `y` - kill pane
 - `<C-b>n` - next window
-- `<C-b>l` - last window
-- `<C-b>p` - previous window (in order)
+- `<C-b>p` - previous window
+- `<C-b>l` - last used window
+- `<C-b>,` - rename the window
 
 <details>
   <summary><b>Example:</b> Tmux window</summary>
-  <div align="center">
-    <img src="https://ziwi01.github.io/proveasio/assets/tmux-overview.png" />
-  </div>
+
+![tmux overview](/assets/tmux-overview.png)
+
 </details>
 
 ## Manage sessions
 
-Uses: 
+Uses:
+
 - [tmuxp](https://github.com/tmux-python/tmuxp)
 - [tmux-resurrect](https://github.com/tmux-plugins/tmux-resurrect)
 
-There are two ways to manage you session(s):
+There are two ways to manage your sessions:
 
 - simple save/restore session
 - user-defined multiple sessions with own layouts, commands, etc.
 
-For the first option - you can simply save your current session (opened windows, splits, Vim instances) using `<C-b><C-s>`. To restore it, run `<C-b><C-r>`. Vim instances are persistent only until system restart (or WSL shutdown).
+To save your sessions (windows, splits, running Neovim instances), press `<C-b><C-s>`. To restore them, for example after a reboot, press `<C-b><C-r>`. Neovim sessions are restored only until the system restarts (or WSL shuts down).
 
-You can also have multiple sessions, configured in YAML format, where you define open windows, panes, commands etc. You can define one for each project and easily switch/attach to them.
+You can also define sessions in YAML: windows, panes, start directories and commands. Define one per project and load it when you need it.
 
-Sessions are stored in `${HOME}/.tmuxp` directory in a `*.yaml` file. There is a default session file created when running Proveasio (for example purposes). To remove creating that file add `tmuxp_default_session: false` in your `overrides.yml` file. See overriding variables in main documentation.
+Session files are `*.yaml` files in `~/.tmuxp`. When that directory is empty, Proveasio creates `default_session.yaml` there as an example. Once you add files of your own (or delete the example), it is not created again.
+
+```yaml title="~/.tmuxp/myproject.yaml"
+session_name: myproject
+start_directory: ~/projects/myproject
+windows:
+  - window_name: code
+    panes:
+      - nvim
+  - window_name: shell
+    layout: even-horizontal
+    panes:
+      - git status
+      - null
+```
 
 See [`tmuxp`](https://github.com/tmux-python/tmuxp) for details on how to define sessions with multiple windows, panes etc.
 
-After you define you session(s), you can run `lp` from shell, which will invoke a picker for your sessions. You can either attach it to our current session or create a new one.
+Run `lp` (load project) in the shell to pick a session file with fzf and load it. `tmuxp load <file>` does the same without the picker.
 
-To jump between sessions, use `<C-b>s`.
+To switch between running sessions, press `<C-b>s`.
 
 ## Copy mode
 
-You can enter a copy mode from Tmux buffer using `<C-b><C-]>` - move around with arrow keys.
+Enter copy mode with `<C-b>[` and move around with the arrow keys or vi keys (scrolling up with the mouse wheel also enters it). Copy mode uses vi bindings: `/` and `?` search.
 
-In copy mode you can select text with `v` (or `<Space>`) and copy selected text with `y` (or `<Enter>`). It will be copied to your clipboard, so you can paste it normally with `<C-v>` or directly from Tmux buffer using `<C-b><C-]>` (that way you can copy something else to the actual clipboard instead).
+Select text with `v` (or <kbd>Space</kbd>) and copy it with `y` (or <kbd>Enter</kbd>). Selecting with the mouse copies too. Paste the last copied text with `<C-b>]`.
 
 :::tip
-To select a block of text (vertical selection), before (or after) selecting text with `<v>` just hit `<Alt>v`.
+To select a rectangular block, press <kbd>Ctrl</kbd>+<kbd>v</kbd> before or after starting the selection with `v`.
 :::
 
 ## Search back buffer
 
 Uses: [tmux-fuzzback](https://github.com/roosta/tmux-fuzzback)
 
-During Tmux session, it saves a pretty big buffer (max 14k lines) for everything that was printed to terminal.
+tmux keeps the last 50,000 lines of each pane.
 
-You can go back somewhere in the buffer with `<C-b><C-f>`, which will pop up a window with fuzzy finder, where you can search for text. After you go back, you can either examine the contents, or copy anything - see copy mode above.
+Press `<C-b><C-f>` to search that history in an fzf popup. Picking a line jumps there in copy mode, so you can read around it or copy it (see above).
 
 ## Extract from buffer
 
 Uses: [extrakto](https://github.com/laktak/extrakto)
 
-There is this awesome plugin, which can directly extract information from Tmux buffer.
+extrakto picks words, paths, URLs or lines from the pane's text with fzf. Press `<C-b><Tab>` to open it.
 
-Running `<C-b><TAB>` will open a fuzzy search to extract something.
+The pane can be a remote SSH session, so this is a quick way to grab an IP address, a hostname or a path without the mouse.
 
-This can be VERY useful, as the buffer includes also remote SSH sessions. It comes in handy to fill out commands, get the IP, hostname, or any other information, which you would need to copy with mouse or write down.
-
-It has three modes (you can change them with `<C-f>`):
+It has several modes; switch between them with <kbd>Ctrl</kbd>+<kbd>f</kbd>:
 
 - `word`: will divide the search in a single words
 - `all`: will show common types if found (urls, paths, quotes)
 - `line`: will show the whole line(s)
 
-After selecting what you want to get, you can either directly put it into terminal with `<TAB>` or just copy it to clipboard with `<Enter>`
+Insert the selection into the command line with <kbd>Tab</kbd>, or copy it to the clipboard with <kbd>Enter</kbd>.
 
 ## Switching panes
 
-By default, you can move around panes with `<C-b><arrows>`. There is a maximum delay for this to work (between hitting `<C-b>` and arrow key), so after moving to the pane, arrows will work normally after a second (not switching between panes anymore).
+`<C-b>` and an arrow key moves between panes. For a short time after that, arrow keys keep switching panes without the prefix; after it, they work normally again.
 
-**However!** You can use a very handy `<Alt>+<arrows>` (without `<C-b>` prefix) to jump between panes **and** Vim windows/splits.
+The easier way: <kbd>Alt</kbd>+arrows (no prefix) moves between tmux panes **and** Neovim splits, as if they were one layout.
 
 ## Synchronize panes
 
-Sometimes you need to enter the same commands in all you panes (like after logging to two ssh servers, need to run the same things).
-
-You can turn on panes synchronizations with: `<C-b>:` and writing `setw synchronize-panes on`
+To type the same commands into all panes of a window (for example on several SSH servers at once), press `<C-b>:` and enter `setw synchronize-panes on`. Turn it off with `setw synchronize-panes off`.
 
 ## Track AI coding agents (ccmux)
 
