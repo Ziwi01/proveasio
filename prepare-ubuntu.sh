@@ -39,6 +39,9 @@ else
 fi
 
 sudo -u "${SUDO_USER}" bash <<_
+# No -u: the code that pyenv init and virtualenv-init print is not written for it.
+set -eo pipefail
+
 # Formatting helpers for visible output (user context)
 if [ -t 1 ]; then
   RESET="\033[0m"; BOLD="\033[1m"; RED="\033[31m"; GREEN="\033[32m"; YELLOW="\033[33m"; BLUE="\033[34m"; MAGENTA="\033[35m"; CYAN="\033[36m"
@@ -49,8 +52,31 @@ fi
 hr() { printf "%b\n" "\${MAGENTA}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\${RESET}"; }
 section() { hr; printf "%b\n" "\${BOLD}\${CYAN}\$1\${RESET}"; hr; }
 
+# Clones a repository unless the destination exists, with 3 attempts.
+clone() {
+  local attempt
+  if [ -d "\$2" ]; then
+    printf "%b\n" "\${YELLOW}\$2 already exists, skipping clone\${RESET}"
+    return 0
+  fi
+  for attempt in 1 2 3; do
+    git clone --depth 1 "\$1" "\$2" && return 0
+    rm -rf "\$2"
+    printf "%b\n" "\${YELLOW}Clone of \$1 failed (attempt \$attempt of 3)\${RESET}"
+    if [ "\$attempt" -lt 3 ]; then sleep 10; fi
+  done
+  printf "%b\n" "\${BOLD}\${RED}Could not clone \$1\${RESET}"
+  return 1
+}
+
+# The same repositories the pyenv.run installer clones, taken from GitHub
+# directly: pyenv.run's DNS is served by a small operator and failed to resolve
+# in CI now and then.
 section "Install pyenv"
-curl https://pyenv.run | bash
+clone https://github.com/pyenv/pyenv.git "\$HOME/.pyenv"
+clone https://github.com/pyenv/pyenv-doctor.git "\$HOME/.pyenv/plugins/pyenv-doctor"
+clone https://github.com/pyenv/pyenv-update.git "\$HOME/.pyenv/plugins/pyenv-update"
+clone https://github.com/pyenv/pyenv-virtualenv.git "\$HOME/.pyenv/plugins/pyenv-virtualenv"
 
 section "Set up .bashrc (temporarily)"
 grep -qxF 'export PYENV_ROOT="\$HOME/.pyenv"' ~/.bashrc || echo 'export PYENV_ROOT="\$HOME/.pyenv"' >> ~/.bashrc
@@ -63,14 +89,13 @@ command -v pyenv >/dev/null || export PATH="\$PYENV_ROOT/bin:\$PATH"
 eval "\$(pyenv init -)"
 eval "\$(pyenv virtualenv-init -)"
 
-section "Install pyenv update plugin"
-git clone https://github.com/pyenv/pyenv-update.git "\$PYENV_ROOT/plugins/pyenv-update"
-
 section "Run pyenv update"
 pyenv update
 
 section "Install Python ${PYTHON_VERSION}"
-pyenv install ${PYTHON_VERSION}
+# --skip-existing: without it, pyenv asks whether to reinstall, reads the answer
+# from this script's stdin and fails the rerun.
+pyenv install --skip-existing ${PYTHON_VERSION}
 pyenv global ${PYTHON_VERSION}
 
 section "Upgrade PIP"

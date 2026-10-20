@@ -77,8 +77,8 @@ ENV PATH=/home/${USERNAME}/.local/bin:/home/${USERNAME}/.pyenv/shims:/home/${USE
 COPY --chown=${USER_UID}:${USER_GID} prepare-ubuntu.sh /home/${USERNAME}/proveasio/prepare-ubuntu.sh
 COPY --chown=${USER_UID}:${USER_GID} ansible/roles/software/vars/main.yml /home/${USERNAME}/proveasio/ansible/roles/software/vars/main.yml
 
-# Python (compiled by pyenv), Ansible and yq. prepare-ubuntu.sh has no `set -e`
-# and exits 0 when it is not root, so its results are checked here.
+# Python (compiled by pyenv), Ansible and yq. prepare-ubuntu.sh sets `-e` only
+# for its user part and exits 0 when it is not root, so its results are checked here.
 # This layer stays cached across REFRESH builds.
 RUN <<'EOF'
 set -euo pipefail
