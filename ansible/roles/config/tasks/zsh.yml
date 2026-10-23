@@ -13,6 +13,12 @@
   failed_when: false
   register: actual_node_version
 
+- name: "[Config][ZSH] Install ocs (opencode session browser) into ~/.local/bin"
+  ansible.builtin.copy:
+    src: ocs
+    dest: "{{ ansible_facts['env']['HOME'] }}/.local/bin/ocs"
+    mode: "0755"
+
 - name: "[Config][ZSH] Configure .zshrc"
   vars:
     app: ZSH

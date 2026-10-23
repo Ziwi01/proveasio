@@ -4,7 +4,7 @@ This role lays down the configuration files. Each row is one task file in `ansib
 
 | Name | Files |
 |---|---|
-| `zsh` (required) | `~/.zshrc`, from `ansible/roles/config/templates/zshrc.j2` |
+| `zsh` (required) | `~/.zshrc`, from `ansible/roles/config/templates/zshrc.j2`, and `~/.local/bin/ocs` ([opencode session browser](../../usage/20-terminal.md#browse-opencode-sessions-with-ocs)) |
 | `p10k` | `~/.p10k.zsh` (powerlevel10k prompt) |
 | `tmux` | `~/.tmux.conf`, the tmux plugins, `~/.local/bin/tmux-default-session-name`, and `~/.tmuxp/default_session.yaml` when `~/.tmuxp` is empty |
 | `git` | `~/.gitconfig`, from `ansible/roles/config/templates/gitconfig.j2` (uses the `git.name` and `git.mail` variables) |

@@ -385,6 +385,7 @@ check_software_ccmux()      { run_cmd ccmux --version && expect_receipt .github_
 check_config_zsh() {
   local rc
   expect_file "$HOME/.zshrc" || return 1
+  expect_exec "$HOME/.local/bin/ocs" || return 1
   # Start zsh the way a container does. The zsh PATH the other checks use
   # has RVM's ruby but not GEM_HOME, and RVM prints a warning about that.
   # stdin is /dev/null for the reason given in use_zsh_path.
