@@ -393,7 +393,11 @@ check_config_zsh() {
   rc=$?
   OUT="$(tr -d '\r' <<<"$OUT")"
   [ "$rc" -eq 0 ] || fail "interactive zsh exited $rc: $(head -c 300 <<<"$OUT")" || return 1
-  [ -z "$(tr -d '[:space:]' <<<"$OUT")" ] || fail "interactive zsh printed: $(head -c 300 <<<"$OUT")"
+  [ -z "$(tr -d '[:space:]' <<<"$OUT")" ] || fail "interactive zsh printed: $(head -c 300 <<<"$OUT")" || return 1
+  # wsl-browser is WSL-only; outside WSL .zshrc must leave BROWSER alone.
+  expect_exec "$HOME/.local/bin/wsl-browser" || return 1
+  zsh_var "" BROWSER
+  [ -z "$OUT" ] || fail "BROWSER is '$OUT' outside WSL"
 }
 
 check_config_p10k() {

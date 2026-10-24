@@ -19,6 +19,13 @@
     dest: "{{ ansible_facts['env']['HOME'] }}/.local/bin/ocs"
     mode: "0755"
 
+# $BROWSER on WSL (set in .zshrc only there), so az login and gh open the Windows browser
+- name: "[Config][ZSH] Install wsl-browser into ~/.local/bin"
+  ansible.builtin.copy:
+    src: wsl-browser
+    dest: "{{ ansible_facts['env']['HOME'] }}/.local/bin/wsl-browser"
+    mode: "0755"
+
 - name: "[Config][ZSH] Configure .zshrc"
   vars:
     app: ZSH

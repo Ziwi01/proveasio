@@ -62,6 +62,16 @@ rvm1_gpg_key_servers:
   - hkp://keyserver.ubuntu.com:80
 ```
 
+## `az login` fails with `gio: ... Operation not supported`
+
+WSL has no Linux browser, so `az login` (and other Python tools) fall back to `gio`, which cannot open URLs. The `.zshrc` from Proveasio sets `BROWSER` to `~/.local/bin/wsl-browser` on WSL, which opens the URL in the Windows default browser. If you still see the error:
+
+- open a new shell: the variable is set when zsh starts
+- check `echo $BROWSER`: a `BROWSER` you set yourself is kept
+- check `command -v rundll32.exe`: it is missing when `appendWindowsPath = false` is set in `/etc/wsl.conf`
+
+Without a browser, use `az login --use-device-code`.
+
 ## Unable to get HTTPS endpoints
 
 If connections to HTTPS sites (like `curl https://get.rvm.io` or `curl https://github.com`) fail with a certificate authority error, a proxy (corporate or ISP) intercepts TLS with its own certificate chain. Import that chain from Windows into WSL. See [this GitHub comment](https://github.com/microsoft/WSL/issues/3161#issuecomment-945384911) for how. For Docker builds, see [Corporate root CA](./docker/10-build.md#corporate-root-ca).

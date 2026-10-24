@@ -1,0 +1,5 @@
+#!/bin/sh
+# Open a URL in the Windows default browser from WSL. .zshrc sets it as $BROWSER on WSL.
+# Takes the URL as the only argument: gh appends it and does not expand %s.
+# Must exit 0 on success: Python's webbrowser (az login) falls back to gio otherwise.
+exec rundll32.exe url.dll,FileProtocolHandler "$1"
