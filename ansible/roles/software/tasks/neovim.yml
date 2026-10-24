@@ -9,11 +9,15 @@
     quiet: true
 
 - name: "[Neovim] Check installed exact Neovim version"
-  ansible.builtin.command: nvim --version | grep -e '^NVIM' | cut -d ' ' -f 2
+  ansible.builtin.shell: |
+    set -e -o pipefail
+    "{{ ansible_facts['env']['HOME'] }}/.local/bin/nvim" --version | grep -m1 -e '^NVIM' | cut -d ' ' -f 2
+  args:
+    executable: /bin/bash
   register: neovim_check_exact
-  ignore_errors: true
-  changed_when: neovim_check_exact.rc > 1
-  failed_when: neovim_check_exact.rc > 1
+  changed_when: false
+  failed_when: false
+  check_mode: false
   tags:
     - versions
 
@@ -71,7 +75,9 @@
   when: github_packages['neovim'] == 'nightly'
 
 - name: "Installation"
-  when: neovim_version | default(neovim_check_exact) != neovim_check_exact or (neovim_version_exact.stdout | default(neovim_check_exact) != neovim_check_exact)
+  when: >-
+    neovim_check_exact.stdout !=
+    (neovim_version_exact.stdout if github_packages['neovim'] == 'nightly' else 'v' ~ neovim_version)
   block:
     - name: "[Neovim] Create release directory in {{ ansible_facts['env']['HOME'] }}/.local/opt"
       ansible.builtin.file:
