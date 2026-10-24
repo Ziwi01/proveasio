@@ -12,7 +12,9 @@ The tmux prefix is <kbd>Ctrl</kbd>+<kbd>b</kbd>, written `<C-b>` below. Press it
 - `<C-b>c` - new window
 - `<C-b>%` - split side by side (the new pane opens in the current directory)
 - `<C-b>"` - split top and bottom
-- `<C-b>e` - open Neovim in a new pane on the left (in the current directory)
+- `<C-b>e` - open Neovim in a new pane on the left, in the current directory. Press it again to close that pane; Neovim asks before discarding unsaved changes
+- `<C-b>E` - the same, but in the session's root directory (where the tmux session started). tmux's default `<C-b>E` (spread panes evenly) moves to `<C-b>+`
+- `<C-b>+` - spread the current pane and its neighbours evenly
 - `<C-b><arrows>` - move between panes. *Easier alternative*: `<Alt>+<arrows>` (includes moving between Vim splits)
 - `<C-b>` then <kbd>Ctrl</kbd>+arrows - resize panes
 - `<C-b>z` - zoom the current pane in and out
