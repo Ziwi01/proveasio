@@ -81,6 +81,19 @@
     - versions
     - neovim-config
 
+- name: "[Config] Install OpenCode config"
+  ansible.builtin.include_tasks:
+    file: opencode-config.yml
+    apply:
+      tags:
+        - config
+        - opencode-config
+  when: "'opencode-config' not in config_tasks_exclude and 'opencode' not in software_tasks_exclude"
+  tags:
+    - config
+    - versions
+    - opencode-config
+
 - name: "[Config] Configure sdkman"
   ansible.builtin.include_tasks:
     file: sdkman.yml

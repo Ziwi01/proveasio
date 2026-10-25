@@ -1,0 +1,59 @@
+# Install the shared OpenCode config
+---
+- name: "[OpenCode config] Validate config source"
+  ansible.builtin.assert:
+    that:
+      - opencode_config_source in ['git', 'local']
+      - opencode_config_source == 'git' or opencode_config_local_path | length > 0
+      - opencode_config_source == 'git' or opencode_config_local_path | expanduser is abs
+    fail_msg: >-
+      opencode_config_source must be 'git' or 'local', and 'local' needs
+      opencode_config_local_path set to an absolute path or one starting with ~
+      (got source '{{ opencode_config_source }}', path '{{ opencode_config_local_path }}')
+    quiet: true
+
+# force stays false on purpose: if OpenCode wrote through the symlink into this
+# clone, the update must fail loudly instead of discarding that work.
+- name: "[OpenCode config] Clone/update config version {{ opencode_config_version }}"
+  ansible.builtin.git:
+    repo: "{{ opencode_config_url }}"
+    dest: "{{ opencode_config_path }}"
+    update: true
+    version: "{{ opencode_config_version }}"
+  when: opencode_config_source == 'git'
+
+- name: "[OpenCode config] Set config directory"
+  ansible.builtin.set_fact:
+    opencode_config_dir: "{{ opencode_config_path if opencode_config_source == 'git' else opencode_config_local_path | expanduser }}"
+
+- name: "[OpenCode config] Install"
+  ansible.builtin.command: "{{ opencode_config_dir }}/install.sh"
+  register: opencode_config_result
+  changed_when: opencode_config_result.stdout_lines[-1] == 'changed'
+  environment:
+    PATH: "{{ ansible_facts['env']['HOME'] }}/.local/bin/:{{ ansible_facts['env']['PATH'] }}"
+
+# `opencode plugin update` prints 'Updated ...' per plugin and
+# 'No plugin updates available' otherwise.
+- name: "[OpenCode config] Update package plugins"
+  ansible.builtin.command: opencode plugin update
+  register: opencode_config_plugins
+  changed_when: "'Updated' in opencode_config_plugins.stdout"
+  environment:
+    PATH: "{{ ansible_facts['env']['HOME'] }}/.local/bin/:{{ ansible_facts['env']['PATH'] }}"
+
+- name: "[OpenCode config] Save used version"
+  vars:
+    app: opencode-config
+    opencode_config_saved_version: "{{ opencode_config_version if opencode_config_source == 'git' else 'local' }}"
+    target_version:
+      opencode_config_version: "{{ opencode_config_saved_version }}"
+    yq_query: '.opencode_config_version = "{{ opencode_config_saved_version }}"'
+  ansible.builtin.include_role:
+    name: common
+    tasks_from: save_version.yml
+    apply:
+      tags:
+        - versions
+  tags:
+    - versions

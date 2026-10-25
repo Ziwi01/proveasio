@@ -34,3 +34,13 @@ neovim_config_path: "{{ ansible_facts['env']['HOME'] }}/.config/{{ neovim_config
 #   local - copy the directory neovim_config_local_path into neovim_config_path
 neovim_config_source: git
 neovim_config_local_path: ""
+
+# Shared OpenCode config
+opencode_config_url: https://github.com/Ziwi01/opencode-config.git
+opencode_config_version: main
+opencode_config_path: "{{ ansible_facts['env']['HOME'] }}/.local/share/opencode-config"
+# Where the OpenCode config comes from:
+#   git   - clone opencode_config_url at opencode_config_version (default)
+#   local - run install.sh from the directory opencode_config_local_path, no copy
+opencode_config_source: git
+opencode_config_local_path: ""
