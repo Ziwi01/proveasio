@@ -78,6 +78,7 @@ A short summary of the included tools. For details see the [documentation](https
 
 - **AI coding agents:**
   - [opencode](https://github.com/anomalyco/opencode) - terminal AI coding agent, also integrated into Neovim and lazygit
+  - [shared OpenCode config](https://github.com/Ziwi01/opencode-config) - agents, skills and plugins for opencode, cloned and linked into `~/.config/opencode`; you can use your own fork
   - [ccmux](https://github.com/epilande/ccmux) - track AI coding agents in tmux: live session states, a status sidebar and picker, and desktop notifications (bridged to Windows toasts on WSL via [wsl-notify-send](https://github.com/stuartleeks/wsl-notify-send))
 
 - **Command-line tools:** [ripgrep](https://github.com/BurntSushi/ripgrep), [fd](https://github.com/sharkdp/fd), [bat](https://github.com/sharkdp/bat), [jq](https://jqlang.org/), [yq](https://mikefarah.gitbook.io/yq/), [fx](https://github.com/antonmedv/fx), [curlie](https://github.com/rs/curlie), [htop](https://htop.dev/), [bottom](https://github.com/ClementTsang/bottom), [gdu](https://github.com/dundee/gdu), [ShellCheck](https://github.com/koalaman/shellcheck), [pay-respects](https://github.com/iffse/pay-respects)

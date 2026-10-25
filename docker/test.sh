@@ -455,6 +455,16 @@ check_config_tmux() {
 
 check_config_ccmux()    { expect_file "$HOME/.config/ccmux/ccmux.json"; }
 
+check_config_opencode_config() {
+  local cfg="$HOME/.config/opencode" n
+  [ -L "$cfg/shared" ] && [ -d "$cfg/shared" ] || fail "$cfg/shared is not a link to a directory" || return 1
+  expect_file "$cfg/opencode.json" || return 1
+  run_cmd jq -e . "$cfg/opencode.json" || return 1
+  run_cmd opencode debug config || return 1
+  n="$(find -L "$cfg/shared/skills" "$cfg/shared/vendor" -name SKILL.md 2>/dev/null | wc -l)"
+  DETAIL="$n shared skills"
+}
+
 check_config_neovim_config() {
   local app lazy mason
   app="$(effective neovim_config_appname config)"

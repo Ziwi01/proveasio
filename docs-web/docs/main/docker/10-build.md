@@ -94,6 +94,7 @@ change with the tool versions). Both images are built from
 | **Azure CLI**, kubelogin, az-account-switcher | ✅ | ✅ | ❌ |
 | **AWS CLI** | ✅ | ✅ | ❌ |
 | **opencode** | ✅ | ⚠️ AVX2 build [^opencode] | ⚠️ AVX2 build [^opencode] |
+| **opencode-config** (shared OpenCode config) | ✅ | ✅ | ✅ |
 | **ccmux** | ✅ | ⚠️ no notifications [^wsl] | ⚠️ no notifications [^wsl] |
 | **win32yank**, **wsl-notify-send** | ✅ [^wsl] | ❌ | ❌ |
 | **Config file backups** in `~/.configs_backup` | ✅ | ❌ | ❌ |

@@ -26,6 +26,9 @@ Commonly changed variables:
 | `nerd_fonts` | `true` | Icons in the prompt, tmux, Neovim, lazygit and `ls`, see below |
 | `neovim_package` | `appimage` | `tarball` where FUSE is missing |
 | `neovim_config_url`, `neovim_config_version` | Ziwi01/astronvim, `main` | Neovim config repository, see [Own config files](./30-config-files.md) |
+| `opencode_config_url`, `opencode_config_version` | Ziwi01/opencode-config, `main` | Shared OpenCode config repository. The version is a branch name, the repository has no releases |
+| `opencode_config_source`, `opencode_config_local_path` | `git`, unset | `local` runs `install.sh` from a working clone at `opencode_config_local_path`, see [Own config files](./30-config-files.md) |
+| `opencode_config_path` | `~/.local/share/opencode-config` | Where the `git` source is cloned |
 | `node_version` | `lts/jod` | Default Node version (nvm) |
 | `go_versions`, `go_default` | `go1.26.1` | Go versions (gvm) |
 | `rvm1_rubies` | `ruby-3.4.7` | Ruby versions (rvm) |

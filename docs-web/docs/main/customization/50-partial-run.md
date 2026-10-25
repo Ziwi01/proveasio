@@ -72,6 +72,7 @@ For particular functionality (`software` + `config`) below tags are available:
 - neovim-config
 - nvm
 - opencode
+- opencode-config
 - p10k
 - pay-respects
 - puppet
