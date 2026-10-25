@@ -29,6 +29,7 @@ Commonly changed variables:
 | `opencode_config_url`, `opencode_config_version` | Ziwi01/opencode-config, `main` | Shared OpenCode config repository. The version is a branch name, the repository has no releases |
 | `opencode_config_source`, `opencode_config_local_path` | `git`, unset | `local` runs `install.sh` from a working clone at `opencode_config_local_path`, see [Own config files](./30-config-files.md) |
 | `opencode_config_path` | `~/.local/share/opencode-config` | Where the `git` source is cloned |
+| `opencode_baseline` | `auto` | `auto` uses the `-baseline` OpenCode build only when the CPU of the machine running the playbook has no AVX2. `true` always downloads it on x64 (arm64 has no baseline build). The Docker images set `true`. OpenCode v2 currently publishes the same x64 binary under both names, so this mainly matters for v1 pins (separate builds) or if v2 splits them again. On an existing install or `update` image it takes effect with the next OpenCode version |
 | `node_version` | `lts/jod` | Default Node version (nvm) |
 | `go_versions`, `go_default` | `go1.26.1` | Go versions (gvm) |
 | `rvm1_rubies` | `ruby-3.4.7` | Ruby versions (rvm) |
