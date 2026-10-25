@@ -93,7 +93,7 @@ change with the tool versions). Both images are built from
 | **IaC:** Terraform, OpenTofu, Terragrunt | ✅ | ✅ | ✅ |
 | **Azure CLI**, kubelogin, az-account-switcher | ✅ | ✅ | ❌ |
 | **AWS CLI** | ✅ | ✅ | ❌ |
-| **opencode** | ✅ | ⚠️ AVX2 build [^opencode] | ⚠️ AVX2 build [^opencode] |
+| **opencode** | ✅ | ✅ | ✅ |
 | **opencode-config** (shared OpenCode config) | ✅ | ✅ | ✅ |
 | **ccmux** | ✅ | ⚠️ no notifications [^wsl] | ⚠️ no notifications [^wsl] |
 | **win32yank**, **wsl-notify-send** | ✅ [^wsl] | ❌ | ❌ |
@@ -104,9 +104,6 @@ change with the tool versions). Both images are built from
 [^docker]: The images have the Docker client, Compose and Buildx, but no
     engine. Mount the host's socket, see
     [Docker inside the container](./run#docker-inside-the-container).
-[^opencode]: The build picks the opencode binary for the CPU of the build
-    machine. The pre-built images can crash on CPUs without AVX2, see
-    [Limitations](./limitations#other-limitations).
 [^wsl]: win32yank and wsl-notify-send are Windows tools. Natively they are
     installed on any Ubuntu, but only do something on WSL. ccmux sends its
     notifications through wsl-notify-send.

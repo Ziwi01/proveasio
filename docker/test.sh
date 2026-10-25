@@ -375,7 +375,19 @@ check_software_azurecli() {
 }
 check_software_awscli()     { run_cmd aws --version && expect_out "aws-cli/" && DETAIL="$(cut -d' ' -f1 <<<"$OUT")"; }
 check_software_uv()         { run_cmd uv --version && expect_receipt .github_packages.uv; }
-check_software_opencode()   { run_cmd opencode --version && expect_receipt .github_packages.opencode; }
+check_software_opencode() {
+  run_cmd opencode --version && expect_receipt .github_packages.opencode || return 1
+  local asset
+  asset="$(receipt .opencode_asset)"
+  [ -z "$asset" ] || DETAIL="$DETAIL, $asset"
+  if [ "$(effective opencode_baseline software)" = true ]; then
+    case "$asset" in
+      '') DETAIL="$DETAIL, asset unrecorded" ;;
+      *-baseline.tar.gz) ;;
+      *) fail "opencode_baseline is true, but the installed asset is '$asset'" ;;
+    esac
+  fi
+}
 check_software_hunk() {
   run_cmd hunk --version && expect_receipt .github_packages.hunk || return 1
   excluded software opencode && return 0

@@ -9,8 +9,18 @@
 # Both lines use the same asset names. Mirror the official installer's
 # (opencode.ai/install) target selection:
 #   arch     x86_64 -> x64, aarch64 -> arm64
-#   baseline x64 CPUs without AVX2 need the -baseline build (default one SIGILLs)
+#   baseline x64 CPUs without AVX2 need the -baseline build (default one SIGILLs);
+#            opencode_baseline: true forces it (images run on other CPUs)
 #   musl     Alpine / musl libc (Ubuntu is glibc, so normally a no-op)
+- name: "[opencode] Check opencode_baseline value"
+  ansible.builtin.assert:
+    that:
+      - opencode_baseline | string | lower in ['auto', 'true']
+    fail_msg: "opencode_baseline must be auto or true, got '{{ opencode_baseline }}'"
+    quiet: true
+  tags:
+    - versions
+
 - name: "[opencode] Resolve release asset for this host"
   ansible.builtin.shell: |
     set -e -o pipefail
@@ -21,7 +31,7 @@
       *) echo "[opencode] unsupported architecture: $arch" >&2; exit 1 ;;
     esac
     target="linux-${arch}"
-    if [ "$arch" = "x64" ] && ! grep -qwi avx2 /proc/cpuinfo 2>/dev/null; then
+    if [ "$arch" = "x64" ] && { [ "$OPENCODE_BASELINE" = true ] || ! grep -qwi avx2 /proc/cpuinfo 2>/dev/null; }; then
       target="${target}-baseline"
     fi
     if [ -f /etc/alpine-release ] || (command -v ldd >/dev/null 2>&1 && ldd --version 2>&1 | grep -qi musl); then
@@ -30,6 +40,8 @@
     printf 'opencode-%s.tar.gz' "$target"
   args:
     executable: /bin/bash
+  environment:
+    OPENCODE_BASELINE: "{{ opencode_baseline | string | lower }}"
   register: opencode_asset_cmd
   changed_when: false
   tags:
@@ -99,6 +111,21 @@
       ansible.builtin.file:
         path: "/tmp/opencode-{{ opencode_version }}.tar.gz"
         state: absent
+
+    - name: "[opencode] Save used asset"
+      vars:
+        app: opencode
+        target_version:
+          opencode_asset: "{{ opencode_asset }}"
+        yq_query: ".opencode_asset = \"{{ opencode_asset }}\""
+      ansible.builtin.include_role:
+        name: common
+        tasks_from: save_version.yml
+        apply:
+          tags:
+            - versions
+      tags:
+        - versions
 
 - name: "[opencode] Link {{ opencode_version }} binary to ~/.local/bin/opencode"
   ansible.builtin.file:

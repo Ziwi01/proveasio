@@ -51,7 +51,3 @@ the largest tools that nothing else needs and is about 5.7 GB. See
   use 1000. See [User ID](./run#user-id).
 - **ccmux notifications do nothing.** They are sent to Windows through the WSL
   bridge, which does not exist in a container.
-- **opencode and older CPUs.** The build picks the opencode binary for the
-  CPU of the machine that builds the image. The pre-built image uses the AVX2
-  build and can crash on CPUs without AVX2. Build the image on your own
-  machine in that case.

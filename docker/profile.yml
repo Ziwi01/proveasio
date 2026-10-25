@@ -24,5 +24,9 @@ docker_apt_packages:
   docker-ce-cli: latest
   docker-buildx-plugin: latest
 
+# The image runs on CPUs other than the build machine's, and the AVX2 build of
+# OpenCode crashes without AVX2.
+opencode_baseline: true
+
 # A fresh image has no earlier config files worth backing up.
 config_files_backup: false

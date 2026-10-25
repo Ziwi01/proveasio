@@ -111,6 +111,9 @@ github_packages:
   argocd: latest # Argo CD CLI
   argonaut: latest # Argo CD terminal UI
   curlie: latest
+# x64 OpenCode build: auto = check this CPU for AVX2, true = always the
+# -baseline build (for images that run on other machines than the build one)
+opencode_baseline: auto
 # revdiff's OpenCode v2 plugin is not in any release up to 1.13.0, so its files
 # come from this master commit. A newer revdiff takes them from its own tag.
 revdiff_opencode_plugin_ref: 038cd928dfd5433813c74ea11cf627c679e6d092
