@@ -566,7 +566,13 @@ role_includes() {
   printf '%s\n' "$out"
 }
 
-excluded() { effective "${1}_tasks_exclude" "$1" '.[]' | grep -qxF -- "$2"; }
+# A here-string, not a pipe: with pipefail, `grep -q` exiting on the first
+# match can kill the writer with SIGPIPE (status 141) and turn a hit into a miss.
+excluded() {
+  local names
+  names="$(effective "${1}_tasks_exclude" "$1" '.[]')" || return 1
+  grep -qxF -- "$2" <<<"$names"
+}
 
 # tags_select <outer tags> <--tags value> <--skip-tags value>: mirrors
 # ansible-playbook --tags / --skip-tags on one include. Ansible's special tags
@@ -714,7 +720,7 @@ main() {
 
   if [ ${#only[@]} -gt 0 ]; then
     for o in "${only[@]}"; do
-      printf '%s\n' "${selected[@]}" | grep -qxF -- "$o" || { echo "not selected in this image: $o" >&2; exit 2; }
+      grep -qxF -- "$o" <<<"$(printf '%s\n' "${selected[@]}")" || { echo "not selected in this image: $o" >&2; exit 2; }
     done
     selected=("${only[@]}")
   fi
