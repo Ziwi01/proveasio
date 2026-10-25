@@ -249,3 +249,9 @@ WSL, bootstrap layers cached, GitHub API unauthenticated (smoke used 8 and slim 
   `secrets.DOCKERHUB_TOKEN` are set in the repository (2026-09-28).
 - Tags other than `latest[-slim]` and `X.Y.Z[-slim]` (e.g. `lor`) are pushed by hand and are
   outside the workflow.
+
+## opencode baseline (2026-10-25)
+- At opencode 2.1.4, opencode.ai serves byte-identical `opencode-linux-x64.tar.gz` and `-x64-baseline.tar.gz` (same sha256 of binary, same etag). 2.1.4 runs on a Celeron N5095 without AVX2. v1 pins come from GitHub releases, where baseline is a separate build.
+- `opencode_baseline: true` is set in `docker/profile.yml`.
+- `opencode_asset` is written to `current-versions.yml` only by the run that downloads opencode.
+- `check_software_opencode` tolerates a missing asset (DETAIL `<version>, asset unrecorded`), so images built before this change stay updatable; it fails only on a recorded non-baseline asset.
