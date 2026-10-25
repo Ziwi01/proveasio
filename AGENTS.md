@@ -112,8 +112,9 @@ user's pins back on top (`set_fact`, precedence 19, outranks the include).
 - The merge is **shallow** — `combine()` is called without `recursive=true`. Equivalent for
   these flat dicts, but the commit message calling it "deep merge" is misleading.
 - `group_vars/` holds **connection plumbing only**. All behavioural config lives in role `vars/`.
-- `group_vars/windows.yml:3` scrapes the Windows host IP out of `/etc/resolv.conf`. This
-  breaks under WSL2 mirrored networking or `generateResolvConf=false`.
+- `group_vars/windows.yml` finds the Windows host with `wslinfo --networking-mode`:
+  `127.0.0.1` under mirrored networking, otherwise the default gateway (NAT). Do not go
+  back to `/etc/resolv.conf`: DNS tunneling points it at `10.255.255.254`.
 
 To change behaviour: personal/machine-local → `ansible/vars/overrides.yml` (gitignored).
 Project-wide default → `roles/<role>/vars/main.yml`.

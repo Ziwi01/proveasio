@@ -1,6 +1,13 @@
 ---
 ansible_user: "{{ win_username }}"
-ansible_host: "{{ lookup('file', '/etc/resolv.conf').split() | last }}"
+# The Windows host as seen from WSL. Mirrored networking shares the host's
+# network stack, so Windows is 127.0.0.1. In NAT mode it is the default
+# gateway. /etc/resolv.conf is not used: with DNS tunneling (the Windows 11
+# default) it points at 10.255.255.254, not at Windows.
+ansible_host: >-
+  {{ '127.0.0.1'
+     if lookup('pipe', 'wslinfo --networking-mode 2>/dev/null || true') == 'mirrored'
+     else lookup('pipe', "ip route show default | awk '{print $3; exit}'") }}
 
 ansible_connection: winrm
 ansible_winrm_transport: credssp

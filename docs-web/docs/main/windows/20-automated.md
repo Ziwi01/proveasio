@@ -4,7 +4,7 @@
 This is experimental and not tested thoroughly. Use it at your own risk, and please report how it went.
 :::
 
-This automates the [Windows manual setup](./10-manual.md) and installs Windows software I commonly use. Ansible runs from WSL and configures Windows over WinRM.
+This automates the [Windows manual setup](./10-manual.md) and installs Windows software I commonly use. Ansible runs from WSL and configures Windows over WinRM. It finds Windows by itself with either WSL networking mode: at `127.0.0.1` with mirrored networking, and at the default gateway with NAT (the default).
 
 ## prepare-windows.ps1
 

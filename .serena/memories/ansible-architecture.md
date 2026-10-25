@@ -86,8 +86,9 @@ config role runs after the whole software role, an hour into the run.
 - Interpreter split: modules run under `/usr/bin/python3`, while `ansible-playbook` itself
   runs from the pyenv 3.14.0 install created by `prepare-ubuntu.sh`. `pip` tasks therefore
   target `~/.pyenv/shims/pip3` explicitly
-- `group_vars/windows.yml:3` derives the Windows host IP by scraping `/etc/resolv.conf`.
-  Breaks under WSL2 mirrored networking or `generateResolvConf=false`. WinRM over
+- `group_vars/windows.yml` finds the Windows host with `wslinfo --networking-mode`:
+  `127.0.0.1` under mirrored networking, otherwise the default gateway (NAT).
+  `/etc/resolv.conf` is unusable: DNS tunneling points it at `10.255.255.254`. WinRM over
   HTTPS/5986 with credssp, cert validation disabled
 - No `delegate_to` anywhere. Windows interop is done by shipping `.exe` files into
   `~/.local/bin` inside WSL (`w32yank.yml`, `wsl-notify-send.yml`)
