@@ -99,6 +99,7 @@ github_packages:
   uv: latest
   opencode: latest # latest = newest v2 (from opencode.ai, not GitHub). Pin "1.x.y" (e.g. "1.18.34") to stay on v1
   hunk: latest
+  revdiff: latest
   ccmux: latest
   wsl_notify_send: latest # WSL -> Windows notification bridge (used by ccmux)
   kubelogin: latest # Installed by the azurecli task
@@ -110,6 +111,9 @@ github_packages:
   argocd: latest # Argo CD CLI
   argonaut: latest # Argo CD terminal UI
   curlie: latest
+# revdiff's OpenCode v2 plugin is not in any release up to 1.13.0, so its files
+# come from this master commit. A newer revdiff takes them from its own tag.
+revdiff_opencode_plugin_ref: 038cd928dfd5433813c74ea11cf627c679e6d092
 # Helm plugins directory (`helm env HELM_PLUGINS`). helm-unittest is linked here.
 helm_plugins_dir: "{{ ansible_facts['env']['HOME'] }}/.local/share/helm/plugins"
 # How Neovim is installed: `appimage` (default) or `tarball`.

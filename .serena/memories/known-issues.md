@@ -20,6 +20,16 @@ cleanup (`helm-*`) would remove `helm-unittest-*`; that is why helm-unittest ins
 `~/.local/opt/helm_unittest-<v>` (cleanup `app: helm_unittest`). Check new tool names against
 existing prefixes.
 
+**hunk cannot retarget a live window to another root.** `hunk session reload --source <dir>`
+fails with "Session reload refused source path outside the initial Hunk root" (hunk 0.24.0,
+tested 2026-10-25). That is why `hunk-popup open <dir>` (config/files/hunk-popup.sh) restarts
+hunk in a new directory instead, and refuses while the window has user notes (`--force`).
+
+**revdiff OpenCode v2 plugin is unreleased.** Up to revdiff 1.13.0 the release tags only have
+the v1 integration. `revdiff.yml` takes the v2 plugin files from `revdiff_opencode_plugin_ref`
+(a master commit, software vars) while `revdiff_version` <= 1.13.0, else from `v<version>`.
+Drop the var once a newer release exists.
+
 ## Fixed
 
 **`enterntainment.yml` typo — FIXED.** `windows/tasks/main.yml` now includes

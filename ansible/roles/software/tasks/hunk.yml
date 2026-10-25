@@ -55,6 +55,25 @@
     state: link
     force: true
 
+# The hunk-review skill teaches an agent the `hunk session` commands. Link the
+# copy bundled with this hunk version (what `hunk skill path` prints) instead
+# of `npx skills add`, so the skill always matches the binary.
+- name: "[hunk] Install the hunk-review skill for OpenCode"
+  when: "'opencode' not in software_tasks_exclude"
+  block:
+    - name: "[hunk] Create ~/.config/opencode/skills/hunk-review"
+      ansible.builtin.file:
+        path: "{{ ansible_facts['env']['HOME'] }}/.config/opencode/skills/hunk-review"
+        state: directory
+        mode: "0755"
+
+    - name: "[hunk] Link the {{ hunk_version }} hunk-review skill"
+      ansible.builtin.file:
+        src: "{{ ansible_facts['env']['HOME'] }}/.local/opt/hunk-{{ hunk_version }}/skills/hunk-review/SKILL.md"
+        dest: "{{ ansible_facts['env']['HOME'] }}/.config/opencode/skills/hunk-review/SKILL.md"
+        state: link
+        force: true
+
 - name: "[hunk] Save used version"
   vars:
     app: hunk

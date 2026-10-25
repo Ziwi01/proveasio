@@ -18,6 +18,7 @@
   - Note: external `rvm1-ansible` role's "Install rvm installer" also reports `changed` (third-party, out of scope)
 - [ ] docs(gita): Describe `gita` usage and example
 - [ ] chore(ansible): Remove `ansible_become_exe` sudo.ws workaround from `group_vars/linux.yml` once a stable ansible-core ships https://github.com/ansible/ansible/pull/86964 (sudo-rs prompt)
+- [ ] chore(software): Remove `revdiff_opencode_plugin_ref` (software vars) and its fallback in `revdiff.yml` once a revdiff release newer than 1.13.0 ships the OpenCode v2 plugin (`plugins/opencode/v2`)
 - [x] fix(windows): `windows/tasks/main.yml:14` included `enterntainment.yml` (typo, double `n`) — actual file is `entertainment.yml`
   - `bundle_include.entertainment` defaults to `true` (`windows/vars/main.yml:10`), so the play failed for everyone
   - Dynamic `include_tasks`, so `--syntax-check` did not catch it — but `ansible-lint` did, as `load-failure[filenotfounderror]`

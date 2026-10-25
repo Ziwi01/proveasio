@@ -1,0 +1,150 @@
+# revdiff - review diffs, plans and documents in the terminal and send line annotations to an AI agent
+# Source: https://github.com/umputun/revdiff
+---
+- name: "[revdiff] Get Github URL for proper version"
+  vars:
+    app: revdiff
+    repo: umputun/revdiff
+    version_query: gh_curl https://api.github.com/repos/umputun/revdiff/releases/latest | jq .tag_name -r | cut -f2 -d'v'
+    github_uri: "v{{ revdiff_version }}/revdiff_{{ revdiff_version }}_linux_amd64.tar.gz"
+  ansible.builtin.include_role:
+    name: common
+    tasks_from: github_version.yml
+    apply:
+      tags:
+        - versions
+  tags:
+    - versions
+
+# Check the binary, not the directory: a failed download leaves the directory
+# behind (see opencode.yml).
+- name: "[revdiff] Check if revdiff {{ revdiff_version }} is installed"
+  ansible.builtin.stat:
+    path: "{{ ansible_facts['env']['HOME'] }}/.local/opt/revdiff-{{ revdiff_version }}/revdiff"
+  register: revdiff_bin
+
+- name: "Installation"
+  when: not revdiff_bin.stat.exists
+  block:
+    - name: "[revdiff] Create directory in {{ ansible_facts['env']['HOME'] }}/.local/opt"
+      ansible.builtin.file:
+        path: "{{ ansible_facts['env']['HOME'] }}/.local/opt/revdiff-{{ revdiff_version }}"
+        state: directory
+        mode: "0755"
+
+    - name: "[revdiff] Download revdiff {{ revdiff_version }}"
+      ansible.builtin.get_url:
+        url: "{{ revdiff_url }}"
+        dest: "/tmp/revdiff-{{ revdiff_version }}.tar.gz"
+        mode: "0644"
+
+    - name: "[revdiff] Untar archive"
+      ansible.builtin.unarchive:
+        src: "/tmp/revdiff-{{ revdiff_version }}.tar.gz"
+        dest: "{{ ansible_facts['env']['HOME'] }}/.local/opt/revdiff-{{ revdiff_version }}"
+
+    - name: "[revdiff] Cleanup tar.gz file"
+      ansible.builtin.file:
+        path: "/tmp/revdiff-{{ revdiff_version }}.tar.gz"
+        state: absent
+
+- name: "[revdiff] Link {{ revdiff_version }} binary to ~/.local/bin/revdiff"
+  ansible.builtin.file:
+    src: "{{ ansible_facts['env']['HOME'] }}/.local/opt/revdiff-{{ revdiff_version }}/revdiff"
+    dest: "{{ ansible_facts['env']['HOME'] }}/.local/bin/revdiff"
+    state: link
+    force: true
+
+- name: "[revdiff] Ensure ~/.zfunc exists for the completion file"
+  ansible.builtin.file:
+    path: "{{ ansible_facts['env']['HOME'] }}/.zfunc"
+    state: directory
+    mode: "0755"
+
+- name: "[revdiff] Link {{ revdiff_version }} zsh completion to ~/.zfunc/_revdiff"
+  ansible.builtin.file:
+    src: "{{ ansible_facts['env']['HOME'] }}/.local/opt/revdiff-{{ revdiff_version }}/completions/revdiff.zsh"
+    dest: "{{ ansible_facts['env']['HOME'] }}/.zfunc/_revdiff"
+    state: link
+    force: true
+
+# OpenCode v2 plugin: `/revdiff` and review of finished plan-agent replies.
+# Upstream's plugins/opencode/setup.sh needs a repo checkout and copies these
+# files; it also edits opencode.json, which only matters for the v1 plugin.
+# The plugin is v2-only, so it is skipped when opencode is pinned to 1.x.
+- name: "[revdiff] Install the OpenCode plugin"
+  when:
+    - "'opencode' not in software_tasks_exclude"
+    - not (github_packages.opencode | string) is match('1\\.')
+  vars:
+    revdiff_plugin_ref: >-
+      {{ ('v' ~ revdiff_version) if revdiff_version is version('1.13.0', '>') else revdiff_opencode_plugin_ref }}
+    revdiff_plugin_src: "{{ ansible_facts['env']['HOME'] }}/.local/opt/revdiff-{{ revdiff_version }}/opencode-{{ revdiff_plugin_ref[:12] }}"
+    revdiff_plugin_dest: "{{ ansible_facts['env']['HOME'] }}/.config/opencode/plugins/revdiff"
+    revdiff_plugin_files:
+      - { src: plugins/opencode/v2/tui.ts, dest: tui.ts, mode: "0644" }
+      - { src: plugins/opencode/v2/claims.ts, dest: claims.ts, mode: "0644" }
+      - { src: plugins/opencode/v2/launcher.ts, dest: launcher.ts, mode: "0644" }
+      - { src: plugins/opencode/v2/package.json, dest: package.json, mode: "0644" }
+      - { src: .claude-plugin/skills/revdiff/scripts/launch-revdiff.sh, dest: scripts/launch-revdiff.sh, mode: "0755" }
+      - { src: .claude-plugin/skills/revdiff/scripts/agentdeck-window.sh, dest: scripts/agentdeck-window.sh, mode: "0644" }
+  block:
+    - name: "[revdiff] Create plugin directories"
+      ansible.builtin.file:
+        path: "{{ item }}"
+        state: directory
+        mode: "0755"
+      loop:
+        - "{{ revdiff_plugin_src }}/scripts"
+        - "{{ revdiff_plugin_dest }}/scripts"
+
+    # Into the versioned directory, so cleanup_versions.yml removes old copies.
+    - name: "[revdiff] Download OpenCode plugin files ({{ revdiff_plugin_ref }})"
+      ansible.builtin.get_url:
+        url: "https://raw.githubusercontent.com/umputun/revdiff/{{ revdiff_plugin_ref }}/{{ item.src }}"
+        dest: "{{ revdiff_plugin_src }}/{{ item.dest }}"
+        mode: "{{ item.mode }}"
+      loop: "{{ revdiff_plugin_files }}"
+      loop_control:
+        label: "{{ item.dest }}"
+
+    - name: "[revdiff] Copy OpenCode plugin to {{ revdiff_plugin_dest }}"
+      ansible.builtin.copy:
+        src: "{{ revdiff_plugin_src }}/{{ item.dest }}"
+        dest: "{{ revdiff_plugin_dest }}/{{ item.dest }}"
+        remote_src: true
+        mode: "{{ item.mode }}"
+      loop: "{{ revdiff_plugin_files }}"
+      loop_control:
+        label: "{{ item.dest }}"
+
+- name: "[revdiff] Save used version"
+  vars:
+    app: revdiff
+    target_version:
+      github_packages:
+        revdiff: "{{ revdiff_version }}"
+    yq_query: ".github_packages.revdiff = \"{{ revdiff_version }}\""
+  ansible.builtin.include_role:
+    name: common
+    tasks_from: save_version.yml
+    apply:
+      tags:
+        - versions
+  tags:
+    - versions
+
+- name: "[revdiff] Cleanup old versions"
+  vars:
+    app: revdiff
+    keep: "{{ revdiff_version }}"
+  ansible.builtin.include_role:
+    name: common
+    tasks_from: cleanup_versions.yml
+    apply:
+      tags:
+        - versions
+        - cleanup
+  tags:
+    - versions
+    - cleanup

@@ -137,3 +137,12 @@ Notifications are enabled by default and fire when an agent starts waiting for y
 
 You can list all commands with `ccmux --help` and see the full feature set in the [ccmux README](https://github.com/epilande/ccmux).
 
+## Review diffs in a popup (hunk)
+
+Uses: [hunk](https://github.com/modem-dev/hunk)
+
+- `<Alt>h` or `<C-b>H` - show [hunk](./70-tools.md#code-review-hunk) in a popup over 90% of the screen, or hide it again. The first press starts `hunk diff --watch` in the current pane's directory
+- `<Alt><Shift>h` (or `q` in hunk) - quit hunk
+
+Each tmux session has its own hunk window. While the popup is hidden, hunk keeps running in a hidden tmux session named `hunk-<session>` (shown in `<C-b>s`, not saved by tmux-resurrect), so an AI agent can still add notes to it. See [Review changes with an agent](./80-ai.md#review-changes-with-an-agent).
+

@@ -75,6 +75,7 @@ For particular functionality (`software` + `config`) below tags are available:
 - p10k
 - pay-respects
 - puppet
+- revdiff
 - ripgrep
 - rust
 - rvm

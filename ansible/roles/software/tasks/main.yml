@@ -746,6 +746,20 @@
     - versions
     - hunk
 
+# revdiff - diff and plan review with annotations sent to an AI agent
+- name: "[Software] Install revdiff"
+  ansible.builtin.include_tasks:
+    file: revdiff.yml
+    apply:
+      tags:
+        - software
+        - revdiff
+  when: "'revdiff' not in software_tasks_exclude"
+  tags:
+    - software
+    - versions
+    - revdiff
+
 # curlie - curl frontend with the ease of use of HTTPie
 - name: "[Software] Install curlie"
   ansible.builtin.include_tasks:

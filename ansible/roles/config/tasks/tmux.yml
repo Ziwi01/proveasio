@@ -5,6 +5,12 @@
     dest: "{{ ansible_facts['env']['HOME'] }}/.local/bin/tmux-default-session-name"
     mode: "0755"
 
+- name: "[Config][Tmux] Install hunk popup helper script"
+  ansible.builtin.copy:
+    src: hunk-popup.sh
+    dest: "{{ ansible_facts['env']['HOME'] }}/.local/bin/hunk-popup"
+    mode: "0755"
+
 - name: "[Config][Tmux] Configure .tmux.conf"
   vars:
     app: Tmux

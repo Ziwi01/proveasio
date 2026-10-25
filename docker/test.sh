@@ -376,7 +376,21 @@ check_software_azurecli() {
 check_software_awscli()     { run_cmd aws --version && expect_out "aws-cli/" && DETAIL="$(cut -d' ' -f1 <<<"$OUT")"; }
 check_software_uv()         { run_cmd uv --version && expect_receipt .github_packages.uv; }
 check_software_opencode()   { run_cmd opencode --version && expect_receipt .github_packages.opencode; }
-check_software_hunk()       { run_cmd hunk --version && expect_receipt .github_packages.hunk; }
+check_software_hunk() {
+  run_cmd hunk --version && expect_receipt .github_packages.hunk || return 1
+  excluded software opencode && return 0
+  # The skill is a link into the versioned install, so -e also catches a dangling one.
+  expect_file "$HOME/.config/opencode/skills/hunk-review/SKILL.md"
+}
+check_software_revdiff() {
+  run_cmd revdiff --version && expect_receipt .github_packages.revdiff || return 1
+  expect_file "$HOME/.zfunc/_revdiff" || return 1
+  excluded software opencode && return 0
+  # The plugin is for OpenCode v2; revdiff.yml skips it when opencode is pinned to 1.x.
+  case "$(receipt .github_packages.opencode)" in 1.*) return 0 ;; esac
+  expect_file "$HOME/.config/opencode/plugins/revdiff/tui.ts" || return 1
+  expect_exec "$HOME/.config/opencode/plugins/revdiff/scripts/launch-revdiff.sh"
+}
 # `curlie --version` is passed to curl; `curlie version` prints curlie's own.
 check_software_curlie()     { run_cmd curlie version && expect_receipt .github_packages.curlie; }
 check_software_shellcheck() { run_cmd shellcheck --version && expect_receipt .github_packages.shellcheck; }
@@ -432,6 +446,7 @@ check_config_tmux() {
   local n
   expect_file "$HOME/.tmux.conf" || return 1
   expect_exec "$HOME/.local/bin/tmux-default-session-name" || return 1
+  expect_exec "$HOME/.local/bin/hunk-popup" || return 1
   expect_file "$HOME/.tmuxp/default_session.yaml" || return 1
   n="$(find "$HOME/.tmux/plugins" -mindepth 1 -maxdepth 1 -type d ! -name tpm 2>/dev/null | wc -l)"
   [ "$n" -gt 0 ] || fail "no TPM plugins in ~/.tmux/plugins" || return 1

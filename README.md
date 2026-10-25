@@ -58,6 +58,7 @@ A short summary of the included tools. For details see the [documentation](https
 - **Git:**
   - [lazygit](https://github.com/jesseduffield/lazygit), with AI-generated commit messages and commit splitting
   - [diff-so-fancy](https://github.com/so-fancy/diff-so-fancy), [git-fuzzy](https://github.com/bigH/git-fuzzy) and [hunk](https://github.com/modem-dev/hunk) for diffs and review
+  - [revdiff](https://github.com/umputun/revdiff) to annotate diffs and plans and send the notes to opencode (`/revdiff`)
   - `ls` with Git status ([eza](https://github.com/eza-community/eza)), fzf branch checkout, many aliases
   - [gita](https://github.com/nosarthur/gita) to run commands on groups of repositories
 
