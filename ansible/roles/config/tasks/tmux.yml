@@ -11,6 +11,12 @@
     dest: "{{ ansible_facts['env']['HOME'] }}/.local/bin/hunk-popup"
     mode: "0755"
 
+- name: "[Config][Tmux] Install agent status helper script"
+  ansible.builtin.copy:
+    src: tmux-agent-status.sh
+    dest: "{{ ansible_facts['env']['HOME'] }}/.local/bin/tmux-agent-status"
+    mode: "0755"
+
 - name: "[Config][Tmux] Configure .tmux.conf"
   vars:
     app: Tmux

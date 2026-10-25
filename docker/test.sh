@@ -447,6 +447,7 @@ check_config_tmux() {
   expect_file "$HOME/.tmux.conf" || return 1
   expect_exec "$HOME/.local/bin/tmux-default-session-name" || return 1
   expect_exec "$HOME/.local/bin/hunk-popup" || return 1
+  expect_exec "$HOME/.local/bin/tmux-agent-status" || return 1
   expect_file "$HOME/.tmuxp/default_session.yaml" || return 1
   n="$(find "$HOME/.tmux/plugins" -mindepth 1 -maxdepth 1 -type d ! -name tpm 2>/dev/null | wc -l)"
   [ "$n" -gt 0 ] || fail "no TPM plugins in ~/.tmux/plugins" || return 1

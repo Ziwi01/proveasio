@@ -4,7 +4,7 @@
     "events": ["waiting", "finished"],
     "delayMs": 1000,
     "backend": "command",
-    "command": "$HOME/.local/bin/ccmux-wsl-notify"
+    "command": "$HOME/.local/bin/tmux-agent-status mark; $HOME/.local/bin/ccmux-wsl-notify"
   },
   "sidebar": {
     "width": 32,

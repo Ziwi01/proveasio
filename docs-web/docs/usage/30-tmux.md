@@ -131,6 +131,8 @@ The following keybindings are configured:
 - `<Alt>o` - toggle the ccmux sidebar from any pane (no prefix)
 - `<C-b><C-i>` - open the picker in persistent **dashboard** mode (stays open after switching)
 
+The window list in the status line shows agent state too. A window that is not selected turns **yellow** when an agent in it waits for your input and **green** when it finished. Selecting the window clears the colour. ccmux sets the state through `~/.local/bin/tmux-agent-status`, called by `notifications.command` in `~/.config/ccmux/ccmux.json`, so it needs notifications enabled. The colours apply to the default tmux2k `onedark` theme only.
+
 :::tip[Desktop notifications]
 Notifications are enabled by default and fire when an agent starts waiting for you or finishes. On WSL they are bridged to native Windows toast notifications through [wsl-notify-send](https://github.com/stuartleeks/wsl-notify-send). You can tweak or disable them in `~/.config/ccmux/ccmux.json` (see the [config role](../main/roles/config)), or test the setup with `ccmux notify`.
 :::
