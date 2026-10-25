@@ -51,8 +51,8 @@ No build, no lint.
   option validation is silently skipped.
 
 ### `docker.yml` — "Docker image"
-- Triggers: push to `master`/`develop`, `v*` tags, `pull_request` (path-filtered), weekly
-  cron, `workflow_dispatch`. A `plan` job path-filters `develop` pushes.
+- Triggers: push to `master`, `v*` tags, `pull_request` (path-filtered), weekly cron,
+  `workflow_dispatch`. `develop` is built only by a manual run, which never publishes.
 - Runs the playbook inside `docker buildx bake`, then `docker/test.sh` in the `test` stage;
   publishes to Docker Hub only for pushes to `master`, manual runs on `master`, the
   schedule, and `v*` tags.

@@ -67,7 +67,8 @@ spec `docs/superpowers/specs/2026-09-25-docker-slim-and-update-design.md`, plan
   nothing without failing), `--only <role>/<name>`, `--coverage`. Without `--tags`, an
   include counts when the build's tags or the tags of any `UPDATES` entry select it (union).
 - `.github/workflows/docker.yml`: `plan` job + `image` job, a matrix over `full` and `slim`
-  (`slim` gets tag `slim` instead of `latest` and a `-slim` suffix on the others; receipt
+  (both get `latest`/`X.Y.Z`, slim with a `-slim` suffix; date, `X.Y` and `sha-` tags were
+  dropped 2026-10-25; receipt
   artifact `current-versions-<profile>`).
 - User docs: `docs-web/docs/main/docker/{10-build,20-customize,30-run,40-limitations}.md`.
 - `.gitignore`: `docker/overrides.yml`, `/out/`.
@@ -246,5 +247,5 @@ WSL, bootstrap layers cached, GitHub API unauthenticated (smoke used 8 and slim 
   `docker/` until the next release, so they fail until then.
 - Publishing target is `docker.io/ziwi/proveasio`; `vars.DOCKERHUB_USERNAME` (`ziwi`) and
   `secrets.DOCKERHUB_TOKEN` are set in the repository (2026-09-28).
-- At release, the `master` push and the `v*` tag both push `sha-<short>` from different
-  concurrency groups; last one wins.
+- Tags other than `latest[-slim]` and `X.Y.Z[-slim]` (e.g. `lor`) are pushed by hand and are
+  outside the workflow.
