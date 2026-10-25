@@ -15,57 +15,23 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 
 
-## [latest] - 2026-10-20
-### :boom: BREAKING CHANGES
-- due to [`824bfc9`](https://github.com/Ziwi01/proveasio/commit/824bfc9793a2020e0dffc6abbd88cd7e92918127) - Make packages, yq and zsh required *(commit by [@Ziwi01](https://github.com/Ziwi01))*:
 
-  an overrides file that excludes packages, yq or zsh now  
-  fails the run. Remove the entry. Removing zsh from config_tasks_exclude  
-  makes the next run replace ~/.zshrc (a backup is kept by default).
-
-
+## [latest] - 2026-10-25
 ### :sparkles: New Features
-- [`10fb0e6`](https://github.com/Ziwi01/proveasio/commit/10fb0e6de85e22c32ed6bf99db1e665a41ee551e) - **neovim**: Add tarball install and local config source *(commit by [@Ziwi01](https://github.com/Ziwi01))*
-- [`3e548a9`](https://github.com/Ziwi01/proveasio/commit/3e548a9007c556ee6ea523809d25b90e44e7e156) - **docker**: Allow installing the Docker client without the engine *(commit by [@Ziwi01](https://github.com/Ziwi01))*
-- [`2568ee8`](https://github.com/Ziwi01/proveasio/commit/2568ee8096f962a639cd3fe5c14ecdb90b8ddd83) - **docker**: Build Proveasio as a Docker image *(commit by [@Ziwi01](https://github.com/Ziwi01))*
-- [`824bfc9`](https://github.com/Ziwi01/proveasio/commit/824bfc9793a2020e0dffc6abbd88cd7e92918127) - Make packages, yq and zsh required *(commit by [@Ziwi01](https://github.com/Ziwi01))*
-- [`b6339c8`](https://github.com/Ziwi01/proveasio/commit/b6339c862dc2377cc732c3eaddad7a7c5e222846) - **docker**: Move the playbook step into provision.sh and stop early without required tasks *(commit by [@Ziwi01](https://github.com/Ziwi01))*
-- [`53dd858`](https://github.com/Ziwi01/proveasio/commit/53dd858565c3cb435b749d4ee907505536989c57) - **docker**: Add image profiles, the slim image and *_tasks_include *(commit by [@Ziwi01](https://github.com/Ziwi01))*
-- [`7130fbd`](https://github.com/Ziwi01/proveasio/commit/7130fbdadf851c328574d88314647e721803c666) - **docker**: Add an update target for tools in a built image *(commit by [@Ziwi01](https://github.com/Ziwi01))*
-- [`4334479`](https://github.com/Ziwi01/proveasio/commit/433447991d89c0b057bbc2fc8c043bf7f23b101f) - **docker**: Warn about UID mismatches, keep prompt colors and document SSH mounts *(commit by [@Ziwi01](https://github.com/Ziwi01))*
-- [`69576ca`](https://github.com/Ziwi01/proveasio/commit/69576ca9d20e3bd58572d6b327821d21a04b41f5) - **azcli**: Add kubelogin *(commit by [@Ziwi01](https://github.com/Ziwi01))*
-- [`ceadb72`](https://github.com/Ziwi01/proveasio/commit/ceadb7242f7308d14cb9c09aed750e4d27551654) - **opencode**: Add support for Opencode v2 *(commit by [@Ziwi01](https://github.com/Ziwi01))*
-- [`c34a47c`](https://github.com/Ziwi01/proveasio/commit/c34a47c26a305a575417fb3b73bf0a22a306e002) - Add support for disabling glyphs and icons for use in remote sessions *(commit by [@Ziwi01](https://github.com/Ziwi01))*
-- [`cfd6676`](https://github.com/Ziwi01/proveasio/commit/cfd6676ad5dd073e7128c5290e9dbe3d1813d34e) - Better support for no nerd fonts *(commit by [@Ziwi01](https://github.com/Ziwi01))*
-- [`685d8e6`](https://github.com/Ziwi01/proveasio/commit/685d8e6e14cad7489527b0108f462dd7822a1a5f) - **lazygit**: Add AI commit message and split helpers *(commit by [@Ziwi01](https://github.com/Ziwi01))*
-- [`dd03603`](https://github.com/Ziwi01/proveasio/commit/dd0360352d4e4d81d62c169cd805477d4494c547) - **software**: Add shellcheck, tofu, kubeconform, dyff and helm-unittest *(commit by [@Ziwi01](https://github.com/Ziwi01))*
-- [`88f45f3`](https://github.com/Ziwi01/proveasio/commit/88f45f36254844c004387753bd1ea669c0b93d31) - **lazygit**: Add Diffview review of proposed commit split *(commit by [@Ziwi01](https://github.com/Ziwi01))*
-- [`4bd34ab`](https://github.com/Ziwi01/proveasio/commit/4bd34abb257df7062dbabc7e40a865add0f5bbc6) - **software**: Add argocd and argonaut *(commit by [@Ziwi01](https://github.com/Ziwi01))*
-- [`e7664b8`](https://github.com/Ziwi01/proveasio/commit/e7664b86aede0cdc78c1182e9a2ec35f5471d6fa) - **software**: Add curlie *(commit by [@Ziwi01](https://github.com/Ziwi01))*
-- [`5060d7e`](https://github.com/Ziwi01/proveasio/commit/5060d7ed28a0611ed3183ae9b50d33f65321bd3c) - **ccmux**: Auto-start daemon and improve plugin detection *(commit by [@Ziwi01](https://github.com/Ziwi01))*
-- [`5c30963`](https://github.com/Ziwi01/proveasio/commit/5c30963bbd51016c50cb4d206fc1dc9cac897b3a) - **lazygit**: Condense diff sent to the AI commit splitter *(commit by [@Ziwi01](https://github.com/Ziwi01))*
+- [`ebdeb59`](https://github.com/Ziwi01/proveasio/commit/ebdeb59d3d7e72c20cfeb9f75d69543224293cae) - **tmux**: Add binding to open Neovim in a left pane *(commit by [@Ziwi01](https://github.com/Ziwi01))*
+- [`4b4ca38`](https://github.com/Ziwi01/proveasio/commit/4b4ca389c08c2bc99de5f73a26a545dbfb682c96) - **tmux**: Toggle Neovim pane with e and E *(commit by [@Ziwi01](https://github.com/Ziwi01))*
+- [`7e137ae`](https://github.com/Ziwi01/proveasio/commit/7e137ae7685c8efeba150e46b9be570e621fdc0a) - **zsh**: Open URLs in the Windows browser on WSL *(commit by [@Ziwi01](https://github.com/Ziwi01))*
+- [`5d91e15`](https://github.com/Ziwi01/proveasio/commit/5d91e1577dece4132e1c658e66d24dcbe6f3ef1c) - **git**: Add revdiff for diff review and hunk popup in tmux *(commit by [@Ziwi01](https://github.com/Ziwi01))*
+- [`32be201`](https://github.com/Ziwi01/proveasio/commit/32be2013da2b21b1b469faab274e8ca7f4b0a3b1) - **opencode-config**: Install shared OpenCode config *(commit by [@Ziwi01](https://github.com/Ziwi01))*
+- [`1a71584`](https://github.com/Ziwi01/proveasio/commit/1a71584f21fe361758712e1baa1dca85356b0382) - **tmux**: Colour window list by AI agent state *(commit by [@Ziwi01](https://github.com/Ziwi01))*
+- [`ce1d696`](https://github.com/Ziwi01/proveasio/commit/ce1d696783cb932ee2c37e09d8618ac66359749a) - **hunk-popup**: Add ref support and persist user notes *(commit by [@Ziwi01](https://github.com/Ziwi01))*
+- [`d6e60c7`](https://github.com/Ziwi01/proveasio/commit/d6e60c7bf9c79088116da81f8f6aac644f6f8a96) - **revdiff**: Enable untracked files and word-diff by default *(commit by [@Ziwi01](https://github.com/Ziwi01))*
 
 ### :bug: Bug Fixes
-- [`bcb76e3`](https://github.com/Ziwi01/proveasio/commit/bcb76e32e48c2b469d2ff1422b48a7cc14faad8b) - **zsh**: Keep .zshrc working when tools are excluded *(commit by [@Ziwi01](https://github.com/Ziwi01))*
-- [`0ab5e02`](https://github.com/Ziwi01/proveasio/commit/0ab5e02d2a963521ca4303caa327f2ebf398066f) - **zsh**: Link the eza completion into ~/.zfunc so --skip-tags eza keeps the zsh config *(commit by [@Ziwi01](https://github.com/Ziwi01))*
-- [`0775c48`](https://github.com/Ziwi01/proveasio/commit/0775c48623f59cf8d92d1410b6ac251a6c8ededf) - **docker**: Stop updates that would test uninstalled new tools *(commit by [@Ziwi01](https://github.com/Ziwi01))*
-- [`3537ce2`](https://github.com/Ziwi01/proveasio/commit/3537ce2b41f81fbd728693ec4210b16ea6bc7017) - **neovim**: Update plugins once after the first config install *(commit by [@Ziwi01](https://github.com/Ziwi01))*
-- [`a9b2244`](https://github.com/Ziwi01/proveasio/commit/a9b22447cc839ff7874f7c25ddab29008b28bc34) - **nvm**: Upgrade nvm when the installed version differs *(commit by [@Ziwi01](https://github.com/Ziwi01))*
-- [`ed02c2e`](https://github.com/Ziwi01/proveasio/commit/ed02c2e73b718ecfbf0f8e02ac07b0711eeb26e9) - **sdkman**: Load SDKMAN in .zshrc *(commit by [@Ziwi01](https://github.com/Ziwi01))*
-- [`4254ef8`](https://github.com/Ziwi01/proveasio/commit/4254ef89800ade8b64e8963f207ca340e7d2642d) - **ci**: Use master instead of the triggering branch in the build workflow *(commit by [@Ziwi01](https://github.com/Ziwi01))*
-- [`93cd4be`](https://github.com/Ziwi01/proveasio/commit/93cd4bed848fa856fbc9b3f56022abecf84a45f4) - **docs-pages**: typo on checkout action *(commit by [@Ziwi01](https://github.com/Ziwi01))*
-- [`79c4756`](https://github.com/Ziwi01/proveasio/commit/79c4756b69445645596cc53568839c0863738c21) - Add support for passing corporate CA when behind mitm proxy *(commit by [@Ziwi01](https://github.com/Ziwi01))*
-- [`cffd8bd`](https://github.com/Ziwi01/proveasio/commit/cffd8bd6f470ec37b099010bf9742c08fb676e32) - **ccmux**: Update ccmux to work on opencode v2 (not yet fully supports it) *(commit by [@Ziwi01](https://github.com/Ziwi01))*
-- [`8dd0857`](https://github.com/Ziwi01/proveasio/commit/8dd08577815c8e5e8a970d35f1285d395281935f) - **sudo**: Force sudo-ws, since ansible-core not yet supports sudo-rs *(commit by [@Ziwi01](https://github.com/Ziwi01))*
-- [`e5877a1`](https://github.com/Ziwi01/proveasio/commit/e5877a15aa3d4ce1cae3b5c164efbb6711465cd5) - **ccmux**: Drop OpenCode v1-only workaround, ccmux 1.4.3 supports v2 *(commit by [@Ziwi01](https://github.com/Ziwi01))*
-- [`b681da9`](https://github.com/Ziwi01/proveasio/commit/b681da921702998c319c984a2b5023413aef1fb9) - **opencode**: Retry version lookup when opencode.ai answers 500 *(commit by [@Ziwi01](https://github.com/Ziwi01))*
-- [`2370413`](https://github.com/Ziwi01/proveasio/commit/237041305438062f098553e51a7ab1fa83cdbf53) - **prepare**: Make pyenv bootstrap robust and rerunnable *(commit by [@Ziwi01](https://github.com/Ziwi01))*
+- [`34e30b0`](https://github.com/Ziwi01/proveasio/commit/34e30b09b064b58e9d3223d9f4daaa66a197e04d) - **neovim**: Fix installed version check *(commit by [@Ziwi01](https://github.com/Ziwi01))*
+- [`66f239b`](https://github.com/Ziwi01/proveasio/commit/66f239b63ce120d720b87e348cceb0e1e3f0e536) - **opencode-config**: Show installer warnings and tolerate empty output *(commit by [@Ziwi01](https://github.com/Ziwi01))*
 
-### :wrench: Chores
-- [`7a1da91`](https://github.com/Ziwi01/proveasio/commit/7a1da916db96508a05257669184c70677266a39b) - **opencode**: Better support for installing Opencode v2 *(commit by [@Ziwi01](https://github.com/Ziwi01))*
-- [`9188acc`](https://github.com/Ziwi01/proveasio/commit/9188acc0b7a497b1e261b320680ab9354bb59d5f) - **workflow**: Update actions/checkout action *(commit by [@Ziwi01](https://github.com/Ziwi01))*
-- [`c151a40`](https://github.com/Ziwi01/proveasio/commit/c151a40bd91d2a7301d5bc44cf02e3d358277417) - **docs**: Update dockerhub username *(commit by [@Ziwi01](https://github.com/Ziwi01))*
-- [`a12e5d3`](https://github.com/Ziwi01/proveasio/commit/a12e5d3f8d4ef41b61a9b60b2944384e1f719626) - **docs**: Move docker to top *(commit by [@Ziwi01](https://github.com/Ziwi01))*
-- [`ae6c821`](https://github.com/Ziwi01/proveasio/commit/ae6c8212d463abae454ec5b9b29abe3ae307a2cd) - Remove .latest-versions.yml and LunarVim leftovers *(commit by [@Ziwi01](https://github.com/Ziwi01))*
+### :recycle: Refactors
+- [`f0ab7fd`](https://github.com/Ziwi01/proveasio/commit/f0ab7fd28ac687a65184ed2e12a7503a94b47a82) - **zsh**: Extract ocs function to standalone script *(commit by [@Ziwi01](https://github.com/Ziwi01))*
 
-[latest]: https://github.com/Ziwi01/proveasio/compare/v4.0.0...latest
+[latest]: https://github.com/Ziwi01/proveasio/compare/v5.0.0...latest
