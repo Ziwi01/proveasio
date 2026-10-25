@@ -462,6 +462,7 @@ check_config_opencode_config() {
   run_cmd jq -e . "$cfg/opencode.json" || return 1
   run_cmd opencode debug config || return 1
   n="$(find -L "$cfg/shared/skills" "$cfg/shared/vendor" -name SKILL.md 2>/dev/null | wc -l)"
+  [ "$n" -gt 0 ] || fail "no shared skills found under $cfg/shared" || return 1
   DETAIL="$n shared skills"
 }
 

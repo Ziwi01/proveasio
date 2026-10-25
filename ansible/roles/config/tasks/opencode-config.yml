@@ -29,9 +29,14 @@
 - name: "[OpenCode config] Install"
   ansible.builtin.command: "{{ opencode_config_dir }}/install.sh"
   register: opencode_config_result
-  changed_when: opencode_config_result.stdout_lines[-1] == 'changed'
+  changed_when: (opencode_config_result.stdout_lines | last | default('')) == 'changed'
   environment:
     PATH: "{{ ansible_facts['env']['HOME'] }}/.local/bin/:{{ ansible_facts['env']['PATH'] }}"
+
+- name: "[OpenCode config] Show installer warnings"
+  ansible.builtin.debug:
+    msg: "{{ opencode_config_result.stderr_lines }}"
+  when: opencode_config_result.stderr | length > 0
 
 # `opencode plugin update` prints 'Updated ...' per plugin and
 # 'No plugin updates available' otherwise.
