@@ -68,6 +68,22 @@
     state: link
     force: true
 
+# `/revdiff` passes no --untracked and refuses it as an argument, so new files
+# would be missing from the review. word-diff highlights the changed words in
+# a changed line. Both go in the config file, which every revdiff run reads;
+# the user's other settings in the file stay.
+- name: "[revdiff] Set review defaults in ~/.config/revdiff/config"
+  community.general.ini_file:
+    path: "{{ ansible_facts['env']['HOME'] }}/.config/revdiff/config"
+    section: Application Options
+    option: "{{ item }}"
+    value: "true"
+    create: true
+    mode: "0644"
+  loop:
+    - untracked
+    - word-diff
+
 # OpenCode v2 plugin: `/revdiff` and review of finished plan-agent replies.
 # Upstream's plugins/opencode/setup.sh needs a repo checkout and copies these
 # files; it also edits opencode.json, which only matters for the v1 plugin.

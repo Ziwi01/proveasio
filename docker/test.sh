@@ -385,6 +385,9 @@ check_software_hunk() {
 check_software_revdiff() {
   run_cmd revdiff --version && expect_receipt .github_packages.revdiff || return 1
   expect_file "$HOME/.zfunc/_revdiff" || return 1
+  OUT="$(<"$HOME/.config/revdiff/config")" || return 1
+  expect_out "untracked = true" || return 1
+  expect_out "word-diff = true" || return 1
   excluded software opencode && return 0
   # The plugin is for OpenCode v2; revdiff.yml skips it when opencode is pinned to 1.x.
   case "$(receipt .github_packages.opencode)" in 1.*) return 0 ;; esac
