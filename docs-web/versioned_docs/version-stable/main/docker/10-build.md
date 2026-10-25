@@ -77,7 +77,7 @@ change with the tool versions). Both images are built from
 | **Shell:** zsh, oh-my-zsh, powerlevel10k, fzf, zoxide, eza, bat, ripgrep, fd, pay-respects | ✅ | ✅ | ✅ |
 | **Terminal:** tmux with plugins, tmuxp | ✅ | ✅ | ✅ |
 | **Data and system tools:** jq, yq, fx, curlie, htop, bottom, gdu, ShellCheck, keychain | ✅ | ✅ | ✅ |
-| **Git:** git, lazygit (with AI commits), diff-so-fancy, git-fuzzy, gita, lsg, hunk, gh | ✅ | ✅ | ✅ |
+| **Git:** git, lazygit (with AI commits), diff-so-fancy, git-fuzzy, gita, lsg, hunk, revdiff, gh | ✅ | ✅ | ✅ |
 | **Neovim** with the AstroNvim-based config and language servers | ✅ AppImage | ✅ tarball | ⚠️ tarball [^java] |
 | **Python** (pyenv, pyenv-virtualenv, uv) | ✅ | ✅ | ✅ |
 | **Node** (nvm, LTS) | ✅ | ✅ | ✅ |
@@ -94,6 +94,7 @@ change with the tool versions). Both images are built from
 | **Azure CLI**, kubelogin, az-account-switcher | ✅ | ✅ | ❌ |
 | **AWS CLI** | ✅ | ✅ | ❌ |
 | **opencode** | ✅ | ⚠️ AVX2 build [^opencode] | ⚠️ AVX2 build [^opencode] |
+| **opencode-config** (shared OpenCode config) | ✅ | ✅ | ✅ |
 | **ccmux** | ✅ | ⚠️ no notifications [^wsl] | ⚠️ no notifications [^wsl] |
 | **win32yank**, **wsl-notify-send** | ✅ [^wsl] | ❌ | ❌ |
 | **Config file backups** in `~/.configs_backup` | ✅ | ❌ | ❌ |
@@ -259,18 +260,17 @@ The project also publishes the image to Docker Hub:
 
 ```shell
 docker pull ziwi/proveasio:latest
-docker pull ziwi/proveasio:slim
+docker pull ziwi/proveasio:latest-slim
 ```
 
 | Tag | Content |
 |---|---|
 | `latest` | The newest build of `master`, rebuilt every week. |
-| `YYYY-MM-DD` | The last build of that day. Use it when you want the same tool versions every time you pull. |
-| `X.Y.Z` | The build of a Proveasio release. |
-| `X.Y` | The build of the newest `X.Y.Z` release. |
-| `sha-<short>` | The repository commit the image was built from. The same commit can be built again later with newer tool versions, so this tag does not give you a fixed set of versions. Use a dated tag for that. |
-| `slim` | The newest slim build of `master`, rebuilt every week. See [Slim image](#slim-image). |
-| `YYYY-MM-DD-slim`, `X.Y.Z-slim`, `X.Y-slim`, `sha-<short>-slim` | The slim image for each tag above. |
+| `X.Y.Z` | The build of a Proveasio release. Use it when you want the same tool versions every time you pull. |
+| `latest-slim`, `X.Y.Z-slim` | The slim image for each tag above. See [Slim image](#slim-image). |
+
+Other tags on Docker Hub are pushed by hand, are not rebuilt and may be
+removed at any time.
 
 Each image contains the exact versions it was built with in
 `~/proveasio/current-versions.yml`.

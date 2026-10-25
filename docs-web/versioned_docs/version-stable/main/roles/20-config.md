@@ -4,12 +4,13 @@ This role lays down the configuration files. Each row is one task file in `ansib
 
 | Name | Files |
 |---|---|
-| `zsh` (required) | `~/.zshrc`, from `ansible/roles/config/templates/zshrc.j2` |
+| `zsh` (required) | `~/.zshrc`, from `ansible/roles/config/templates/zshrc.j2`, and `~/.local/bin/ocs` ([opencode session browser](../../usage/20-terminal.md#browse-opencode-sessions-with-ocs)) |
 | `p10k` | `~/.p10k.zsh` (powerlevel10k prompt) |
-| `tmux` | `~/.tmux.conf`, the tmux plugins, `~/.local/bin/tmux-default-session-name`, and `~/.tmuxp/default_session.yaml` when `~/.tmuxp` is empty |
+| `tmux` | `~/.tmux.conf`, the tmux plugins, `~/.local/bin/tmux-default-session-name`, `~/.local/bin/hunk-popup`, `~/.local/bin/tmux-agent-status`, and `~/.tmuxp/default_session.yaml` when `~/.tmuxp` is empty |
 | `git` | `~/.gitconfig`, from `ansible/roles/config/templates/gitconfig.j2` (uses the `git.name` and `git.mail` variables) |
 | `lazygit` | `~/.config/lazygit/config.yml`, `lazygit-no-nerd-fonts.yml`, the AI commit scripts in `~/.config/lazygit/scripts/` and the `commit-msg`/`commit-split` agents in `~/.config/opencode/agents/`. See [AI commits in lazygit](../../usage/20-terminal.md#ai-commits-in-lazygit). |
 | `neovim-config` | The Neovim config in `~/.config/<neovim_config_appname>` (default `~/.config/astronvim`), cloned from `neovim_config_url` or copied from a local directory. See [Own config files](../customization/30-config-files.md). |
+| `opencode-config` | The shared [OpenCode config](https://github.com/Ziwi01/opencode-config), cloned to `~/.local/share/opencode-config` and linked into `~/.config/opencode` by its `install.sh`. Also updates package plugins such as superpowers with `opencode plugin update`. Runs only when `opencode` is not excluded. See [Shared OpenCode config](../../usage/80-ai.md#shared-opencode-config). |
 | `ansible` | `~/.ansible-lint` |
 | `sdkman` | `~/.sdkman/etc/config` |
 | `ccmux` | `~/.config/ccmux/ccmux.json` and `~/.local/bin/ccmux-wsl-notify` |

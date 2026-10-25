@@ -41,7 +41,8 @@ These cannot be excluded. The playbook stops at the start if `software_tasks_exc
 | `git-fuzzy` | [git-fuzzy](https://github.com/bigH/git-fuzzy) - Git commands in fzf |
 | `gita` | [Gita](https://github.com/nosarthur/gita) - run commands on groups of repositories |
 | `lsg` | [ls-with-git-status](https://github.com/gerph/ls-with-git-status) - `ls` with Git status |
-| `hunk` | [hunk](https://github.com/modem-dev/hunk) - terminal code review and diff viewer |
+| `hunk` | [hunk](https://github.com/modem-dev/hunk) - terminal code review and diff viewer, with the hunk-review skill for opencode |
+| `revdiff` | [revdiff](https://github.com/umputun/revdiff) - review diffs and plans with line annotations for AI agents, with its opencode plugin (`/revdiff`); sets `untracked = true` and `word-diff = true` in `~/.config/revdiff/config` |
 
 ## Editor
 

@@ -6,7 +6,8 @@ Git comes from the [git-core PPA](https://launchpad.net/~git-core/+archive/ubunt
 - [diff-so-fancy](https://github.com/so-fancy/diff-so-fancy) - more readable `git diff` output.
 - [git-fuzzy](https://github.com/bigH/git-fuzzy) - Git status, log and diff in fzf (`gst`, `glo`, `gd`).
 - `gco` / `gb` - pick a branch with fzf and check it out (`gco`) or print it (`gb`). `gco <branch>` checks out without searching.
-- [hunk](https://github.com/modem-dev/hunk) - review diffs in a desktop-like terminal viewer.
+- [hunk](https://github.com/modem-dev/hunk) - review diffs in a desktop-like terminal viewer. In tmux, <kbd>Alt</kbd>+<kbd>h</kbd> opens it in a popup, and opencode can [walk you through its changes](../../usage/80-ai.md#review-changes-with-an-agent) in it.
+- [revdiff](https://github.com/umputun/revdiff) - annotate diffs and plans line by line; `/revdiff` in opencode [sends the annotations to the agent](../../usage/80-ai.md#review-changes-with-an-agent).
 - [Gita](https://github.com/nosarthur/gita) - group your repositories and run Git or shell commands on a whole group at once.
 - [ls with git status](https://github.com/gerph/ls-with-git-status) (`lsg`), the `k` oh-my-zsh plugin and `eza --git` - list files with their Git status.
 - [GitHub CLI](https://cli.github.com/) (`gh`) - pull requests, issues and releases from the terminal. Proveasio also uses its login for the GitHub API.

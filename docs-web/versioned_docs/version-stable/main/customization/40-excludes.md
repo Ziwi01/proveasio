@@ -25,7 +25,7 @@ config_tasks_exclude:
 
 The names are listed in the [software](../roles/10-software.md) and [config](../roles/20-config.md) roles.
 
-Excluding a tool does not uninstall it if an earlier run installed it. When you exclude a software task that has a config task of the same name (`tmux`, `ccmux`, `sdkman`, `lazygit`, `ansible`), exclude the config task too; for `neovim`, exclude `neovim-config`.
+Excluding a tool does not uninstall it if an earlier run installed it. When you exclude a software task that has a config task of the same name (`tmux`, `ccmux`, `sdkman`, `lazygit`, `ansible`), exclude the config task too; for `neovim`, exclude `neovim-config`. Excluding `opencode` also skips `opencode-config`.
 
 `packages`, `yq` and `zsh` in `software_tasks_exclude`, and `zsh` in `config_tasks_exclude`, are required. The playbook stops at the start when an overrides file excludes one of them.
 

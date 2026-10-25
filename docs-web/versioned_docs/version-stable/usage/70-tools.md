@@ -76,6 +76,25 @@ hunk show HEAD~1          # a commit
 hunk log                  # browse history
 ```
 
+In tmux, <kbd>Alt</kbd>+<kbd>h</kbd> opens hunk in a popup, and opencode can walk you through its changes in it. See [Review changes with an agent](./80-ai.md#review-changes-with-an-agent).
+
+## Code review with notes for the agent: revdiff
+
+Uses: [revdiff](https://github.com/umputun/revdiff)
+
+revdiff shows a diff, a file or a plan, and lets you annotate any line. When you quit, it prints the annotations as Markdown (`## file:line (+)` and the comment), ready for an AI agent. In opencode, use `/revdiff` instead; see [Review changes with an agent](./80-ai.md#review-changes-with-an-agent).
+
+```shell
+revdiff                   # working tree changes
+revdiff --staged          # staged changes
+revdiff main              # against a branch
+revdiff HEAD~1 HEAD       # a commit
+revdiff --only=plan.md    # a single file, even outside git
+revdiff -o review.md main # write the annotations to a file
+```
+
+In revdiff, <kbd>a</kbd> or <kbd>Enter</kbd> annotates the current line, <kbd>A</kbd> the whole file, <kbd>@</kbd> lists the annotations and <kbd>q</kbd> quits. <kbd>?</kbd> shows every key.
+
 ## Shell scripts: ShellCheck
 
 [ShellCheck](https://www.shellcheck.net/) finds bugs in shell scripts: unquoted variables, wrong tests, unused variables and more.

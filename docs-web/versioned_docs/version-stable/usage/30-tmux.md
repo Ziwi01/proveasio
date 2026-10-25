@@ -12,6 +12,9 @@ The tmux prefix is <kbd>Ctrl</kbd>+<kbd>b</kbd>, written `<C-b>` below. Press it
 - `<C-b>c` - new window
 - `<C-b>%` - split side by side (the new pane opens in the current directory)
 - `<C-b>"` - split top and bottom
+- `<C-b>e` - open Neovim in a new pane on the left, in the current directory. Press it again to close that pane; Neovim asks before discarding unsaved changes
+- `<C-b>E` - the same, but in the session's root directory (where the tmux session started). tmux's default `<C-b>E` (spread panes evenly) moves to `<C-b>+`
+- `<C-b>+` - spread the current pane and its neighbours evenly
 - `<C-b><arrows>` - move between panes. *Easier alternative*: `<Alt>+<arrows>` (includes moving between Vim splits)
 - `<C-b>` then <kbd>Ctrl</kbd>+arrows - resize panes
 - `<C-b>z` - zoom the current pane in and out
@@ -128,9 +131,20 @@ The following keybindings are configured:
 - `<Alt>o` - toggle the ccmux sidebar from any pane (no prefix)
 - `<C-b><C-i>` - open the picker in persistent **dashboard** mode (stays open after switching)
 
+The window list in the status line shows agent state too. A window that is not selected turns **yellow** when an agent in it waits for your input and **green** when it finished. Selecting the window clears the colour. ccmux sets the state through `~/.local/bin/tmux-agent-status`, called by `notifications.command` in `~/.config/ccmux/ccmux.json`, so it needs notifications enabled. The colours apply to the default tmux2k `onedark` theme only.
+
 :::tip[Desktop notifications]
 Notifications are enabled by default and fire when an agent starts waiting for you or finishes. On WSL they are bridged to native Windows toast notifications through [wsl-notify-send](https://github.com/stuartleeks/wsl-notify-send). You can tweak or disable them in `~/.config/ccmux/ccmux.json` (see the [config role](../main/roles/config)), or test the setup with `ccmux notify`.
 :::
 
 You can list all commands with `ccmux --help` and see the full feature set in the [ccmux README](https://github.com/epilande/ccmux).
+
+## Review diffs in a popup (hunk)
+
+Uses: [hunk](https://github.com/modem-dev/hunk)
+
+- `<Alt>h` or `<C-b>H` - show [hunk](./70-tools.md#code-review-hunk) in a popup over 90% of the screen, or hide it again. The first press starts `hunk diff --watch` in the current pane's directory
+- `<Alt><Shift>h` (or `q` in hunk) - quit hunk
+
+Each tmux session has its own hunk window. While the popup is hidden, hunk keeps running in a hidden tmux session named `hunk-<session>` (shown in `<C-b>s`, not saved by tmux-resurrect), so an AI agent can still add notes to it. See [Review changes with an agent](./80-ai.md#review-changes-with-an-agent).
 

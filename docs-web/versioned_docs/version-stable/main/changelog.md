@@ -14,6 +14,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 
 
+
 ## [latest] - 2026-10-20
 ### :boom: BREAKING CHANGES
 - due to [`824bfc9`](https://github.com/Ziwi01/proveasio/commit/824bfc9793a2020e0dffc6abbd88cd7e92918127) - Make packages, yq and zsh required *(commit by [@Ziwi01](https://github.com/Ziwi01))*:
@@ -42,6 +43,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - [`4bd34ab`](https://github.com/Ziwi01/proveasio/commit/4bd34abb257df7062dbabc7e40a865add0f5bbc6) - **software**: Add argocd and argonaut *(commit by [@Ziwi01](https://github.com/Ziwi01))*
 - [`e7664b8`](https://github.com/Ziwi01/proveasio/commit/e7664b86aede0cdc78c1182e9a2ec35f5471d6fa) - **software**: Add curlie *(commit by [@Ziwi01](https://github.com/Ziwi01))*
 - [`5060d7e`](https://github.com/Ziwi01/proveasio/commit/5060d7ed28a0611ed3183ae9b50d33f65321bd3c) - **ccmux**: Auto-start daemon and improve plugin detection *(commit by [@Ziwi01](https://github.com/Ziwi01))*
+- [`5c30963`](https://github.com/Ziwi01/proveasio/commit/5c30963bbd51016c50cb4d206fc1dc9cac897b3a) - **lazygit**: Condense diff sent to the AI commit splitter *(commit by [@Ziwi01](https://github.com/Ziwi01))*
 
 ### :bug: Bug Fixes
 - [`bcb76e3`](https://github.com/Ziwi01/proveasio/commit/bcb76e32e48c2b469d2ff1422b48a7cc14faad8b) - **zsh**: Keep .zshrc working when tools are excluded *(commit by [@Ziwi01](https://github.com/Ziwi01))*

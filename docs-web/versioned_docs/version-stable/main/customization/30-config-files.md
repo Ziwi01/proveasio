@@ -19,3 +19,18 @@ neovim_config_local_path: /home/you/my-nvim
 
 The directory is copied to `~/.config/<neovim_config_appname>` on every run. The copy adds and overwrites files but never deletes any in the target. If you switch from a git config to a local one, the files of the old clone stay there, including its `.git` directory. Delete the target directory before the run to start clean.
 :::
+
+:::note[OpenCode config]
+The shared OpenCode config (agents, skills, plugins, MCP servers) has its own repository, [Ziwi01/opencode-config](https://github.com/Ziwi01/opencode-config). Fork it like the Neovim config and set `opencode_config_url` and `opencode_config_version` in `ansible/vars/overrides.yml`. To work on a clone on your machine instead, set:
+
+```yaml
+opencode_config_source: local
+opencode_config_local_path: /home/you/projects/opencode-config
+```
+
+The `local` source is not copied: `install.sh` runs from that directory and the links point into it.
+
+With the `git` source, the clone in `~/.local/share/opencode-config` is managed by Proveasio. If opencode wrote into it (for example `opencode mcp add --global`), the next run stops on the local changes. Move the change to your own clone and commit it there.
+
+Per-machine additions go in `~/.config/opencode` and are not touched: `AGENTS.md`, `skills/`, `plugins/`, `opencode.local.json`, `cli.local.json` and `skill-repos.local.txt`. See the [repository README](https://github.com/Ziwi01/opencode-config#readme).
+:::

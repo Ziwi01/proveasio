@@ -88,6 +88,8 @@ An opencode session is tied to the directory it was started from. Running `openc
 - `CTRL+/` toggles the preview pane
 - `ESC` aborts without launching anything
 
+In Neovim, `<Space>OS` opens the same list in a floating window and opens the session you pick in a new opencode pane, like `<Space>ON` does. See [opencode.nvim](./80-ai.md#opencodenvim).
+
 :::note[Where the data comes from]
 Sessions live in `~/.local/share/opencode/opencode.db`. `ocs` only reads it — it never writes. Archived sessions are hidden. It reads the v2 tables when they exist (v2 migrates v1 sessions into them) and the v1 tables otherwise, so it works with both versions.
 :::
