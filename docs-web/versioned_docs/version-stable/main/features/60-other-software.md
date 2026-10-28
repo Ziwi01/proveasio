@@ -14,6 +14,7 @@
 - [curlie](https://github.com/rs/curlie) - `curl` with HTTPie-style output
 - [ShellCheck](https://github.com/koalaman/shellcheck) - static analysis for shell scripts
 - [keychain](https://www.funtoo.org/Funtoo:Keychain) - keeps your SSH keys unlocked across terminal logins
+- [rsync](https://rsync.samba.org/) - fast incremental file copy and sync, locally or over SSH
 
 ## System monitoring
 
