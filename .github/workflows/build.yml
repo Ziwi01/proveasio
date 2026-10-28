@@ -88,7 +88,7 @@ jobs:
           toTag: ${{ env.previousTag }}
 
       - name: Create Pre-Release
-        uses: ncipollo/release-action@v1.12.0
+        uses: ncipollo/release-action@v1
         with:
           allowUpdates: true
           draft: false

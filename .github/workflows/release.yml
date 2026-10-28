@@ -32,7 +32,7 @@ jobs:
           toTag: ${{ env.previousTag }}
 
       - name: Create new release
-        uses: ncipollo/release-action@v1.12.0
+        uses: ncipollo/release-action@v1
         with:
           allowUpdates: false
           draft: false
@@ -43,9 +43,11 @@ jobs:
           body: ${{ steps.changelog.outputs.changes }}
           token: ${{ github.token }}
 
-      - uses: dev-drprasad/delete-older-releases@v0.3.2
-        with:
-          delete_prerelease_only: true
-          keep_latest: 0
+      - name: Delete pre-releases
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          gh release list -R "$GITHUB_REPOSITORY" --limit 1000 --json tagName,isPrerelease \
+            --jq '.[] | select(.isPrerelease) | .tagName' \
+            | xargs -r -n1 gh release delete -R "$GITHUB_REPOSITORY" --yes
