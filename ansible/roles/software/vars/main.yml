@@ -33,6 +33,7 @@ default_apt_packages:
   - php
   - composer
   - keychain
+  - rsync
     #  - exa # Used in fzf-tab
   - bc # Required for git commands in cmdline
   - libfuse2 # Required for Neovim Appimage

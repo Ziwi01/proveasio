@@ -10,7 +10,7 @@ These cannot be excluded. The playbook stops at the start if `software_tasks_exc
 
 | Name | Installs |
 |---|---|
-| `packages` | Ubuntu packages from `default_apt_packages`: `tree`, `htop`, `jq`, `bat`, `gh`, `gdu`, `keychain`, `sqlite3`, build tools and more. Tag: `software_packages`. |
+| `packages` | Ubuntu packages from `default_apt_packages`: `tree`, `htop`, `jq`, `bat`, `gh`, `gdu`, `keychain`, `rsync`, `sqlite3`, build tools and more. Tag: `software_packages`. |
 | `yq` | [yq](https://mikefarah.gitbook.io/yq/) - YAML, JSON and XML processor. The playbook itself uses it. |
 | `zsh` | [oh-my-zsh](https://github.com/ohmyzsh/ohmyzsh) plugins from `omz_plugins` and the [powerlevel10k](https://github.com/romkatv/powerlevel10k) theme |
 

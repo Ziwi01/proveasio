@@ -76,7 +76,7 @@ change with the tool versions). Both images are built from
 |---|:---:|:---:|:---:|
 | **Shell:** zsh, oh-my-zsh, powerlevel10k, fzf, zoxide, eza, bat, ripgrep, fd, pay-respects | ✅ | ✅ | ✅ |
 | **Terminal:** tmux with plugins, tmuxp | ✅ | ✅ | ✅ |
-| **Data and system tools:** jq, yq, fx, curlie, htop, bottom, gdu, ShellCheck, keychain | ✅ | ✅ | ✅ |
+| **Data and system tools:** jq, yq, fx, curlie, htop, bottom, gdu, ShellCheck, keychain, rsync | ✅ | ✅ | ✅ |
 | **Git:** git, lazygit (with AI commits), diff-so-fancy, git-fuzzy, gita, lsg, hunk, revdiff, gh | ✅ | ✅ | ✅ |
 | **Neovim** with the AstroNvim-based config and language servers | ✅ AppImage | ✅ tarball | ⚠️ tarball [^java] |
 | **Python** (pyenv, pyenv-virtualenv, uv) | ✅ | ✅ | ✅ |
