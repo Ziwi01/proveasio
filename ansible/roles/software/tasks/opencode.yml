@@ -90,7 +90,7 @@
     # Check the binary, not the directory: a failed download leaves the directory
     # behind, and gating on it would skip the install on the next run, link a
     # missing binary and let cleanup delete the previous, working version.
-    - name: "[opencode] Check if opencode {{ opencode_version }} is installed"
+    - name: "[opencode] Check if opencode {{ opencode_version | default('') }} is installed"
       ansible.builtin.stat:
         path: "{{ ansible_facts['env']['HOME'] }}/.local/opt/opencode-{{ opencode_version }}/opencode"
       register: opencode_bin
@@ -107,7 +107,7 @@
         # Downloads of the ~90 MB tarball from opencode.ai get reset part-way
         # (seen in 2 of 3 tries behind a TLS-inspecting proxy; GitHub assets were
         # not affected). get_url rejects the short file, so retrying is safe.
-        - name: "[opencode] Download opencode {{ opencode_version }}"
+        - name: "[opencode] Download opencode {{ opencode_version | default('') }}"
           ansible.builtin.get_url:
             url: "{{ opencode_url }}"
             dest: "/tmp/opencode-{{ opencode_version }}.tar.gz"
@@ -142,7 +142,7 @@
           tags:
             - versions
 
-    - name: "[opencode] Link {{ opencode_version }} binary to ~/.local/bin/opencode"
+    - name: "[opencode] Link {{ opencode_version | default('') }} binary to ~/.local/bin/opencode"
       ansible.builtin.file:
         src: "{{ ansible_facts['env']['HOME'] }}/.local/opt/opencode-{{ opencode_version }}/opencode"
         dest: "{{ ansible_facts['env']['HOME'] }}/.local/bin/opencode"
