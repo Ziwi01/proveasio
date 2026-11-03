@@ -1,6 +1,9 @@
 # opencode - AI coding assistant
 # Source: https://github.com/anomalyco/opencode
 ---
+# opencode_package: tarball (default) installs from opencode.ai or GitHub as
+# described below; brew installs with a preinstalled Homebrew (see the end).
+#
 # OpenCode v2 is the default. v2 is not published as GitHub releases (only tags):
 # its version comes from the opencode.ai update service and its tarballs from
 # opencode.ai/files/bin. Pinning a 1.x version in `github_packages.opencode`
@@ -12,112 +15,147 @@
 #   baseline x64 CPUs without AVX2 need the -baseline build (default one SIGILLs);
 #            opencode_baseline: true forces it (images run on other CPUs)
 #   musl     Alpine / musl libc (Ubuntu is glibc, so normally a no-op)
-- name: "[opencode] Check opencode_baseline value"
+- name: "[opencode] Check opencode_package value"
   ansible.builtin.assert:
     that:
-      - opencode_baseline | string | lower in ['auto', 'true']
-    fail_msg: "opencode_baseline must be auto or true, got '{{ opencode_baseline }}'"
+      - opencode_package in ['tarball', 'brew']
+    fail_msg: "opencode_package must be 'tarball' or 'brew', got '{{ opencode_package }}'"
     quiet: true
   tags:
     - versions
 
-- name: "[opencode] Resolve release asset for this host"
-  ansible.builtin.shell: |
-    set -e -o pipefail
-    arch="$(uname -m)"
-    case "$arch" in
-      x86_64|amd64) arch="x64" ;;
-      aarch64|arm64) arch="arm64" ;;
-      *) echo "[opencode] unsupported architecture: $arch" >&2; exit 1 ;;
-    esac
-    target="linux-${arch}"
-    if [ "$arch" = "x64" ] && { [ "$OPENCODE_BASELINE" = true ] || ! grep -qwi avx2 /proc/cpuinfo 2>/dev/null; }; then
-      target="${target}-baseline"
-    fi
-    if [ -f /etc/alpine-release ] || (command -v ldd >/dev/null 2>&1 && ldd --version 2>&1 | grep -qi musl); then
-      target="${target}-musl"
-    fi
-    printf 'opencode-%s.tar.gz' "$target"
-  args:
-    executable: /bin/bash
-  environment:
-    OPENCODE_BASELINE: "{{ opencode_baseline | string | lower }}"
-  register: opencode_asset_cmd
-  changed_when: false
-  tags:
-    - versions
-
-- name: "[opencode] Set release asset name"
-  ansible.builtin.set_fact:
-    opencode_asset: "{{ opencode_asset_cmd.stdout }}"
-  tags:
-    - versions
-
-- name: "[opencode] Get download URL for proper version"
-  vars:
-    app: opencode
-    # `latest` resolves the newest v2 from the update service (not the GitHub API).
-    # The service intermittently answers 500 (Cloudflare error 1101), so retry.
-    version_query: curl -fsSL --retry 5 --retry-delay 2 --retry-all-errors https://opencode.ai/update/api/latest/cli/opencode | jq -r .version
-    artifact_url: >-
-      {{ ('https://github.com/anomalyco/opencode/releases/download/v' ~ opencode_version)
-         if opencode_version is version('2', '<')
-         else ('https://opencode.ai/files/bin/' ~ opencode_version) }}/{{ opencode_asset }}
-  ansible.builtin.include_role:
-    name: common
-    tasks_from: github_version.yml
-    apply:
+- name: "[opencode] Install from tarball"
+  when: opencode_package == 'tarball'
+  block:
+    - name: "[opencode] Check opencode_baseline value"
+      ansible.builtin.assert:
+        that:
+          - opencode_baseline | string | lower in ['auto', 'true']
+        fail_msg: "opencode_baseline must be auto or true, got '{{ opencode_baseline }}'"
+        quiet: true
       tags:
         - versions
-  tags:
-    - versions
 
-# Check the binary, not the directory: a failed download leaves the directory
-# behind, and gating on it would skip the install on the next run, link a
-# missing binary and let cleanup delete the previous, working version.
-- name: "[opencode] Check if opencode {{ opencode_version }} is installed"
-  ansible.builtin.stat:
-    path: "{{ ansible_facts['env']['HOME'] }}/.local/opt/opencode-{{ opencode_version }}/opencode"
-  register: opencode_bin
+    - name: "[opencode] Resolve release asset for this host"
+      ansible.builtin.shell: |
+        set -e -o pipefail
+        arch="$(uname -m)"
+        case "$arch" in
+          x86_64|amd64) arch="x64" ;;
+          aarch64|arm64) arch="arm64" ;;
+          *) echo "[opencode] unsupported architecture: $arch" >&2; exit 1 ;;
+        esac
+        target="linux-${arch}"
+        if [ "$arch" = "x64" ] && { [ "$OPENCODE_BASELINE" = true ] || ! grep -qwi avx2 /proc/cpuinfo 2>/dev/null; }; then
+          target="${target}-baseline"
+        fi
+        if [ -f /etc/alpine-release ] || (command -v ldd >/dev/null 2>&1 && ldd --version 2>&1 | grep -qi musl); then
+          target="${target}-musl"
+        fi
+        printf 'opencode-%s.tar.gz' "$target"
+      args:
+        executable: /bin/bash
+      environment:
+        OPENCODE_BASELINE: "{{ opencode_baseline | string | lower }}"
+      register: opencode_asset_cmd
+      changed_when: false
+      tags:
+        - versions
 
-- name: "Installation"
-  when: not opencode_bin.stat.exists
-  block:
-    - name: "[opencode] Create directory in {{ ansible_facts['env']['HOME'] }}/.local/opt"
+    - name: "[opencode] Set release asset name"
+      ansible.builtin.set_fact:
+        opencode_asset: "{{ opencode_asset_cmd.stdout }}"
+      tags:
+        - versions
+
+    - name: "[opencode] Get download URL for proper version"
+      vars:
+        app: opencode
+        # `latest` resolves the newest v2 from the update service (not the GitHub API).
+        # The service intermittently answers 500 (Cloudflare error 1101), so retry.
+        version_query: curl -fsSL --retry 5 --retry-delay 2 --retry-all-errors https://opencode.ai/update/api/latest/cli/opencode | jq -r .version
+        artifact_url: >-
+          {{ ('https://github.com/anomalyco/opencode/releases/download/v' ~ opencode_version)
+             if opencode_version is version('2', '<')
+             else ('https://opencode.ai/files/bin/' ~ opencode_version) }}/{{ opencode_asset }}
+      ansible.builtin.include_role:
+        name: common
+        tasks_from: github_version.yml
+        apply:
+          tags:
+            - versions
+      tags:
+        - versions
+
+    # Check the binary, not the directory: a failed download leaves the directory
+    # behind, and gating on it would skip the install on the next run, link a
+    # missing binary and let cleanup delete the previous, working version.
+    - name: "[opencode] Check if opencode {{ opencode_version }} is installed"
+      ansible.builtin.stat:
+        path: "{{ ansible_facts['env']['HOME'] }}/.local/opt/opencode-{{ opencode_version }}/opencode"
+      register: opencode_bin
+
+    - name: "Installation"
+      when: not opencode_bin.stat.exists
+      block:
+        - name: "[opencode] Create directory in {{ ansible_facts['env']['HOME'] }}/.local/opt"
+          ansible.builtin.file:
+            path: "{{ ansible_facts['env']['HOME'] }}/.local/opt/opencode-{{ opencode_version }}"
+            state: directory
+            mode: "0755"
+
+        # Downloads of the ~90 MB tarball from opencode.ai get reset part-way
+        # (seen in 2 of 3 tries behind a TLS-inspecting proxy; GitHub assets were
+        # not affected). get_url rejects the short file, so retrying is safe.
+        - name: "[opencode] Download opencode {{ opencode_version }}"
+          ansible.builtin.get_url:
+            url: "{{ opencode_url }}"
+            dest: "/tmp/opencode-{{ opencode_version }}.tar.gz"
+            mode: "0755"
+          register: opencode_download
+          until: opencode_download is succeeded
+          retries: 5
+          delay: 3
+
+        - name: "[opencode] Untar archive"
+          ansible.builtin.unarchive:
+            src: "/tmp/opencode-{{ opencode_version }}.tar.gz"
+            dest: "{{ ansible_facts['env']['HOME'] }}/.local/opt/opencode-{{ opencode_version }}"
+
+        - name: "[opencode] Cleanup tar.gz file"
+          ansible.builtin.file:
+            path: "/tmp/opencode-{{ opencode_version }}.tar.gz"
+            state: absent
+
+        - name: "[opencode] Save used asset"
+          vars:
+            app: opencode
+            target_version:
+              opencode_asset: "{{ opencode_asset }}"
+            yq_query: ".opencode_asset = \"{{ opencode_asset }}\""
+          ansible.builtin.include_role:
+            name: common
+            tasks_from: save_version.yml
+            apply:
+              tags:
+                - versions
+          tags:
+            - versions
+
+    - name: "[opencode] Link {{ opencode_version }} binary to ~/.local/bin/opencode"
       ansible.builtin.file:
-        path: "{{ ansible_facts['env']['HOME'] }}/.local/opt/opencode-{{ opencode_version }}"
-        state: directory
-        mode: "0755"
+        src: "{{ ansible_facts['env']['HOME'] }}/.local/opt/opencode-{{ opencode_version }}/opencode"
+        dest: "{{ ansible_facts['env']['HOME'] }}/.local/bin/opencode"
+        state: link
+        force: true
 
-    # Downloads of the ~90 MB tarball from opencode.ai get reset part-way
-    # (seen in 2 of 3 tries behind a TLS-inspecting proxy; GitHub assets were
-    # not affected). get_url rejects the short file, so retrying is safe.
-    - name: "[opencode] Download opencode {{ opencode_version }}"
-      ansible.builtin.get_url:
-        url: "{{ opencode_url }}"
-        dest: "/tmp/opencode-{{ opencode_version }}.tar.gz"
-        mode: "0755"
-      register: opencode_download
-      until: opencode_download is succeeded
-      retries: 5
-      delay: 3
-
-    - name: "[opencode] Untar archive"
-      ansible.builtin.unarchive:
-        src: "/tmp/opencode-{{ opencode_version }}.tar.gz"
-        dest: "{{ ansible_facts['env']['HOME'] }}/.local/opt/opencode-{{ opencode_version }}"
-
-    - name: "[opencode] Cleanup tar.gz file"
-      ansible.builtin.file:
-        path: "/tmp/opencode-{{ opencode_version }}.tar.gz"
-        state: absent
-
-    - name: "[opencode] Save used asset"
+    - name: "[opencode] Save used version"
       vars:
         app: opencode
         target_version:
-          opencode_asset: "{{ opencode_asset }}"
-        yq_query: ".opencode_asset = \"{{ opencode_asset }}\""
+          github_packages:
+            opencode: "{{ opencode_version }}"
+        yq_query: ".github_packages.opencode = \"{{ opencode_version }}\""
       ansible.builtin.include_role:
         name: common
         tasks_from: save_version.yml
@@ -127,40 +165,114 @@
       tags:
         - versions
 
-- name: "[opencode] Link {{ opencode_version }} binary to ~/.local/bin/opencode"
-  ansible.builtin.file:
-    src: "{{ ansible_facts['env']['HOME'] }}/.local/opt/opencode-{{ opencode_version }}/opencode"
-    dest: "{{ ansible_facts['env']['HOME'] }}/.local/bin/opencode"
-    state: link
-    force: true
-
-- name: "[opencode] Save used version"
-  vars:
-    app: opencode
-    target_version:
-      github_packages:
-        opencode: "{{ opencode_version }}"
-    yq_query: ".github_packages.opencode = \"{{ opencode_version }}\""
-  ansible.builtin.include_role:
-    name: common
-    tasks_from: save_version.yml
-    apply:
-      tags:
-        - versions
-  tags:
-    - versions
-
-- name: "[opencode] Cleanup old versions"
-  vars:
-    app: opencode
-    keep: "{{ opencode_version }}"
-  ansible.builtin.include_role:
-    name: common
-    tasks_from: cleanup_versions.yml
-    apply:
+    - name: "[opencode] Cleanup old versions"
+      vars:
+        app: opencode
+        keep: "{{ opencode_version }}"
+      ansible.builtin.include_role:
+        name: common
+        tasks_from: cleanup_versions.yml
+        apply:
+          tags:
+            - versions
+            - cleanup
       tags:
         - versions
         - cleanup
-  tags:
-    - versions
-    - cleanup
+
+# Homebrew's formula comes from GitHub and ghcr.io, not opencode.ai, so this
+# works where a firewall blocks opencode.ai. Homebrew itself is not installed.
+- name: "[opencode] Install with Homebrew"
+  when: opencode_package == 'brew'
+  block:
+    - name: "[opencode] Find Homebrew"
+      ansible.builtin.shell: |
+        set -e -o pipefail
+        for brew in "$(command -v brew || true)" /home/linuxbrew/.linuxbrew/bin/brew "$HOME/.linuxbrew/bin/brew"; do
+          if [ -n "$brew" ] && [ -x "$brew" ]; then
+            "$brew" --prefix
+            exit 0
+          fi
+        done
+        exit 1
+      args:
+        executable: /bin/bash
+      register: opencode_brew_cmd
+      changed_when: false
+      failed_when: false
+      check_mode: false
+      tags:
+        - versions
+
+    - name: "[opencode] Check that Homebrew is installed"
+      ansible.builtin.assert:
+        that:
+          - opencode_brew_cmd.rc == 0
+        fail_msg: >-
+          opencode_package: brew needs Homebrew preinstalled (https://brew.sh), but no brew was found
+          on PATH, in /home/linuxbrew/.linuxbrew or in ~/.linuxbrew.
+          See the docs: Versions management > Install opencode with Homebrew.
+        quiet: true
+      tags:
+        - versions
+
+    - name: "[opencode] Check that no version is pinned"
+      ansible.builtin.assert:
+        that:
+          - github_packages['opencode'] == 'latest'
+        fail_msg: >-
+          opencode_package: brew always installs the latest version, but github_packages.opencode is
+          pinned to '{{ github_packages['opencode'] }}'. Set it to latest or use opencode_package: tarball.
+        quiet: true
+      tags:
+        - versions
+
+    - name: "[opencode] Set Homebrew prefix"
+      ansible.builtin.set_fact:
+        opencode_brew_prefix: "{{ opencode_brew_cmd.stdout | trim }}"
+      tags:
+        - versions
+
+    - name: "[opencode] Install or upgrade opencode with Homebrew"
+      community.general.homebrew:
+        name: opencode
+        state: latest
+        update_homebrew: true
+        path: "{{ opencode_brew_prefix }}/bin"
+      tags:
+        - versions
+
+    - name: "[opencode] Link Homebrew binary to ~/.local/bin/opencode"
+      ansible.builtin.file:
+        src: "{{ opencode_brew_prefix }}/bin/opencode"
+        dest: "{{ ansible_facts['env']['HOME'] }}/.local/bin/opencode"
+        state: link
+        force: true
+
+    # Homebrew appends a revision (_1) to rebuilt formulae; the receipt keeps the upstream version.
+    - name: "[opencode] Get installed Homebrew version"
+      ansible.builtin.shell: |
+        set -e -o pipefail
+        "{{ opencode_brew_prefix }}/bin/brew" list --versions opencode | awk '{print $NF}' | sed 's/_[0-9]*$//'
+      args:
+        executable: /bin/bash
+      register: opencode_brew_version
+      changed_when: false
+      tags:
+        - versions
+
+    - name: "[opencode] Save used version"
+      vars:
+        app: opencode
+        target_version:
+          github_packages:
+            opencode: "{{ opencode_brew_version.stdout }}"
+        yq_query: ".github_packages.opencode = \"{{ opencode_brew_version.stdout }}\""
+      ansible.builtin.include_role:
+        name: common
+        tasks_from: save_version.yml
+        apply:
+          tags:
+            - versions
+      tags:
+        - versions

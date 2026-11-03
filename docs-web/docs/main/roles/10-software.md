@@ -98,7 +98,7 @@ Python itself is installed by `prepare-ubuntu.sh` with [pyenv](https://github.co
 
 | Name | Installs |
 |---|---|
-| `opencode` | [opencode](https://github.com/anomalyco/opencode) - terminal AI coding agent. Installs v2 by default; pin a 1.x version to keep v1 (see [opencode v1 and v2](../customization/20-versions.md#opencode-v1-and-v2)). |
+| `opencode` | [opencode](https://github.com/anomalyco/opencode) - terminal AI coding agent. Installs v2 by default; pin a 1.x version to keep v1 (see [opencode v1 and v2](../customization/20-versions.md#opencode-v1-and-v2)). Can also install with a preinstalled Homebrew (`opencode_package: brew`, see [Install opencode with Homebrew](../customization/20-versions.md#install-opencode-with-homebrew)). |
 | `ccmux` | [ccmux](https://github.com/epilande/ccmux) - run and track AI coding agents (opencode, Claude Code, Codex and more) in tmux, with live session states, a sidebar and desktop notifications |
 | `wsl-notify-send` | [wsl-notify-send](https://github.com/stuartleeks/wsl-notify-send) - bridges ccmux notifications to Windows toasts on WSL |
 
