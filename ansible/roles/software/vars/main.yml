@@ -112,6 +112,29 @@ github_packages:
   argocd: latest # Argo CD CLI
   argonaut: latest # Argo CD terminal UI
   curlie: latest
+  granted: latest # AWS profile and SSO role switcher (`assume`)
+  session_manager_plugin: latest # AWS SSM Session Manager plugin for the AWS CLI
+  taws: latest # Terminal UI for AWS
+  eksctl: latest
+  eks_node_viewer: latest
+  stern: latest
+  crane: latest # From google/go-containerregistry
+  spacectl: latest # Spacelift CLI
+  tenv: latest # Version manager for Terraform, OpenTofu and Terragrunt
+  tflint: latest
+  terraform_docs: latest
+  steampipe: latest
+# Tool bundles. A bundle name selects all its members as an Ansible tag
+# (`--tags terraform-tools`) and excludes them all in software_tasks_exclude.
+# Members are include names of tasks/main.yml; every member's include carries
+# the bundle tag. Single members can still be skipped or excluded.
+software_bundles:
+  aws-tools: [awscli, granted, session-manager-plugin, taws, eksctl, eks-node-viewer, steampipe]
+  azure-tools: [azurecli, az-account-switcher]
+  kubernetes-tools: [kubectl, kubecolor, kubeswitch, k9s, helm, helm-unittest, kubeconform, dyff, kind, stern, crane]
+  terraform-tools: [tenv, terraform, tofu, terragrunt, tflint, terraform-docs]
+  argocd-tools: [argocd, argonaut]
+  spacelift-tools: [spacectl]
 # x64 OpenCode build: auto = check this CPU for AVX2, true = always the
 # -baseline build (for images that run on other machines than the build one)
 opencode_baseline: auto

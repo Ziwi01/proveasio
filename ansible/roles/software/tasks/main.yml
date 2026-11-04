@@ -46,6 +46,36 @@
   tags:
     - always
 
+# Bundle names in software_tasks_exclude stand for all their members. The
+# expanded list keeps the bundle names, so every `when:` guard below only
+# needs the tool name. docker/render-overrides.sh does the same for images.
+- name: "[Software] Check and expand tool bundles"
+  vars:
+    _proveasio_includes: "{{ lookup('ansible.builtin.file', role_path ~ '/tasks/main.yml') | regex_findall('file: ([a-z0-9-]+)\\.yml') }}"
+    _proveasio_bundle_members: "{{ software_bundles.values() | flatten }}"
+  tags:
+    - always
+  block:
+    - name: "[Software] Check that bundle members are includes and bundle names are not"
+      ansible.builtin.assert:
+        that:
+          - _proveasio_bundle_members | difference(_proveasio_includes) | length == 0
+          - software_bundles.keys() | intersect(_proveasio_includes) | length == 0
+        fail_msg: >-
+          software_bundles is invalid. Unknown members:
+          {{ _proveasio_bundle_members | difference(_proveasio_includes) | join(', ') or '-' }}.
+          Bundle names that are also include names:
+          {{ software_bundles.keys() | intersect(_proveasio_includes) | join(', ') or '-' }}.
+        quiet: true
+
+    - name: "[Software] Expand bundle names in software_tasks_exclude"
+      ansible.builtin.set_fact:
+        software_tasks_exclude: >-
+          {{ (software_tasks_exclude
+              + (software_bundles | dict2items | selectattr('key', 'in', software_tasks_exclude)
+                 | map(attribute='value') | flatten))
+             | unique }}
+
 # packages (jq and curl for every version lookup), yq (save_version.yml) and
 # zsh (oh-my-zsh, and the .zshrc that sets NVIM_APPNAME and loads nvm, gvm and
 # rvm) are required, so their includes have no exclude guard. Both roles are
@@ -302,11 +332,13 @@
       tags:
         - software
         - kubeswitch
+        - kubernetes-tools
   when: "'kubeswitch' not in software_tasks_exclude"
   tags:
     - software
     - versions
     - kubeswitch
+    - kubernetes-tools
 
 # AZ subscription switcher
 - name: "[Software] Install az-account-switcher"
@@ -316,11 +348,13 @@
       tags:
         - software
         - az-account-switcher
+        - azure-tools
   when: "'az-account-switcher' not in software_tasks_exclude"
   tags:
     - software
     - versions
     - az-account-switcher
+    - azure-tools
 
 # Zoxide
 - name: "[Software] Install zoxide"
@@ -344,11 +378,13 @@
       tags:
         - software
         - helm
+        - kubernetes-tools
   when: "'helm' not in software_tasks_exclude"
   tags:
     - software
     - versions
     - helm
+    - kubernetes-tools
 
 # helm-unittest - Helm plugin for chart unit tests (needs helm)
 - name: "[Software] Install helm-unittest"
@@ -358,11 +394,13 @@
       tags:
         - software
         - helm-unittest
+        - kubernetes-tools
   when: "'helm-unittest' not in software_tasks_exclude"
   tags:
     - software
     - versions
     - helm-unittest
+    - kubernetes-tools
 
 # ZSH
 - name: "[Software] Install zsh"
@@ -425,11 +463,13 @@
       tags:
         - software
         - kubectl
+        - kubernetes-tools
   when: "'kubectl' not in software_tasks_exclude"
   tags:
     - software
     - versions
     - kubectl
+    - kubernetes-tools
 
 - name: "[Software] kubecolor"
   ansible.builtin.include_tasks:
@@ -438,11 +478,13 @@
       tags:
         - software
         - kubecolor
+        - kubernetes-tools
   when: "'kubecolor' not in software_tasks_exclude"
   tags:
     - software
     - versions
     - kubecolor
+    - kubernetes-tools
 
 - name: "[Software] KinD"
   ansible.builtin.include_tasks:
@@ -451,11 +493,13 @@
       tags:
         - software
         - kind
+        - kubernetes-tools
   when: "'kind' not in software_tasks_exclude"
   tags:
     - software
     - versions
     - kind
+    - kubernetes-tools
 
 - name: "[Software] k9s"
   ansible.builtin.include_tasks:
@@ -464,11 +508,45 @@
       tags:
         - software
         - k9s
+        - kubernetes-tools
   when: "'k9s' not in software_tasks_exclude"
   tags:
     - software
     - versions
     - k9s
+    - kubernetes-tools
+
+# stern - tail logs of many pods and containers at once
+- name: "[Software] Install stern"
+  ansible.builtin.include_tasks:
+    file: stern.yml
+    apply:
+      tags:
+        - software
+        - stern
+        - kubernetes-tools
+  when: "'stern' not in software_tasks_exclude"
+  tags:
+    - software
+    - versions
+    - stern
+    - kubernetes-tools
+
+# crane - container registry CLI (google/go-containerregistry)
+- name: "[Software] Install crane"
+  ansible.builtin.include_tasks:
+    file: crane.yml
+    apply:
+      tags:
+        - software
+        - crane
+        - kubernetes-tools
+  when: "'crane' not in software_tasks_exclude"
+  tags:
+    - software
+    - versions
+    - crane
+    - kubernetes-tools
 
 # kubeconform - Kubernetes manifests validator
 - name: "[Software] Install kubeconform"
@@ -478,11 +556,13 @@
       tags:
         - software
         - kubeconform
+        - kubernetes-tools
   when: "'kubeconform' not in software_tasks_exclude"
   tags:
     - software
     - versions
     - kubeconform
+    - kubernetes-tools
 
 # dyff - diff tool for YAML files
 - name: "[Software] Install dyff"
@@ -492,11 +572,13 @@
       tags:
         - software
         - dyff
+        - kubernetes-tools
   when: "'dyff' not in software_tasks_exclude"
   tags:
     - software
     - versions
     - dyff
+    - kubernetes-tools
 
 # argocd - Argo CD command line interface
 - name: "[Software] Install argocd"
@@ -506,11 +588,13 @@
       tags:
         - software
         - argocd
+        - argocd-tools
   when: "'argocd' not in software_tasks_exclude"
   tags:
     - software
     - versions
     - argocd
+    - argocd-tools
 
 # argonaut - terminal UI for Argo CD (uses the argocd CLI login config)
 - name: "[Software] Install argonaut"
@@ -520,11 +604,13 @@
       tags:
         - software
         - argonaut
+        - argocd-tools
   when: "'argonaut' not in software_tasks_exclude"
   tags:
     - software
     - versions
     - argonaut
+    - argocd-tools
 
 # Ruby Version Manager
 - name: "[Software] Install Ruby Version Manager"
@@ -638,6 +724,23 @@
     - versions
     - puppet
 
+# tenv - version manager for Terraform, OpenTofu and Terragrunt.
+# The terraform, tofu and terragrunt tasks below install their versions with it.
+- name: "[Software] Install tenv"
+  ansible.builtin.include_tasks:
+    file: tenv.yml
+    apply:
+      tags:
+        - software
+        - tenv
+        - terraform-tools
+  when: "'tenv' not in software_tasks_exclude"
+  tags:
+    - software
+    - versions
+    - tenv
+    - terraform-tools
+
 - name: "[Software] Terraform"
   ansible.builtin.include_tasks:
     file: terraform.yml
@@ -645,11 +748,13 @@
       tags:
         - software
         - terraform
+        - terraform-tools
   when: "'terraform' not in software_tasks_exclude"
   tags:
     - software
     - versions
     - terraform
+    - terraform-tools
 
 - name: "[Software] Terragrunt"
   ansible.builtin.include_tasks:
@@ -658,11 +763,13 @@
       tags:
         - software
         - terragrunt
+        - terraform-tools
   when: "'terragrunt' not in software_tasks_exclude"
   tags:
     - software
     - versions
     - terragrunt
+    - terraform-tools
 
 # OpenTofu - open source fork of Terraform
 - name: "[Software] Install OpenTofu"
@@ -672,11 +779,61 @@
       tags:
         - software
         - tofu
+        - terraform-tools
   when: "'tofu' not in software_tasks_exclude"
   tags:
     - software
     - versions
     - tofu
+    - terraform-tools
+
+# TFLint - Terraform linter
+- name: "[Software] Install tflint"
+  ansible.builtin.include_tasks:
+    file: tflint.yml
+    apply:
+      tags:
+        - software
+        - tflint
+        - terraform-tools
+  when: "'tflint' not in software_tasks_exclude"
+  tags:
+    - software
+    - versions
+    - tflint
+    - terraform-tools
+
+# terraform-docs - generate documentation from Terraform modules
+- name: "[Software] Install terraform-docs"
+  ansible.builtin.include_tasks:
+    file: terraform-docs.yml
+    apply:
+      tags:
+        - software
+        - terraform-docs
+        - terraform-tools
+  when: "'terraform-docs' not in software_tasks_exclude"
+  tags:
+    - software
+    - versions
+    - terraform-docs
+    - terraform-tools
+
+# spacectl - Spacelift CLI
+- name: "[Software] Install spacectl"
+  ansible.builtin.include_tasks:
+    file: spacectl.yml
+    apply:
+      tags:
+        - software
+        - spacectl
+        - spacelift-tools
+  when: "'spacectl' not in software_tasks_exclude"
+  tags:
+    - software
+    - versions
+    - spacectl
+    - spacelift-tools
 
 - name: "[Software] Azure CLI"
   ansible.builtin.include_tasks:
@@ -685,11 +842,13 @@
       tags:
         - software
         - azurecli
+        - azure-tools
   when: "'azurecli' not in software_tasks_exclude"
   tags:
     - software
     - versions
     - azurecli
+    - azure-tools
 
 - name: "[Software] AWS CLI"
   ansible.builtin.include_tasks:
@@ -698,11 +857,109 @@
       tags:
         - software
         - awscli
+        - aws-tools
   when: "'awscli' not in software_tasks_exclude"
   tags:
     - software
     - versions
     - awscli
+    - aws-tools
+
+# Granted - AWS profile and SSO role switcher (`assume`)
+- name: "[Software] Install Granted"
+  ansible.builtin.include_tasks:
+    file: granted.yml
+    apply:
+      tags:
+        - software
+        - granted
+        - aws-tools
+  when: "'granted' not in software_tasks_exclude"
+  tags:
+    - software
+    - versions
+    - granted
+    - aws-tools
+
+# AWS SSM Session Manager plugin, used by `aws ssm start-session`
+- name: "[Software] Install session-manager-plugin"
+  ansible.builtin.include_tasks:
+    file: session-manager-plugin.yml
+    apply:
+      tags:
+        - software
+        - session-manager-plugin
+        - aws-tools
+  when: "'session-manager-plugin' not in software_tasks_exclude"
+  tags:
+    - software
+    - versions
+    - session-manager-plugin
+    - aws-tools
+
+# taws - terminal UI for AWS
+- name: "[Software] Install taws"
+  ansible.builtin.include_tasks:
+    file: taws.yml
+    apply:
+      tags:
+        - software
+        - taws
+        - aws-tools
+  when: "'taws' not in software_tasks_exclude"
+  tags:
+    - software
+    - versions
+    - taws
+    - aws-tools
+
+# eksctl - CLI for Amazon EKS
+- name: "[Software] Install eksctl"
+  ansible.builtin.include_tasks:
+    file: eksctl.yml
+    apply:
+      tags:
+        - software
+        - eksctl
+        - aws-tools
+  when: "'eksctl' not in software_tasks_exclude"
+  tags:
+    - software
+    - versions
+    - eksctl
+    - aws-tools
+
+# eks-node-viewer - node usage and cost of an EKS cluster
+- name: "[Software] Install eks-node-viewer"
+  ansible.builtin.include_tasks:
+    file: eks-node-viewer.yml
+    apply:
+      tags:
+        - software
+        - eks-node-viewer
+        - aws-tools
+  when: "'eks-node-viewer' not in software_tasks_exclude"
+  tags:
+    - software
+    - versions
+    - eks-node-viewer
+    - aws-tools
+
+# Steampipe - SQL queries against cloud APIs
+- name: "[Software] Install Steampipe"
+  ansible.builtin.include_tasks:
+    file: steampipe.yml
+    apply:
+      tags:
+        - software
+        - steampipe
+        - aws-tools
+  when: "'steampipe' not in software_tasks_exclude"
+  tags:
+    - software
+    - versions
+    - steampipe
+    - aws-tools
 
 # UV - Fast Python package and project manager
 - name: "[Software] Install uv"

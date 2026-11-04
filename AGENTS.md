@@ -138,7 +138,7 @@ Not everything resolves through GitHub: `kubectl` uses `dl.k8s.io/release/stable
 and pip tools use `state: latest` / `--upgrade` and read the version back, SDKMAN does not
 support `latest` at all, and a few entries are hard-pinned.
 
-## Adding software: five edits minimum
+## Adding software: five edits minimum (six in a bundle)
 
 1. `roles/software/tasks/<tool>.yml`: copy `hunk.yml` or `eza.yml`; they are the canonical shape.
 2. Register in `roles/software/tasks/main.yml` with
@@ -151,6 +151,9 @@ support `latest` at all, and a few entries are hard-pinned.
    `PROVEASIO_HOME="$PWD" bash docker/test.sh --coverage` lists missing checks without
    building.
 5. Update the docs (see below).
+6. If it belongs to a bundle (`software_bundles` in `roles/software/vars/main.yml`): add it to
+   the bundle's list **and** add the bundle tag to its include's outer and `apply` tags. The run
+   fails when a member is not an include; `docker/test.sh --coverage` reports a missing tag.
 
 **The `app` naming trap.** Up to three spellings of the same tool coexist:
 

@@ -631,7 +631,21 @@ coverage() {
     done <<<"$lines"
   done
   echo "# $total includes, $uncovered without a check"
-  [ "$uncovered" -eq 0 ]
+  # Every member of a bundle must carry the bundle tag, or --tags <bundle>
+  # would leave it out.
+  local untagged=0 bundle member
+  lines="$(role_includes software)" || exit 1
+  while read -r bundle member; do
+    [ -n "$member" ] || continue
+    tags="$(awk -v n="$member" '$1 == n { print $2 }' <<<"$lines")"
+    if [[ ",$tags," != *",$bundle,"* ]]; then
+      echo "missing tag $bundle on software/$member"
+      untagged=$((untagged + 1))
+    fi
+  done < <(yq -r '.software_bundles // {} | to_entries[] | .key as $b | .value[] | $b + " " + .' \
+    "$ANSIBLE_DIR/roles/software/vars/main.yml")
+  echo "# $untagged bundle members without their bundle tag"
+  [ "$uncovered" -eq 0 ] && [ "$untagged" -eq 0 ]
 }
 
 # Checks run in bash, with the PATH an interactive zsh would have, so they see

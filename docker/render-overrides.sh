@@ -5,7 +5,9 @@
 # DOCKER_DIR, merged in this order: the committed docker/profile.yml,
 # docker/profile-<PROFILE>.yml unless PROFILE is "full", and the optional,
 # gitignored docker/overrides.yml. Maps merge recursively and lists are
-# appended. Then software_tasks_include and config_tasks_include take names
+# appended. Bundle names (software_bundles) in software_tasks_exclude and
+# software_tasks_include become their members. Then software_tasks_include
+# and config_tasks_include take names
 # out of software_tasks_exclude and config_tasks_exclude. The nvim-config
 # build context at NVIM_CONFIG_DIR switches the Neovim config to that
 # directory. The roles then merge github_packages, pip_packages and
@@ -114,6 +116,25 @@ apply_includes() {
   done <<<"$names"
   merged="$(INC="$inc" EXC="$exc" yq '.[strenv(EXC)] = ((.[strenv(EXC)] // []) - .[strenv(INC)]) | del(.[strenv(INC)])' <<<"$merged")"
 }
+# expand_bundles: replace bundle names in software_tasks_exclude and
+# software_tasks_include with their members, as roles/software/tasks/main.yml
+# does for the exclude list. Bundles come from the merged inputs when they
+# define software_bundles, else from roles/software/vars/main.yml. After this,
+# docker/provision.sh and docker/test.sh only see tool names.
+expand_bundles() {
+  local key bundles
+  if [ "$(yq 'has("software_bundles")' <<<"$merged")" = true ]; then
+    bundles="$(yq -o=json -I0 '.software_bundles' <<<"$merged")"
+  else
+    bundles="$(yq -o=json -I0 '.software_bundles // {}' "$PROVEASIO_HOME/ansible/roles/software/vars/main.yml")"
+  fi
+  for key in software_tasks_exclude software_tasks_include; do
+    [ "$(KEY="$key" yq '.[strenv(KEY)] | type' <<<"$merged")" = '!!seq' ] || continue
+    merged="$(KEY="$key" BUNDLES="$bundles" \
+      yq '(env(BUNDLES)) as $b | .[strenv(KEY)] |= ([.[] as $n | ($b[$n] // [$n])[]] | unique)' <<<"$merged")"
+  done
+}
+expand_bundles
 apply_includes software
 apply_includes config
 

@@ -1,6 +1,8 @@
 # Slim image profile (PROFILE=slim). docker/render-overrides.sh merges it
 # after docker/profile.yml and before docker/overrides.yml; lists append.
-# It leaves out the largest tools that nothing else in the image needs.
+# It leaves out the largest tools that nothing else in the image needs, and
+# the cloud, Kubernetes and IaC tools (bundles, see software_bundles in
+# roles/software/vars/main.yml).
 #
 # nvm, gvm and rvm stay: the default Neovim config installs Mason packages
 # with npm (yaml, json, bash and ansible language servers), go (gopls, delve
@@ -10,14 +12,18 @@
 # with nvm's npm.
 #
 # To add a tool back, list it in software_tasks_include (and
-# config_tasks_include for sdkman) in docker/overrides.yml.
+# config_tasks_include for sdkman) in docker/overrides.yml. A bundle name
+# there adds the whole bundle back.
 software_tasks_exclude:
   - sdkman
-  - azurecli
-  - az-account-switcher
   - rust
   - puppet
-  - awscli
+  - aws-tools
+  - azure-tools
+  - kubernetes-tools
+  - terraform-tools
+  - argocd-tools
+  - spacelift-tools
 # The config task writes ~/.sdkman/etc/config, which needs SDKMAN.
 config_tasks_exclude:
   - sdkman
