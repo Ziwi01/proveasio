@@ -133,6 +133,65 @@ argocd app sync <app>
 
 `argonaut` opens a terminal UI for the same server, using the session saved by `argocd login`: browse the applications and their sync and health status. Press `?` in it for the available actions.
 
+## Tail logs with stern
+
+Uses: [stern](https://github.com/stern/stern)
+
+`kubectl logs` follows one pod. stern follows every pod and container that matches, colors each one and picks up new pods as they start, for example during a rollout.
+
+```shell
+stern api -n prod                          # pods whose name matches the regex "api"
+stern -l app.kubernetes.io/name=api --since 15m
+stern api -n prod -c app --tail 20         # only the "app" container, last 20 lines each
+stern api -n prod -i error                 # only lines that match "error"
+stern api -n prod -o json | jq .message    # structured output
+```
+
+## Container registries with crane
+
+Uses: [crane](https://github.com/google/go-containerregistry/blob/main/cmd/crane/doc/crane.md)
+
+crane works on images in a registry without pulling them. It reads the Docker login, so log in to ECR once per 12 hours:
+
+```shell
+aws ecr get-login-password --region eu-west-1 \
+  | crane auth login <account>.dkr.ecr.eu-west-1.amazonaws.com -u AWS --password-stdin
+REPO=<account>.dkr.ecr.eu-west-1.amazonaws.com/api
+crane ls "$REPO"                           # tags
+crane digest "$REPO:1.4.2"                 # the digest a tag points to
+crane config "$REPO:1.4.2" | jq .config    # entrypoint, env, labels
+crane copy "$REPO:1.4.2" <other-account>.dkr.ecr.eu-central-1.amazonaws.com/api:1.4.2   # promote between accounts or regions
+crane tag "$REPO:1.4.2" stable             # add a tag without pulling or pushing layers
+```
+
+## EKS clusters
+
+Uses: [eksctl](https://eksctl.io/), [eks-node-viewer](https://github.com/awslabs/eks-node-viewer)
+
+Add a cluster to your kubeconfig with the AWS CLI, then use kubectl, k9s and stern as usual:
+
+```shell
+aws eks update-kubeconfig --name <cluster> --region eu-west-1
+```
+
+eksctl reads and changes EKS clusters. When Terraform owns the cluster, use it mainly to look; changes made with it drift from the Terraform state.
+
+```shell
+eksctl get cluster --region eu-west-1
+eksctl get nodegroup --cluster <cluster>
+eksctl get addons --cluster <cluster>              # add-on versions and available updates
+eksctl get iamidentitymapping --cluster <cluster>  # who can access the cluster through aws-auth
+```
+
+eks-node-viewer shows each node's requested CPU and memory against its capacity, with the price per node and per hour for the cluster. It shows unused capacity at a glance, for example nodes Karpenter could consolidate.
+
+```shell
+eks-node-viewer
+eks-node-viewer --resources cpu,memory
+eks-node-viewer --node-selector karpenter.sh/nodepool=default
+eks-node-viewer --extra-labels topology.kubernetes.io/zone
+```
+
 ## AKS clusters (kubelogin)
 
 Uses: [kubelogin](https://github.com/Azure/kubelogin)

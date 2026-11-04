@@ -75,13 +75,15 @@ to them. To take tools out of those lists again, name them in
 
 ```yaml
 software_tasks_include:
-  - azurecli
-  - az-account-switcher
+  - azure-tools # azurecli and az-account-switcher
+  - stern # one tool of kubernetes-tools
 ```
 
 ```shell
 PROFILE=slim IMAGE=proveasio:slim-az docker buildx bake
 ```
+
+A [bundle](../roles/10-software.md#bundles) name adds back all its tools.
 
 These keys only remove names from the excludes. They do not limit the build
 to the named tools. The build stops on a name that is not a task and prints
@@ -91,7 +93,8 @@ same file works with every profile. The keys work only in Docker builds.
 Add these tools back together:
 
 - `sdkman` in both `software_tasks_include` and `config_tasks_include`,
-- `azurecli` and `az-account-switcher`.
+- `azurecli` and `az-account-switcher` (the `azure-tools` bundle),
+- `tenv` with `terraform`, `tofu` or `terragrunt`, which tenv installs.
 
 To add a tool to an image you already built, see
 [Updating tools in a built image](./build#updating-tools-in-a-built-image).

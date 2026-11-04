@@ -67,12 +67,14 @@ A short summary of the included tools. For details see the [documentation](https
   - [kubectl](https://kubernetes.io/docs/reference/kubectl/) with [kubecolor](https://github.com/kubecolor/kubecolor) and [kubeswitch](https://github.com/danielfoehrKn/kubeswitch)
   - [k9s](https://github.com/derailed/k9s), [kind](https://kind.sigs.k8s.io/), [Helm](https://github.com/helm/helm) with [helm-unittest](https://github.com/helm-unittest/helm-unittest)
   - [kubeconform](https://github.com/yannh/kubeconform), [dyff](https://github.com/homeport/dyff)
+  - [stern](https://github.com/stern/stern) (multi-pod logs), [crane](https://github.com/google/go-containerregistry) (registry CLI)
   - [Argo CD CLI](https://github.com/argoproj/argo-cd) and [Argonaut](https://github.com/darksworm/argonaut)
 
 - **Infrastructure as code and cloud:**
-  - [Terraform](https://github.com/hashicorp/terraform), [OpenTofu](https://github.com/opentofu/opentofu), [Terragrunt](https://github.com/gruntwork-io/terragrunt)
+  - [Terraform](https://github.com/hashicorp/terraform), [OpenTofu](https://github.com/opentofu/opentofu), [Terragrunt](https://github.com/gruntwork-io/terragrunt), versioned per repository by [tenv](https://github.com/tofuutils/tenv)
+  - [TFLint](https://github.com/terraform-linters/tflint), [terraform-docs](https://github.com/terraform-docs/terraform-docs), [spacectl](https://github.com/spacelift-io/spacectl) (Spacelift)
   - [Azure CLI](https://learn.microsoft.com/en-us/cli/azure/) with [kubelogin](https://github.com/Azure/kubelogin) and [az-account-switcher](https://github.com/abij/az-account-switcher)
-  - [AWS CLI](https://github.com/aws/aws-cli)
+  - [AWS CLI](https://github.com/aws/aws-cli) with [Granted](https://github.com/fwdcloudsec/granted), the [Session Manager plugin](https://github.com/aws/session-manager-plugin), [taws](https://github.com/huseyinbabal/taws), [eksctl](https://github.com/eksctl-io/eksctl), [eks-node-viewer](https://github.com/awslabs/eks-node-viewer) and [Steampipe](https://github.com/turbot/steampipe)
 
 - **Neovim:** replaces Vim. The default config, based on [AstroNvim](https://astronvim.com/), makes it a full IDE with language servers, Git tools and AI assistants. You can use your own config instead.
 

@@ -44,11 +44,14 @@ For particular functionality (`software` + `config`) below tags are available:
 - azurecli
 - bottom
 - ccmux
+- crane
 - curlie
 - diff-so-fancy
 - docker
 - dry
 - dyff
+- eks-node-viewer
+- eksctl
 - eza
 - fd
 - fx
@@ -56,6 +59,7 @@ For particular functionality (`software` + `config`) below tags are available:
 - git
 - git-fuzzy
 - gita
+- granted
 - gvm
 - helm
 - helm-unittest
@@ -81,10 +85,18 @@ For particular functionality (`software` + `config`) below tags are available:
 - rust
 - rvm
 - sdkman
+- session-manager-plugin
 - shellcheck
 - software_packages
+- spacectl
+- steampipe
+- stern
+- taws
+- tenv
 - terraform
+- terraform-docs
 - terragrunt
+- tflint
 - tmux
 - tofu
 - uv
@@ -93,6 +105,27 @@ For particular functionality (`software` + `config`) below tags are available:
 - yq
 - zoxide
 - zsh
+
+## Bundles
+
+A bundle tag selects all the tools for one purpose. Combine it with
+`--skip-tags` to leave single tools out:
+
+```shell
+ansible-playbook -i inventory.yml setup-ubuntu.yml --tags "aws-tools,terraform-tools" --skip-tags "tofu" -K
+```
+
+| Bundle | Tools |
+|---|---|
+| `aws-tools` | awscli, granted, session-manager-plugin, taws, eksctl, eks-node-viewer, steampipe |
+| `azure-tools` | azurecli, az-account-switcher |
+| `kubernetes-tools` | kubectl, kubecolor, kubeswitch, k9s, helm, helm-unittest, kubeconform, dyff, kind, stern, crane |
+| `terraform-tools` | tenv, terraform, tofu, terragrunt, tflint, terraform-docs |
+| `argocd-tools` | argocd, argonaut |
+| `spacelift-tools` | spacectl |
+
+Bundle names also work in `software_tasks_exclude`, see
+[Excluding code](./40-excludes.md#bundles).
 
 There is also `versions`, which re-resolves every tool version and prunes old
 installation directories.
