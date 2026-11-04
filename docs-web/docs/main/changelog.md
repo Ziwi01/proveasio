@@ -18,12 +18,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 
 
-## [latest] - 2026-10-28
+
+## [latest] - 2026-11-04
 ### :sparkles: New Features
-- [`82ca69b`](https://github.com/Ziwi01/proveasio/commit/82ca69b9fe36f4fb2127eae8b4c12456ad753265) - Add rsync to default apt packages *(commit by [@Ziwi01](https://github.com/Ziwi01))*
+- [`ab01ed0`](https://github.com/Ziwi01/proveasio/commit/ab01ed0acf94927d17040741cb14184a7e3ce961) - **opencode**: Add Homebrew install option for firewall-blocked networks *(commit by [@Ziwi01](https://github.com/Ziwi01))*
+- [`776ad84`](https://github.com/Ziwi01/proveasio/commit/776ad8450a61b24c16c7a4a2ca82a700272c2b39) - **software**: Add tool bundles *(commit by [@Ziwi01](https://github.com/Ziwi01))*
+- [`89a0410`](https://github.com/Ziwi01/proveasio/commit/89a04100eb5e265c7891d09d1e04f4166ccac103) - **software**: Add AWS, Kubernetes and IaC tools *(commit by [@Ziwi01](https://github.com/Ziwi01))*
+- [`03ad545`](https://github.com/Ziwi01/proveasio/commit/03ad54599e904e6b734a738533c72b3be2f75e83) - **software**: Manage Terraform tools with tenv *(commit by [@Ziwi01](https://github.com/Ziwi01))*
 
 ### :bug: Bug Fixes
-- [`d1db30c`](https://github.com/Ziwi01/proveasio/commit/d1db30c1a1bd9ac48863ec10ce15440cf0e16380) - **config**: Improve SSH/TMUX window renaming logic *(commit by [@Ziwi01](https://github.com/Ziwi01))*
-- [`f267e1b`](https://github.com/Ziwi01/proveasio/commit/f267e1b4ad56098fab2debecc1db93850d5bdb42) - **docker**: Stop SIGPIPE from un-excluding tasks in test.sh *(commit by [@Ziwi01](https://github.com/Ziwi01))*
+- [`7366b5f`](https://github.com/Ziwi01/proveasio/commit/7366b5f6f53abab2c4ddba476bddcc997d5527fc) - **opencode**: Handle undefined opencode_version in task names *(commit by [@Ziwi01](https://github.com/Ziwi01))*
 
-[latest]: https://github.com/Ziwi01/proveasio/compare/v5.1.0...latest
+[latest]: https://github.com/Ziwi01/proveasio/compare/v5.1.1...latest
