@@ -27,7 +27,8 @@ single exclude removes the path. `/usr` holds the Ubuntu packages, and
 
 To make the image smaller, exclude what you do not need. See
 [Turning tools off](./customize#turning-tools-off). The slim image leaves out
-the largest tools that nothing else needs and is about 5.7 GB. See
+the largest tools that nothing else needs, and the cloud, Kubernetes and IaC
+tools, and is about 6.1 GB. See
 [Slim image](./build#slim-image).
 
 ## Other limitations

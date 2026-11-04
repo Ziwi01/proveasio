@@ -44,14 +44,16 @@ adds about 5 minutes. Later builds reuse that layer.
 
 ## Slim image
 
-The slim image leaves out SDKMAN (Java, Gradle, Groovy, Maven), Azure CLI,
-az-account-switcher, Rust, Puppet and AWS CLI:
+The slim image leaves out SDKMAN (Java, Gradle, Groovy, Maven), Rust, Puppet
+and the cloud, Kubernetes and IaC tools: the `aws-tools`, `azure-tools`,
+`kubernetes-tools`, `terraform-tools`, `argocd-tools` and `spacelift-tools`
+[bundles](../roles/10-software.md#bundles):
 
 ```shell
 PROFILE=slim USER_UID=$(id -u) USER_GID=$(id -g) docker buildx bake
 ```
 
-It is loaded as `proveasio:slim` and is about 5.7 GB. It keeps nvm, gvm and
+It is loaded as `proveasio:slim` and is about 6.1 GB. It keeps nvm, gvm and
 rvm, because the default Neovim config installs language servers with npm, Go
 and gem, and Neovim would otherwise try to install them again on every start.
 The Java language server is installed but does not start, because the image
@@ -66,33 +68,39 @@ Build the images one at a time. Two builds at once need twice the memory.
 ## Full and slim compared
 
 What each image contains, next to a native install. The full image is about
-8.5 GB and the slim image about 5.7 GB (measured with the defaults; sizes
+8.5 GB and the slim image about 6.1 GB (measured with the defaults; sizes
 change with the tool versions). Both images are built from
 `docker/profile.yml`; the slim image also applies `docker/profile-slim.yml`.
 
 ✅ included · ⚠️ included with a limitation · ❌ not included
 
+🔒 Proveasio needs it to run or re-run. **Enforced** rows cannot be excluded
+(the playbook stops). The others can be, but then a re-run of Proveasio, or the
+part named in the note, breaks. What installs what is in
+[Dependencies](../roles/10-software.md#dependencies).
+
 | | Native install | Full image | Slim image |
 |---|:---:|:---:|:---:|
-| **Shell:** zsh, oh-my-zsh, powerlevel10k, fzf, zoxide, eza, bat, ripgrep, fd, pay-respects | ✅ | ✅ | ✅ |
+| **Shell:** zsh, oh-my-zsh, powerlevel10k 🔒 enforced; fzf, zoxide, eza, bat, ripgrep, fd, pay-respects | ✅ | ✅ | ✅ |
 | **Terminal:** tmux with plugins, tmuxp | ✅ | ✅ | ✅ |
-| **Data and system tools:** jq, yq, fx, curlie, htop, bottom, gdu, ShellCheck, keychain, rsync | ✅ | ✅ | ✅ |
-| **Git:** git, lazygit (with AI commits), diff-so-fancy, git-fuzzy, gita, lsg, hunk, revdiff, gh | ✅ | ✅ | ✅ |
+| **Data and system tools:** jq, curl 🔒 enforced (`packages`), yq 🔒 enforced; fx, curlie, htop, bottom, gdu, ShellCheck, keychain, rsync | ✅ | ✅ | ✅ |
+| **Git:** git 🔒 (to update Proveasio); lazygit (with AI commits), diff-so-fancy, git-fuzzy, gita, lsg, hunk, revdiff, gh | ✅ | ✅ | ✅ |
 | **Neovim** with the AstroNvim-based config and language servers | ✅ AppImage | ✅ tarball | ⚠️ tarball [^java] |
-| **Python** (pyenv, pyenv-virtualenv, uv) | ✅ | ✅ | ✅ |
-| **Node** (nvm, LTS) | ✅ | ✅ | ✅ |
-| **Go** (gvm) | ✅ | ✅ | ✅ |
-| **Ruby** (rvm) | ✅ | ✅ | ✅ |
-| **Ansible**, ansible-lint, Ansible language server | ✅ | ✅ | ✅ |
+| **Python** (pyenv, pyenv-virtualenv) 🔒 (runs Ansible), uv | ✅ | ✅ | ✅ |
+| **Node** (nvm, LTS) 🔒 (Ansible language server, Neovim language servers) | ✅ | ✅ | ✅ |
+| **Go** (gvm), **Ruby** (rvm) 🔒 (Neovim language servers) | ✅ | ✅ | ✅ |
+| **Ansible** 🔒 (runs Proveasio), ansible-lint, Ansible language server | ✅ | ✅ | ✅ |
 | **Java, Gradle, Groovy, Maven** (SDKMAN!) | ✅ | ✅ | ❌ |
 | **Rust** (rustup, Cargo) | ✅ | ✅ | ❌ |
 | **Puppet:** gems, PDK, Puppet Editor Services | ✅ | ✅ | ❌ |
 | **Docker** | ✅ engine and client | ⚠️ client only [^docker] | ⚠️ client only [^docker] |
-| **dry**, **kind** | ✅ | ⚠️ need the host engine [^docker] | ⚠️ need the host engine [^docker] |
-| **Kubernetes:** kubectl, kubecolor, kubeswitch, k9s, Helm, helm-unittest, kubeconform, dyff, Argo CD CLI, Argonaut | ✅ | ✅ | ✅ |
-| **IaC:** Terraform, OpenTofu, Terragrunt | ✅ | ✅ | ✅ |
-| **Azure CLI**, kubelogin, az-account-switcher | ✅ | ✅ | ❌ |
-| **AWS CLI** | ✅ | ✅ | ❌ |
+| **dry** | ✅ | ⚠️ needs the host engine [^docker] | ⚠️ needs the host engine [^docker] |
+| **Kubernetes** (`kubernetes-tools`): kubectl, kubecolor, kubeswitch, k9s, Helm, helm-unittest, kubeconform, dyff, kind [^docker], stern, crane | ✅ | ✅ | ❌ |
+| **Argo CD** (`argocd-tools`): Argo CD CLI, Argonaut | ✅ | ✅ | ❌ |
+| **IaC** (`terraform-tools`): tenv with Terraform, OpenTofu, Terragrunt; TFLint, terraform-docs | ✅ | ✅ | ❌ |
+| **Spacelift** (`spacelift-tools`): spacectl | ✅ | ✅ | ❌ |
+| **Azure** (`azure-tools`): Azure CLI, kubelogin, az-account-switcher | ✅ | ✅ | ❌ |
+| **AWS** (`aws-tools`): AWS CLI, Granted, Session Manager plugin, taws, eksctl, eks-node-viewer, Steampipe | ✅ | ✅ | ❌ |
 | **opencode** | ✅ | ✅ | ✅ |
 | **opencode-config** (shared OpenCode config) | ✅ | ✅ | ✅ |
 | **ccmux** | ✅ | ⚠️ no notifications [^wsl] | ⚠️ no notifications [^wsl] |

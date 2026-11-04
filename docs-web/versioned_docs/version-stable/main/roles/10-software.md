@@ -82,25 +82,100 @@ Python itself is installed by `prepare-ubuntu.sh` with [pyenv](https://github.co
 | `dyff` | [dyff](https://github.com/homeport/dyff) - YAML diff with Kubernetes-aware output |
 | `argocd` | [Argo CD CLI](https://github.com/argoproj/argo-cd) with zsh completion |
 | `argonaut` | [Argonaut](https://github.com/darksworm/argonaut) - terminal UI for Argo CD; uses the session saved by `argocd login` |
+| `stern` | [stern](https://github.com/stern/stern) - tail logs of many pods and containers at once, filtered by name regex or label |
+| `crane` | [crane](https://github.com/google/go-containerregistry/blob/main/cmd/crane/doc/crane.md) - container registry CLI: list tags, copy images between registries, read digests and manifests without pulling |
 
 ## Infrastructure as code and cloud
 
 | Name | Installs |
 |---|---|
-| `terraform` | [Terraform](https://github.com/hashicorp/terraform) |
-| `tofu` | [OpenTofu](https://github.com/opentofu/opentofu) |
-| `terragrunt` | [Terragrunt](https://github.com/gruntwork-io/terragrunt) |
+| `tenv` | [tenv](https://github.com/tofuutils/tenv) - version manager for Terraform, OpenTofu and Terragrunt. Links its proxies (`terraform`, `tofu`, `terragrunt`, `terramate`, `tf`, `atmos`) into `~/.local/bin`. The tasks below need it. |
+| `terraform` | [Terraform](https://github.com/hashicorp/terraform), installed with tenv. The repository picks the version. See [Terraform, OpenTofu and Terragrunt versions](#terraform-opentofu-and-terragrunt-versions). |
+| `tofu` | [OpenTofu](https://github.com/opentofu/opentofu), installed with tenv, like `terraform` |
+| `terragrunt` | [Terragrunt](https://github.com/gruntwork-io/terragrunt), installed with tenv, like `terraform` |
+| `tflint` | [TFLint](https://github.com/terraform-linters/tflint) - Terraform linter; provider rulesets are set per project in `.tflint.hcl` |
+| `terraform-docs` | [terraform-docs](https://github.com/terraform-docs/terraform-docs) - generates the inputs and outputs documentation of a module |
+| `spacectl` | [spacectl](https://github.com/spacelift-io/spacectl) - Spacelift CLI: runs, logs, local previews |
 | `azurecli` | [Azure CLI](https://learn.microsoft.com/en-us/cli/azure/) and [kubelogin](https://github.com/Azure/kubelogin) |
 | `az-account-switcher` | [az-account-switcher](https://github.com/abij/az-account-switcher) (`az-switch`) |
 | `awscli` | [AWS CLI](https://github.com/aws/aws-cli) v2 |
+| `granted` | [Granted](https://github.com/fwdcloudsec/granted) (`assume`) - switch AWS profiles and SSO roles in the current shell, open the console for a role |
+| `session-manager-plugin` | [Session Manager plugin](https://github.com/aws/session-manager-plugin) - lets `aws ssm start-session` open shells and port forwards without SSH. Unpacked from AWS's `.deb`, no `sudo`. |
+| `taws` | [taws](https://github.com/huseyinbabal/taws) - terminal UI for AWS resources, in the style of k9s |
+| `eksctl` | [eksctl](https://github.com/eksctl-io/eksctl) - CLI for Amazon EKS clusters, node groups, add-ons and IAM service accounts |
+| `eks-node-viewer` | [eks-node-viewer](https://github.com/awslabs/eks-node-viewer) - live node usage against requests, with cost per node |
+| `steampipe` | [Steampipe](https://github.com/turbot/steampipe) - SQL queries against cloud APIs. Plugins are not installed: run `steampipe plugin install aws`. |
+
+### Terraform, OpenTofu and Terragrunt versions
+
+The repository decides the version. [tenv](https://tofuutils.github.io/tenv/)'s proxies look for it in this order, first match wins:
+
+1. an environment variable (`TFENV_TERRAFORM_VERSION`, `TOFUENV_TOFU_VERSION`, `TG_VERSION`)
+2. a version file in the directory or a parent: `.terraform-version` (or `.tfswitchrc`), `.opentofu-version`, `.terragrunt-version`, `.tool-versions`
+3. a version constraint in `terragrunt.hcl` or `root.hcl`
+4. the global default in `~/.tenv/<Terraform|OpenTofu|Terragrunt>/version`, written by `tenv tf use <version>`
+5. the newest installed version that satisfies `required_version`
+
+Proveasio installs the version from `github_packages` (`latest` by default) and does **not** write a global default: it would win over `required_version`. Outside a repository, the newest installed version runs. `.zshrc` sets `TENV_AUTO_INSTALL=true`, so a version a repository asks for is downloaded on first use. Proveasio never removes versions tenv installed; use `tenv tf uninstall <version>`.
+
+Before tenv, Proveasio unpacked these tools into `~/.local/opt/<tool>-<version>`. The first run with tenv deletes those directories and points `~/.local/bin/terraform`, `tofu` and `terragrunt` at tenv's proxies. Pins in `github_packages` keep working.
+
+Excluding `tofu` or `terragrunt` skips installing a version, but tenv's proxy for it stays on the `PATH`. With `TENV_AUTO_INSTALL`, calling it installs a version.
 
 ## AI coding agents
 
 | Name | Installs |
 |---|---|
-| `opencode` | [opencode](https://github.com/anomalyco/opencode) - terminal AI coding agent. Installs v2 by default; pin a 1.x version to keep v1 (see [opencode v1 and v2](../customization/20-versions.md#opencode-v1-and-v2)). |
+| `opencode` | [opencode](https://github.com/anomalyco/opencode) - terminal AI coding agent. Installs v2 by default; pin a 1.x version to keep v1 (see [opencode v1 and v2](../customization/20-versions.md#opencode-v1-and-v2)). Can also install with a preinstalled Homebrew (`opencode_package: brew`, see [Install opencode with Homebrew](../customization/20-versions.md#install-opencode-with-homebrew)). |
 | `ccmux` | [ccmux](https://github.com/epilande/ccmux) - run and track AI coding agents (opencode, Claude Code, Codex and more) in tmux, with live session states, a sidebar and desktop notifications |
 | `wsl-notify-send` | [wsl-notify-send](https://github.com/stuartleeks/wsl-notify-send) - bridges ccmux notifications to Windows toasts on WSL |
+
+## Bundles
+
+A bundle groups the tools for one purpose. Its name works as a tag (`--tags terraform-tools`) and as an exclude name (`software_tasks_exclude: [terraform-tools]`). You can still leave out single tools of a selected bundle:
+
+```shell
+ansible-playbook -i inventory.yml setup-ubuntu.yml --tags terraform-tools --skip-tags tofu -K
+```
+
+```yaml
+# ansible/vars/overrides.yml: everything AWS, except taws
+software_tasks_exclude:
+  - azure-tools
+  - taws
+```
+
+| Bundle | Tools |
+|---|---|
+| `aws-tools` | `awscli`, `granted`, `session-manager-plugin`, `taws`, `eksctl`, `eks-node-viewer`, `steampipe` |
+| `azure-tools` | `azurecli`, `az-account-switcher` |
+| `kubernetes-tools` | `kubectl`, `kubecolor`, `kubeswitch`, `k9s`, `helm`, `helm-unittest`, `kubeconform`, `dyff`, `kind`, `stern`, `crane` |
+| `terraform-tools` | `tenv`, `terraform`, `tofu`, `terragrunt`, `tflint`, `terraform-docs` |
+| `argocd-tools` | `argocd`, `argonaut` |
+| `spacelift-tools` | `spacectl` |
+
+Bundles are defined in `software_bundles` in `ansible/roles/software/vars/main.yml`. Each member's include in `tasks/main.yml` carries the bundle tag; the playbook stops at the start if a member is not an include name.
+
+## Dependencies
+
+What a tool needs, and what it installs besides itself. A tool listed under "Needs" must be installed too, by the same run or an earlier one.
+
+| Tool | Needs | Also installs |
+|---|---|---|
+| every GitHub tool | `packages` (`curl`, `jq`, `unzip`), `yq` (version receipt) | |
+| `zsh` | `packages` | oh-my-zsh plugins, powerlevel10k |
+| `ansible` | Python (`prepare-ubuntu.sh`), `nvm` | ansible-lint, Ansible Language Server (npm) |
+| `neovim` config | `nvm`, `gvm`, `rvm` | language servers and tools through Mason (npm, go and gem packages) |
+| `puppet` | `rvm` | puppet, puppet-lint, PDK, Puppet Editor Services |
+| `helm-unittest` | `helm` | |
+| `azurecli` | | kubelogin |
+| `terraform`, `tofu`, `terragrunt` | `tenv` | |
+| `tenv` | | proxies: `terraform`, `tofu`, `terragrunt`, `terramate`, `tf`, `atmos` |
+| `granted` | | `assume`, `assumego` |
+| `argonaut` | `argocd` login (`argocd login`) | |
+| `session-manager-plugin` | `awscli` to be useful | |
+| `ccmux` | `tmux` | |
+| `wsl-notify-send` | WSL | |
 
 ## Configuration
 

@@ -29,6 +29,23 @@ Excluding a tool does not uninstall it if an earlier run installed it. When you 
 
 `packages`, `yq` and `zsh` in `software_tasks_exclude`, and `zsh` in `config_tasks_exclude`, are required. The playbook stops at the start when an overrides file excludes one of them.
 
+## Bundles
+
+A [bundle](../roles/10-software.md#bundles) name in `software_tasks_exclude`
+excludes all its tools. List single tools next to it, or exclude only some
+tools of a bundle:
+
+```yaml
+software_tasks_exclude:
+  - azure-tools # azurecli and az-account-switcher
+  - spacelift-tools
+  - taws # one tool of aws-tools
+```
+
+In a Docker build, a bundle name in `software_tasks_include` brings the whole
+bundle back, and a tool name brings back that tool only. See
+[Building the image](../docker/10-build.md#slim-image).
+
 ## Old versions cleanup
 
 Old versioned installs under `~/.local/opt` are removed automatically. This can

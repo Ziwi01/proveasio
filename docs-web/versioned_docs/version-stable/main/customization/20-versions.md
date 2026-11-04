@@ -63,6 +63,33 @@ v2 reads and migrates the v1 sessions in `~/.local/share/opencode/opencode.db`.
 [`ocs`](../../usage/20-terminal.md#browse-opencode-sessions-with-ocs) works with
 both.
 
+## Install opencode with Homebrew
+
+If a firewall blocks `opencode.ai`, the default install fails, because both the
+version lookup and the download go there. The Homebrew `opencode` formula is
+built from the GitHub source and downloaded from `ghcr.io`, so it avoids
+opencode.ai. Set this in `ansible/vars/overrides.yml`:
+
+```yaml
+opencode_package: brew
+```
+
+:::warning[Homebrew must be preinstalled]
+Proveasio does not install Homebrew. Install it first, see
+[brew.sh](https://brew.sh). The playbook looks for `brew` on `PATH`, in
+`/home/linuxbrew/.linuxbrew` and in `~/.linuxbrew`, and fails if it finds none.
+:::
+
+With `brew`:
+
+- Every run upgrades opencode to the newest version in Homebrew. Pins are not
+  supported: a pinned `github_packages.opencode` fails the run.
+- `~/.local/bin/opencode` links to Homebrew's binary.
+- `opencode_baseline` has no effect.
+- Old versions in `~/.local/opt/opencode-*` are kept, so switching back to
+  `opencode_package: tarball` reuses them.
+- The Docker image does not support it (it has no Homebrew).
+
 ## GitHub API rate limits
 
 With versions set to `latest`, each run queries the GitHub API to resolve the newest release for ~30+ tools. **Unauthenticated** GitHub API requests are limited to **60 per hour** (shared across everyone on your public IP), so running the playbook a few times in a row can exhaust it and fail with:
