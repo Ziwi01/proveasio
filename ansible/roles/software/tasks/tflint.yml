@@ -1,0 +1,88 @@
+# TFLint - Terraform linter. Plugins (like the AWS ruleset) are set per
+# project in .tflint.hcl and installed with `tflint --init`.
+# Source: https://github.com/terraform-linters/tflint
+---
+- name: "[TFLint] Get Github URL for proper version"
+  vars:
+    app: tflint
+    repo: terraform-linters/tflint
+    version_query: gh_curl https://api.github.com/repos/terraform-linters/tflint/releases/latest | jq .tag_name -r | cut -f2 -d'v'
+    github_uri: "v{{ tflint_version }}/tflint_linux_amd64.zip"
+  ansible.builtin.include_role:
+    name: common
+    tasks_from: github_version.yml
+    apply:
+      tags:
+        - versions
+  tags:
+    - versions
+
+- name: "[TFLint] Check if TFLint {{ tflint_version }} is installed"
+  ansible.builtin.stat:
+    path: "{{ ansible_facts['env']['HOME'] }}/.local/opt/tflint-{{ tflint_version }}"
+  register: tflint_dir
+  tags:
+    - versions
+
+- name: "Installation"
+  when: not tflint_dir.stat.exists
+  block:
+    - name: "[TFLint] Create directory {{ ansible_facts['env']['HOME'] }}/.local/opt/tflint-{{ tflint_version }}"
+      ansible.builtin.file:
+        path: "{{ ansible_facts['env']['HOME'] }}/.local/opt/tflint-{{ tflint_version }}"
+        state: directory
+        mode: "0755"
+
+    - name: "[TFLint] Download TFLint {{ tflint_version }}"
+      ansible.builtin.get_url:
+        url: "{{ tflint_url }}"
+        dest: "/tmp/tflint-{{ tflint_version }}.zip"
+        mode: "0644"
+
+    - name: "[TFLint] Unpack TFLint archive"
+      ansible.builtin.unarchive:
+        src: "/tmp/tflint-{{ tflint_version }}.zip"
+        dest: "{{ ansible_facts['env']['HOME'] }}/.local/opt/tflint-{{ tflint_version }}"
+
+    - name: "[TFLint] Cleanup archive"
+      ansible.builtin.file:
+        path: "/tmp/tflint-{{ tflint_version }}.zip"
+        state: absent
+
+- name: "[TFLint] Link {{ tflint_version }} binary to ~/.local/bin/tflint"
+  ansible.builtin.file:
+    src: "{{ ansible_facts['env']['HOME'] }}/.local/opt/tflint-{{ tflint_version }}/tflint"
+    dest: "{{ ansible_facts['env']['HOME'] }}/.local/bin/tflint"
+    state: link
+    force: true
+
+- name: "[TFLint] Save used version"
+  vars:
+    app: tflint
+    target_version:
+      github_packages:
+        tflint: "{{ tflint_version }}"
+    yq_query: ".github_packages.tflint = \"{{ tflint_version }}\""
+  ansible.builtin.include_role:
+    name: common
+    tasks_from: save_version.yml
+    apply:
+      tags:
+        - versions
+  tags:
+    - versions
+
+- name: "[TFLint] Cleanup old versions"
+  vars:
+    app: tflint
+    keep: "{{ tflint_version }}"
+  ansible.builtin.include_role:
+    name: common
+    tasks_from: cleanup_versions.yml
+    apply:
+      tags:
+        - versions
+        - cleanup
+  tags:
+    - versions
+    - cleanup

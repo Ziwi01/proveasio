@@ -1,0 +1,87 @@
+# crane - container registry CLI (google/go-containerregistry)
+# Source: https://github.com/google/go-containerregistry
+---
+- name: "[crane] Get Github URL for proper version"
+  vars:
+    app: crane
+    repo: google/go-containerregistry
+    version_query: gh_curl https://api.github.com/repos/google/go-containerregistry/releases/latest | jq .tag_name -r | cut -f2 -d'v'
+    github_uri: "v{{ crane_version }}/go-containerregistry_Linux_x86_64.tar.gz"
+  ansible.builtin.include_role:
+    name: common
+    tasks_from: github_version.yml
+    apply:
+      tags:
+        - versions
+  tags:
+    - versions
+
+- name: "[crane] Check if crane {{ crane_version }} is installed"
+  ansible.builtin.stat:
+    path: "{{ ansible_facts['env']['HOME'] }}/.local/opt/crane-{{ crane_version }}"
+  register: crane_dir
+  tags:
+    - versions
+
+- name: "Installation"
+  when: not crane_dir.stat.exists
+  block:
+    - name: "[crane] Create directory {{ ansible_facts['env']['HOME'] }}/.local/opt/crane-{{ crane_version }}"
+      ansible.builtin.file:
+        path: "{{ ansible_facts['env']['HOME'] }}/.local/opt/crane-{{ crane_version }}"
+        state: directory
+        mode: "0755"
+
+    - name: "[crane] Download crane {{ crane_version }}"
+      ansible.builtin.get_url:
+        url: "{{ crane_url }}"
+        dest: "/tmp/crane-{{ crane_version }}.tar.gz"
+        mode: "0644"
+
+    - name: "[crane] Unpack crane archive"
+      ansible.builtin.unarchive:
+        src: "/tmp/crane-{{ crane_version }}.tar.gz"
+        dest: "{{ ansible_facts['env']['HOME'] }}/.local/opt/crane-{{ crane_version }}"
+
+    - name: "[crane] Cleanup archive"
+      ansible.builtin.file:
+        path: "/tmp/crane-{{ crane_version }}.tar.gz"
+        state: absent
+
+- name: "[crane] Link {{ crane_version }} binary to ~/.local/bin/crane"
+  ansible.builtin.file:
+    src: "{{ ansible_facts['env']['HOME'] }}/.local/opt/crane-{{ crane_version }}/crane"
+    dest: "{{ ansible_facts['env']['HOME'] }}/.local/bin/crane"
+    state: link
+    force: true
+
+- name: "[crane] Save used version"
+  vars:
+    app: crane
+    target_version:
+      github_packages:
+        crane: "{{ crane_version }}"
+    yq_query: ".github_packages.crane = \"{{ crane_version }}\""
+  ansible.builtin.include_role:
+    name: common
+    tasks_from: save_version.yml
+    apply:
+      tags:
+        - versions
+  tags:
+    - versions
+
+- name: "[crane] Cleanup old versions"
+  vars:
+    app: crane
+    keep: "{{ crane_version }}"
+  ansible.builtin.include_role:
+    name: common
+    tasks_from: cleanup_versions.yml
+    apply:
+      tags:
+        - versions
+        - cleanup
+  tags:
+    - versions
+    - cleanup

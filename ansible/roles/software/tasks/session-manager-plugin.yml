@@ -1,0 +1,94 @@
+# AWS Session Manager plugin - lets `aws ssm start-session` open shells and
+# port forwards to EC2 instances and EKS nodes. The AWS CLI finds it on PATH.
+# AWS publishes it as a .deb only; the binary is unpacked from it without sudo.
+# Sources:
+#   - https://docs.aws.amazon.com/systems-manager/latest/userguide/session-manager-working-with-install-plugin.html
+#   - https://github.com/aws/session-manager-plugin
+---
+- name: "[session-manager-plugin] Get URL for proper version"
+  vars:
+    app: session_manager_plugin
+    version_query: gh_curl https://api.github.com/repos/aws/session-manager-plugin/releases/latest | jq .tag_name -r | cut -f2 -d'v'
+    artifact_url: "https://s3.amazonaws.com/session-manager-downloads/plugin/{{ session_manager_plugin_version }}/ubuntu_64bit/session-manager-plugin.deb"
+  ansible.builtin.include_role:
+    name: common
+    tasks_from: github_version.yml
+    apply:
+      tags:
+        - versions
+  tags:
+    - versions
+
+- name: "[session-manager-plugin] Check if session-manager-plugin {{ session_manager_plugin_version }} is installed"
+  ansible.builtin.stat:
+    path: "{{ ansible_facts['env']['HOME'] }}/.local/opt/session-manager-plugin-{{ session_manager_plugin_version }}"
+  register: session_manager_plugin_dir
+  tags:
+    - versions
+
+- name: "Installation"
+  when: not session_manager_plugin_dir.stat.exists
+  block:
+    - name: "[session-manager-plugin] Download session-manager-plugin {{ session_manager_plugin_version }}"
+      ansible.builtin.get_url:
+        url: "{{ session_manager_plugin_url }}"
+        dest: "/tmp/session-manager-plugin-{{ session_manager_plugin_version }}.deb"
+        mode: "0644"
+
+    # Unpacked into a temporary directory first, so a failed unpack does not
+    # leave a versioned directory that the stat check above would accept.
+    - name: "[session-manager-plugin] Unpack the binary from the .deb"
+      ansible.builtin.shell: |
+        set -e -o pipefail
+        tmp="$(mktemp -d)"
+        trap 'rm -rf "$tmp"' EXIT
+        dpkg-deb --fsys-tarfile "/tmp/session-manager-plugin-{{ session_manager_plugin_version }}.deb" \
+          | tar -xf - -C "$tmp" --strip-components=4 usr/local/sessionmanagerplugin/bin/session-manager-plugin
+        mkdir -p "{{ ansible_facts['env']['HOME'] }}/.local/opt/session-manager-plugin-{{ session_manager_plugin_version }}"
+        mv "$tmp/session-manager-plugin" "{{ ansible_facts['env']['HOME'] }}/.local/opt/session-manager-plugin-{{ session_manager_plugin_version }}/"
+      args:
+        executable: /bin/bash
+        creates: "{{ ansible_facts['env']['HOME'] }}/.local/opt/session-manager-plugin-{{ session_manager_plugin_version }}/session-manager-plugin"
+
+    - name: "[session-manager-plugin] Cleanup .deb file"
+      ansible.builtin.file:
+        path: "/tmp/session-manager-plugin-{{ session_manager_plugin_version }}.deb"
+        state: absent
+
+- name: "[session-manager-plugin] Link {{ session_manager_plugin_version }} binary to ~/.local/bin/session-manager-plugin"
+  ansible.builtin.file:
+    src: "{{ ansible_facts['env']['HOME'] }}/.local/opt/session-manager-plugin-{{ session_manager_plugin_version }}/session-manager-plugin"
+    dest: "{{ ansible_facts['env']['HOME'] }}/.local/bin/session-manager-plugin"
+    state: link
+    force: true
+
+- name: "[session-manager-plugin] Save used version"
+  vars:
+    app: session_manager_plugin
+    target_version:
+      github_packages:
+        session_manager_plugin: "{{ session_manager_plugin_version }}"
+    yq_query: ".github_packages.session_manager_plugin = \"{{ session_manager_plugin_version }}\""
+  ansible.builtin.include_role:
+    name: common
+    tasks_from: save_version.yml
+    apply:
+      tags:
+        - versions
+  tags:
+    - versions
+
+- name: "[session-manager-plugin] Cleanup old versions"
+  vars:
+    app: session-manager-plugin
+    keep: "{{ session_manager_plugin_version }}"
+  ansible.builtin.include_role:
+    name: common
+    tasks_from: cleanup_versions.yml
+    apply:
+      tags:
+        - versions
+        - cleanup
+  tags:
+    - versions
+    - cleanup

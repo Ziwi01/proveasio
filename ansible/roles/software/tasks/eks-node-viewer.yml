@@ -1,0 +1,77 @@
+# eks-node-viewer - node usage and cost of an EKS cluster
+# Source: https://github.com/awslabs/eks-node-viewer
+---
+- name: "[eks-node-viewer] Get Github URL for proper version"
+  vars:
+    app: eks_node_viewer
+    repo: awslabs/eks-node-viewer
+    version_query: gh_curl https://api.github.com/repos/awslabs/eks-node-viewer/releases/latest | jq .tag_name -r | cut -f2 -d'v'
+    github_uri: "v{{ eks_node_viewer_version }}/eks-node-viewer_Linux_x86_64"
+  ansible.builtin.include_role:
+    name: common
+    tasks_from: github_version.yml
+    apply:
+      tags:
+        - versions
+  tags:
+    - versions
+
+- name: "[eks-node-viewer] Check if eks-node-viewer {{ eks_node_viewer_version }} is installed"
+  ansible.builtin.stat:
+    path: "{{ ansible_facts['env']['HOME'] }}/.local/opt/eks-node-viewer-{{ eks_node_viewer_version }}"
+  register: eks_node_viewer_dir
+  tags:
+    - versions
+
+- name: "Installation"
+  when: not eks_node_viewer_dir.stat.exists
+  block:
+    - name: "[eks-node-viewer] Create directory {{ ansible_facts['env']['HOME'] }}/.local/opt/eks-node-viewer-{{ eks_node_viewer_version }}"
+      ansible.builtin.file:
+        path: "{{ ansible_facts['env']['HOME'] }}/.local/opt/eks-node-viewer-{{ eks_node_viewer_version }}"
+        state: directory
+        mode: "0755"
+
+    - name: "[eks-node-viewer] Download eks-node-viewer {{ eks_node_viewer_version }}"
+      ansible.builtin.get_url:
+        url: "{{ eks_node_viewer_url }}"
+        dest: "{{ ansible_facts['env']['HOME'] }}/.local/opt/eks-node-viewer-{{ eks_node_viewer_version }}/eks-node-viewer"
+        mode: "0755"
+
+- name: "[eks-node-viewer] Link {{ eks_node_viewer_version }} binary to ~/.local/bin/eks-node-viewer"
+  ansible.builtin.file:
+    src: "{{ ansible_facts['env']['HOME'] }}/.local/opt/eks-node-viewer-{{ eks_node_viewer_version }}/eks-node-viewer"
+    dest: "{{ ansible_facts['env']['HOME'] }}/.local/bin/eks-node-viewer"
+    state: link
+    force: true
+
+- name: "[eks-node-viewer] Save used version"
+  vars:
+    app: eks_node_viewer
+    target_version:
+      github_packages:
+        eks_node_viewer: "{{ eks_node_viewer_version }}"
+    yq_query: ".github_packages.eks_node_viewer = \"{{ eks_node_viewer_version }}\""
+  ansible.builtin.include_role:
+    name: common
+    tasks_from: save_version.yml
+    apply:
+      tags:
+        - versions
+  tags:
+    - versions
+
+- name: "[eks-node-viewer] Cleanup old versions"
+  vars:
+    app: eks-node-viewer
+    keep: "{{ eks_node_viewer_version }}"
+  ansible.builtin.include_role:
+    name: common
+    tasks_from: cleanup_versions.yml
+    apply:
+      tags:
+        - versions
+        - cleanup
+  tags:
+    - versions
+    - cleanup

@@ -1,0 +1,87 @@
+# spacectl - Spacelift CLI
+# Source: https://github.com/spacelift-io/spacectl
+---
+- name: "[spacectl] Get Github URL for proper version"
+  vars:
+    app: spacectl
+    repo: spacelift-io/spacectl
+    version_query: gh_curl https://api.github.com/repos/spacelift-io/spacectl/releases/latest | jq .tag_name -r | cut -f2 -d'v'
+    github_uri: "v{{ spacectl_version }}/spacectl_{{ spacectl_version }}_linux_amd64.zip"
+  ansible.builtin.include_role:
+    name: common
+    tasks_from: github_version.yml
+    apply:
+      tags:
+        - versions
+  tags:
+    - versions
+
+- name: "[spacectl] Check if spacectl {{ spacectl_version }} is installed"
+  ansible.builtin.stat:
+    path: "{{ ansible_facts['env']['HOME'] }}/.local/opt/spacectl-{{ spacectl_version }}"
+  register: spacectl_dir
+  tags:
+    - versions
+
+- name: "Installation"
+  when: not spacectl_dir.stat.exists
+  block:
+    - name: "[spacectl] Create directory {{ ansible_facts['env']['HOME'] }}/.local/opt/spacectl-{{ spacectl_version }}"
+      ansible.builtin.file:
+        path: "{{ ansible_facts['env']['HOME'] }}/.local/opt/spacectl-{{ spacectl_version }}"
+        state: directory
+        mode: "0755"
+
+    - name: "[spacectl] Download spacectl {{ spacectl_version }}"
+      ansible.builtin.get_url:
+        url: "{{ spacectl_url }}"
+        dest: "/tmp/spacectl-{{ spacectl_version }}.zip"
+        mode: "0644"
+
+    - name: "[spacectl] Unpack spacectl archive"
+      ansible.builtin.unarchive:
+        src: "/tmp/spacectl-{{ spacectl_version }}.zip"
+        dest: "{{ ansible_facts['env']['HOME'] }}/.local/opt/spacectl-{{ spacectl_version }}"
+
+    - name: "[spacectl] Cleanup archive"
+      ansible.builtin.file:
+        path: "/tmp/spacectl-{{ spacectl_version }}.zip"
+        state: absent
+
+- name: "[spacectl] Link {{ spacectl_version }} binary to ~/.local/bin/spacectl"
+  ansible.builtin.file:
+    src: "{{ ansible_facts['env']['HOME'] }}/.local/opt/spacectl-{{ spacectl_version }}/spacectl"
+    dest: "{{ ansible_facts['env']['HOME'] }}/.local/bin/spacectl"
+    state: link
+    force: true
+
+- name: "[spacectl] Save used version"
+  vars:
+    app: spacectl
+    target_version:
+      github_packages:
+        spacectl: "{{ spacectl_version }}"
+    yq_query: ".github_packages.spacectl = \"{{ spacectl_version }}\""
+  ansible.builtin.include_role:
+    name: common
+    tasks_from: save_version.yml
+    apply:
+      tags:
+        - versions
+  tags:
+    - versions
+
+- name: "[spacectl] Cleanup old versions"
+  vars:
+    app: spacectl
+    keep: "{{ spacectl_version }}"
+  ansible.builtin.include_role:
+    name: common
+    tasks_from: cleanup_versions.yml
+    apply:
+      tags:
+        - versions
+        - cleanup
+  tags:
+    - versions
+    - cleanup

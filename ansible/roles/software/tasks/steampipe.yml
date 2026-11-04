@@ -1,0 +1,88 @@
+# Steampipe - SQL queries against cloud APIs. Plugins (`steampipe plugin
+# install aws`) are left to the user.
+# Source: https://github.com/turbot/steampipe
+---
+- name: "[Steampipe] Get Github URL for proper version"
+  vars:
+    app: steampipe
+    repo: turbot/steampipe
+    version_query: gh_curl https://api.github.com/repos/turbot/steampipe/releases/latest | jq .tag_name -r | cut -f2 -d'v'
+    github_uri: "v{{ steampipe_version }}/steampipe_linux_amd64.tar.gz"
+  ansible.builtin.include_role:
+    name: common
+    tasks_from: github_version.yml
+    apply:
+      tags:
+        - versions
+  tags:
+    - versions
+
+- name: "[Steampipe] Check if Steampipe {{ steampipe_version }} is installed"
+  ansible.builtin.stat:
+    path: "{{ ansible_facts['env']['HOME'] }}/.local/opt/steampipe-{{ steampipe_version }}"
+  register: steampipe_dir
+  tags:
+    - versions
+
+- name: "Installation"
+  when: not steampipe_dir.stat.exists
+  block:
+    - name: "[Steampipe] Create directory {{ ansible_facts['env']['HOME'] }}/.local/opt/steampipe-{{ steampipe_version }}"
+      ansible.builtin.file:
+        path: "{{ ansible_facts['env']['HOME'] }}/.local/opt/steampipe-{{ steampipe_version }}"
+        state: directory
+        mode: "0755"
+
+    - name: "[Steampipe] Download Steampipe {{ steampipe_version }}"
+      ansible.builtin.get_url:
+        url: "{{ steampipe_url }}"
+        dest: "/tmp/steampipe-{{ steampipe_version }}.tar.gz"
+        mode: "0644"
+
+    - name: "[Steampipe] Unpack Steampipe archive"
+      ansible.builtin.unarchive:
+        src: "/tmp/steampipe-{{ steampipe_version }}.tar.gz"
+        dest: "{{ ansible_facts['env']['HOME'] }}/.local/opt/steampipe-{{ steampipe_version }}"
+
+    - name: "[Steampipe] Cleanup archive"
+      ansible.builtin.file:
+        path: "/tmp/steampipe-{{ steampipe_version }}.tar.gz"
+        state: absent
+
+- name: "[Steampipe] Link {{ steampipe_version }} binary to ~/.local/bin/steampipe"
+  ansible.builtin.file:
+    src: "{{ ansible_facts['env']['HOME'] }}/.local/opt/steampipe-{{ steampipe_version }}/steampipe"
+    dest: "{{ ansible_facts['env']['HOME'] }}/.local/bin/steampipe"
+    state: link
+    force: true
+
+- name: "[Steampipe] Save used version"
+  vars:
+    app: steampipe
+    target_version:
+      github_packages:
+        steampipe: "{{ steampipe_version }}"
+    yq_query: ".github_packages.steampipe = \"{{ steampipe_version }}\""
+  ansible.builtin.include_role:
+    name: common
+    tasks_from: save_version.yml
+    apply:
+      tags:
+        - versions
+  tags:
+    - versions
+
+- name: "[Steampipe] Cleanup old versions"
+  vars:
+    app: steampipe
+    keep: "{{ steampipe_version }}"
+  ansible.builtin.include_role:
+    name: common
+    tasks_from: cleanup_versions.yml
+    apply:
+      tags:
+        - versions
+        - cleanup
+  tags:
+    - versions
+    - cleanup

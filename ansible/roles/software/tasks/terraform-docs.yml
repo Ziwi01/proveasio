@@ -1,0 +1,87 @@
+# terraform-docs - generate documentation from Terraform modules
+# Source: https://github.com/terraform-docs/terraform-docs
+---
+- name: "[terraform-docs] Get Github URL for proper version"
+  vars:
+    app: terraform_docs
+    repo: terraform-docs/terraform-docs
+    version_query: gh_curl https://api.github.com/repos/terraform-docs/terraform-docs/releases/latest | jq .tag_name -r | cut -f2 -d'v'
+    github_uri: "v{{ terraform_docs_version }}/terraform-docs-v{{ terraform_docs_version }}-linux-amd64.tar.gz"
+  ansible.builtin.include_role:
+    name: common
+    tasks_from: github_version.yml
+    apply:
+      tags:
+        - versions
+  tags:
+    - versions
+
+- name: "[terraform-docs] Check if terraform-docs {{ terraform_docs_version }} is installed"
+  ansible.builtin.stat:
+    path: "{{ ansible_facts['env']['HOME'] }}/.local/opt/terraform-docs-{{ terraform_docs_version }}"
+  register: terraform_docs_dir
+  tags:
+    - versions
+
+- name: "Installation"
+  when: not terraform_docs_dir.stat.exists
+  block:
+    - name: "[terraform-docs] Create directory {{ ansible_facts['env']['HOME'] }}/.local/opt/terraform-docs-{{ terraform_docs_version }}"
+      ansible.builtin.file:
+        path: "{{ ansible_facts['env']['HOME'] }}/.local/opt/terraform-docs-{{ terraform_docs_version }}"
+        state: directory
+        mode: "0755"
+
+    - name: "[terraform-docs] Download terraform-docs {{ terraform_docs_version }}"
+      ansible.builtin.get_url:
+        url: "{{ terraform_docs_url }}"
+        dest: "/tmp/terraform-docs-{{ terraform_docs_version }}.tar.gz"
+        mode: "0644"
+
+    - name: "[terraform-docs] Unpack terraform-docs archive"
+      ansible.builtin.unarchive:
+        src: "/tmp/terraform-docs-{{ terraform_docs_version }}.tar.gz"
+        dest: "{{ ansible_facts['env']['HOME'] }}/.local/opt/terraform-docs-{{ terraform_docs_version }}"
+
+    - name: "[terraform-docs] Cleanup archive"
+      ansible.builtin.file:
+        path: "/tmp/terraform-docs-{{ terraform_docs_version }}.tar.gz"
+        state: absent
+
+- name: "[terraform-docs] Link {{ terraform_docs_version }} binary to ~/.local/bin/terraform-docs"
+  ansible.builtin.file:
+    src: "{{ ansible_facts['env']['HOME'] }}/.local/opt/terraform-docs-{{ terraform_docs_version }}/terraform-docs"
+    dest: "{{ ansible_facts['env']['HOME'] }}/.local/bin/terraform-docs"
+    state: link
+    force: true
+
+- name: "[terraform-docs] Save used version"
+  vars:
+    app: terraform_docs
+    target_version:
+      github_packages:
+        terraform_docs: "{{ terraform_docs_version }}"
+    yq_query: ".github_packages.terraform_docs = \"{{ terraform_docs_version }}\""
+  ansible.builtin.include_role:
+    name: common
+    tasks_from: save_version.yml
+    apply:
+      tags:
+        - versions
+  tags:
+    - versions
+
+- name: "[terraform-docs] Cleanup old versions"
+  vars:
+    app: terraform-docs
+    keep: "{{ terraform_docs_version }}"
+  ansible.builtin.include_role:
+    name: common
+    tasks_from: cleanup_versions.yml
+    apply:
+      tags:
+        - versions
+        - cleanup
+  tags:
+    - versions
+    - cleanup

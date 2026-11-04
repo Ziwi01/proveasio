@@ -1,0 +1,92 @@
+# Granted - AWS profile and SSO role switcher.
+# `assume` must be sourced; .zshrc defines `alias assume="source assume"`.
+# Source: https://github.com/fwdcloudsec/granted
+---
+- name: "[Granted] Get Github URL for proper version"
+  vars:
+    app: granted
+    repo: fwdcloudsec/granted
+    version_query: gh_curl https://api.github.com/repos/fwdcloudsec/granted/releases/latest | jq .tag_name -r | cut -f2 -d'v'
+    github_uri: "v{{ granted_version }}/granted_{{ granted_version }}_linux_x86_64.tar.gz"
+  ansible.builtin.include_role:
+    name: common
+    tasks_from: github_version.yml
+    apply:
+      tags:
+        - versions
+  tags:
+    - versions
+
+- name: "[Granted] Check if Granted {{ granted_version }} is installed"
+  ansible.builtin.stat:
+    path: "{{ ansible_facts['env']['HOME'] }}/.local/opt/granted-{{ granted_version }}"
+  register: granted_dir
+  tags:
+    - versions
+
+- name: "Installation"
+  when: not granted_dir.stat.exists
+  block:
+    - name: "[Granted] Create directory {{ ansible_facts['env']['HOME'] }}/.local/opt/granted-{{ granted_version }}"
+      ansible.builtin.file:
+        path: "{{ ansible_facts['env']['HOME'] }}/.local/opt/granted-{{ granted_version }}"
+        state: directory
+        mode: "0755"
+
+    - name: "[Granted] Download Granted {{ granted_version }}"
+      ansible.builtin.get_url:
+        url: "{{ granted_url }}"
+        dest: "/tmp/granted-{{ granted_version }}.tar.gz"
+        mode: "0644"
+
+    - name: "[Granted] Unpack Granted archive"
+      ansible.builtin.unarchive:
+        src: "/tmp/granted-{{ granted_version }}.tar.gz"
+        dest: "{{ ansible_facts['env']['HOME'] }}/.local/opt/granted-{{ granted_version }}"
+
+    - name: "[Granted] Cleanup archive"
+      ansible.builtin.file:
+        path: "/tmp/granted-{{ granted_version }}.tar.gz"
+        state: absent
+
+- name: "[Granted] Link {{ granted_version }} binaries to ~/.local/bin"
+  ansible.builtin.file:
+    src: "{{ ansible_facts['env']['HOME'] }}/.local/opt/granted-{{ granted_version }}/{{ item }}"
+    dest: "{{ ansible_facts['env']['HOME'] }}/.local/bin/{{ item }}"
+    state: link
+    force: true
+  loop:
+    - granted
+    - assume
+    - assumego
+
+- name: "[Granted] Save used version"
+  vars:
+    app: granted
+    target_version:
+      github_packages:
+        granted: "{{ granted_version }}"
+    yq_query: ".github_packages.granted = \"{{ granted_version }}\""
+  ansible.builtin.include_role:
+    name: common
+    tasks_from: save_version.yml
+    apply:
+      tags:
+        - versions
+  tags:
+    - versions
+
+- name: "[Granted] Cleanup old versions"
+  vars:
+    app: granted
+    keep: "{{ granted_version }}"
+  ansible.builtin.include_role:
+    name: common
+    tasks_from: cleanup_versions.yml
+    apply:
+      tags:
+        - versions
+        - cleanup
+  tags:
+    - versions
+    - cleanup

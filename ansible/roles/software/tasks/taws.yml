@@ -1,0 +1,87 @@
+# taws - terminal UI for AWS, in the style of k9s
+# Source: https://github.com/huseyinbabal/taws
+---
+- name: "[taws] Get Github URL for proper version"
+  vars:
+    app: taws
+    repo: huseyinbabal/taws
+    version_query: gh_curl https://api.github.com/repos/huseyinbabal/taws/releases/latest | jq .tag_name -r | cut -f2 -d'v'
+    github_uri: "v{{ taws_version }}/taws-x86_64-unknown-linux-musl.tar.gz"
+  ansible.builtin.include_role:
+    name: common
+    tasks_from: github_version.yml
+    apply:
+      tags:
+        - versions
+  tags:
+    - versions
+
+- name: "[taws] Check if taws {{ taws_version }} is installed"
+  ansible.builtin.stat:
+    path: "{{ ansible_facts['env']['HOME'] }}/.local/opt/taws-{{ taws_version }}"
+  register: taws_dir
+  tags:
+    - versions
+
+- name: "Installation"
+  when: not taws_dir.stat.exists
+  block:
+    - name: "[taws] Create directory {{ ansible_facts['env']['HOME'] }}/.local/opt/taws-{{ taws_version }}"
+      ansible.builtin.file:
+        path: "{{ ansible_facts['env']['HOME'] }}/.local/opt/taws-{{ taws_version }}"
+        state: directory
+        mode: "0755"
+
+    - name: "[taws] Download taws {{ taws_version }}"
+      ansible.builtin.get_url:
+        url: "{{ taws_url }}"
+        dest: "/tmp/taws-{{ taws_version }}.tar.gz"
+        mode: "0644"
+
+    - name: "[taws] Unpack taws archive"
+      ansible.builtin.unarchive:
+        src: "/tmp/taws-{{ taws_version }}.tar.gz"
+        dest: "{{ ansible_facts['env']['HOME'] }}/.local/opt/taws-{{ taws_version }}"
+
+    - name: "[taws] Cleanup archive"
+      ansible.builtin.file:
+        path: "/tmp/taws-{{ taws_version }}.tar.gz"
+        state: absent
+
+- name: "[taws] Link {{ taws_version }} binary to ~/.local/bin/taws"
+  ansible.builtin.file:
+    src: "{{ ansible_facts['env']['HOME'] }}/.local/opt/taws-{{ taws_version }}/taws"
+    dest: "{{ ansible_facts['env']['HOME'] }}/.local/bin/taws"
+    state: link
+    force: true
+
+- name: "[taws] Save used version"
+  vars:
+    app: taws
+    target_version:
+      github_packages:
+        taws: "{{ taws_version }}"
+    yq_query: ".github_packages.taws = \"{{ taws_version }}\""
+  ansible.builtin.include_role:
+    name: common
+    tasks_from: save_version.yml
+    apply:
+      tags:
+        - versions
+  tags:
+    - versions
+
+- name: "[taws] Cleanup old versions"
+  vars:
+    app: taws
+    keep: "{{ taws_version }}"
+  ansible.builtin.include_role:
+    name: common
+    tasks_from: cleanup_versions.yml
+    apply:
+      tags:
+        - versions
+        - cleanup
+  tags:
+    - versions
+    - cleanup

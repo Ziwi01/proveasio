@@ -1,0 +1,87 @@
+# eksctl - CLI for Amazon EKS
+# Source: https://github.com/eksctl-io/eksctl
+---
+- name: "[eksctl] Get Github URL for proper version"
+  vars:
+    app: eksctl
+    repo: eksctl-io/eksctl
+    version_query: gh_curl https://api.github.com/repos/eksctl-io/eksctl/releases/latest | jq .tag_name -r | cut -f2 -d'v'
+    github_uri: "v{{ eksctl_version }}/eksctl_Linux_amd64.tar.gz"
+  ansible.builtin.include_role:
+    name: common
+    tasks_from: github_version.yml
+    apply:
+      tags:
+        - versions
+  tags:
+    - versions
+
+- name: "[eksctl] Check if eksctl {{ eksctl_version }} is installed"
+  ansible.builtin.stat:
+    path: "{{ ansible_facts['env']['HOME'] }}/.local/opt/eksctl-{{ eksctl_version }}"
+  register: eksctl_dir
+  tags:
+    - versions
+
+- name: "Installation"
+  when: not eksctl_dir.stat.exists
+  block:
+    - name: "[eksctl] Create directory {{ ansible_facts['env']['HOME'] }}/.local/opt/eksctl-{{ eksctl_version }}"
+      ansible.builtin.file:
+        path: "{{ ansible_facts['env']['HOME'] }}/.local/opt/eksctl-{{ eksctl_version }}"
+        state: directory
+        mode: "0755"
+
+    - name: "[eksctl] Download eksctl {{ eksctl_version }}"
+      ansible.builtin.get_url:
+        url: "{{ eksctl_url }}"
+        dest: "/tmp/eksctl-{{ eksctl_version }}.tar.gz"
+        mode: "0644"
+
+    - name: "[eksctl] Unpack eksctl archive"
+      ansible.builtin.unarchive:
+        src: "/tmp/eksctl-{{ eksctl_version }}.tar.gz"
+        dest: "{{ ansible_facts['env']['HOME'] }}/.local/opt/eksctl-{{ eksctl_version }}"
+
+    - name: "[eksctl] Cleanup archive"
+      ansible.builtin.file:
+        path: "/tmp/eksctl-{{ eksctl_version }}.tar.gz"
+        state: absent
+
+- name: "[eksctl] Link {{ eksctl_version }} binary to ~/.local/bin/eksctl"
+  ansible.builtin.file:
+    src: "{{ ansible_facts['env']['HOME'] }}/.local/opt/eksctl-{{ eksctl_version }}/eksctl"
+    dest: "{{ ansible_facts['env']['HOME'] }}/.local/bin/eksctl"
+    state: link
+    force: true
+
+- name: "[eksctl] Save used version"
+  vars:
+    app: eksctl
+    target_version:
+      github_packages:
+        eksctl: "{{ eksctl_version }}"
+    yq_query: ".github_packages.eksctl = \"{{ eksctl_version }}\""
+  ansible.builtin.include_role:
+    name: common
+    tasks_from: save_version.yml
+    apply:
+      tags:
+        - versions
+  tags:
+    - versions
+
+- name: "[eksctl] Cleanup old versions"
+  vars:
+    app: eksctl
+    keep: "{{ eksctl_version }}"
+  ansible.builtin.include_role:
+    name: common
+    tasks_from: cleanup_versions.yml
+    apply:
+      tags:
+        - versions
+        - cleanup
+  tags:
+    - versions
+    - cleanup

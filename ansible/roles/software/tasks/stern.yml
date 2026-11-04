@@ -1,0 +1,87 @@
+# stern - tail logs of many Kubernetes pods and containers at once
+# Source: https://github.com/stern/stern
+---
+- name: "[stern] Get Github URL for proper version"
+  vars:
+    app: stern
+    repo: stern/stern
+    version_query: gh_curl https://api.github.com/repos/stern/stern/releases/latest | jq .tag_name -r | cut -f2 -d'v'
+    github_uri: "v{{ stern_version }}/stern_{{ stern_version }}_linux_amd64.tar.gz"
+  ansible.builtin.include_role:
+    name: common
+    tasks_from: github_version.yml
+    apply:
+      tags:
+        - versions
+  tags:
+    - versions
+
+- name: "[stern] Check if stern {{ stern_version }} is installed"
+  ansible.builtin.stat:
+    path: "{{ ansible_facts['env']['HOME'] }}/.local/opt/stern-{{ stern_version }}"
+  register: stern_dir
+  tags:
+    - versions
+
+- name: "Installation"
+  when: not stern_dir.stat.exists
+  block:
+    - name: "[stern] Create directory {{ ansible_facts['env']['HOME'] }}/.local/opt/stern-{{ stern_version }}"
+      ansible.builtin.file:
+        path: "{{ ansible_facts['env']['HOME'] }}/.local/opt/stern-{{ stern_version }}"
+        state: directory
+        mode: "0755"
+
+    - name: "[stern] Download stern {{ stern_version }}"
+      ansible.builtin.get_url:
+        url: "{{ stern_url }}"
+        dest: "/tmp/stern-{{ stern_version }}.tar.gz"
+        mode: "0644"
+
+    - name: "[stern] Unpack stern archive"
+      ansible.builtin.unarchive:
+        src: "/tmp/stern-{{ stern_version }}.tar.gz"
+        dest: "{{ ansible_facts['env']['HOME'] }}/.local/opt/stern-{{ stern_version }}"
+
+    - name: "[stern] Cleanup archive"
+      ansible.builtin.file:
+        path: "/tmp/stern-{{ stern_version }}.tar.gz"
+        state: absent
+
+- name: "[stern] Link {{ stern_version }} binary to ~/.local/bin/stern"
+  ansible.builtin.file:
+    src: "{{ ansible_facts['env']['HOME'] }}/.local/opt/stern-{{ stern_version }}/stern"
+    dest: "{{ ansible_facts['env']['HOME'] }}/.local/bin/stern"
+    state: link
+    force: true
+
+- name: "[stern] Save used version"
+  vars:
+    app: stern
+    target_version:
+      github_packages:
+        stern: "{{ stern_version }}"
+    yq_query: ".github_packages.stern = \"{{ stern_version }}\""
+  ansible.builtin.include_role:
+    name: common
+    tasks_from: save_version.yml
+    apply:
+      tags:
+        - versions
+  tags:
+    - versions
+
+- name: "[stern] Cleanup old versions"
+  vars:
+    app: stern
+    keep: "{{ stern_version }}"
+  ansible.builtin.include_role:
+    name: common
+    tasks_from: cleanup_versions.yml
+    apply:
+      tags:
+        - versions
+        - cleanup
+  tags:
+    - versions
+    - cleanup

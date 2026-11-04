@@ -166,6 +166,15 @@ if command -v pay-respects &>/dev/null; then
   eval "$(pay-respects zsh --alias)"
 fi
 
+### tenv: a repository's version file may ask for a Terraform, OpenTofu or
+### Terragrunt version that is not installed yet; install it on first use.
+export TENV_AUTO_INSTALL=true
+
+### Granted: `assume` sets AWS credentials in the current shell, so it must be sourced
+if command -v assume &>/dev/null; then
+  alias assume="source assume"
+fi
+
 ### Kubectl context switch
 if command -v switcher &>/dev/null; then
   source <(switcher init zsh)

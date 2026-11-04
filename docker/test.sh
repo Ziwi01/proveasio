@@ -280,6 +280,8 @@ check_software_kubectl()   { run_cmd kubectl version --client && expect_receipt 
 check_software_kubecolor() { run_cmd kubecolor --kubecolor-version && expect_receipt .github_packages.kubecolor; }
 check_software_kind()      { run_cmd kind version && expect_receipt .github_packages.kind; }
 check_software_k9s()       { run_cmd k9s version -s && expect_receipt .github_packages.k9s; }
+check_software_stern()      { run_cmd stern --version && expect_receipt .github_packages.stern; }
+check_software_crane()      { run_cmd crane version && expect_receipt .github_packages.crane; }
 check_software_kubeconform() { run_cmd kubeconform -v && expect_receipt .github_packages.kubeconform; }
 check_software_dyff()      { run_cmd dyff version && expect_receipt .github_packages.dyff; }
 check_software_argocd()    { run_cmd argocd version --client --short && expect_receipt .github_packages.argocd; }
@@ -374,6 +376,17 @@ check_software_azurecli() {
   DETAIL="az $az, kubelogin $DETAIL"
 }
 check_software_awscli()     { run_cmd aws --version && expect_out "aws-cli/" && DETAIL="$(cut -d' ' -f1 <<<"$OUT")"; }
+check_software_granted() {
+  run_cmd granted -v && expect_receipt .github_packages.granted || return 1
+  expect_exec "$HOME/.local/bin/assume" && expect_exec "$HOME/.local/bin/assumego"
+}
+check_software_session_manager_plugin() {
+  run_cmd session-manager-plugin --version && expect_receipt .github_packages.session_manager_plugin
+}
+check_software_taws()       { run_cmd taws --version && expect_receipt .github_packages.taws; }
+check_software_eksctl()     { run_cmd eksctl version && expect_receipt .github_packages.eksctl; }
+check_software_eks_node_viewer() { run_cmd eks-node-viewer --version && expect_receipt .github_packages.eks_node_viewer; }
+check_software_steampipe()  { run_cmd steampipe --version && expect_receipt .github_packages.steampipe; }
 check_software_uv()         { run_cmd uv --version && expect_receipt .github_packages.uv; }
 check_software_opencode() {
   run_cmd opencode --version && expect_receipt .github_packages.opencode || return 1
