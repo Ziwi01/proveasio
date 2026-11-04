@@ -364,9 +364,21 @@ check_software_puppet() {
   DETAIL="puppet $(effective puppet_version software), pdk $pdk"
 }
 
-check_software_terraform()  { run_cmd terraform version && expect_receipt .github_packages.terraform; }
-check_software_terragrunt() { run_cmd terragrunt --version && expect_receipt .github_packages.terragrunt; }
-check_software_tofu()       { run_cmd tofu version && expect_receipt .github_packages.tofu; }
+# terraform, tofu and terragrunt are tenv's proxies; with no version file in
+# the working directory they run the newest installed version, which in a
+# fresh image is the one the task installed.
+check_tenv_proxy() {
+  local link
+  link="$(readlink "$HOME/.local/bin/$1")"
+  [[ "$link" == "$HOME/.local/opt/tenv-"*"/$1" ]] || fail "$HOME/.local/bin/$1 points to '$link', not to tenv's proxy"
+}
+check_software_tenv()       { run_cmd tenv --version && expect_receipt .github_packages.tenv; }
+check_software_terraform()  { check_tenv_proxy terraform && run_cmd terraform version && expect_receipt .github_packages.terraform; }
+check_software_terragrunt() { check_tenv_proxy terragrunt && run_cmd terragrunt --version && expect_receipt .github_packages.terragrunt; }
+check_software_tofu()       { check_tenv_proxy tofu && run_cmd tofu version && expect_receipt .github_packages.tofu; }
+check_software_tflint()     { run_cmd tflint --version && expect_receipt .github_packages.tflint; }
+check_software_terraform_docs() { run_cmd terraform-docs --version && expect_receipt .github_packages.terraform_docs; }
+check_software_spacectl()   { run_cmd spacectl version && expect_receipt .github_packages.spacectl; }
 check_software_azurecli() {
   local az
   run_cmd az version && expect_receipt .azurecli_apt_version deb || return 1

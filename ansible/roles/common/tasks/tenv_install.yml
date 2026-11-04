@@ -1,0 +1,61 @@
+# Install one version of a tool that tenv manages
+#
+# The tool's own task resolves `<app>_version` with github_version.yml first.
+# tenv's proxy in ~/.local/bin (linked by roles/software/tasks/tenv.yml) then
+# picks the version per directory: a version file (.terraform-version,
+# .opentofu-version, .terragrunt-version, .tool-versions, ...), then the global
+# ~/.tenv/<Tool>/version, then the newest installed version that satisfies
+# required_version. A global version file would beat required_version, so this
+# task never writes one: outside a repository the newest installed version runs.
+#
+# Inputs:
+#   - app:        github_packages key and receipt name (e.g. `terraform`)
+#   - tenv_tool:  tenv subcommand (`tf`, `tofu`, `tg`)
+#   - tenv_dir:   tenv's directory for the tool (`Terraform`, `OpenTofu`, `Terragrunt`)
+#   - version:    version to install (e.g. `{{ terraform_version }}`)
+---
+- name: "[{{ app }}] Check that tenv is installed"
+  ansible.builtin.stat:
+    path: "{{ ansible_facts['env']['HOME'] }}/.local/bin/tenv"
+  register: tenv_install_bin
+
+- name: "[{{ app }}] Fail without tenv"
+  ansible.builtin.fail:
+    msg: >-
+      {{ app }} is installed with tenv, and ~/.local/bin/tenv is missing.
+      Remove tenv from software_tasks_exclude, or add the tenv tag to --tags
+      (the terraform-tools tag selects both), then run again.
+  when: not tenv_install_bin.stat.exists
+
+# Before tenv, Proveasio unpacked each tool into ~/.local/opt/<app>-<version>.
+# tenv.yml has already replaced the ~/.local/bin links, so these are unused.
+# Only version directories match: `terraform-*` would also take terraform-docs.
+- name: "[{{ app }}] Find installs from before tenv in ~/.local/opt"
+  ansible.builtin.find:
+    paths: "{{ ansible_facts['env']['HOME'] }}/.local/opt"
+    patterns: "{{ app }}-[0-9]*"
+    file_type: directory
+    recurse: false
+  register: tenv_install_old
+
+- name: "[{{ app }}] Remove installs from before tenv"
+  ansible.builtin.file:
+    path: "{{ item.path }}"
+    state: absent
+  loop: "{{ tenv_install_old.files }}"
+  loop_control:
+    label: "{{ item.path | basename }}"
+
+- name: "[{{ app }}] Install {{ version }} with tenv"
+  ansible.builtin.command:
+    cmd: "{{ ansible_facts['env']['HOME'] }}/.local/bin/tenv {{ tenv_tool }} install {{ version }}"
+    creates: "{{ ansible_facts['env']['HOME'] }}/.tenv/{{ tenv_dir }}/{{ version }}"
+  environment:
+    TENV_GITHUB_TOKEN: "{{ github_api_token | default('') }}"
+
+- name: "[{{ app }}] Save used version"
+  vars:
+    target_version:
+      github_packages: "{{ {app: version} }}"
+    yq_query: ".github_packages.{{ app }} = \"{{ version }}\""
+  ansible.builtin.include_tasks: save_version.yml

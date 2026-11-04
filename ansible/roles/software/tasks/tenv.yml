@@ -1,0 +1,101 @@
+# tenv - version manager for Terraform, OpenTofu and Terragrunt. Its proxy
+# binaries (terraform, tofu, terragrunt, ...) pick the version from the
+# repository (.terraform-version, .opentofu-version, .terragrunt-version,
+# required_version). Elsewhere the newest installed version runs. The
+# terraform, tofu and terragrunt tasks install the versions.
+# Source: https://github.com/tofuutils/tenv
+---
+- name: "[tenv] Get Github URL for proper version"
+  vars:
+    app: tenv
+    repo: tofuutils/tenv
+    version_query: gh_curl https://api.github.com/repos/tofuutils/tenv/releases/latest | jq .tag_name -r | cut -f2 -d'v'
+    github_uri: "v{{ tenv_version }}/tenv_v{{ tenv_version }}_Linux_x86_64.tar.gz"
+  ansible.builtin.include_role:
+    name: common
+    tasks_from: github_version.yml
+    apply:
+      tags:
+        - versions
+  tags:
+    - versions
+
+- name: "[tenv] Check if tenv {{ tenv_version }} is installed"
+  ansible.builtin.stat:
+    path: "{{ ansible_facts['env']['HOME'] }}/.local/opt/tenv-{{ tenv_version }}"
+  register: tenv_dir
+  tags:
+    - versions
+
+- name: "Installation"
+  when: not tenv_dir.stat.exists
+  block:
+    - name: "[tenv] Create directory {{ ansible_facts['env']['HOME'] }}/.local/opt/tenv-{{ tenv_version }}"
+      ansible.builtin.file:
+        path: "{{ ansible_facts['env']['HOME'] }}/.local/opt/tenv-{{ tenv_version }}"
+        state: directory
+        mode: "0755"
+
+    - name: "[tenv] Download tenv {{ tenv_version }}"
+      ansible.builtin.get_url:
+        url: "{{ tenv_url }}"
+        dest: "/tmp/tenv-{{ tenv_version }}.tar.gz"
+        mode: "0644"
+
+    - name: "[tenv] Unpack tenv archive"
+      ansible.builtin.unarchive:
+        src: "/tmp/tenv-{{ tenv_version }}.tar.gz"
+        dest: "{{ ansible_facts['env']['HOME'] }}/.local/opt/tenv-{{ tenv_version }}"
+
+    - name: "[tenv] Cleanup archive"
+      ansible.builtin.file:
+        path: "/tmp/tenv-{{ tenv_version }}.tar.gz"
+        state: absent
+
+# Every proxy in the release is linked. The proxies call `tenv`, so it must be
+# on PATH too. Forced links replace the symlinks of the installs before tenv.
+- name: "[tenv] Link {{ tenv_version }} binaries to ~/.local/bin"
+  ansible.builtin.file:
+    src: "{{ ansible_facts['env']['HOME'] }}/.local/opt/tenv-{{ tenv_version }}/{{ item }}"
+    dest: "{{ ansible_facts['env']['HOME'] }}/.local/bin/{{ item }}"
+    state: link
+    force: true
+  loop:
+    - tenv
+    - terraform
+    - tofu
+    - terragrunt
+    - terramate
+    - tf
+    - atmos
+
+- name: "[tenv] Save used version"
+  vars:
+    app: tenv
+    target_version:
+      github_packages:
+        tenv: "{{ tenv_version }}"
+    yq_query: ".github_packages.tenv = \"{{ tenv_version }}\""
+  ansible.builtin.include_role:
+    name: common
+    tasks_from: save_version.yml
+    apply:
+      tags:
+        - versions
+  tags:
+    - versions
+
+- name: "[tenv] Cleanup old versions"
+  vars:
+    app: tenv
+    keep: "{{ tenv_version }}"
+  ansible.builtin.include_role:
+    name: common
+    tasks_from: cleanup_versions.yml
+    apply:
+      tags:
+        - versions
+        - cleanup
+  tags:
+    - versions
+    - cleanup

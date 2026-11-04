@@ -1,16 +1,13 @@
----
-#
-# Terraform
+# Terraform, installed with tenv (see tenv.yml). A repository's version file or
+# required_version picks the version; elsewhere the newest installed one runs.
 # Sources:
 #   - https://www.terraform.io/
 #   - https://github.com/hashicorp/terraform
-#
-- name: "[terraform] Get Github URL for proper version"
+---
+- name: "[terraform] Resolve version"
   vars:
     app: terraform
-    repo: hashicorp/terraform
     version_query: gh_curl https://api.github.com/repos/hashicorp/terraform/releases/latest | jq .name -r | cut -f2 -d'v'
-    artifact_url: "https://releases.hashicorp.com/terraform/{{ terraform_version }}/terraform_{{ terraform_version }}_linux_amd64.zip"
   ansible.builtin.include_role:
     name: common
     tasks_from: github_version.yml
@@ -20,70 +17,17 @@
   tags:
     - versions
 
-- name: "[terraform] Check if terraform {{ terraform_version }} is installed"
-  ansible.builtin.stat:
-    path: "{{ ansible_facts['env']['HOME'] }}/.local/opt/terraform-{{ terraform_version }}"
-  register: terraform_dir
-
-- name: "Installation"
-  when: not terraform_dir.stat.exists
-  block:
-    - name: "[terraform] Create directory in {{ ansible_facts['env']['HOME'] }}/.local/opt"
-      ansible.builtin.file:
-        path: "{{ ansible_facts['env']['HOME'] }}/.local/opt/terraform-{{ terraform_version }}"
-        state: directory
-        mode: '0755'
-
-    - name: "[terraform] Download terraform {{ terraform_version }}"
-      ansible.builtin.get_url:
-        url: "{{ terraform_url }}"
-        dest: "/tmp/terraform-{{ terraform_version }}.zip"
-        mode: '0755'
-
-    - name: "[terraform] Unzip archive"
-      ansible.builtin.unarchive:
-        src: "/tmp/terraform-{{ terraform_version }}.zip"
-        dest: "{{ ansible_facts['env']['HOME'] }}/.local/opt/terraform-{{ terraform_version }}"
-
-    - name: "[terraform] Cleanup zip file"
-      ansible.builtin.file:
-        path: "/tmp/terraform-{{ terraform_version }}.zip"
-        state: absent
-
-- name: "[terraform] Link {{ terraform_version }} binary"
-  ansible.builtin.file:
-    src: "{{ ansible_facts['env']['HOME'] }}/.local/opt/terraform-{{ terraform_version }}/terraform"
-    dest: "{{ ansible_facts['env']['HOME'] }}/.local/bin/terraform"
-    state: link
-    force: true
-
-- name: "[terraform] Save used version"
+- name: "[terraform] Install {{ terraform_version }} with tenv"
   vars:
     app: terraform
-    target_version:
-      github_packages:
-        terraform: "{{ terraform_version }}"
-    yq_query: ".github_packages.terraform = \"{{ terraform_version }}\""
+    tenv_tool: tf
+    tenv_dir: Terraform
+    version: "{{ terraform_version }}"
   ansible.builtin.include_role:
     name: common
-    tasks_from: save_version.yml
+    tasks_from: tenv_install.yml
     apply:
       tags:
         - versions
   tags:
     - versions
-
-- name: "[Terraform] Cleanup old versions"
-  vars:
-    app: terraform
-    keep: "{{ terraform_version }}"
-  ansible.builtin.include_role:
-    name: common
-    tasks_from: cleanup_versions.yml
-    apply:
-      tags:
-        - versions
-        - cleanup
-  tags:
-    - versions
-    - cleanup

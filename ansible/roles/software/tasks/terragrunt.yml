@@ -1,16 +1,13 @@
----
-#
-# Terragrunt
+# Terragrunt, installed with tenv (see tenv.yml). A repository's version file or
+# required_version picks the version; elsewhere the newest installed one runs.
 # Sources:
-#   - https://github.com/gruntwork-io/terragrunt
 #   - https://terragrunt.gruntwork.io/
-#
-- name: "[terragrunt] Get Github URL for proper version"
+#   - https://github.com/gruntwork-io/terragrunt
+---
+- name: "[terragrunt] Resolve version"
   vars:
     app: terragrunt
-    repo: gruntwork-io/terragrunt
     version_query: gh_curl https://api.github.com/repos/gruntwork-io/terragrunt/releases/latest | jq .name -r | cut -f2 -d'v'
-    github_uri: "v{{ terragrunt_version }}/terragrunt_linux_amd64"
   ansible.builtin.include_role:
     name: common
     tasks_from: github_version.yml
@@ -20,60 +17,17 @@
   tags:
     - versions
 
-- name: "[terragrunt] Check if terragrunt {{ terragrunt_version }} is installed"
-  ansible.builtin.stat:
-    path: "{{ ansible_facts['env']['HOME'] }}/.local/opt/terragrunt-{{ terragrunt_version }}"
-  register: terragrunt_dir
-
-- name: "Installation"
-  when: not terragrunt_dir.stat.exists
-  block:
-    - name: "[terragrunt] Create directory in {{ ansible_facts['env']['HOME'] }}/.local/opt"
-      ansible.builtin.file:
-        path: "{{ ansible_facts['env']['HOME'] }}/.local/opt/terragrunt-{{ terragrunt_version }}"
-        state: directory
-        mode: '0755'
-
-    - name: "[terragrunt] Download terragrunt {{ terragrunt_version }}"
-      ansible.builtin.get_url:
-        url: "{{ terragrunt_url }}"
-        dest: "{{ ansible_facts['env']['HOME'] }}/.local/opt/terragrunt-{{ terragrunt_version }}/terragrunt"
-        mode: '0755'
-
-- name: "[terragrunt] Link {{ terragrunt_version }} binary"
-  ansible.builtin.file:
-    src: "{{ ansible_facts['env']['HOME'] }}/.local/opt/terragrunt-{{ terragrunt_version }}/terragrunt"
-    dest: "{{ ansible_facts['env']['HOME'] }}/.local/bin/terragrunt"
-    state: link
-    force: true
-
-- name: "[terragrunt] Save used version"
+- name: "[terragrunt] Install {{ terragrunt_version }} with tenv"
   vars:
     app: terragrunt
-    target_version:
-      github_packages:
-        terragrunt: "{{ terragrunt_version }}"
-    yq_query: ".github_packages.terragrunt = \"{{ terragrunt_version }}\""
+    tenv_tool: tg
+    tenv_dir: Terragrunt
+    version: "{{ terragrunt_version }}"
   ansible.builtin.include_role:
     name: common
-    tasks_from: save_version.yml
+    tasks_from: tenv_install.yml
     apply:
       tags:
         - versions
   tags:
     - versions
-
-- name: "[Terragrunt] Cleanup old versions"
-  vars:
-    app: terragrunt
-    keep: "{{ terragrunt_version }}"
-  ansible.builtin.include_role:
-    name: common
-    tasks_from: cleanup_versions.yml
-    apply:
-      tags:
-        - versions
-        - cleanup
-  tags:
-    - versions
-    - cleanup
