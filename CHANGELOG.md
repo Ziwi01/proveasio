@@ -14,7 +14,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 
 
-## [latest] - 2026-11-04
+## [latest] - 2026-11-06
 ### :sparkles: New Features
 - [`ab01ed0`](https://github.com/Ziwi01/proveasio/commit/ab01ed0acf94927d17040741cb14184a7e3ce961) - **opencode**: Add Homebrew install option for firewall-blocked networks *(commit by [@Ziwi01](https://github.com/Ziwi01))*
 - [`776ad84`](https://github.com/Ziwi01/proveasio/commit/776ad8450a61b24c16c7a4a2ca82a700272c2b39) - **software**: Add tool bundles *(commit by [@Ziwi01](https://github.com/Ziwi01))*
