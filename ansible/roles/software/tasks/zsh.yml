@@ -82,9 +82,11 @@
   tags:
     - versions
 
+# No `depth`: ansible-core 2.21.6 crashes updating a shallow tag checkout
+# ('NoneType' object has no attribute 'startswith'). Restore `depth: 1` once a
+# release ships https://github.com/ansible/ansible/pull/87883.
 - name: '[Zsh][P10k] Clone powerlevel10k'
   ansible.builtin.git:
     repo: https://github.com/romkatv/powerlevel10k.git
     dest: "{{ omz_home }}/custom/themes/powerlevel10k"
     version: "v{{ p10k_version }}"
-    depth: 1
