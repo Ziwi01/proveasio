@@ -162,8 +162,15 @@ lazyload nvm -- "source '${NVM_DIR}/nvm.sh'"
 ZSH_COLORIZE_TOOL=chroma
 
 ### Pay Respects
+# Without --prompt-prefix pay-respects expands $PROMPT with `print -P`. The
+# powerlevel10k prompt only expands inside zle, so every unknown command printed
+# "__pr_base:1: bad substitution". The prefix is the p10k prompt character.
 if command -v pay-respects &>/dev/null; then
-  eval "$(pay-respects zsh --alias)"
+  if [[ $PROVEASIO_NERD_FONTS == 0 ]]; then
+    eval "$(pay-respects zsh --alias --prompt-prefix '>')"
+  else
+    eval "$(pay-respects zsh --alias --prompt-prefix '❯')"
+  fi
 fi
 
 ### tenv: a repository's version file may ask for a Terraform, OpenTofu or
