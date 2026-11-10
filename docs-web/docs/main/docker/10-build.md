@@ -19,8 +19,8 @@ its latest version unless you pin it.
 ## Build
 
 ```shell
-git clone https://github.com/Ziwi01/proveasio.git
-cd proveasio
+git clone https://github.com/Ziwi01/proveasio.git ~/proveasio
+cd ~/proveasio
 USER_UID=$(id -u) USER_GID=$(id -g) docker buildx bake
 ```
 

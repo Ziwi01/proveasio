@@ -33,9 +33,9 @@ Before the first run, set your git identity in `ansible/vars/overrides.yml` and 
 Or build it as a Docker image:
 
 ```bash
-git clone https://github.com/Ziwi01/proveasio.git && cd proveasio
+git clone https://github.com/Ziwi01/proveasio.git ~/proveasio && cd ~/proveasio
 USER_UID=$(id -u) USER_GID=$(id -g) docker buildx bake
-mkdir -p ~/.local/bin && ln -s "$PWD/docker/proveasio" ~/.local/bin/proveasio
+mkdir -p ~/.local/bin && ln -s ~/proveasio/docker/proveasio ~/.local/bin/proveasio
 proveasio init   # then set PROVEASIO_IMAGE=proveasio:local in the file it prints
 proveasio        # from any project directory
 ```

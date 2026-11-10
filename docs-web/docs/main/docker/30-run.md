@@ -9,10 +9,11 @@ another `USERNAME`, replace `/home/dev` with `/home/<USERNAME>`.
 directory. Your settings (image, SSH keys, tokens, the CA bundle and so on)
 live in a config file, so the command stays short.
 
-Install it from a clone of the repository:
+Install it from your clone of the repository (`~/proveasio`, see
+[Download](../download)):
 
 ```shell
-mkdir -p ~/.local/bin && ln -s "$PWD/docker/proveasio" ~/.local/bin/proveasio
+mkdir -p ~/.local/bin && ln -s ~/proveasio/docker/proveasio ~/.local/bin/proveasio
 ```
 
 Or download only the script:
