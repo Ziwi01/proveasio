@@ -34,10 +34,12 @@ Before the first run, set your git identity and read the [requirements](./requir
 ```shell
 git clone https://github.com/Ziwi01/proveasio.git && cd proveasio
 USER_UID=$(id -u) USER_GID=$(id -g) docker buildx bake
-ln -s "$PWD/docker/proveasio" ~/.local/bin/proveasio
-proveasio init && echo 'PROVEASIO_IMAGE=proveasio:local' >> ~/.config/proveasio/config
-proveasio    # from any project directory
+mkdir -p ~/.local/bin && ln -s "$PWD/docker/proveasio" ~/.local/bin/proveasio
+proveasio init   # then set PROVEASIO_IMAGE=proveasio:local in the file it prints
+proveasio        # from any project directory
 ```
+
+`~/.local/bin` must be on your `PATH`.
 
 See [Build the image](./docker/10-build.md) and [Run the image](./docker/30-run.md).
 

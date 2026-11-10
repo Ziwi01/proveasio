@@ -12,12 +12,13 @@ live in a config file, so the command stays short.
 Install it from a clone of the repository:
 
 ```shell
-ln -s "$PWD/docker/proveasio" ~/.local/bin/proveasio
+mkdir -p ~/.local/bin && ln -s "$PWD/docker/proveasio" ~/.local/bin/proveasio
 ```
 
 Or download only the script:
 
 ```shell
+mkdir -p ~/.local/bin
 curl -fsSLo ~/.local/bin/proveasio https://raw.githubusercontent.com/ziwi01/proveasio/master/docker/proveasio
 chmod +x ~/.local/bin/proveasio
 ```
@@ -27,10 +28,11 @@ The script reaches `master` with the next release. Until then, take it from a
 clone of the `develop` branch, or replace `master` with `develop` in the URL.
 :::
 
-Then write a starter config and start the container from a project directory:
+`~/.local/bin` must be on your `PATH`. Then write a starter config and start
+the container from a project directory:
 
 ```shell
-proveasio init        # writes ~/.config/proveasio/config
+proveasio init        # writes the config and prints its path
 cd ~/projects/my-project
 proveasio             # zsh in the container, with the project at /workspace
 proveasio -- ansible --version   # run one command instead
@@ -44,10 +46,6 @@ container your whole home directory, including keys and tokens the config did
 not ask for.
 
 It runs on Linux and WSL with Docker Engine. It is not tested on macOS.
-
-The launcher needs an image built after the launcher was added (it relies on
-defaults set in the image). With an older image it prints a warning: pull the
-image again or rebuild it.
 
 ## Choosing the image
 
@@ -256,25 +254,6 @@ PROVEASIO_ARGS+=(-v proveasio-nvim-state:/home/dev/.local/state/astronvim)
 The directory must exist in the image. If it does not, Docker creates the
 volume owned by root and the tool cannot write to it.
 
-### From the old volumes
-
-Before the launcher, the docs mounted `proveasio-state` on all of
-`~/.local/state` and zoxide's data in a second volume, `proveasio-zoxide`. The
-history file in `proveasio-state` lands in the right place by itself. Copy the
-zoxide database once (with your image instead of `proveasio:local`), then
-remove the old volume:
-
-```shell
-docker run --rm -v proveasio-zoxide:/from:ro \
-  -v proveasio-state:/home/dev/.local/state/proveasio \
-  --entrypoint bash proveasio:local -c 'mkdir -p "$_ZO_DATA_DIR" && cp /from/db.zo "$_ZO_DATA_DIR/"'
-docker volume rm proveasio-zoxide
-```
-
-Other directories in `proveasio-state` from the old layout, such as `opencode`
-or `astronvim`, are no longer used and can be deleted from inside the
-container.
-
 ## User ID
 
 Files in a mounted directory keep their owner's UID and GID from the host. The
@@ -305,11 +284,18 @@ terminal needs another value, pass it with `-e TERM`.
 
 ## Without the launcher
 
-The launcher only builds a `docker run` command. The minimal one is:
+The launcher only builds a `docker run` command. The minimal one, with the
+state volume that keeps shell history and zoxide data, is:
 
 ```shell
-docker run -it --rm -v "$PWD":/workspace -w /workspace proveasio:local
+docker run -it --rm -v "$PWD":/workspace -w /workspace \
+  -v proveasio-state:/home/dev/.local/state/proveasio \
+  proveasio:local
 ```
+
+The state volume must be mounted at `~/.local/state/proveasio`: the image
+keeps history and zoxide data there, not in `~/.zsh_history` or
+`~/.local/share/zoxide`.
 
 `proveasio --dry-run` prints the full command for your config, ready to copy.
 

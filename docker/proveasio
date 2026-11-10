@@ -34,6 +34,8 @@ config_dir() {
 
 # load_file <file>: source one config file. Syntax errors stop the launcher;
 # errors while it runs are the file's own business, as in a shell rc file.
+# The launcher's own variables start with _pv_, so a config cannot change
+# them by accident.
 load_file() {
   bash -n "$1" || die "syntax error in $1"
   set +eu
@@ -43,8 +45,9 @@ load_file() {
 }
 
 main() {
-  local env_image="${PROVEASIO_IMAGE:-}" env_pull="${PROVEASIO_PULL:-}"
-  local opt_image="" opt_pull="" dry_run=0 cmd=()
+  local _pv_env_image="${PROVEASIO_IMAGE:-}" _pv_env_pull="${PROVEASIO_PULL:-}"
+  local _pv_env_home="${PROVEASIO_USER_HOME:-}"
+  local _pv_opt_image="" _pv_opt_pull="" _pv_dry_run=0 _pv_cmd=()
 
   if [ "${1:-}" = init ]; then
     shift
@@ -53,11 +56,11 @@ main() {
   fi
   while [ $# -gt 0 ]; do
     case "$1" in
-      --image) [ $# -ge 2 ] || die "--image needs a value"; opt_image="$2"; shift ;;
-      --image=*) opt_image="${1#*=}" ;;
-      --pull) [ $# -ge 2 ] || die "--pull needs a value"; opt_pull="$2"; shift ;;
-      --pull=*) opt_pull="${1#*=}" ;;
-      --dry-run) dry_run=1 ;;
+      --image) [ $# -ge 2 ] || die "--image needs a value"; _pv_opt_image="$2"; shift ;;
+      --image=*) _pv_opt_image="${1#*=}" ;;
+      --pull) [ $# -ge 2 ] || die "--pull needs a value"; _pv_opt_pull="$2"; shift ;;
+      --pull=*) _pv_opt_pull="${1#*=}" ;;
+      --dry-run) _pv_dry_run=1 ;;
       -h|--help) usage; return 0 ;;
       --) shift; break ;;
       -*) echo "proveasio: unknown option: $1" >&2; usage >&2; exit 2 ;;
@@ -65,59 +68,58 @@ main() {
     esac
     shift
   done
-  cmd=("$@")
+  _pv_cmd=("$@")
 
-  PROVEASIO_IMAGE="" PROVEASIO_PULL="" PROVEASIO_USER_HOME="" PROVEASIO_ARGS=()
-  local dir found=0 f
-  dir="$(config_dir)"
-  if [ -f "$dir/config" ]; then load_file "$dir/config"; found=1; fi
-  if [ -d "$dir/conf.d" ]; then
-    for f in "$dir"/conf.d/*.sh; do
-      [ -f "$f" ] || continue
-      load_file "$f"; found=1
+  PROVEASIO_IMAGE="" PROVEASIO_PULL="" PROVEASIO_USER_HOME="${_pv_env_home}" PROVEASIO_ARGS=()
+  local _pv_dir _pv_found=0 _pv_f
+  _pv_dir="$(config_dir)"
+  if [ -f "$_pv_dir/config" ]; then load_file "$_pv_dir/config"; _pv_found=1; fi
+  if [ -d "$_pv_dir/conf.d" ]; then
+    for _pv_f in "$_pv_dir"/conf.d/*.sh; do
+      [ -f "$_pv_f" ] || continue
+      load_file "$_pv_f"; _pv_found=1
     done
   fi
-  [ "$found" -eq 1 ] || echo "proveasio: no config in $dir, using defaults; 'proveasio init' writes one" >&2
+  [ "$_pv_found" -eq 1 ] || echo "proveasio: no config in $_pv_dir, using defaults; 'proveasio init' writes one" >&2
 
-  local image="${opt_image:-${env_image:-${PROVEASIO_IMAGE:-ziwi/proveasio:latest}}}"
-  local pull="${opt_pull:-${env_pull:-${PROVEASIO_PULL:-}}}"
-  if [ -z "$pull" ]; then
+  local _pv_image="${_pv_opt_image:-${_pv_env_image:-${PROVEASIO_IMAGE:-ziwi/proveasio:latest}}}"
+  local _pv_pull="${_pv_opt_pull:-${_pv_env_pull:-${PROVEASIO_PULL:-}}}"
+  if [ -z "$_pv_pull" ]; then
     # A name without a registry or namespace is a local build; Docker would
     # look for it under docker.io/library/.
-    case "$image" in */*) pull=missing ;; *) pull=never ;; esac
+    case "$_pv_image" in */*) _pv_pull=missing ;; *) _pv_pull=never ;; esac
   fi
-  case "$pull" in missing|always|never) ;; *) die "--pull must be missing, always or never, not '$pull'" ;; esac
-  local user_home="${PROVEASIO_USER_HOME:-/home/dev}"
+  case "$_pv_pull" in missing|always|never) ;; *) die "--pull must be missing, always or never, not '$_pv_pull'" ;; esac
+  # The environment wins over the config, as for the image and pull policy.
+  local _pv_home_in="${_pv_env_home:-${PROVEASIO_USER_HOME:-/home/dev}}"
 
-  local here home
-  here="$(pwd -P)"
-  home="$(cd "$HOME" && pwd -P)"
-  if [ "$here" = / ] || [ "$here" = "$home" ] || [[ "$home/" == "$here"/* ]]; then
-    die "refusing to mount $here as /workspace: it contains your whole home directory. cd into a project directory first."
+  local _pv_here _pv_home
+  _pv_here="$(pwd -P)"
+  _pv_home="$(cd "$HOME" && pwd -P)"
+  if [ "$_pv_here" = / ] || [ "$_pv_here" = "$_pv_home" ] || [[ "$_pv_home/" == "$_pv_here"/* ]]; then
+    die "refusing to mount $_pv_here as /workspace: it contains your whole home directory. cd into a project directory first."
   fi
 
-  local run=(docker run --rm -i)
-  if [ -t 0 ] && [ -t 1 ]; then run+=(-t); fi
-  run+=(-v "$PWD:/workspace" -w /workspace)
-  run+=(-v "proveasio-state:$user_home/.local/state/proveasio")
-  run+=("${PROVEASIO_ARGS[@]}")
-  run+=(--pull "$pull" "$image" "${cmd[@]}")
+  local _pv_run=(docker run --rm -i)
+  if [ -t 0 ] && [ -t 1 ]; then _pv_run+=(-t); fi
+  # --mount, not -v: -v splits at ':'. The source is a quoted CSV field, so
+  # commas are fine too; a '"' is doubled.
+  _pv_run+=(--mount "type=bind,\"src=${PWD//\"/\"\"}\",dst=/workspace" -w /workspace)
+  _pv_run+=(-v "proveasio-state:$_pv_home_in/.local/state/proveasio")
+  _pv_run+=("${PROVEASIO_ARGS[@]}")
+  _pv_run+=(--pull "$_pv_pull" "$_pv_image" "${_pv_cmd[@]}")
 
-  if [ "$dry_run" -eq 1 ]; then
-    local line
-    line="$(printf '%q ' "${run[@]}")"
-    printf '%s\n' "${line% }"
+  if [ "$_pv_dry_run" -eq 1 ]; then
+    local _pv_line
+    _pv_line="$(printf '%q ' "${_pv_run[@]}")"
+    printf '%s\n' "${_pv_line% }"
     return 0
   fi
 
-  local envs
-  if envs="$(docker image inspect --format '{{range .Config.Env}}{{println .}}{{end}}' "$image" 2>/dev/null)"; then
-    grep -q '^_ZO_DATA_DIR=' <<<"$envs" \
-      || echo "proveasio: $image was built before the image defaults this launcher needs; shell history, the CA bundle and token presets will not work. Pull it again or rebuild it (docker buildx bake)." >&2
-  elif [ "$pull" = never ]; then
-    die "image $image not found and --pull is never. Build it with 'docker buildx bake' (IMAGE=$image), or pull it and set PROVEASIO_PULL=missing."
+  if ! docker image inspect "$_pv_image" >/dev/null 2>&1 && [ "$_pv_pull" = never ]; then
+    die "image $_pv_image not found and --pull is never. Build it with 'docker buildx bake' (IMAGE=$_pv_image), or pull it and set PROVEASIO_PULL=missing."
   fi
-  exec "${run[@]}"
+  exec "${_pv_run[@]}"
 }
 
 init() {
@@ -139,6 +141,8 @@ init() {
   mkdir -p "$dir"
 
   local name email text
+  # Bash 5.2 replaces '&' in ${var//pattern/replacement} with the match.
+  shopt -u patsub_replacement 2>/dev/null || true
   name="$(git config --get user.name 2>/dev/null || true)"
   email="$(git config --get user.email 2>/dev/null || true)"
   text="$(config_template)"
