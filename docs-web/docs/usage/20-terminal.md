@@ -123,6 +123,8 @@ Uses: [pay-respects](https://github.com/iffse/pay-respects)
 
 When a command fails because of a typo or a missing option, type `f` and press <kbd>Enter</kbd>. `pay-respects` suggests the corrected command. This is handy with git, for example after `git push` on a new branch that has no upstream yet.
 
+For a command that is not installed, `pay-respects` names the Ubuntu package that provides it (from the `command-not-found` database).
+
 You can add your own rules in a TOML file, see the [pay-respects repository](https://github.com/iffse/pay-respects).
 
 ## Docker and Kubernetes

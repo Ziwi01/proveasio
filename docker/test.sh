@@ -190,6 +190,9 @@ check_software_packages() {
     grep -qxF -- "$p" <<<"$installed" || missing+=("$p")
   done <<<"$LIST"
   [ ${#missing[@]} -eq 0 ] || fail "not installed: ${missing[*]}" || return 1
+  if grep -qxF command-not-found <<<"$LIST"; then
+    expect_file /var/lib/command-not-found/commands.db || return 1
+  fi
   DETAIL="$(effective default_apt_packages software 'length') packages"
 }
 
