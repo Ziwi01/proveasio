@@ -35,7 +35,9 @@ Or build it as a Docker image:
 ```bash
 git clone https://github.com/Ziwi01/proveasio.git && cd proveasio
 USER_UID=$(id -u) USER_GID=$(id -g) docker buildx bake
-docker run -it --rm -v "$PWD":/workspace -w /workspace proveasio:local
+ln -s "$PWD/docker/proveasio" ~/.local/bin/proveasio
+proveasio init && echo 'PROVEASIO_IMAGE=proveasio:local' >> ~/.config/proveasio/config
+proveasio    # from any project directory
 ```
 
 See [Docker image](https://ziwi01.github.io/proveasio/main/docker/build).

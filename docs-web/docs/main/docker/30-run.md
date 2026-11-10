@@ -3,15 +3,277 @@
 The paths on this page assume the default user name `dev`. If you built with
 another `USERNAME`, replace `/home/dev` with `/home/<USERNAME>`.
 
-## Interactive shell
+## The launcher
+
+`proveasio` is a script for the host that starts the image in the current
+directory. Your settings (image, SSH keys, tokens, the CA bundle and so on)
+live in a config file, so the command stays short.
+
+Install it from a clone of the repository:
 
 ```shell
-docker run -it --rm -v "$PWD":/workspace -w /workspace proveasio:local
+ln -s "$PWD/docker/proveasio" ~/.local/bin/proveasio
 ```
 
-This starts zsh, with tmux, Neovim and the other tools installed, as the user
-`dev` with passwordless sudo. Your current directory is mounted at
-`/workspace`.
+Or download only the script:
+
+```shell
+curl -fsSLo ~/.local/bin/proveasio https://raw.githubusercontent.com/ziwi01/proveasio/master/docker/proveasio
+chmod +x ~/.local/bin/proveasio
+```
+
+:::note
+The script reaches `master` with the next release. Until then, take it from a
+clone of the `develop` branch, or replace `master` with `develop` in the URL.
+:::
+
+Then write a starter config and start the container from a project directory:
+
+```shell
+proveasio init        # writes ~/.config/proveasio/config
+cd ~/projects/my-project
+proveasio             # zsh in the container, with the project at /workspace
+proveasio -- ansible --version   # run one command instead
+proveasio --dry-run   # print the docker command instead of running it
+```
+
+The launcher always adds `--rm`, mounts the current directory at `/workspace`,
+and mounts the `proveasio-state` volume (see [Keeping state](#keeping-state)).
+It refuses to start in your home directory or in `/`: that would give the
+container your whole home directory, including keys and tokens the config did
+not ask for.
+
+It runs on Linux and WSL with Docker Engine. It is not tested on macOS.
+
+The launcher needs an image built after the launcher was added (it relies on
+defaults set in the image). With an older image it prints a warning: pull the
+image again or rebuild it.
+
+## Choosing the image
+
+Set the image in the config:
+
+```bash
+PROVEASIO_IMAGE=proveasio:local   # your local build (the default of docker buildx bake)
+PROVEASIO_PULL=missing            # missing, always or never
+```
+
+Or for one run: `proveasio --image ziwi/proveasio:latest-slim --pull always`.
+An environment variable (`PROVEASIO_IMAGE=... proveasio`) overrides the config,
+and the option overrides both.
+
+Without a setting, the image is `ziwi/proveasio:latest`. The pull policy
+defaults to `never` for names without a `/`, such as `proveasio:local`: Docker
+would otherwise look for them on Docker Hub. When such an image does not
+exist, the launcher tells you to build it. For all other names it defaults to
+`missing`.
+
+:::note
+The pre-built image is not published yet. Until it is, build the image
+([Build the image](./build)) and set `PROVEASIO_IMAGE=proveasio:local`.
+:::
+
+## Config files
+
+The launcher reads `~/.config/proveasio/config`, then every
+`~/.config/proveasio/conf.d/*.sh` in name order. Set `PROVEASIO_CONFIG_DIR`
+to use another directory, for example one per project or customer.
+
+The files are bash. Each setting adds arguments for `docker run` to
+`PROVEASIO_ARGS`:
+
+```bash
+PROVEASIO_ARGS+=(-v "$HOME/.kube:/home/dev/.kube")
+```
+
+`proveasio init` writes every setting below into the config, commented out.
+Remove the `# ` in front of the ones you want. You can also put a setting into
+its own file in `conf.d/`.
+
+Pass secrets by name only: `export NAME=...` and then `-e NAME`. A value on the
+docker command line is visible to every user of the host in `ps`, and
+`proveasio --dry-run` would print it.
+
+## Settings
+
+### SSH keys
+
+```bash
+PROVEASIO_ARGS+=(-v "$HOME/.ssh:/home/dev/.ssh")
+```
+
+This needs an image built with your UID (see [User ID](#user-id)). ssh
+refuses to read private keys and `~/.ssh/config` that belong to another user.
+The mount is writable, so ssh can add new hosts to `known_hosts`. With `:ro`
+added it still works, but ssh warns that it cannot add new hosts. Paths in
+`~/.ssh/config` that start with `/home/<you>` do not exist in the container;
+write them as `~/.ssh/...` instead.
+
+Instead of the key files, you can pass your ssh agent. The keys then stay on
+the host:
+
+```bash
+PROVEASIO_ARGS+=(-v "$SSH_AUTH_SOCK:/run/ssh-agent.sock" -e SSH_AUTH_SOCK=/run/ssh-agent.sock)
+```
+
+The agent socket is readable only by its owner, so this also needs your UID.
+This is for Docker Engine on Linux or WSL; Docker Desktop passes the agent
+differently.
+
+### Kubernetes
+
+```bash
+PROVEASIO_ARGS+=(-v "$HOME/.kube:/home/dev/.kube")
+```
+
+### Git identity
+
+The image has the git identity from the build (the default is
+`Proveasio <Proveasio@hell.no>`). Set yours in `docker/overrides.yml` before
+building, or pass it when the container starts. `proveasio init` fills in the
+values from your host's git config:
+
+```bash
+PROVEASIO_ARGS+=(-e GIT_AUTHOR_NAME=James -e GIT_AUTHOR_EMAIL=james.doe@hell.no)
+PROVEASIO_ARGS+=(-e GIT_COMMITTER_NAME=James -e GIT_COMMITTER_EMAIL=james.doe@hell.no)
+```
+
+### No Nerd Font
+
+The prompt, tmux, Neovim, lazygit and `ls` show
+[Nerd Fonts](https://www.nerdfonts.com/) icons. When your terminal has no such
+font, turn them off:
+
+```bash
+PROVEASIO_ARGS+=(-e PROVEASIO_NERD_FONTS=0)
+```
+
+To make it the image default, set `nerd_fonts: false` in `docker/overrides.yml`
+before building. See [No Nerd Font](../customization/variables#no-nerd-font).
+
+### Corporate CA bundle
+
+If your network intercepts TLS, mount your host's CA bundle over the image's:
+
+```bash
+PROVEASIO_ARGS+=(-v /etc/pki/ca-trust/extracted/pem/tls-ca-bundle.pem:/etc/ssl/certs/ca-certificates.crt:ro)
+```
+
+The file must be a full bundle: the public root CAs plus your organization's.
+The path above is the one on RHEL; on Debian and Ubuntu it is
+`/etc/ssl/certs/ca-certificates.crt`. A file with only your organization's root
+CA breaks TLS to every other site. If that is all you have, build the image
+with it instead ([Corporate root CA](./build#corporate-root-ca)).
+
+The image points `NODE_EXTRA_CA_CERTS` and `REQUESTS_CA_BUNDLE` at that file,
+so Node.js and Python use the bundle too.
+
+### Docker inside the container
+
+The image has the Docker client, Compose and Buildx, but no engine. Mount the
+host's socket to use the host engine, and add the socket's group so the user
+`dev` can use it:
+
+```bash
+PROVEASIO_ARGS+=(-v /var/run/docker.sock:/var/run/docker.sock --group-add "$(stat -c %g /var/run/docker.sock)")
+```
+
+`dry` and `kind` then work against the host engine.
+Containers you start this way run on the host, next to this one.
+
+### Azure DevOps
+
+To clone and push over HTTPS with a personal access token (PAT), create a PAT
+in Azure DevOps with the narrowest scope that works: **Code (Read)** or
+**Code (Read & Write)**, for one organization. Save it on the host:
+
+```shell
+install -m 600 /dev/null ~/.config/proveasio/ado-pat
+$EDITOR ~/.config/proveasio/ado-pat
+```
+
+Then turn on the setting:
+
+```bash
+export ADO_PAT="$(<"$HOME/.config/proveasio/ado-pat")"
+PROVEASIO_ARGS+=(-e ADO_PAT)
+```
+
+A git credential helper in the image gives the token to git for
+`https://dev.azure.com` and `https://<org>.visualstudio.com`:
+
+```shell
+git clone https://dev.azure.com/<org>/<project>/_git/<repo>
+```
+
+When the PAT expires, replace the file. Nothing in the container needs to
+change.
+
+### GitHub
+
+Create a token on GitHub, preferably a fine-grained one limited to the
+repositories you need, and save it the same way:
+
+```shell
+install -m 600 /dev/null ~/.config/proveasio/github-token
+$EDITOR ~/.config/proveasio/github-token
+```
+
+```bash
+export GH_TOKEN="$(<"$HOME/.config/proveasio/github-token")"
+PROVEASIO_ARGS+=(-e GH_TOKEN)
+```
+
+git uses it for `https://github.com`, and `gh` reads `GH_TOKEN` itself, so it
+works without `gh auth login`:
+
+```shell
+git clone https://github.com/<owner>/<repo>.git
+gh repo list
+```
+
+It also lifts the GitHub API rate limit when you run the playbook in the
+container.
+
+The token is visible to every program in the container, including the AI
+agents. Give it, and the Azure DevOps PAT, only the scopes you need.
+
+## Keeping state
+
+Everything outside mounted directories is lost when the container stops. The
+image keeps shell history (`HISTFILE`) and zoxide's data (`_ZO_DATA_DIR`) in
+`/home/dev/.local/state/proveasio`, and the launcher mounts the
+`proveasio-state` volume there. The state of other tools in `~/.local/state`
+starts fresh in every container.
+
+To keep another tool's state, add a volume for its directory. For Neovim (the
+default config runs as `NVIM_APPNAME=astronvim`):
+
+```bash
+PROVEASIO_ARGS+=(-v proveasio-nvim-state:/home/dev/.local/state/astronvim)
+```
+
+The directory must exist in the image. If it does not, Docker creates the
+volume owned by root and the tool cannot write to it.
+
+### From the old volumes
+
+Before the launcher, the docs mounted `proveasio-state` on all of
+`~/.local/state` and zoxide's data in a second volume, `proveasio-zoxide`. The
+history file in `proveasio-state` lands in the right place by itself. Copy the
+zoxide database once (with your image instead of `proveasio:local`), then
+remove the old volume:
+
+```shell
+docker run --rm -v proveasio-zoxide:/from:ro \
+  -v proveasio-state:/home/dev/.local/state/proveasio \
+  --entrypoint bash proveasio:local -c 'mkdir -p "$_ZO_DATA_DIR" && cp /from/db.zo "$_ZO_DATA_DIR/"'
+docker volume rm proveasio-zoxide
+```
+
+Other directories in `proveasio-state` from the old layout, such as `opencode`
+or `astronvim`, are no longer used and can be deleted from inside the
+container.
 
 ## User ID
 
@@ -35,99 +297,21 @@ work: the home directory would not be writable. A
 [devcontainer](#devcontainer) with `updateRemoteUserUID` changes the IDs
 once, in an extra image layer.
 
-## SSH keys
-
-To use your own keys, mount your `~/.ssh`:
-
-```shell
-docker run -it --rm \
-  -v "$PWD":/workspace -w /workspace \
-  -v "$HOME/.ssh":/home/dev/.ssh \
-  proveasio:local
-```
-
-This needs an image built with your UID (see [User ID](#user-id)). ssh
-refuses to read private keys and `~/.ssh/config` that belong to another user.
-The mount is writable, so ssh can add new hosts to `known_hosts`. With `:ro`
-added it still works, but ssh warns that it cannot add new hosts. Paths in
-`~/.ssh/config` that start with `/home/<you>` do not exist in the container;
-write them as `~/.ssh/...` instead.
-
-Instead of the key files, you can pass your ssh agent. The keys then stay on
-the host:
-
-```shell
-docker run -it --rm \
-  -v "$SSH_AUTH_SOCK":/run/ssh-agent.sock -e SSH_AUTH_SOCK=/run/ssh-agent.sock \
-  proveasio:local
-```
-
-The agent socket is readable only by its owner, so this also needs your UID.
-This is for Docker Engine on Linux or WSL; Docker Desktop passes the agent
-differently.
-
 ## Terminal colors
 
 The image sets `TERM=xterm-256color`, because Docker would otherwise set
 `xterm`, which has 8 colors, and the zsh prompt would lose its colors. If your
 terminal needs another value, pass it with `-e TERM`.
 
-## No Nerd Font
+## Without the launcher
 
-The prompt, tmux, Neovim, lazygit and `ls` show
-[Nerd Fonts](https://www.nerdfonts.com/) icons. When your terminal has no such
-font, turn them off when you start the container:
+The launcher only builds a `docker run` command. The minimal one is:
 
 ```shell
-docker run -it --rm -e PROVEASIO_NERD_FONTS=0 proveasio:local
+docker run -it --rm -v "$PWD":/workspace -w /workspace proveasio:local
 ```
 
-To make it the image default, set `nerd_fonts: false` in `docker/overrides.yml`
-before building. See [No Nerd Font](../customization/variables#no-nerd-font).
-
-## Keeping state
-
-Everything outside mounted directories is lost when the container stops. To
-keep shell history and zoxide data, mount named volumes and point zsh's
-history file into one of them:
-
-```shell
-docker run -it --rm \
-  -v "$PWD":/workspace -w /workspace \
-  -v proveasio-state:/home/dev/.local/state \
-  -v proveasio-zoxide:/home/dev/.local/share/zoxide \
-  -e HISTFILE=/home/dev/.local/state/zsh_history \
-  proveasio:local
-```
-
-## Git identity
-
-The image has the git identity from the build (the default is
-`Proveasio <Proveasio@hell.no>`). Set yours in `docker/overrides.yml` before
-building, or pass it when you start a container:
-
-```shell
-docker run -it --rm \
-  -e GIT_AUTHOR_NAME="James" -e GIT_AUTHOR_EMAIL="james.doe@hell.no" \
-  -e GIT_COMMITTER_NAME="James" -e GIT_COMMITTER_EMAIL="james.doe@hell.no" \
-  proveasio:local
-```
-
-## Docker inside the container
-
-The image has the Docker client, Compose and Buildx, but no engine. Mount the
-host's socket to use the host engine, and add the socket's group so the user
-`dev` can use it:
-
-```shell
-docker run -it --rm \
-  -v /var/run/docker.sock:/var/run/docker.sock \
-  --group-add "$(stat -c %g /var/run/docker.sock)" \
-  proveasio:local
-```
-
-`dry` and `kind` then work against the host engine.
-Containers you start this way run on the host, next to this one.
+`proveasio --dry-run` prints the full command for your config, ready to copy.
 
 ## Devcontainer
 
@@ -166,9 +350,10 @@ With the Docker socket mounted, the `software/docker` check also connects to
 the engine.
 
 The tests check that each tool runs and reports the version recorded in
-`~/proveasio/current-versions.yml`, and that zsh, tmux and Neovim start
-without errors. They do not check that your configuration works the way you
-want.
+`~/proveasio/current-versions.yml`, that zsh, tmux and Neovim start without
+errors, and that the image defaults the launcher relies on are set
+(`image/defaults`). They do not check that your configuration works the way
+you want.
 
 To get an image even when a test fails, for example to investigate the
 failure, build the stage before the tests:

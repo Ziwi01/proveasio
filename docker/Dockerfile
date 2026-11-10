@@ -116,6 +116,26 @@ RUN --mount=type=bind,source=docker,target=/tmp/proveasio-docker \
     --mount=type=secret,id=GITHUB_TOKEN,env=GITHUB_TOKEN \
     PROVEASIO_IMAGE_BUILD=1 bash /tmp/proveasio-docker/provision.sh
 
+# Defaults the docker/proveasio launcher relies on, the same for every user.
+# Shell history and zoxide data go to one directory, so one volume on it
+# keeps both. HISTFILE is set in /etc/zsh/zshenv, not ENV: bash would trim
+# the zsh history to its own HISTFILESIZE. oh-my-zsh keeps a HISTFILE that is
+# already set, and `-e HISTFILE=...` still wins. The CA variables name the
+# system bundle, which changes nothing until a corporate bundle is mounted
+# over it. The directory is created here so that a new named volume on it
+# belongs to the user. Repeated in the `update` stage.
+ENV _ZO_DATA_DIR=/home/${USERNAME}/.local/state/proveasio/zoxide \
+    NODE_EXTRA_CA_CERTS=/etc/ssl/certs/ca-certificates.crt \
+    REQUESTS_CA_BUNDLE=/etc/ssl/certs/ca-certificates.crt
+RUN <<'EOF'
+set -euo pipefail
+mkdir -p "$HOME/.local/state/proveasio/zoxide"
+line=': ${HISTFILE:=$HOME/.local/state/proveasio/zsh_history}  # proveasio'
+grep -qxF "$line" /etc/zsh/zshenv || echo "$line" | sudo tee -a /etc/zsh/zshenv >/dev/null
+EOF
+# git credential helpers for ADO_PAT and GH_TOKEN.
+COPY --chmod=0644 docker/gitconfig /etc/gitconfig
+
 COPY --chown=${USER_UID}:${USER_GID} --chmod=0755 docker/test.sh /home/${USERNAME}/proveasio/docker/test.sh
 # Warns when the working directory or ~/.ssh belongs to another UID, then runs CMD.
 COPY --chmod=0755 docker/entrypoint.sh /usr/local/bin/proveasio-entrypoint
@@ -144,7 +164,17 @@ RUN --mount=type=bind,source=docker,target=/tmp/proveasio-docker \
     PROVEASIO_IMAGE_BUILD=1 bash /tmp/proveasio-docker/provision.sh --update
 COPY --chown=${USER_UID}:${USER_GID} --chmod=0755 docker/test.sh /home/${USERNAME}/proveasio/docker/test.sh
 # Also set here so that updating an image built before they existed adds them.
-ENV TERM=xterm-256color
+ENV TERM=xterm-256color \
+    _ZO_DATA_DIR=/home/${USERNAME}/.local/state/proveasio/zoxide \
+    NODE_EXTRA_CA_CERTS=/etc/ssl/certs/ca-certificates.crt \
+    REQUESTS_CA_BUNDLE=/etc/ssl/certs/ca-certificates.crt
+RUN <<'EOF'
+set -euo pipefail
+mkdir -p "$HOME/.local/state/proveasio/zoxide"
+line=': ${HISTFILE:=$HOME/.local/state/proveasio/zsh_history}  # proveasio'
+grep -qxF "$line" /etc/zsh/zshenv || echo "$line" | sudo tee -a /etc/zsh/zshenv >/dev/null
+EOF
+COPY --chmod=0644 docker/gitconfig /etc/gitconfig
 COPY --chmod=0755 docker/entrypoint.sh /usr/local/bin/proveasio-entrypoint
 ENTRYPOINT ["/usr/local/bin/proveasio-entrypoint"]
 CMD ["zsh", "-l"]

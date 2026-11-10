@@ -197,7 +197,9 @@ runs inside the build; `.github/workflows/docker.yml` publishes it.
   `UPDATES+=(...)` to `build-info.env`. `test.sh` then tests everything the build's or any
   update's tags selected. Each update adds about 4 layers; replaced files stay below.
 - `docker/test.sh` runs in the `test` stage; `final` depends on it. It selects checks from the
-  includes in `software`/`config` `tasks/main.yml`, the effective excludes and the build tags.
+  includes in `software`/`config` `tasks/main.yml`, the effective excludes and the build tags,
+  plus `image/defaults`, which is always selected (not by `--list --tags`). `provision.sh
+  --update` skips `image/*` in its "new include" check, because the `update` stage sets them.
 - `docker/nvim-install.lua` runs after the playbook and waits for Mason and treesitter installs.
   nvim gets the PATH of an interactive zsh, so Mason's npm, go and gem packages install. A failed
   package is logged, not fatal.
@@ -205,6 +207,17 @@ runs inside the build; `.github/workflows/docker.yml` publishes it.
   an entrypoint (`docker/entrypoint.sh`) that warns when the working directory or `~/.ssh`
   belongs to another UID. The UID/GID are fixed at build time; docs pass
   `USER_UID=$(id -u) USER_GID=$(id -g)`. Do not add a runtime `chown` of the home.
+- Image defaults for the launcher, set after the playbook in both `build` and `update`:
+  `_ZO_DATA_DIR` and (in `/etc/zsh/zshenv`, not ENV, so bash does not trim it) zsh's `HISTFILE`
+  under `~/.local/state/proveasio` (created in the image so a
+  new volume on it belongs to the user), `NODE_EXTRA_CA_CERTS`/`REQUESTS_CA_BUNDLE` on the
+  system bundle, and `docker/gitconfig` as `/etc/gitconfig` (HTTPS credential helpers that
+  read `ADO_PAT` and `GH_TOKEN`).
+- `docker/proveasio` is the host-side launcher: it sources
+  `~/.config/proveasio/{config,conf.d/*.sh}` (`PROVEASIO_CONFIG_DIR` overrides) and builds one
+  `docker run`. `proveasio init` writes the starter config from a heredoc in the script; the
+  presets in `docs-web/docs/main/docker/30-run.md` mirror it, so change both together.
+  Secrets go in as `-e NAME` only.
 - `docker/cleanup.sh` runs in the playbook layer. It must not delete paths the roles use as
   "already installed" gates. It exits 2 unless `PROVEASIO_IMAGE_BUILD=1`. The Dockerfile sets
   it on `provision.sh`, which unsets it and passes it only to `render-overrides.sh` and
@@ -213,10 +226,10 @@ runs inside the build; `.github/workflows/docker.yml` publishes it.
   per run.
 - Verify Docker changes with `docker buildx bake --print` and a smoke build:
   `ANSIBLE_TAGS=software_packages,yq,eza,zsh,neovim,neovim-config,docker IMAGE=proveasio:smoke docker buildx bake`.
-  It is the quick check (9 checks, about 5-7 minutes with cached bootstrap layers). Its 13
+  It is the quick check (10 checks, about 5-7 minutes with cached bootstrap layers). Its 13
   Mason failures are expected, because the tag set leaves out nvm, gvm and rvm.
   For update changes, also run an update on the smoke image:
-  `IMAGE=proveasio:smoke ANSIBLE_TAGS=eza docker buildx bake update` (9 checks).
+  `IMAGE=proveasio:smoke ANSIBLE_TAGS=eza docker buildx bake update` (10 checks).
 - On WSL, check free host memory before a build. A full build pushed WSL to its memory cap;
   on a host that also runs other large programs, that can exhaust Windows memory and Windows
   then shuts WSL down. The margin used so far: start only with at least 10 GB free physical
