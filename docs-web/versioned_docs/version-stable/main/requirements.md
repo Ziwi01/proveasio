@@ -8,8 +8,8 @@ sidebar_position: 3
 
 | System | Status |
 |---|---|
-| Ubuntu 24.04, native or WSL2 | ✅ Supported. CI runs the full playbook on a clean 24.04 runner weekly and on every push to `master`. The Docker image is built on 24.04. |
-| Ubuntu 26.04, native or WSL2 | ✅ Supported. CI runs the full playbook on a clean 26.04 runner (the `Build (26)` workflow, started manually). See the [sudo note](./installation.md#sudo-rs) below. |
+| Ubuntu 26.04, native or WSL2 | ✅ Supported. CI runs the full playbook on a clean 26.04 runner weekly and on every push to `master`. The Docker image is built on 26.04. See the [sudo note](./installation.md#sudo-rs) below. |
+| Ubuntu 24.04, native or WSL2 | ✅ Supported, but no longer tested in CI. |
 | Other Ubuntu releases | ⚠️ Not tested. They may work, but nothing checks them. |
 | Other distributions, macOS | ❌ Not supported. The roles use `apt` and Ubuntu packages. On those systems, use the [Docker image](./docker/10-build.md). |
 | Windows host | ⚠️ Experimental. See [Windows setup](./windows/20-automated.md). |

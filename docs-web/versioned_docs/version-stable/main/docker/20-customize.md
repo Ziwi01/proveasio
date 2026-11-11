@@ -191,7 +191,7 @@ Set these as environment variables when you run `docker buildx bake`.
 | `ANSIBLE_TAGS` | empty | Passed as `--tags`. |
 | `ANSIBLE_SKIP_TAGS` | empty | Passed as `--skip-tags`. |
 | `PROFILE` | `full` | Extra settings file `docker/profile-<PROFILE>.yml`, see [Profiles](#profiles). Also sets the default `IMAGE`. |
-| `UBUNTU_VERSION` | `24.04` | Tag of the `ubuntu` base image. |
+| `UBUNTU_VERSION` | `26.04` | Tag of the `ubuntu` base image. |
 | `USERNAME` | `dev` | User inside the image. |
 | `USER_UID` / `USER_GID` | `1000` / `1000` | IDs of that user. Set them to yours (`$(id -u)`, `$(id -g)`), or `dev` cannot write to mounted directories. See [User ID](./run#user-id). |
 | `IMAGE` | `proveasio:local`, or `proveasio:<PROFILE>` for other profiles | Name of the loaded image. |
