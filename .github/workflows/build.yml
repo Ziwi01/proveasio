@@ -31,8 +31,13 @@ jobs:
       - name: Prepare for setup
         run: sudo sh prepare-ubuntu.sh
 
+      # Without a token, the version lookups share the unauthenticated GitHub API
+      # limit (60/hour per runner IP) and fail at random. GH_TOKEN is a
+      # repository secret holding a read-only PAT; github.token is the fallback.
       - name: Build Proveasio'ned environment
         working-directory: ./ansible
+        env:
+          GITHUB_TOKEN: ${{ secrets.GH_TOKEN || github.token }}
         run: ansible-playbook -i inventory.yml setup-ubuntu.yml
 
       - name: Push latest tag
