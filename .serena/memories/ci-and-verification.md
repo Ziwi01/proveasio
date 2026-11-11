@@ -2,16 +2,18 @@
 
 Deeper detail behind the "Verifying your work" section of `AGENTS.md`.
 
-## Workflows (6 files, all in `.github/workflows/`)
+## Workflows (5 files, all in `.github/workflows/`)
 
-`lint.yml` and `docker.yml` are the only `pull_request`-triggered workflows; the other four
+`lint.yml` and `docker.yml` are the only `pull_request`-triggered workflows; the other three
 run on push, schedule, tag or dispatch only.
 
 ### `build.yml` — "Build"
 - Triggers: push to `master`, weekly cron `0 6 * * 5`, `workflow_dispatch`
-- Runner `ubuntu-24.04`
-- `sudo apt remove shim-signed grub-efi-amd64-bin -y --allow-remove-essential` (frees disk)
-  → `sudo sh prepare-ubuntu.sh` → `ansible-playbook -i inventory.yml setup-ubuntu.yml`
+- Runner `ubuntu-26.04` (pinned, not `ubuntu-latest`). Until 2026-11 it ran on `ubuntu-24.04`
+  with a `sudo apt remove shim-signed grub-efi-amd64-bin` step first; the separate
+  `build-26.yml` (manual, 26.04) was folded in and the grub step dropped. 24.04 is no longer
+  tested in CI.
+- `sudo sh prepare-ubuntu.sh` → `ansible-playbook -i inventory.yml setup-ubuntu.yml`
   in `./ansible` (no `-K`; runners have passwordless sudo)
 - Then: force-push `latest` tag, generate changelog via `requarks/changelog-action@v1`,
   create prerelease via `ncipollo/release-action@v1.12.0`, auto-commit `CHANGELOG.md`
@@ -21,10 +23,6 @@ run on push, schedule, tag or dispatch only.
   `github.ref_name` is `develop` there; the steps used it until 2026-09-29, which made the
   previous-tag lookup fail (`malformed object name develop`), dropped the `[latest]` CHANGELOG
   section (`fd06813`) and named the pre-release "develop". Now `BUILD_BRANCH`; unverified on GitHub.
-
-### `build-26.yml` — "Build (26)"
-`workflow_dispatch` only. `ubuntu-26.04`, same two steps, no release plumbing. Forward-
-looking LTS smoke test.
 
 ### `pages.yml` — "Documentation"
 - Triggers: push to **`develop`**, `workflow_dispatch`
@@ -61,7 +59,7 @@ No build, no lint.
 
 ## What "done" actually means
 
-CI verifies three things: the playbook runs green on Ubuntu 24.04, the Docusaurus site
+CI verifies three things: the playbook runs green on Ubuntu 26.04, the Docusaurus site
 builds, and `ansible/` passes ansible-lint. Nothing else is gated yet; `docker.yml` adds
 the image build and `docker/test.sh` once it runs on GitHub.
 

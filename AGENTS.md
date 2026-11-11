@@ -63,7 +63,7 @@ any markdownlint runner, any Lua linter, `make`, `just`, `pytest`, pre-commit ho
 `docker/nvim-install.lua`, and nothing lints it.
 
 There are two functional tests, both in CI. `.github/workflows/build.yml` is a full playbook
-run on a clean Ubuntu 24.04 runner, on push to `master` and weekly. It is destructive —
+run on a clean Ubuntu 26.04 runner, on push to `master` and weekly. It is destructive —
 never run the full playbook to "check" something on a real machine.
 `.github/workflows/docker.yml` runs the playbook inside the image build, then
 `docker/test.sh`; it has not run on GitHub yet. Locally, the smoke build (see "Docker

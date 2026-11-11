@@ -17,7 +17,7 @@ Set up an Ubuntu terminal environment for development and operations with one An
 
 Proveasio installs and configures the tools: zsh, tmux, Neovim, Git helpers, Kubernetes and cloud CLIs, language version managers and AI coding agents. Every tool comes with customizations that make day-to-day terminal work faster.
 
-Supported systems: **Ubuntu 24.04** and **Ubuntu 26.04**, natively or on Windows WSL2. Both are tested in CI. On any other system, use the **Docker image**.
+Supported systems: **Ubuntu 24.04** and **Ubuntu 26.04**, natively or on Windows WSL2. CI tests 26.04. On any other system, use the **Docker image**.
 
 ## Quick start
 
