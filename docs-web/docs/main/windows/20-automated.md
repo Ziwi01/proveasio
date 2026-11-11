@@ -10,7 +10,7 @@ This automates the [Windows manual setup](./10-manual.md) and installs Windows s
 
 Download this repository somewhere on Windows. The script `prepare-windows.ps1`:
 
-- installs WSL with Ubuntu 24.04,
+- installs WSL with Ubuntu 26.04,
 - enables WinRM with CredSSP authentication, so Ansible in WSL can configure Windows,
 - installs the [Chocolatey](https://chocolatey.org/) package manager.
 

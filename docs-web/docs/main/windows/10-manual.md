@@ -2,12 +2,12 @@
 
 1. If WSL is not installed, install it from an administrator `cmd` or PowerShell with `wsl --install`. See the [Microsoft docs](https://learn.microsoft.com/en-us/windows/wsl/install#install-wsl-command).
 
-2. Install Ubuntu 24.04 or 26.04. From PowerShell (as Administrator):
+2. Install Ubuntu 26.04 or 24.04. From PowerShell (as Administrator):
 
    ```powershell
    wsl.exe --list --online             # shows the exact distribution names
-   wsl.exe --install -d Ubuntu-24.04   # or Ubuntu-26.04
-   wsl.exe --set-default Ubuntu-24.04
+   wsl.exe --install -d Ubuntu-26.04   # or Ubuntu-24.04
+   wsl.exe --set-default Ubuntu-26.04
    ```
 
 3. Check that `systemd` runs in the distribution: `systemctl is-system-running` should print `running` or `degraded`. New Ubuntu installs enable it by default. If it does not, add these lines to `/etc/wsl.conf`:
