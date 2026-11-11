@@ -230,6 +230,8 @@ update() {
     tested="$(sed -nE 's#^ok ([^ ]+).*#\1#p' "$passed")"
     while IFS= read -r item; do
       [ -n "$item" ] || continue
+      # The update stage sets the image defaults itself (docker/Dockerfile).
+      case "$item" in image/*) continue ;; esac
       grep -qxF -- "$item" <<<"$tested" && continue
       grep -qxF -- "$item" <<<"$selected" && continue
       fresh+=("$item")

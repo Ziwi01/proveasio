@@ -190,6 +190,9 @@ check_software_packages() {
     grep -qxF -- "$p" <<<"$installed" || missing+=("$p")
   done <<<"$LIST"
   [ ${#missing[@]} -eq 0 ] || fail "not installed: ${missing[*]}" || return 1
+  if grep -qxF command-not-found <<<"$LIST"; then
+    expect_file /var/lib/command-not-found/commands.db || return 1
+  fi
   DETAIL="$(effective default_apt_packages software 'length') packages"
 }
 
@@ -570,6 +573,47 @@ check_config_lazygit() {
   [ -z "$OUT" ] || fail "LG_CONFIG_FILE is '$OUT' with PROVEASIO_NERD_FONTS=1"
 }
 check_config_ansible()  { expect_file "$HOME/.ansible-lint"; }
+
+# cred_fill <host>: OUT is what git's credential helpers return for
+# https://<host>, without prompting.
+cred_fill() {
+  OUT="$(printf 'protocol=https\nhost=%s\n\n' "$1" | GIT_TERMINAL_PROMPT=0 GIT_ASKPASS='' SSH_ASKPASS='' git credential fill 2>/dev/null)"
+}
+
+# Not an include: the image defaults from docker/Dockerfile and
+# docker/gitconfig, which the docker/proveasio launcher relies on. Always selected.
+check_image_defaults() {
+  local state="$HOME/.local/state/proveasio" bundle=/etc/ssl/certs/ca-certificates.crt
+  [ "${_ZO_DATA_DIR:-}" = "$state/zoxide" ] || fail "_ZO_DATA_DIR is '${_ZO_DATA_DIR:-}'" || return 1
+  # HISTFILE is set for zsh only (/etc/zsh/zshenv): bash would trim the zsh
+  # history file to its HISTFILESIZE.
+  run_cmd zsh -fc 'print -r -- $HISTFILE'
+  [ "$OUT" = "$state/zsh_history" ] || fail "zsh has HISTFILE '$OUT'" || return 1
+  run_cmd bash -ic 'echo "HISTFILE=$HISTFILE"'
+  ! grep -qF "$state/" <<<"$OUT" || fail "bash uses the zsh history: $OUT" || return 1
+  [ "${NODE_EXTRA_CA_CERTS:-}" = "$bundle" ] || fail "NODE_EXTRA_CA_CERTS is '${NODE_EXTRA_CA_CERTS:-}'" || return 1
+  [ "${REQUESTS_CA_BUNDLE:-}" = "$bundle" ] || fail "REQUESTS_CA_BUNDLE is '${REQUESTS_CA_BUNDLE:-}'" || return 1
+  { [ -d "$state/zoxide" ] && [ -O "$state" ] && [ -O "$state/zoxide" ]; } \
+    || fail "$state/zoxide missing or not owned by $(id -un)" || return 1
+  if [ -f "$HOME/.zshrc" ]; then
+    zsh_var "" HISTFILE
+    [ "$OUT" = "$state/zsh_history" ] || fail "interactive zsh has HISTFILE '$OUT'" || return 1
+  fi
+  local host
+  for host in dev.azure.com myorg.visualstudio.com; do
+    ADO_PAT=t-ado cred_fill "$host"
+    grep -qx 'password=t-ado' <<<"$OUT" || fail "no ADO_PAT answer for $host: $OUT" || return 1
+    ADO_PAT="" cred_fill "$host"
+    ! grep -q '^password=' <<<"$OUT" || fail "answer for $host without ADO_PAT" || return 1
+  done
+  GH_TOKEN=t-gh cred_fill github.com
+  { grep -qx 'username=x-access-token' <<<"$OUT" && grep -qx 'password=t-gh' <<<"$OUT"; } \
+    || fail "no GH_TOKEN answer for github.com: $OUT" || return 1
+  GH_TOKEN="" cred_fill github.com
+  ! grep -q '^password=' <<<"$OUT" || fail "answer for github.com without GH_TOKEN" || return 1
+  ADO_PAT=t-ado GH_TOKEN=t-gh cred_fill example.com
+  ! grep -q '^password=' <<<"$OUT" || fail "a helper answered for example.com"
+}
 # ------------------------------------------------------------- end of checks
 
 # includes <role>: "<name> <comma-separated outer tags>" for each include.
@@ -756,6 +800,9 @@ main() {
     echo "# error: no checks selected" >&2
     exit 1
   fi
+  # The image defaults are checked in every image; --list --tags (provision.sh's
+  # selection of includes) leaves them out.
+  if [ "$tags_given" -eq 0 ]; then selected+=(image/defaults); fi
 
   if [ ${#only[@]} -gt 0 ]; then
     for o in "${only[@]}"; do

@@ -1,0 +1,225 @@
+#!/usr/bin/env bash
+# proveasio: start the Proveasio Docker image in the current directory.
+#
+# Settings come from <config dir>/config and <config dir>/conf.d/*.sh, both
+# sourced as bash. The config dir is $PROVEASIO_CONFIG_DIR, or
+# ${XDG_CONFIG_HOME:-~/.config}/proveasio. `proveasio init` writes a starter
+# config. Docs: https://ziwi01.github.io/proveasio/next/main/docker/run
+#
+# Linux and WSL hosts with Docker Engine. Not tested on macOS.
+set -euo pipefail
+
+usage() {
+  cat <<EOF
+Usage: proveasio [--image IMAGE] [--pull POLICY] [--dry-run] [--] [COMMAND...]
+       proveasio init [--force]
+
+Starts the Proveasio image with the current directory mounted at /workspace.
+Without COMMAND it starts the image's shell.
+
+  --image IMAGE   image to run (default: config, then ziwi/proveasio:latest)
+  --pull POLICY   missing, always or never (docker run --pull)
+  --dry-run       print the docker command instead of running it
+  init            write a starter config; --force replaces it (keeps config.bak)
+
+Config: $(config_dir)/config and conf.d/*.sh
+EOF
+}
+
+die() { echo "proveasio: $*" >&2; exit 1; }
+
+config_dir() {
+  printf '%s' "${PROVEASIO_CONFIG_DIR:-${XDG_CONFIG_HOME:-$HOME/.config}/proveasio}"
+}
+
+# load_file <file>: source one config file. Syntax errors stop the launcher;
+# errors while it runs are the file's own business, as in a shell rc file.
+# The launcher's own variables start with _pv_, so a config cannot change
+# them by accident.
+load_file() {
+  bash -n "$1" || die "syntax error in $1"
+  set +eu
+  # shellcheck source=/dev/null
+  source "$1"
+  set -eu
+}
+
+main() {
+  local _pv_env_image="${PROVEASIO_IMAGE:-}" _pv_env_pull="${PROVEASIO_PULL:-}"
+  local _pv_env_home="${PROVEASIO_USER_HOME:-}"
+  local _pv_opt_image="" _pv_opt_pull="" _pv_dry_run=0 _pv_cmd=()
+
+  if [ "${1:-}" = init ]; then
+    shift
+    init "$@"
+    return
+  fi
+  while [ $# -gt 0 ]; do
+    case "$1" in
+      --image) [ $# -ge 2 ] || die "--image needs a value"; _pv_opt_image="$2"; shift ;;
+      --image=*) _pv_opt_image="${1#*=}" ;;
+      --pull) [ $# -ge 2 ] || die "--pull needs a value"; _pv_opt_pull="$2"; shift ;;
+      --pull=*) _pv_opt_pull="${1#*=}" ;;
+      --dry-run) _pv_dry_run=1 ;;
+      -h|--help) usage; return 0 ;;
+      --) shift; break ;;
+      -*) echo "proveasio: unknown option: $1" >&2; usage >&2; exit 2 ;;
+      *) break ;;
+    esac
+    shift
+  done
+  _pv_cmd=("$@")
+
+  PROVEASIO_IMAGE="" PROVEASIO_PULL="" PROVEASIO_USER_HOME="${_pv_env_home}" PROVEASIO_ARGS=()
+  local _pv_dir _pv_found=0 _pv_f
+  _pv_dir="$(config_dir)"
+  if [ -f "$_pv_dir/config" ]; then load_file "$_pv_dir/config"; _pv_found=1; fi
+  if [ -d "$_pv_dir/conf.d" ]; then
+    for _pv_f in "$_pv_dir"/conf.d/*.sh; do
+      [ -f "$_pv_f" ] || continue
+      load_file "$_pv_f"; _pv_found=1
+    done
+  fi
+  [ "$_pv_found" -eq 1 ] || echo "proveasio: no config in $_pv_dir, using defaults; 'proveasio init' writes one" >&2
+
+  local _pv_image="${_pv_opt_image:-${_pv_env_image:-${PROVEASIO_IMAGE:-ziwi/proveasio:latest}}}"
+  local _pv_pull="${_pv_opt_pull:-${_pv_env_pull:-${PROVEASIO_PULL:-}}}"
+  if [ -z "$_pv_pull" ]; then
+    # A name without a registry or namespace is a local build; Docker would
+    # look for it under docker.io/library/.
+    case "$_pv_image" in */*) _pv_pull=missing ;; *) _pv_pull=never ;; esac
+  fi
+  case "$_pv_pull" in missing|always|never) ;; *) die "--pull must be missing, always or never, not '$_pv_pull'" ;; esac
+  # The environment wins over the config, as for the image and pull policy.
+  local _pv_home_in="${_pv_env_home:-${PROVEASIO_USER_HOME:-/home/dev}}"
+
+  local _pv_here _pv_home
+  _pv_here="$(pwd -P)"
+  _pv_home="$(cd "$HOME" && pwd -P)"
+  if [ "$_pv_here" = / ] || [ "$_pv_here" = "$_pv_home" ] || [[ "$_pv_home/" == "$_pv_here"/* ]]; then
+    die "refusing to mount $_pv_here as /workspace: it contains your whole home directory. cd into a project directory first."
+  fi
+
+  local _pv_run=(docker run --rm -i)
+  if [ -t 0 ] && [ -t 1 ]; then _pv_run+=(-t); fi
+  # --mount, not -v: -v splits at ':'. The source is a quoted CSV field, so
+  # commas are fine too; a '"' is doubled.
+  _pv_run+=(--mount "type=bind,\"src=${PWD//\"/\"\"}\",dst=/workspace" -w /workspace)
+  _pv_run+=(-v "proveasio-state:$_pv_home_in/.local/state/proveasio")
+  _pv_run+=("${PROVEASIO_ARGS[@]}")
+  _pv_run+=(--pull "$_pv_pull" "$_pv_image" "${_pv_cmd[@]}")
+
+  if [ "$_pv_dry_run" -eq 1 ]; then
+    local _pv_line
+    _pv_line="$(printf '%q ' "${_pv_run[@]}")"
+    printf '%s\n' "${_pv_line% }"
+    return 0
+  fi
+
+  if ! docker image inspect "$_pv_image" >/dev/null 2>&1 && [ "$_pv_pull" = never ]; then
+    die "image $_pv_image not found and --pull is never. Build it with 'docker buildx bake' (IMAGE=$_pv_image), or pull it and set PROVEASIO_PULL=missing."
+  fi
+  exec "${_pv_run[@]}"
+}
+
+init() {
+  local force=0
+  while [ $# -gt 0 ]; do
+    case "$1" in
+      --force) force=1 ;;
+      *) echo "proveasio: unknown argument to init: $1" >&2; usage >&2; exit 2 ;;
+    esac
+    shift
+  done
+  local dir file
+  dir="$(config_dir)"
+  file="$dir/config"
+  if [ -e "$file" ]; then
+    [ "$force" -eq 1 ] || die "$file exists; 'proveasio init --force' replaces it and keeps the old one as config.bak"
+    mv -f "$file" "$file.bak"
+  fi
+  mkdir -p "$dir"
+
+  local name email text
+  # Bash 5.2 replaces '&' in ${var//pattern/replacement} with the match.
+  shopt -u patsub_replacement 2>/dev/null || true
+  name="$(git config --get user.name 2>/dev/null || true)"
+  email="$(git config --get user.email 2>/dev/null || true)"
+  text="$(config_template)"
+  text="${text//@GIT_NAME@/$(printf '%q' "${name:-Your Name}")}"
+  text="${text//@GIT_EMAIL@/$(printf '%q' "${email:-you@example.com}")}"
+  text="${text//@CONFIG_DIR@/$(printf '%q' "$dir")}"
+  printf '%s\n' "$text" > "$file"
+  echo "proveasio: wrote $file"
+}
+
+# The starter config. Lines starting with "## " explain, lines starting with
+# "# " are settings: remove the "# " to turn one on.
+config_template() {
+  cat <<'EOF'
+# Proveasio launcher config, sourced as bash by `proveasio`.
+# Files in conf.d/*.sh next to this one are sourced after it, in name order.
+# `proveasio --dry-run` prints the docker command these settings produce.
+#
+# Everything that adds to `docker run` goes into PROVEASIO_ARGS with +=.
+# Pass secrets by name only (-e NAME, after export NAME=...): a value on the
+# docker command line is visible to every user of the host in `ps`.
+
+## Image
+## A local build is proveasio:local (the default of `docker buildx bake`).
+## Until the pre-built image is published on Docker Hub, use the local build.
+## PROVEASIO_PULL: missing (pull when absent), always, or never. Default:
+## never for names without a "/" such as proveasio:local, missing otherwise.
+## PROVEASIO_USER_HOME: the home of the image user, if built with another USERNAME.
+# PROVEASIO_IMAGE=proveasio:local
+# PROVEASIO_PULL=missing
+# PROVEASIO_USER_HOME=/home/dev
+
+## SSH keys
+## The image must be built with your UID, or ssh refuses the keys.
+# PROVEASIO_ARGS+=(-v "$HOME/.ssh:${PROVEASIO_USER_HOME:-/home/dev}/.ssh")
+
+## SSH agent, instead of the keys (Docker Engine on Linux or WSL)
+# PROVEASIO_ARGS+=(-v "$SSH_AUTH_SOCK:/run/ssh-agent.sock" -e SSH_AUTH_SOCK=/run/ssh-agent.sock)
+
+## Kubernetes
+# PROVEASIO_ARGS+=(-v "$HOME/.kube:${PROVEASIO_USER_HOME:-/home/dev}/.kube")
+
+## Git identity (from this host's git config when `proveasio init` ran)
+# PROVEASIO_ARGS+=(-e GIT_AUTHOR_NAME=@GIT_NAME@ -e GIT_AUTHOR_EMAIL=@GIT_EMAIL@)
+# PROVEASIO_ARGS+=(-e GIT_COMMITTER_NAME=@GIT_NAME@ -e GIT_COMMITTER_EMAIL=@GIT_EMAIL@)
+
+## No Nerd Font in your terminal
+# PROVEASIO_ARGS+=(-e PROVEASIO_NERD_FONTS=0)
+
+## Corporate CA bundle (TLS-intercepting proxy)
+## Must be a full bundle: the public roots plus the corporate root, for
+## example /etc/pki/ca-trust/extracted/pem/tls-ca-bundle.pem on RHEL. A file
+## with only the corporate root breaks TLS to every other site; for that, use
+## the CORP_CA build secret instead (docs: Build the image, Corporate root CA).
+# PROVEASIO_ARGS+=(-v /etc/pki/ca-trust/extracted/pem/tls-ca-bundle.pem:/etc/ssl/certs/ca-certificates.crt:ro)
+
+## Docker socket: use the host's Docker engine from the container
+# PROVEASIO_ARGS+=(-v /var/run/docker.sock:/var/run/docker.sock --group-add "$(stat -c %g /var/run/docker.sock)")
+
+## Azure DevOps personal access token, for git over HTTPS
+## Put the token in the file below (chmod 600). Give it the narrowest scope:
+## Code (Read) or Code (Read & Write), for one organisation.
+# export ADO_PAT="$(<@CONFIG_DIR@/ado-pat)"
+# PROVEASIO_ARGS+=(-e ADO_PAT)
+
+## GitHub token, for git over HTTPS, gh and the playbook's API calls
+## Put the token in the file below (chmod 600). Prefer a fine-grained token
+## limited to the repositories you need.
+# export GH_TOKEN="$(<@CONFIG_DIR@/github-token)"
+# PROVEASIO_ARGS+=(-e GH_TOKEN)
+
+## Keep another tool's state between containers, for example Neovim's (the
+## default Neovim config runs as NVIM_APPNAME=astronvim). The directory must
+## exist in the image, or Docker creates the volume owned by root and the tool
+## cannot write to it.
+# PROVEASIO_ARGS+=(-v proveasio-nvim-state:"${PROVEASIO_USER_HOME:-/home/dev}/.local/state/astronvim")
+EOF
+}
+
+main "$@"

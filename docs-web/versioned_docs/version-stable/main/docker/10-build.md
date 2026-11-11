@@ -19,14 +19,15 @@ its latest version unless you pin it.
 ## Build
 
 ```shell
-git clone https://github.com/Ziwi01/proveasio.git
-cd proveasio
+git clone https://github.com/Ziwi01/proveasio.git ~/proveasio
+cd ~/proveasio
 USER_UID=$(id -u) USER_GID=$(id -g) docker buildx bake
 ```
 
 `docker buildx bake` reads `docker-bake.hcl` in the repository root. It builds
 the image, runs the smoke tests, and loads the result as `proveasio:local`.
 If a test fails, the build fails and no image is loaded.
+Start it with the [launcher](./run#the-launcher).
 
 :::warning[Build with your user ID]
 The user `dev` inside the image gets the UID and GID from `USER_UID` and
@@ -279,6 +280,9 @@ removed at any time.
 
 Each image contains the exact versions it was built with in
 `~/proveasio/current-versions.yml`.
+
+`ziwi/proveasio:latest` is the [launcher](./run#the-launcher)'s default image;
+set `PROVEASIO_IMAGE` in its config for another tag.
 
 The user `dev` in the pre-built images has UID and GID 1000, the default of
 the first user on most Linux systems and in WSL. If `id -u` or `id -g` prints

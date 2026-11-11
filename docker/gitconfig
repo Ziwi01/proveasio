@@ -1,0 +1,19 @@
+# System git config of the Proveasio image (/etc/gitconfig), copied by
+# docker/Dockerfile. The user's ~/.gitconfig comes from the config role
+# (ansible/roles/config/templates/gitconfig.j2) and is separate.
+#
+# HTTPS credentials from environment variables, so a token kept on the host
+# reaches git without being stored in the container. Each helper answers only
+# for its hosts and only when its variable is set; otherwise git goes on to
+# its usual prompt. The docker/proveasio launcher passes the variables with
+# `-e ADO_PAT` / `-e GH_TOKEN`.
+
+# Azure DevOps personal access token. Any non-empty user name works.
+[credential "https://dev.azure.com"]
+	helper = "!f() { test \"$1\" = get && test -n \"$ADO_PAT\" && printf 'username=pat\\npassword=%s\\n' \"$ADO_PAT\"; }; f"
+[credential "https://*.visualstudio.com"]
+	helper = "!f() { test \"$1\" = get && test -n \"$ADO_PAT\" && printf 'username=pat\\npassword=%s\\n' \"$ADO_PAT\"; }; f"
+
+# GitHub token (classic or fine-grained). gh and the playbook read GH_TOKEN too.
+[credential "https://github.com"]
+	helper = "!f() { test \"$1\" = get && test -n \"$GH_TOKEN\" && printf 'username=x-access-token\\npassword=%s\\n' \"$GH_TOKEN\"; }; f"

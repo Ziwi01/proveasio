@@ -57,6 +57,7 @@ default_apt_packages:
   - luarocks
   - lua5.4
   - sqlite3 # Required for the `ocs` opencode session browser (~/.local/bin/ocs)
+  - command-not-found # pay-respects reads its database to suggest packages for unknown commands
 # Optional GitHub API token used to authenticate `latest` version lookups.
 # Unauthenticated GitHub API is limited to 60 requests/hour (per public IP);
 # authenticating raises it to 5000/hour and avoids "Target version is empty"

@@ -7,3 +7,19 @@
     name: "{{ item }}"
     state: 'present'
   loop: "{{ default_apt_packages }}"
+
+- name: '[Packages] Check the command-not-found database'
+  ansible.builtin.stat:
+    path: /var/lib/command-not-found/commands.db
+  register: packages_cnf_db
+  when: "'command-not-found' in default_apt_packages"
+
+# apt downloads the Commands index only once command-not-found is installed, and the
+# package's apt hook builds the database from it after an `apt update`.
+- name: '[Packages] Build the command-not-found database'
+  become: true
+  ansible.builtin.apt:
+    update_cache: true
+  when:
+    - "'command-not-found' in default_apt_packages"
+    - not packages_cnf_db.stat.exists
