@@ -7,7 +7,7 @@
 # docker-bake.hcl builds the `update` stage on an existing image instead of
 # `build`.
 
-ARG UBUNTU_VERSION=24.04
+ARG UBUNTU_VERSION=26.04
 ARG USERNAME=dev
 ARG USER_UID=1000
 ARG USER_GID=1000

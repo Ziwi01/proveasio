@@ -75,7 +75,7 @@ jobs:
   image:
     name: "Build, test and publish (${{ matrix.profile }})"
     needs: plan
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-26.04
     timeout-minutes: 240
     strategy:
       # A failed slim build must not stop the full image from publishing.

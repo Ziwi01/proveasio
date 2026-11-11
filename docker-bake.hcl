@@ -24,7 +24,7 @@ variable "REFRESH" {
   default = timestamp()
 }
 variable "UBUNTU_VERSION" {
-  default = "24.04"
+  default = "26.04"
 }
 variable "USERNAME" {
   default = "dev"
