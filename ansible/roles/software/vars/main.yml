@@ -34,6 +34,7 @@ default_apt_packages:
   - composer
   - keychain
   - rsync
+  - bind9-dnsutils # nslookup, dig, host, delv, nsupdate
     #  - exa # Used in fzf-tab
   - bc # Required for git commands in cmdline
   - libfuse2 # Required for Neovim Appimage

@@ -84,7 +84,7 @@ part named in the note, breaks. What installs what is in
 |---|:---:|:---:|:---:|
 | **Shell:** zsh, oh-my-zsh, powerlevel10k 🔒 enforced; fzf, zoxide, eza, bat, ripgrep, fd, pay-respects | ✅ | ✅ | ✅ |
 | **Terminal:** tmux with plugins, tmuxp | ✅ | ✅ | ✅ |
-| **Data and system tools:** jq, curl 🔒 enforced (`packages`), yq 🔒 enforced; fx, curlie, htop, bottom, gdu, ShellCheck, keychain, rsync | ✅ | ✅ | ✅ |
+| **Data and system tools:** jq, curl 🔒 enforced (`packages`), yq 🔒 enforced; fx, curlie, htop, bottom, gdu, ShellCheck, keychain, rsync, bind9-dnsutils | ✅ | ✅ | ✅ |
 | **Git:** git 🔒 (to update Proveasio); lazygit (with AI commits), diff-so-fancy, git-fuzzy, gita, lsg, hunk, revdiff, gh | ✅ | ✅ | ✅ |
 | **Neovim** with the AstroNvim-based config and language servers | ✅ AppImage | ✅ tarball | ⚠️ tarball [^java] |
 | **Python** (pyenv, pyenv-virtualenv) 🔒 (runs Ansible), uv | ✅ | ✅ | ✅ |
