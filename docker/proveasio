@@ -9,24 +9,57 @@
 # Linux and WSL hosts with Docker Engine. Not tested on macOS.
 set -euo pipefail
 
+# Volumes the launcher creates carry this label; cleanup and uninstall find
+# them by it.
+readonly PV_LABEL=io.github.ziwi01.proveasio.launcher
+
 usage() {
   cat <<EOF
 Usage: proveasio [--image IMAGE] [--pull POLICY] [--dry-run] [--] [COMMAND...]
        proveasio init [--force]
+       proveasio cleanup [--mounts[=NAME,...]] [--exclude-mount NAME]... [--include-unlabeled]
+                         [--images[=all]] [--image IMAGE] [--config] [--yes] [--dry-run]
+       proveasio uninstall [--include-unlabeled] [--yes] [--dry-run]
 
 Starts the Proveasio image with the current directory mounted at /workspace.
 Without COMMAND it starts the image's shell.
 
   --image IMAGE   image to run (default: config, then ziwi/proveasio:latest)
   --pull POLICY   missing, always or never (docker run --pull)
-  --dry-run       print the docker command instead of running it
+  --dry-run       print the docker commands instead of running them
   init            write a starter config; --force replaces it (keeps config.bak)
+
+The launcher creates the named volumes in the config with the label
+$PV_LABEL. cleanup removes what you select:
+
+  --mounts                 every labeled volume
+  --mounts=NAME,...        only these volumes
+  --exclude-mount NAME     keep NAME (repeatable)
+  --include-unlabeled      also remove unlabeled volumes named in the config or
+                           starting with proveasio-, without asking
+  --images                 the configured image
+  --images=all             every image named proveasio or */proveasio
+  --config                 the config files: config, config.bak, conf.d/*.sh,
+                           ado-pat, github-token (other files stay)
+  --yes                    do not ask; --dry-run lists and removes nothing
+
+uninstall removes every labeled volume, every proveasio image, the config
+files and this launcher (a symlink only, never a file in a git checkout).
+Bind mounts are never removed.
 
 Config: $(config_dir)/config and conf.d/*.sh
 EOF
 }
 
 die() { echo "proveasio: $*" >&2; exit 1; }
+
+# contains_home DIR: true when DIR is /, the home directory, or above it.
+contains_home() {
+  local dir home
+  dir="$(cd "$1" && pwd -P)" || return 1
+  home="$(cd "$HOME" && pwd -P)"
+  [ "$dir" = / ] || [ "$dir" = "$home" ] || [[ "$home/" == "$dir"/* ]]
+}
 
 config_dir() {
   printf '%s' "${PROVEASIO_CONFIG_DIR:-${XDG_CONFIG_HOME:-$HOME/.config}/proveasio}"
@@ -44,6 +77,77 @@ load_file() {
   set -eu
 }
 
+# load_config <home from the environment>: reset the settings and source the
+# config files.
+load_config() {
+  PROVEASIO_IMAGE="" PROVEASIO_PULL="" PROVEASIO_USER_HOME="$1" PROVEASIO_ARGS=()
+  local _pv_dir _pv_found=0 _pv_f
+  _pv_dir="$(config_dir)"
+  if [ -f "$_pv_dir/config" ]; then load_file "$_pv_dir/config"; _pv_found=1; fi
+  if [ -d "$_pv_dir/conf.d" ]; then
+    for _pv_f in "$_pv_dir"/conf.d/*.sh; do
+      [ -f "$_pv_f" ] || continue
+      load_file "$_pv_f"; _pv_found=1
+    done
+  fi
+  [ "$_pv_found" -eq 1 ] || echo "proveasio: no config in $_pv_dir, using defaults; 'proveasio init' writes one" >&2
+}
+
+# volume_names ARG...: print the named volumes in docker run arguments, once
+# each. Bind mounts and anonymous volumes are left out.
+volume_names() {
+  local _pv_spec _pv_name _pv_field _pv_type _pv_seen=" "
+  local -a _pv_fields
+  while [ $# -gt 0 ]; do
+    _pv_spec="" _pv_name=""
+    case "$1" in
+      -v|--volume|--mount) _pv_spec="${2:-}" ;;
+      --volume=*|--mount=*) _pv_spec="${1#*=}" ;;
+    esac
+    case "$1" in
+      -v|--volume|--volume=*)
+        # NAME:PATH[:OPTS]; a spec without ':' is an anonymous volume.
+        case "$_pv_spec" in *:*) _pv_name="${_pv_spec%%:*}" ;; esac
+        case "$_pv_name" in /*|.*|"~"*) _pv_name="" ;; esac
+        ;;
+      --mount|--mount=*)
+        _pv_type=volume
+        IFS=, read -r -a _pv_fields <<<"$_pv_spec"
+        for _pv_field in "${_pv_fields[@]}"; do
+          _pv_field="${_pv_field#\"}"; _pv_field="${_pv_field%\"}"
+          case "$_pv_field" in
+            type=*) _pv_type="${_pv_field#*=}" ;;
+            src=*|source=*) _pv_name="${_pv_field#*=}" ;;
+          esac
+        done
+        [ "$_pv_type" = volume ] || _pv_name=""
+        ;;
+    esac
+    case "$1" in -v|--volume|--mount) shift ;; esac
+    shift
+    if [ -n "$_pv_name" ] && [[ "$_pv_seen" != *" $_pv_name "* ]]; then
+      _pv_seen+="$_pv_name "
+      printf '%s\n' "$_pv_name"
+    fi
+  done
+}
+
+# ensure_volumes DRY_RUN NAME...: create the volumes that do not exist yet,
+# with the label. Docker cannot add a label to an existing volume. With
+# DRY_RUN=1, print the commands instead.
+ensure_volumes() {
+  local _pv_dry="$1" _pv_v
+  shift
+  for _pv_v in "$@"; do
+    docker volume inspect "$_pv_v" >/dev/null 2>&1 && continue
+    if [ "$_pv_dry" -eq 1 ]; then
+      printf 'docker volume create --label %s %s\n' "$PV_LABEL=1" "$(printf '%q' "$_pv_v")"
+    else
+      docker volume create --label "$PV_LABEL=1" "$_pv_v" >/dev/null || die "cannot create volume $_pv_v"
+    fi
+  done
+}
+
 main() {
   local _pv_env_image="${PROVEASIO_IMAGE:-}" _pv_env_pull="${PROVEASIO_PULL:-}"
   local _pv_env_home="${PROVEASIO_USER_HOME:-}"
@@ -52,6 +156,16 @@ main() {
   if [ "${1:-}" = init ]; then
     shift
     init "$@"
+    return
+  fi
+  if [ "${1:-}" = cleanup ]; then
+    shift
+    cleanup "$@"
+    return
+  fi
+  if [ "${1:-}" = uninstall ]; then
+    shift
+    uninstall "$@"
     return
   fi
   while [ $# -gt 0 ]; do
@@ -70,17 +184,7 @@ main() {
   done
   _pv_cmd=("$@")
 
-  PROVEASIO_IMAGE="" PROVEASIO_PULL="" PROVEASIO_USER_HOME="${_pv_env_home}" PROVEASIO_ARGS=()
-  local _pv_dir _pv_found=0 _pv_f
-  _pv_dir="$(config_dir)"
-  if [ -f "$_pv_dir/config" ]; then load_file "$_pv_dir/config"; _pv_found=1; fi
-  if [ -d "$_pv_dir/conf.d" ]; then
-    for _pv_f in "$_pv_dir"/conf.d/*.sh; do
-      [ -f "$_pv_f" ] || continue
-      load_file "$_pv_f"; _pv_found=1
-    done
-  fi
-  [ "$_pv_found" -eq 1 ] || echo "proveasio: no config in $_pv_dir, using defaults; 'proveasio init' writes one" >&2
+  load_config "$_pv_env_home"
 
   local _pv_image="${_pv_opt_image:-${_pv_env_image:-${PROVEASIO_IMAGE:-ziwi/proveasio:latest}}}"
   local _pv_pull="${_pv_opt_pull:-${_pv_env_pull:-${PROVEASIO_PULL:-}}}"
@@ -93,10 +197,9 @@ main() {
   # The environment wins over the config, as for the image and pull policy.
   local _pv_home_in="${_pv_env_home:-${PROVEASIO_USER_HOME:-/home/dev}}"
 
-  local _pv_here _pv_home
+  local _pv_here
   _pv_here="$(pwd -P)"
-  _pv_home="$(cd "$HOME" && pwd -P)"
-  if [ "$_pv_here" = / ] || [ "$_pv_here" = "$_pv_home" ] || [[ "$_pv_home/" == "$_pv_here"/* ]]; then
+  if contains_home "$_pv_here"; then
     die "refusing to mount $_pv_here as /workspace: it contains your whole home directory. cd into a project directory first."
   fi
 
@@ -109,7 +212,11 @@ main() {
   _pv_run+=("${PROVEASIO_ARGS[@]}")
   _pv_run+=(--pull "$_pv_pull" "$_pv_image" "${_pv_cmd[@]}")
 
+  local _pv_vols
+  mapfile -t _pv_vols < <(volume_names -v "proveasio-state:$_pv_home_in/.local/state/proveasio" "${PROVEASIO_ARGS[@]}")
+
   if [ "$_pv_dry_run" -eq 1 ]; then
+    ensure_volumes 1 "${_pv_vols[@]}"
     local _pv_line
     _pv_line="$(printf '%q ' "${_pv_run[@]}")"
     printf '%s\n' "${_pv_line% }"
@@ -119,6 +226,7 @@ main() {
   if ! docker image inspect "$_pv_image" >/dev/null 2>&1 && [ "$_pv_pull" = never ]; then
     die "image $_pv_image not found and --pull is never. Build it with 'docker buildx bake' (IMAGE=$_pv_image), or pull it and set PROVEASIO_PULL=missing."
   fi
+  ensure_volumes 0 "${_pv_vols[@]}"
   exec "${_pv_run[@]}"
 }
 
@@ -151,6 +259,270 @@ init() {
   text="${text//@CONFIG_DIR@/$(printf '%q' "$dir")}"
   printf '%s\n' "$text" > "$file"
   echo "proveasio: wrote $file"
+}
+
+# What cleanup and uninstall remove. select_* fill these, remove_all empties
+# them.
+_pv_rm_volumes=() _pv_rm_unlabeled=() _pv_rm_images=() _pv_rm_paths=() _pv_rm_skipped=()
+_pv_rm_dirs=() _pv_rm_kept=()
+
+# docker_reachable: stop when there is no Docker daemon to ask; an empty
+# answer would read as "nothing to remove".
+docker_reachable() {
+  docker info >/dev/null 2>&1 || die "cannot reach Docker ('docker info' failed). Is the daemon running, and is DOCKER_HOST right?"
+}
+
+# select_volumes SPEC EXCLUDE...: SPEC is "all" (every labeled volume, plus
+# unlabeled candidates for the extra question) or a comma-separated list of
+# names. Expects the config to be loaded.
+select_volumes() {
+  local spec="$1" v
+  shift
+  local -a labeled=() known=() wanted=()
+  mapfile -t labeled < <(docker volume ls -q --filter "label=$PV_LABEL")
+  # Unlabeled candidates: named in the config, or with the proveasio- prefix.
+  mapfile -t known < <(volume_names -v proveasio-state:/x "${PROVEASIO_ARGS[@]}")
+  local -A is_labeled=() is_candidate=() excluded=()
+  for v in "${labeled[@]}"; do is_labeled[$v]=1; done
+  for v in "$@"; do excluded[$v]=1; done
+  while IFS= read -r v; do
+    [ -n "$v" ] && [ -z "${is_labeled[$v]:-}" ] || continue
+    case "$v" in proveasio-*) is_candidate[$v]=1 ;; esac
+  done < <(docker volume ls -q)
+  for v in "${known[@]}"; do
+    if [ -z "${is_labeled[$v]:-}" ] && docker volume inspect "$v" >/dev/null 2>&1; then is_candidate[$v]=1; fi
+  done
+
+  if [ "$spec" = all ]; then
+    for v in "${labeled[@]}"; do
+      [ -n "${excluded[$v]:-}" ] || add_volume "$v" _pv_rm_volumes
+    done
+    for v in $(printf '%s\n' "${!is_candidate[@]}" | sort); do
+      [ -n "${excluded[$v]:-}" ] || add_volume "$v" _pv_rm_unlabeled
+    done
+    return
+  fi
+  IFS=, read -r -a wanted <<<"$spec"
+  for v in "${wanted[@]}"; do
+    [ -n "$v" ] && [ -z "${excluded[$v]:-}" ] || continue
+    # Naming a volume is consent: unlabeled ones go with the rest.
+    if [ -n "${is_labeled[$v]:-}" ] || [ -n "${is_candidate[$v]:-}" ]; then
+      add_volume "$v" _pv_rm_volumes
+    else
+      _pv_rm_skipped+=("volume $v: not found, or not a proveasio volume")
+    fi
+  done
+}
+
+# add_volume NAME ARRAY: add NAME to ARRAY unless a container uses it.
+add_volume() {
+  local -n _pv_into="$2"
+  if [ -n "$(docker ps -aq --filter "volume=$1")" ]; then
+    _pv_rm_skipped+=("volume $1: in use by a container")
+  else
+    _pv_into+=("$1")
+  fi
+}
+
+# select_images MODE IMAGE: MODE "one" selects IMAGE, "all" every image whose
+# repository is proveasio or ends in /proveasio.
+select_images() {
+  local mode="$1" image="$2" repo tag id ref
+  local -a refs=()
+  if [ "$mode" = one ]; then
+    if docker image inspect "$image" >/dev/null 2>&1; then
+      refs=("$image")
+    else
+      _pv_rm_skipped+=("image $image: not found")
+    fi
+  else
+    while read -r repo tag id; do
+      case "$repo" in proveasio|*/proveasio) ;; *) continue ;; esac
+      # An untagged image can only be removed by ID.
+      if [ "$tag" = "<none>" ]; then refs+=("$id"); else refs+=("$repo:$tag"); fi
+    done < <(docker image ls --format '{{.Repository}} {{.Tag}} {{.ID}}')
+  fi
+  for ref in "${refs[@]}"; do
+    if [ -n "$(docker ps -aq --filter "ancestor=$ref")" ]; then
+      _pv_rm_skipped+=("image $ref: in use by a container")
+    else
+      _pv_rm_images+=("$ref")
+    fi
+  done
+}
+
+# ask QUESTION: true when the answer is y or yes.
+ask() {
+  local answer=""
+  printf '%s [y/N] ' "$1"
+  read -r answer || true
+  case "${answer,,}" in y|yes) return 0 ;; *) return 1 ;; esac
+}
+
+# print_list TITLE ITEM...
+print_list() {
+  local title="$1"
+  shift
+  [ $# -gt 0 ] || return 0
+  echo "$title"
+  printf '  %s\n' "$@"
+}
+
+# remove_all YES DRY_RUN INCLUDE_UNLABELED: list, ask, remove.
+remove_all() {
+  local yes="$1" dry="$2" incl="$3" item rc=0
+  print_list "Volumes:" "${_pv_rm_volumes[@]}"
+  print_list "Images:" "${_pv_rm_images[@]}"
+  print_list "Files:" "${_pv_rm_paths[@]}"
+  print_list "Unlabeled volumes (from before the launcher labeled its volumes, or made by hand):" "${_pv_rm_unlabeled[@]}"
+  print_list "Skipped:" "${_pv_rm_skipped[@]}"
+  print_list "Not removed (not created by the launcher):" "${_pv_rm_kept[@]}"
+
+  local total=$(( ${#_pv_rm_volumes[@]} + ${#_pv_rm_images[@]} + ${#_pv_rm_paths[@]} ))
+  if [ "$total" -eq 0 ] && [ ${#_pv_rm_unlabeled[@]} -eq 0 ]; then
+    echo "Nothing to remove."
+    return 0
+  fi
+  if [ "$dry" -eq 1 ]; then
+    echo "Dry run: nothing removed."
+    return 0
+  fi
+  if [ "$yes" -eq 0 ] && [ ! -t 0 ]; then
+    die "no terminal to ask on; pass --yes to remove without asking"
+  fi
+  if [ ${#_pv_rm_unlabeled[@]} -gt 0 ]; then
+    if [ "$incl" -eq 1 ] || { [ "$yes" -eq 0 ] && ask "Also remove these unlabeled volumes?"; }; then
+      _pv_rm_volumes+=("${_pv_rm_unlabeled[@]}")
+      total=$(( total + ${#_pv_rm_unlabeled[@]} ))
+    else
+      echo "Keeping the unlabeled volumes; --include-unlabeled removes them too."
+    fi
+  fi
+  if [ "$total" -eq 0 ]; then
+    echo "Nothing removed."
+    return 0
+  fi
+  if [ "$yes" -eq 0 ] && ! ask "Remove these?"; then
+    echo "Nothing removed."
+    return 0
+  fi
+  for item in "${_pv_rm_volumes[@]}"; do
+    docker volume rm "$item" >/dev/null || { echo "proveasio: could not remove volume $item" >&2; rc=1; }
+  done
+  for item in "${_pv_rm_images[@]}"; do
+    docker image rm "$item" >/dev/null || { echo "proveasio: could not remove image $item" >&2; rc=1; }
+  done
+  for item in "${_pv_rm_paths[@]}"; do
+    rm -f -- "$item" || { echo "proveasio: could not remove $item" >&2; rc=1; }
+  done
+  # Only empty directories go.
+  for item in "${_pv_rm_dirs[@]}"; do
+    [ ! -d "$item" ] || rmdir -- "$item" 2>/dev/null || true
+  done
+  [ "$rc" -eq 0 ] && echo "Removed."
+  return "$rc"
+}
+
+cleanup() {
+  local _pv_env_image="${PROVEASIO_IMAGE:-}" _pv_env_home="${PROVEASIO_USER_HOME:-}"
+  local _pv_mounts="" _pv_images="" _pv_config=0 _pv_yes=0 _pv_dry=0 _pv_incl=0 _pv_opt_image=""
+  local -a _pv_excl=()
+  while [ $# -gt 0 ]; do
+    case "$1" in
+      --mounts) _pv_mounts=all ;;
+      --mounts=*) _pv_mounts="${1#*=}"; [ -n "$_pv_mounts" ] || die "--mounts= needs names" ;;
+      --exclude-mount) [ $# -ge 2 ] || die "--exclude-mount needs a value"; _pv_excl+=("$2"); shift ;;
+      --exclude-mount=*) _pv_excl+=("${1#*=}") ;;
+      --include-unlabeled) _pv_incl=1 ;;
+      --images) _pv_images=one ;;
+      --images=all) _pv_images=all ;;
+      --config) _pv_config=1 ;;
+      --image) [ $# -ge 2 ] || die "--image needs a value"; _pv_opt_image="$2"; shift ;;
+      --image=*) _pv_opt_image="${1#*=}" ;;
+      --yes|-y) _pv_yes=1 ;;
+      --dry-run) _pv_dry=1 ;;
+      -h|--help) usage; return 0 ;;
+      *) echo "proveasio: unknown argument to cleanup: $1" >&2; usage >&2; exit 2 ;;
+    esac
+    shift
+  done
+  if [ -z "$_pv_mounts" ] && [ -z "$_pv_images" ] && [ "$_pv_config" -eq 0 ]; then
+    echo "proveasio: cleanup needs --mounts, --images or --config" >&2
+    usage >&2
+    exit 2
+  fi
+
+  load_config "$_pv_env_home"
+  if [ -n "$_pv_mounts" ] || [ -n "$_pv_images" ]; then docker_reachable; fi
+  [ -z "$_pv_mounts" ] || select_volumes "$_pv_mounts" "${_pv_excl[@]}"
+  [ -z "$_pv_images" ] || select_images "$_pv_images" "${_pv_opt_image:-${_pv_env_image:-${PROVEASIO_IMAGE:-ziwi/proveasio:latest}}}"
+  [ "$_pv_config" -eq 0 ] || select_config
+  remove_all "$_pv_yes" "$_pv_dry" "$_pv_incl"
+}
+
+# select_config: the files the launcher and the docs put in the config
+# directory. Other files stay; the directories go only when empty.
+select_config() {
+  local dir f
+  dir="$(config_dir)"
+  [ -d "$dir" ] || return 0
+  dir="$(cd "$dir" && pwd)"
+  contains_home "$dir" && die "refusing to touch $dir: it contains your whole home directory. Check PROVEASIO_CONFIG_DIR."
+  local -a own=()
+  for f in "$dir"/config "$dir"/config.bak "$dir"/ado-pat "$dir"/github-token "$dir"/conf.d/*.sh; do
+    if [ -e "$f" ] || [ -L "$f" ]; then own+=("$f"); fi
+  done
+  [ ${#own[@]} -gt 0 ] || return 0
+  _pv_rm_paths+=("${own[@]}")
+  _pv_rm_dirs+=("$dir/conf.d" "$dir")
+  local -A is_own=()
+  for f in "${own[@]}"; do is_own[$f]=1; done
+  while IFS= read -r f; do
+    if [ -z "${is_own[$f]:-}" ] && [ "$f" != "$dir/conf.d" ]; then _pv_rm_kept+=("$f"); fi
+  done < <(find "$dir" -mindepth 1 | sort)
+}
+
+# select_launcher: this script, as it was started. A symlink is removed, not
+# its target; a file inside a git checkout is kept.
+select_launcher() {
+  local path="$0" dir
+  if [[ "$path" != */* ]]; then
+    # `bash proveasio` runs ./proveasio when there is one, else the PATH one.
+    if [ -f "$path" ]; then path="$PWD/$path"; else path="$(command -v proveasio || true)"; fi
+  fi
+  if [ -L "$path" ]; then _pv_rm_paths+=("$path"); return 0; fi
+  [ -f "$path" ] || return 0
+  dir="$(cd "$(dirname "$path")" && pwd -P)"
+  while :; do
+    if [ -e "$dir/.git" ]; then
+      _pv_rm_skipped+=("$path: inside a git checkout, not removed")
+      return 0
+    fi
+    [ "$dir" != / ] || break
+    dir="$(dirname "$dir")"
+  done
+  _pv_rm_paths+=("$path")
+}
+
+uninstall() {
+  local _pv_env_home="${PROVEASIO_USER_HOME:-}" _pv_yes=0 _pv_dry=0 _pv_incl=0
+  while [ $# -gt 0 ]; do
+    case "$1" in
+      --include-unlabeled) _pv_incl=1 ;;
+      --yes|-y) _pv_yes=1 ;;
+      --dry-run) _pv_dry=1 ;;
+      -h|--help) usage; return 0 ;;
+      *) echo "proveasio: unknown argument to uninstall: $1" >&2; usage >&2; exit 2 ;;
+    esac
+    shift
+  done
+  load_config "$_pv_env_home"
+  docker_reachable
+  select_volumes all
+  select_images all ""
+  select_config
+  select_launcher
+  remove_all "$_pv_yes" "$_pv_dry" "$_pv_incl"
 }
 
 # The starter config. Lines starting with "## " explain, lines starting with

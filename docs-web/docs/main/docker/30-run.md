@@ -37,7 +37,7 @@ proveasio init        # writes the config and prints its path
 cd ~/projects/my-project
 proveasio             # zsh in the container, with the project at /workspace
 proveasio -- ansible --version   # run one command instead
-proveasio --dry-run   # print the docker command instead of running it
+proveasio --dry-run   # print the docker commands instead of running them
 ```
 
 The launcher always adds `--rm`, mounts the current directory at `/workspace`,
@@ -45,6 +45,9 @@ and mounts the `proveasio-state` volume (see [Keeping state](#keeping-state)).
 It refuses to start in your home directory or in `/`: that would give the
 container your whole home directory, including keys and tokens the config did
 not ask for.
+
+To remove the volumes, images and config the launcher created, see
+[Cleanup and uninstall](#cleanup-and-uninstall).
 
 It runs on Linux and WSL with Docker Engine. It is not tested on macOS.
 
@@ -254,6 +257,48 @@ PROVEASIO_ARGS+=(-v proveasio-nvim-state:/home/dev/.local/state/astronvim)
 
 The directory must exist in the image. If it does not, Docker creates the
 volume owned by root and the tool cannot write to it.
+
+## Cleanup and uninstall
+
+The launcher creates the named volumes in your config itself, before
+`docker run`, with the label `io.github.ziwi01.proveasio.launcher=1`.
+`proveasio --dry-run` prints these `docker volume create` commands too.
+`proveasio cleanup` finds the volumes by this label, so it also finds volumes
+whose line you have since removed from the config.
+
+```shell
+proveasio cleanup --mounts --dry-run           # list, remove nothing
+proveasio cleanup --mounts                     # every labeled volume
+proveasio cleanup --mounts=proveasio-azure     # only these (comma-separated)
+proveasio cleanup --mounts --exclude-mount proveasio-state
+proveasio cleanup --images                     # the configured image
+proveasio cleanup --images=all                 # every proveasio image, local builds too
+proveasio cleanup --config                     # config, config.bak, conf.d/*.sh, the token files
+proveasio uninstall                            # all of the above, and the launcher
+```
+
+Each command lists what it will remove and asks once. `--yes` removes without
+asking; without a terminal, cleanup stops unless you pass `--yes`.
+
+Docker cannot add a label to an existing volume. Volumes from before this
+version, such as `proveasio-state`, and volumes you created by hand have no
+label. Cleanup lists those that are named in the config or start with
+`proveasio-` separately and asks whether to remove them as well;
+`--include-unlabeled` removes them without asking. A volume you name in
+`--mounts=` is removed with or without the label.
+
+Cleanup never removes:
+
+- bind mounts such as `~/.ssh` or `~/.kube`: those are your files on the host
+- volumes and images a container still uses: they are listed as skipped
+- other files in the config directory: they are listed as not removed, and
+  the directory goes only when it is empty
+- anything when the config directory is your home directory or contains it
+
+`uninstall` removes every labeled volume, every image named `proveasio` or
+`*/proveasio`, the config files, and the launcher. When the launcher is a
+symlink, only the link goes; a launcher inside a git checkout, such as
+`~/proveasio/docker/proveasio`, stays.
 
 ## User ID
 
