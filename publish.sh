@@ -16,7 +16,9 @@ SCRIPT_DIR=$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" &>/dev/null && pwd)
 # git commit -a -m 'build: Release updated versions'
 
 echo 'Update docs'
-rsync -avrE ${SCRIPT_DIR}/docs-web/docs/ ${SCRIPT_DIR}/docs-web/versioned_docs/version-stable/
+# The changelog page is generated at docs build time (docs-web/changelog.sh) and
+# gitignored; do not copy a stale local copy into the stable docs.
+rsync -avrE --exclude main/changelog.md ${SCRIPT_DIR}/docs-web/docs/ ${SCRIPT_DIR}/docs-web/versioned_docs/version-stable/
 
 echo 'git commit updated docs'
 # `git commit -a` stages modifications to *tracked* files only, so doc pages added

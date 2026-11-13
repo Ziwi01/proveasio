@@ -1,0 +1,73 @@
+# git-cliff configuration: https://git-cliff.org/docs/configuration
+#
+# Renders CHANGELOG.md. The docs page (docs-web/changelog.sh) reuses the [git]
+# section and replaces the templates with docs-web/changelog.md.tera.
+
+[changelog]
+header = """
+# Changelog
+
+All notable changes to this project are documented in this file. It is generated
+from the git history by [git-cliff](https://git-cliff.org); do not edit it by hand.
+{%- if releases | length == 0 or releases | first | get(key="version") %}
+
+## Unreleased
+
+No unreleased changes.
+{%- endif %}
+"""
+body = """
+{% macro entry(commit) -%}
+- {% if commit.breaking %}**BREAKING** {% endif %}{% if commit.scope %}**{{ commit.scope }}**: {% endif %}\
+{{ commit.message | split(pat="\n") | first | trim | replace(from="<", to="&lt;") | replace(from=">", to="&gt;") }} \
+([`{{ commit.id | truncate(length=7, end="") }}`](https://github.com/Ziwi01/proveasio/commit/{{ commit.id }}))
+{%- endmacro entry %}
+{% if version -%}
+## {{ version }} - {{ timestamp | date(format="%Y-%m-%d") }}
+{% else -%}
+## Unreleased
+{% endif -%}
+{% if commits | length == 0 %}
+No unreleased changes.
+{% endif -%}
+{% for group, commits in commits | group_by(attribute="group") %}
+### {{ group | striptags | trim }}
+
+{% for commit in commits -%}
+{{ self::entry(commit=commit) }}
+{% endfor -%}
+{% endfor %}
+"""
+footer = ""
+trim = true
+
+[git]
+conventional_commits = true
+filter_unconventional = false
+protect_breaking_commits = true
+tag_pattern = "^v[0-9]"
+sort_commits = "newest"
+commit_parsers = [
+  # Breaking changes are listed even in types skipped below (protect_breaking_commits
+  # keeps them, but without a group they would get a raw "build" heading).
+  { message = "^build(\\([^)]*\\))?!:", group = "<!-- 05 -->Build" },
+  # Merges, release mechanics and changelog commits made by CI.
+  { message = "^Merge", skip = true },
+  { message = "^docs: Update CHANGELOG", skip = true },
+  { message = "^build: Release updated (docs|versions)", skip = true },
+  { message = "^(build|release): Set latest versions for development", skip = true },
+  # Dependabot.
+  { message = "^build\\(deps\\)", skip = true },
+  { message = "^feat", group = "<!-- 00 -->Features" },
+  { message = "^fix", group = "<!-- 01 -->Bug Fixes" },
+  { message = "^perf", group = "<!-- 02 -->Performance" },
+  { message = "^refactor", group = "<!-- 03 -->Refactor" },
+  { message = "^docs?", group = "<!-- 04 -->Documentation" },
+  { message = "^build", group = "<!-- 05 -->Build" },
+  { message = "^ci", group = "<!-- 06 -->CI" },
+  { message = "^test", group = "<!-- 07 -->Tests" },
+  { message = "^chore", group = "<!-- 08 -->Chores" },
+  { message = "^revert", group = "<!-- 09 -->Reverts" },
+  # Older commits that do not follow Conventional Commits.
+  { message = ".*", group = "<!-- 10 -->Other" },
+]

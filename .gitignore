@@ -3,3 +3,6 @@ Session.vim
 ansible/vars/overrides.yml
 docker/overrides.yml
 /out/
+# Generated at docs build time by docs-web/changelog.sh
+docs-web/docs/main/changelog.md
+docs-web/versioned_docs/version-stable/main/changelog.md

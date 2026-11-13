@@ -93,7 +93,6 @@ in `docs-web/docs/main/customization/50-partial-run.md`.
 - **`current-versions.yml`** accumulates stale keys because it is written one key at a time
   and never truncated. The checked-out copy still has `astronvim_config_version`, renamed
   to `neovim_config_version` long ago. Both keys are present.
-- **`CHANGELOG.md`** is stale: top section `[latest] - 2024-08-28` vs newest tag `v3.0.0`.
 
 ## Deliberate, not bugs
 

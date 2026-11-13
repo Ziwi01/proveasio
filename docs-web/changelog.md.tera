@@ -1,0 +1,64 @@
+{#- Docs changelog page, rendered by docs-web/changelog.sh as the git-cliff footer
+    (only the footer sees the whole `releases` list). Unreleased and the newest
+    release are open; older releases are collapsed per major version. Headings
+    inside <details> are raw HTML so the page TOC stays short. -#}
+{%- macro entry(commit) -%}
+- {% if commit.breaking %}**BREAKING** {% endif %}{% if commit.scope %}**{{ commit.scope }}**: {% endif %}{{ commit.message | split(pat="\n") | first | trim | replace(from="<", to="&lt;") | replace(from=">", to="&gt;") }} ([`{{ commit.id | truncate(length=7, end="") }}`](https://github.com/Ziwi01/proveasio/commit/{{ commit.id }}))
+{%- endmacro entry -%}
+
+{%- macro groups(commits, html) -%}
+{%- if commits | length == 0 %}
+
+No unreleased changes.
+{%- endif -%}
+{%- for group, group_commits in commits | group_by(attribute="group") %}
+
+{% if html %}<h4>{{ group | striptags | trim }}</h4>{% else %}<h3>{{ group | striptags | trim }}</h3>{% endif %}
+
+{% for commit in group_commits -%}
+{{ self::entry(commit=commit) }}
+{% endfor -%}
+{%- endfor -%}
+{%- endmacro groups -%}
+
+{%- set_global newest_major = "" -%}
+{%- set_global current_major = "" -%}
+{%- if releases | length == 0 or releases | first | get(key="version") %}
+
+## Unreleased
+
+No unreleased changes.
+{%- endif -%}
+{%- for release in releases -%}
+{%- if not release.version %}
+
+## Unreleased
+{{ self::groups(commits=release.commits, html=false) }}
+{%- elif newest_major == "" -%}
+{%- set_global newest_major = release.version | split(pat=".") | first %}
+
+## {{ release.version }} - {{ release.timestamp | date(format="%Y-%m-%d") }}
+{{ self::groups(commits=release.commits, html=false) }}
+{%- else -%}
+{%- set major = release.version | split(pat=".") | first -%}
+{%- if major != current_major -%}
+{%- if current_major != "" %}
+
+</details>
+{%- endif -%}
+{%- set_global current_major = major %}
+
+## {{ major }}
+
+<details>
+<summary>{% if major == newest_major %}Earlier {{ major }} releases{% else %}{{ major }} releases{% endif %}</summary>
+{%- endif %}
+
+<h3 id="{{ release.version | replace(from=".", to="") }}">{{ release.version }} - {{ release.timestamp | date(format="%Y-%m-%d") }}</h3>
+{{ self::groups(commits=release.commits, html=true) }}
+{%- endif -%}
+{%- endfor -%}
+{%- if current_major != "" %}
+
+</details>
+{%- endif %}

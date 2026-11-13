@@ -9,27 +9,41 @@ jobs:
   tagged-release:
     name: "Release"
     runs-on: "ubuntu-26.04"
+    permissions:
+      contents: write
+      actions: write
 
     steps:
+      # develop, not master: the CHANGELOG commit below goes to develop, and the
+      # tag commit is on both (master is rebased from develop at release time).
       - uses: actions/checkout@v7
         with:
-          ref: master
+          ref: develop
           fetch-depth: 0
 
-      - name: Get previous tag
-        id: previousTag
-        run: |
-          name=$(git --no-pager tag --sort=creatordate --merged ${{ github.ref_name }} | grep -v 'latest' | tail -2 | head -1)
-          echo "previousTag: $name"
-          echo "previousTag=$name" >> $GITHUB_ENV
-
-      - name: Generate CHANGELOG
-        id: changelog
-        uses: requarks/changelog-action@v1
+      - name: Install git-cliff
+        uses: taiki-e/install-action@v2
         with:
-          token: ${{ github.token }}
-          fromTag: ${{ github.ref_name }}
-          toTag: ${{ env.previousTag }}
+          tool: git-cliff@2.14.2
+
+      # `git cliff --latest` and the CHANGELOG below only see tags reachable from
+      # develop. A tag on a commit that is not on develop (a forgotten publish.sh, a
+      # hotfix on master) would silently get the previous version's notes.
+      - name: Check that the tag is on develop
+        env:
+          TAG: ${{ github.ref_name }}
+        run: |
+          set -euo pipefail
+          if ! git merge-base --is-ancestor "$GITHUB_SHA" HEAD; then
+            echo "::error::Tag $TAG ($GITHUB_SHA) is not on develop. Run publish.sh before tagging."
+            exit 1
+          fi
+
+      - name: Generate release notes
+        run: |
+          set -euo pipefail
+          git cliff --config cliff.toml --latest --strip all > "$RUNNER_TEMP/release-notes.md"
+          cat "$RUNNER_TEMP/release-notes.md"
 
       - name: Create new release
         uses: ncipollo/release-action@v1
@@ -40,7 +54,7 @@ jobs:
           tag: ${{ github.ref_name }}
           prerelease: false
           name: ${{ github.ref_name }}
-          body: ${{ steps.changelog.outputs.changes }}
+          bodyFile: ${{ runner.temp }}/release-notes.md
           token: ${{ github.token }}
 
       - name: Delete pre-releases
@@ -51,3 +65,40 @@ jobs:
           gh release list -R "$GITHUB_REPOSITORY" --limit 1000 --json tagName,isPrerelease \
             --jq '.[] | select(.isPrerelease) | .tagName' \
             | xargs -r -n1 gh release delete -R "$GITHUB_REPOSITORY" --yes
+
+      - name: Commit CHANGELOG to develop
+        env:
+          TAG: ${{ github.ref_name }}
+        run: |
+          set -euo pipefail
+          git config user.name "GitHub Actions"
+          git config user.email "github-actions@users.noreply.github.com"
+          # Retried from a fresh origin/develop when a push lands in between.
+          for attempt in 1 2 3; do
+            if [ "$attempt" -gt 1 ]; then
+              git fetch origin develop
+              git checkout -f -B develop origin/develop
+            fi
+            git cliff --config cliff.toml --output CHANGELOG.md
+            if git diff --quiet -- CHANGELOG.md; then
+              echo "CHANGELOG unchanged, nothing to commit."
+              exit 0
+            fi
+            git add CHANGELOG.md
+            git commit -m "docs: Update CHANGELOG for $TAG"
+            if git push origin develop; then
+              exit 0
+            fi
+            echo "Push rejected (attempt $attempt), retrying from origin/develop."
+          done
+          exit 1
+
+      # The docs changelog is generated from the git history, so the new tag
+      # changes it even when CHANGELOG.md did not. A push made with GITHUB_TOKEN
+      # does not trigger other workflows; workflow_dispatch is exempt. Runs even
+      # when the CHANGELOG push failed: the page does not depend on that commit.
+      - name: Deploy the documentation
+        if: ${{ !cancelled() }}
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: gh workflow run pages.yml --ref develop

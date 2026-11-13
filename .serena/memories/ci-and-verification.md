@@ -15,25 +15,27 @@ run on push, schedule, tag or dispatch only.
   tested in CI.
 - `sudo sh prepare-ubuntu.sh` → `ansible-playbook -i inventory.yml setup-ubuntu.yml`
   in `./ansible` (no `-K`; runners have passwordless sudo)
-- Then: force-push `latest` tag, generate changelog via `requarks/changelog-action@v1`,
-  create prerelease via `ncipollo/release-action@v1.12.0`, auto-commit `CHANGELOG.md`
-  with `stefanzweifel/git-auto-commit-action@v4`
+- Then: force-push `latest` tag, pre-release notes via `git cliff --unreleased` ("No changes
+  since vX.Y.Z." when the count from `--context` is 0), prerelease via
+  `ncipollo/release-action`, then regenerate `CHANGELOG.md` on `develop` and commit it only
+  if it changed. git-cliff 2.14.2 via `taiki-e/install-action`. requarks/changelog-action was
+  removed on 2026-11-13: it failed the scheduled run when `latest` == the newest tag.
 - **One of two functional tests**, with `docker.yml` (below). No linters run here.
 - Always builds `master` (`env.BUILD_BRANCH`). Scheduled runs start on `develop`, so
-  `github.ref_name` is `develop` there; the steps used it until 2026-09-29, which made the
-  previous-tag lookup fail (`malformed object name develop`), dropped the `[latest]` CHANGELOG
-  section (`fd06813`) and named the pre-release "develop". Now `BUILD_BRANCH`; unverified on GitHub.
+  `github.ref_name` is `develop` there; the pre-release is named after `BUILD_BRANCH`.
 
 ### `pages.yml` — "Documentation"
 - Triggers: push to **`develop`**, `workflow_dispatch`
-- `npm install` then `npm run build` in `docs-web`, upload `docs-web/build`, deploy via
+- git-cliff generates the changelog page (`docs-web/changelog.sh`, gitignored in both docs
+  versions), then `npm install` and `npm run build` in `docs-web`, upload `docs-web/build`, deploy via
   `actions/deploy-pages@v4`
 - Reproducible locally with the command below, like `lint.yml` (`cd ansible &&
   ansible-lint`). The smoke build in `AGENTS.md` covers the image path.
 
 ### `release.yml` — "Release"
-Triggers on `v*` tags. Changelog + non-prerelease GitHub Release + prune old prereleases.
-No build, no lint.
+Triggers on `v*` tags. Checks out `develop`. Release notes from `git cliff --latest`,
+non-prerelease GitHub Release, prune old prereleases, commit regenerated `CHANGELOG.md` to
+`develop` if changed, dispatch `pages.yml`. No build, no lint.
 
 ### `lint.yml` — "Lint"
 - Triggers: `push` **and** `pull_request`, both path-filtered to `ansible/**` and
@@ -130,6 +132,6 @@ Documented as experimental (`:::danger` admonition in the docs).
 occur (`fix(tmux/opencode):`). Subject after the colon is Capitalized, no trailing period.
 Breaking changes use `!`.
 
-`CHANGELOG.md` is machine output (emoji section headers, commit-SHA links, `*(commit by
-[@Ziwi01])*` attribution) committed by CI. It is currently stale — top section says
-`[latest] - 2024-08-28` while the newest tag is `v3.0.0`.
+`CHANGELOG.md` is git-cliff output (`cliff.toml`): full history, `## Unreleased` on top,
+commit-SHA links, no author credit. Skips merges, dependabot `build(deps)`, and CI/release
+commits (`docs: Update CHANGELOG`, `build: Release updated ...`, `... Set latest versions`).

@@ -10,10 +10,8 @@ on:
 
 # Every trigger builds master: the checkout below always takes `master`.
 # Scheduled runs start on the default branch (develop), so github.ref_name is
-# `develop` there. The steps use BUILD_BRANCH instead: with ref_name, the
-# previous tag lookup failed ("malformed object name develop", as the clone has
-# no local develop branch), and the weekly run dropped the `[latest]` CHANGELOG
-# section and named the pre-release "develop".
+# `develop` there. The pre-release is named after BUILD_BRANCH instead, or the
+# weekly run would name it "develop".
 env:
   BUILD_BRANCH: master
 
@@ -47,46 +45,24 @@ jobs:
           git tag latest -f
           git push origin latest -f
 
-      # Take the newest real version tag. `latest` must be filtered out: it is a
-      # lightweight tag, so `--sort=creatordate` sorts it by the committer date of
-      # the commit it points at, which makes its position in the list depend on
-      # where it happens to be force-pushed.
-      - name: Get previous tag
-        id: previousTag
-        run: |
-          set -euo pipefail
-          name=$(git --no-pager tag --sort=creatordate --merged "$BUILD_BRANCH" | grep -v '^latest$' | tail -1)
-          echo "previousTag: $name"
-          echo "previousTag=$name" >> "$GITHUB_ENV"
-
-      # requarks/changelog-action refuses to write when the topmost section of the
-      # CHANGELOG already matches the tag it is about to add ("This version already
-      # exists in the CHANGELOG!"). Since we always regenerate the rolling `latest`
-      # section, drop the previous one first. Released `## [vX.Y.Z]` sections are
-      # preserved.
-      - name: Drop the previous `latest` section from CHANGELOG.md
-        run: |
-          set -euo pipefail
-          [ -f CHANGELOG.md ] || exit 0
-          awk '
-            /^## \[latest\]/ { skip = 1; next }
-            skip && /^## \[/ { skip = 0 }
-            skip             { next }
-            /^\[latest\]: /  { next }
-            { print }
-          ' CHANGELOG.md > CHANGELOG.md.tmp
-          mv CHANGELOG.md.tmp CHANGELOG.md
-
-      # NOTE: the action's input names are inverted with respect to their meaning:
-      # it compares `toTag...fromTag`, i.e. `fromTag` is the HEAD and `toTag` is the
-      # BASE. `fromTag` is also what ends up as the `## [<tag>]` heading.
-      - name: Generate CHANGELOG
-        id: changelog
-        uses: requarks/changelog-action@v1
+      - name: Install git-cliff
+        uses: taiki-e/install-action@v2
         with:
-          token: ${{ github.token }}
-          fromTag: latest
-          toTag: ${{ env.previousTag }}
+          tool: git-cliff@2.14.2
+
+      # Commits on master since the newest v* tag. When there are none (the
+      # weekly run right after a release), say so instead of failing.
+      - name: Generate pre-release notes
+        run: |
+          set -euo pipefail
+          notes="$RUNNER_TEMP/release-notes.md"
+          count=$(git cliff --config cliff.toml --unreleased --context | jq '[.[].commits[]] | length')
+          if [ "$count" -eq 0 ]; then
+            echo "No changes since $(git describe --tags --abbrev=0 --match 'v[0-9]*')." > "$notes"
+          else
+            git cliff --config cliff.toml --unreleased --strip all > "$notes"
+          fi
+          cat "$notes"
 
       - name: Create Pre-Release
         uses: ncipollo/release-action@v1
@@ -97,62 +73,29 @@ jobs:
           tag: latest
           prerelease: true
           name: ${{ env.BUILD_BRANCH }}
-          body: ${{ steps.changelog.outputs.changes }}
+          bodyFile: ${{ runner.temp }}/release-notes.md
           token: ${{ github.token }}
 
-      # Mirror the CHANGELOG into the Docusaurus docs. The MDX loader is scoped to
-      # the docs plugin's content dir, so the file has to physically live there;
-      # `format: md` forces CommonMark parsing so that stray `<...>` or `{...}` in a
-      # commit subject cannot break the docs build.
-      - name: Render CHANGELOG as a docs page
-        if: steps.changelog.outputs.changes != ''
-        run: |
-          set -euo pipefail
-          {
-            echo '---'
-            echo 'sidebar_position: 11'
-            echo 'title: Changelog'
-            echo 'format: md'
-            echo '---'
-            echo
-            tail -n +2 CHANGELOG.md
-          } > docs-web/docs/main/changelog.md
-
-      # Committed to `develop`, not `master`: `pages.yml` only deploys the docs site
-      # on push to `develop`.
+      # CHANGELOG.md is generated from develop, so "Unreleased" lists everything
+      # not yet in a v* tag. Committed to develop only when it changed. The docs
+      # page is generated at docs build time (pages.yml), so no deploy is needed.
       - name: Commit CHANGELOG to develop
-        id: commitChangelog
-        if: steps.changelog.outputs.changes != ''
         run: |
           set -euo pipefail
-          git config user.name "GitHub Actions"
-          git config user.email "github-actions@users.noreply.github.com"
-
-          tmp="$(mktemp -d)"
-          cp CHANGELOG.md "$tmp/CHANGELOG.md"
-          cp docs-web/docs/main/changelog.md "$tmp/changelog.md"
-
-          git fetch origin develop
-          git checkout -f -B develop origin/develop
-
-          cp "$tmp/CHANGELOG.md" CHANGELOG.md
-          cp "$tmp/changelog.md" docs-web/docs/main/changelog.md
-
-          git add CHANGELOG.md docs-web/docs/main/changelog.md
-          if git diff --staged --quiet; then
-            echo "CHANGELOG unchanged, nothing to commit."
-            echo "committed=false" >> "$GITHUB_OUTPUT"
-            exit 0
-          fi
-          git commit -m "docs: Update CHANGELOG for $BUILD_BRANCH"
-          git push origin develop
-          echo "committed=true" >> "$GITHUB_OUTPUT"
-
-      # A push made with GITHUB_TOKEN does not trigger other workflows, so the docs
-      # deployment has to be dispatched explicitly. `workflow_dispatch` is one of the
-      # two events GitHub exempts from that restriction.
-      - name: Deploy the documentation
-        if: steps.commitChangelog.outputs.committed == 'true'
-        env:
-          GH_TOKEN: ${{ github.token }}
-        run: gh workflow run pages.yml --ref develop
+          # Retried from a fresh origin/develop when a push lands in between.
+          for attempt in 1 2 3; do
+            git fetch origin develop
+            git checkout -f -B develop origin/develop
+            git cliff --config cliff.toml --output CHANGELOG.md
+            if git diff --quiet -- CHANGELOG.md; then
+              echo "CHANGELOG unchanged, nothing to commit."
+              exit 0
+            fi
+            git add CHANGELOG.md
+            git commit -m "docs: Update CHANGELOG"
+            if git push origin develop; then
+              exit 0
+            fi
+            echo "Push rejected (attempt $attempt), retrying from origin/develop."
+          done
+          exit 1

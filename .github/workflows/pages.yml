@@ -31,6 +31,14 @@ jobs:
       - name: Setup Pages
         id: pages
         uses: actions/configure-pages@v6
+      - name: Install git-cliff
+        uses: taiki-e/install-action@v2
+        with:
+          tool: git-cliff@2.14.2
+      # The changelog page is gitignored: it is generated from the git history
+      # (tags included, hence fetch-depth: 0) for both docs versions.
+      - name: Generate changelog page
+        run: docs-web/changelog.sh
       - name: Install NPM packages
         run: npm install
         working-directory: docs-web
