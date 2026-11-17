@@ -78,10 +78,9 @@
 # shows `changed` on every run. Accepted as a must-run task: there is no cheap
 # idempotent check for "already at latest" without a per-package network lookup.
 - name: "[NVM] Install Node default packages"
-  ansible.builtin.shell: ". {{ ansible_facts['env']['HOME'] }}/.local/opt/nvm/nvm.sh; npm install -g {{ item }}"
+  ansible.builtin.shell: ". {{ ansible_facts['env']['HOME'] }}/.local/opt/nvm/nvm.sh; npm install -g {{ npm_default_packages | map('quote') | join(' ') }}"
   args:
     executable: /bin/bash
-  loop: "{{ npm_default_packages }}"
   register: npm_global_install
   changed_when: "'up to date' not in npm_global_install.stdout"
 

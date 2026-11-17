@@ -28,6 +28,7 @@
 
 - name: "[Git] Add git-core/ppa repository"
   become: true
+  register: git_repository
   ansible.builtin.deb822_repository:
     name: git-core-ppa
     types: deb
@@ -44,6 +45,7 @@
     name: "git"
     state: "{{ git_apt_version }}"
     update_cache: true
+    cache_valid_time: "{{ 0 if git_repository is changed else 3600 }}"
   when: git_apt_version == 'latest'
 
 - name: "[Git] Install Git version {{ git_apt_version }}"
@@ -52,6 +54,7 @@
     name: "git={{ git_apt_version }}"
     state: present
     update_cache: true
+    cache_valid_time: "{{ 0 if git_repository is changed else 3600 }}"
   when: git_apt_version != 'latest'
 
 - name: "[Git] Get installed GIT version"

@@ -4,7 +4,6 @@
 - name: '[Docker] Remove old docker system packages'
   become: true
   ansible.builtin.apt:
-    update_cache: true
     pkg:
       - docker
       - docker-engine
@@ -17,12 +16,15 @@
   become: true
   ansible.builtin.apt:
     update_cache: true
-    name: "{{ item }}"
+    cache_valid_time: 3600
+    name: "{{ docker_apt_dependencies }}"
     state: 'present'
-  loop: "{{ docker_apt_dependencies }}"
 
 - name: '[Docker] Add repository into sources list'
   become: true
+  # A new source needs a fresh cache: the install tasks below drop
+  # cache_valid_time to 0 (always update) when this reports changed.
+  register: docker_repository
   ansible.builtin.deb822_repository:
     name: docker
     types: deb
@@ -34,30 +36,30 @@
     install_python_debian: true
     state: present
 
-- name: '[Docker] Update apt cache'
-  become: true
-  ansible.builtin.apt:
-    update_cache: true
-    force_apt_get: true
-    cache_valid_time: 3600
-
 - name: '[Docker] Ensure docker packages are installed as latest/present'
   become: true
-  when: item.value in ['latest', 'present']
+  vars:
+    docker_packages_in_state: "{{ docker_apt_packages | dict2items | selectattr('value', 'equalto', item) | map(attribute='key') | list }}"
+  when: docker_packages_in_state | length > 0
   ansible.builtin.apt:
     update_cache: true
-    name: "{{ item.key }}"
-    state: "{{ item.value }}"
-  loop: "{{ docker_apt_packages | dict2items }}"
+    cache_valid_time: "{{ 0 if docker_repository is changed else 3600 }}"
+    name: "{{ docker_packages_in_state }}"
+    state: "{{ item }}"
+  loop:
+    - latest
+    - present
 
 - name: '[Docker] Ensure docker packages are installed in particular versions'
   become: true
-  when: item.value not in ['latest', 'present', 'absent']
+  vars:
+    docker_pinned_packages: "{{ docker_apt_packages.items() | rejectattr('1', 'in', ['latest', 'present', 'absent']) | map('join', '=') | list }}"
+  when: docker_pinned_packages | length > 0
   ansible.builtin.apt:
     update_cache: true
+    cache_valid_time: "{{ 0 if docker_repository is changed else 3600 }}"
     allow_downgrade: true
-    name: "{{ item.key }}={{ item.value }}"
-  loop: "{{ docker_apt_packages | dict2items }}"
+    name: "{{ docker_pinned_packages }}"
 
 - name: '[Docker] Get installed packages versions'
   ansible.builtin.shell: |

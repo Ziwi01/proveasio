@@ -118,12 +118,14 @@
   ansible.builtin.apt:
     deb: https://apt.puppet.com/puppet-tools-release-focal.deb
   become: true
+  register: puppet_pdk_repository
 
 - name: "[Puppet PDK] Install latest PDK"
   ansible.builtin.apt:
     name: pdk
     state: "{{ puppet_pdk_version }}"
     update_cache: true
+    cache_valid_time: "{{ 0 if puppet_pdk_repository is changed else 3600 }}"
   become: true
   when: puppet_pdk_version == 'latest'
 
@@ -132,6 +134,7 @@
     name: "pdk={{ puppet_pdk_version }}"
     state: present
     update_cache: true
+    cache_valid_time: "{{ 0 if puppet_pdk_repository is changed else 3600 }}"
   become: true
   when: puppet_pdk_version != 'latest'
 
