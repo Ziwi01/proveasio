@@ -49,6 +49,24 @@
   changed_when: "'Requirement already satisfied' not in pip_out.stdout"
   when: ansible_pip_version == 'latest'
 
+# The upgrade can replace the ansible-core this playbook runs from. The running
+# controller keeps the old code in memory but builds every module it has not
+# used yet from the new files, and those modules fail. Stop and ask for a re-run.
+- name: "[Ansible] Stop when the running ansible-core was upgraded"
+  vars:
+    ansible_core_on_disk: "{{ lookup('ansible.builtin.pipe', ansible_playbook_python ~ \" -c 'import ansible.release as r; print(r.__version__)'\") }}"
+  when: ansible_core_on_disk != ansible_version.full
+  block:
+    - name: "[Ansible] Report the ansible-core upgrade"
+      ansible.builtin.debug:
+        msg: >-
+          ansible-core was upgraded from {{ ansible_version.full }} to {{ ansible_core_on_disk }}
+          while this playbook was running. The rest of the run would mix both versions and fail,
+          so it ends here. Run the playbook again.
+
+    - name: "[Ansible] End the play after the ansible-core upgrade"
+      ansible.builtin.meta: end_play
+
 - name: "[Ansible] Get installed Ansible version from PIP"
   ansible.builtin.shell: |
     set -e -o pipefail
@@ -91,6 +109,22 @@
   register: pip_out
   changed_when: "'Requirement already satisfied' not in pip_out.stdout"
   when: ansible_lint_pip_version == 'latest'
+
+# ansible-lint depends on ansible-core, so its upgrade can replace it too. See above.
+- name: "[Ansible] Stop when ansible-lint upgraded the running ansible-core"
+  vars:
+    ansible_core_on_disk: "{{ lookup('ansible.builtin.pipe', ansible_playbook_python ~ \" -c 'import ansible.release as r; print(r.__version__)'\") }}"
+  when: ansible_core_on_disk != ansible_version.full
+  block:
+    - name: "[Ansible] Report the ansible-core upgrade by ansible-lint"
+      ansible.builtin.debug:
+        msg: >-
+          ansible-core was upgraded from {{ ansible_version.full }} to {{ ansible_core_on_disk }}
+          while this playbook was running. The rest of the run would mix both versions and fail,
+          so it ends here. Run the playbook again.
+
+    - name: "[Ansible] End the play after the ansible-core upgrade by ansible-lint"
+      ansible.builtin.meta: end_play
 
 - name: "[Ansible] Get installed Ansible version from PIP"
   ansible.builtin.shell: "set -e -o pipefail; {{ ansible_facts['env']['HOME'] }}/.pyenv/shims/pip3 show ansible-lint | grep Version | awk '{print $2}'"
