@@ -7,8 +7,17 @@ from the git history by [git-cliff](https://git-cliff.org); do not edit it by ha
 
 ### Features
 
+- **ansible**: Stop playbook when ansible-core is upgraded mid-run ([`cb1639d`](https://github.com/Ziwi01/proveasio/commit/cb1639d6dc80a3f88fd09aea2b696529d4b5d38b))
 - **docker**: Add proveasio cleanup and uninstall subcommands ([`cc1d9c3`](https://github.com/Ziwi01/proveasio/commit/cc1d9c30cac9514702b7d76f555a82ca22795241))
 - **packages**: Install bind9-dnsutils for nslookup and dig ([`bb13a5b`](https://github.com/Ziwi01/proveasio/commit/bb13a5bd182fb988494507e38e131622370871b4))
+
+### Refactor
+
+- Eliminate apt cache invalidation and task loops with pipelining ([`f346ea0`](https://github.com/Ziwi01/proveasio/commit/f346ea0f5966d84dbc6042877d3c0166bfe164dd))
+
+### CI
+
+- **changelog**: Generate the full changelog with git-cliff ([`b0577a1`](https://github.com/Ziwi01/proveasio/commit/b0577a13ea7c9639bc4590e53de957e541695d38))
 
 ## v5.2.0 - 2026-11-11
 
