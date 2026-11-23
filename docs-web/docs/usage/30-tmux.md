@@ -139,6 +139,10 @@ Notifications are enabled by default and fire when an agent starts waiting for y
 
 You can list all commands with `ccmux --help` and see the full feature set in the [ccmux README](https://github.com/epilande/ccmux).
 
+## Browse opencode sessions (ocs)
+
+- `<Alt><Shift>o` or `<C-b>O` - open [`ocs`](./20-terminal.md#browse-opencode-sessions-with-ocs) in a popup. Pick a session to switch to the pane that already runs it, or to open it in a new window
+
 ## Review diffs in a popup (hunk)
 
 Uses: [hunk](https://github.com/modem-dev/hunk)

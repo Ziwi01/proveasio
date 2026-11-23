@@ -2,67 +2,268 @@
 # Browse opencode sessions across all project directories.
 #
 #   ocs           pick a session and reopen it in its directory
+#   ocs -p        start at the project picker
+#   ocs .         start on the project of the current directory
 #   ocs --print   pick a session and print "<session_id>\t<directory>" instead
 #                 (used by the Neovim config to open it in a tmux split)
+#
+# Sessions already open in a tmux pane are marked with ● and their window.
+# Picking one switches to it. Picking a closed session whose project is open in
+# other windows offers those windows first. Otherwise, inside tmux, the session
+# opens in a new window; outside tmux, opencode replaces ocs. With --print, ocs
+# switches when it can and prints only when a new session has to be opened.
+#
+# In the list: CTRL+P picks a project, CTRL+A shows all sessions again,
+# CTRL+/ toggles the preview. Search is exact: every word must appear as typed.
+#
+# Internal, called by the fzf bindings below (rows are tab-separated:
+# date, marker, path, title, kind S|P, session id, directory, project):
+#   ocs --_sessions [<project>]   session rows, all or of one project
+#   ocs --_projects               project rows
+#   ocs --_preview <kind> <session id> <project>
+#   ocs --_enter <kind> <project>  fzf actions for ENTER on a row
 emulate -L zsh
 
-local print_only=0
+local self="zsh ${(q)${0:A}}" db=${OCS_DB:-$HOME/.local/share/opencode/opencode.db} dw=42
+local usage='usage: ocs [-p | .] [--print]'
+
+local internal=
 case $1 in
-    '') ;;
-    --print) print_only=1 ;;
-    *) print -u2 "usage: ocs [--print]"; exit 2 ;;
+    --_sessions|--_projects|--_preview|--_enter) internal=$1; shift ;;
 esac
 
-local db=$HOME/.local/share/opencode/opencode.db dw=42 row dir sid pv sessions=session
+local print_only=0 start=all arg
+if [[ -z $internal ]]; then
+    for arg; do
+        case $arg in
+            --print) print_only=1 ;;
+            -p) start=projects ;;
+            .) start=here ;;
+            *) print -u2 "$usage"; exit 2 ;;
+        esac
+    done
+fi
 
 [[ -r $db ]] || { print -u2 "ocs: no db at $db"; exit 1; }
 
 # OpenCode v2 keeps sessions in `session_v2` and messages in `session_message`
 # (it migrates v1 sessions there); v1 (pinned 1.x) uses `session`/`message`/`part`.
+local sessions=session v2=0
 if [[ -n $(sqlite3 "$db" "select 1 from sqlite_master where type = 'table' and name = 'session_v2';") ]]; then
-    sessions=session_v2
-    pv='sqlite3 "'$db'" "select data ->> '\''text'\''
-            from session_message
-            where session_id = {2} and type = '\''user'\''
-            order by seq limit 1;"'
-else
-    pv='sqlite3 "'$db'" "select p.data ->> '\''text'\''
-            from part p join message m on m.id = p.message_id
-            where p.session_id = {2}
-              and p.data ->> '\''type'\'' = '\''text'\''
-              and m.data ->> '\''role'\'' = '\''user'\''
-            order by p.time_created limit 1;"'
+    sessions=session_v2 v2=1
 fi
 
-row=$(sqlite3 -separator $'\x1f' "$db" "
-      select strftime('%Y-%m-%d %H:%M', s.time_updated/1000, 'unixepoch', 'localtime'),
-             replace(s.directory, '$HOME', '~'),
-             coalesce(nullif(trim(s.title), ''), '(untitled)'),
-             s.id,
-             s.directory
-      from $sessions s
-      where s.time_archived is null
-      order by s.time_updated desc;" \
+# A project is the git repository opencode recorded for the session; sessions
+# outside any repository (project "global") are grouped by their directory.
+local key_sql="case when s.project_id = 'global' or p.worktree is null then s.directory else p.worktree end"
+local from_sql="$sessions s left join project p on p.id = s.project_id where s.time_archived is null"
+
+clean() { print -r -- "replace(replace($1, char(9), ' '), char(31), ' ')"; }
+sql_str() { local q="'"; print -r -- "'${1//$q/$q$q}'"; }
+
+# "<session id>\t<pane>\t<session>:<window>\t<pane path>\t<pane title>" for every
+# live tmux pane running an opencode session. ccmux knows the session of every
+# opencode pane; without it, only panes started with `--session <id>` are found.
+open_panes() {
+    local -A tty_pane live seen
+    local tty line sid pane
+    local -a p
+    # The title comes last: it is free text and may be empty.
+    for line in ${(f)"$(tmux list-panes -a -F $'#{pane_id}\t#{pane_tty}\t#{session_name}:#{window_index}\t#{pane_current_path}\t#{pane_title}' 2>/dev/null)"}; do
+        p=("${(@ps:\t:)line}")
+        live[$p[1]]="$p[3]"$'\t'"$p[4]"$'\t'"$p[5]"
+        tty_pane[${p[2]#/dev/}]=$p[1]
+    done
+    (( $#live )) || return 0
+    {
+        if [[ -n $OCS_CCMUX_JSON ]]; then
+            [[ -r $OCS_CCMUX_JSON ]] && cat -- $OCS_CCMUX_JSON
+        elif whence -p ccmux >/dev/null; then
+            timeout 3 ccmux show --json
+        fi | if whence -p jq >/dev/null; then
+            jq -r '.[]? | select(.agentType == "opencode" and .nativeSessionId and .tmuxPane)
+                   | [.nativeSessionId, .tmuxPane] | @tsv'
+        fi
+        ps -eo tty=,args= | while read -r tty line; do
+            [[ $line == *opencode* && $line =~ '--session[= ]([^ ]+)' && -n ${tty_pane[$tty]} ]] &&
+                print -r -- "$match[1]"$'\t'"${tty_pane[$tty]}"
+        done
+    } 2>/dev/null | while IFS=$'\t' read -r sid pane; do
+        [[ -n ${live[$pane]} && -z ${seen[$pane]} ]] || continue
+        seen[$pane]=1
+        print -r -- "$sid"$'\t'"$pane"$'\t'"${live[$pane]}"
+    done
+}
+
+list_sessions() {
+    local where= marks
+    marks=$(open_panes | cut -f1,3)
+    [[ -n $1 ]] && where="and ($key_sql) = $(sql_str $1)"
+    sqlite3 -separator $'\x1f' "$db" "
+        select strftime('%Y-%m-%d %H:%M', s.time_updated/1000, 'unixepoch', 'localtime'),
+               replace($(clean s.directory), '$HOME', '~'),
+               coalesce(nullif(trim($(clean s.title)), ''), '(untitled)'),
+               s.id,
+               $(clean s.directory),
+               $(clean "($key_sql)")
+        from $from_sql $where
+        order by s.time_updated desc;" \
+    | awk -F$'\x1f' -v dw=$dw -v marks="$marks" '
+        function trunc(s, w) {
+          return length(s) > w ? "\xe2\x80\xa6" substr(s, length(s) - w + 2) : s
+        }
+        BEGIN {
+          n = split(marks, m, "\n")
+          for (i = 1; i <= n; i++) {
+            split(m[i], kv, "\t")
+            if (kv[1] != "" && !(kv[1] in mark)) { mark[kv[1]] = "\xe2\x97\x8f " kv[2]; w = length(kv[2]) + 2 > w ? length(kv[2]) + 2 : w }
+          }
+        }
+        { printf "\033[38;5;245m%s\033[0m\t\033[38;5;114m%-*s\033[0m\t\033[38;5;110m%-*s\033[0m\t\033[38;5;253m%s\033[0m\tS\t%s\t%s\t%s\n",
+                 $1, w, mark[$4], dw, trunc($2, dw), $3, $4, $5, $6 }'
+}
+
+list_projects() {
+    sqlite3 -separator $'\x1f' "$db" "
+        select strftime('%Y-%m-%d %H:%M', max(s.time_updated)/1000, 'unixepoch', 'localtime'),
+               replace(k, '$HOME', '~'), count(*), k
+        from (select s.time_updated, $(clean "($key_sql)") k, s.id from $from_sql) s
+        group by k
+        order by max(s.time_updated) desc;" \
     | awk -F$'\x1f' -v dw=$dw '
         function trunc(s, w) {
           return length(s) > w ? "\xe2\x80\xa6" substr(s, length(s) - w + 2) : s
         }
-        { printf "\033[38;5;245m%s\033[0m  \033[38;5;110m%-*s\033[0m  \033[38;5;253m%s\033[0m\t%s\t%s\n",
-                 $1, dw, trunc($2, dw), $3, $4, $5 }' \
-    | fzf --ansi --delimiter=$'\t' --with-nth=1 \
-          --prompt='  session  ' --pointer='▌' --info=inline-right \
+        { rows[NR] = $0; total += $3 }
+        END {
+          printf "%16s\t\t\033[38;5;212m%-*s\033[0m\t\033[38;5;253m%d sessions\033[0m\tP\t\t\t\n", "", dw, "(all sessions)", total
+          for (i = 1; i <= NR; i++) {
+            split(rows[i], f, "\x1f")
+            printf "\033[38;5;245m%s\033[0m\t\t\033[38;5;110m%-*s\033[0m\t\033[38;5;253m%d sessions\033[0m\tP\t\t\t%s\n",
+                   f[1], dw, trunc(f[2], dw), f[3], f[4]
+          }
+        }'
+}
+
+preview() {
+    local kind=$1 sid=$2 key=$3
+    if [[ $kind == P ]]; then
+        local where=
+        [[ -n $key ]] && where="and ($key_sql) = $(sql_str $key)"
+        sqlite3 "$db" "select coalesce(nullif(trim(s.title), ''), '(untitled)')
+                       from $from_sql $where order by s.time_updated desc limit 20;"
+    elif (( v2 )); then
+        sqlite3 "$db" "select data ->> 'text' from session_message
+                       where session_id = $(sql_str $sid) and type = 'user'
+                       order by seq limit 1;"
+    else
+        sqlite3 "$db" "select p.data ->> 'text'
+                       from part p join message m on m.id = p.message_id
+                       where p.session_id = $(sql_str $sid)
+                         and p.data ->> 'type' = 'text'
+                         and m.data ->> 'role' = 'user'
+                       order by p.time_created limit 1;"
+    fi
+}
+
+# fzf action argument in a bracket pair that does not occur in the text.
+act() {
+    local name=$1 text=$2 pair
+    for pair in '()' '[]' '{}' '<>' '~~' '!!' '@@' '##' '%%' '^^' '**' ';;' '||'; do
+        [[ $text != *${pair[2]}* ]] && { print -rn -- "$name${pair[1]}$text${pair[2]}"; return }
+    done
+}
+prompt_for() { print -r -- "  ${${1:-session}/#$HOME/~}  "; }
+
+# ENTER on a project row lists its sessions ({8} is the project of that row,
+# quoted by fzf); ENTER on a session row picks it.
+enter() {
+    if [[ $1 == P ]]; then
+        print -r -- "$(act change-prompt "$(prompt_for $2)")+clear-query+$(act reload "$self --_sessions {8}")+first"
+    else
+        print -r -- accept
+    fi
+}
+
+case $internal in
+    --_sessions) list_sessions "$1"; exit ;;
+    --_projects) list_projects; exit ;;
+    --_preview) preview "$@"; exit ;;
+    --_enter) enter "$@"; exit ;;
+esac
+
+# The project of $PWD: the longest project path that is $PWD or above it.
+local key= k
+if [[ $start == here ]]; then
+    for k in ${(f)"$(sqlite3 "$db" "select distinct $(clean "($key_sql)") from $from_sql;")"}; do
+        [[ $PWD:A == $k || $PWD:A == $k/* ]] && (( ${#k} > ${#key} )) && key=$k
+    done
+fi
+
+local -a search_opts=(--exact --delimiter=$'\t' --with-nth=1,2,3,4 --nth=2,3,4)
+local row dir sid fzf_prompt
+local -a f
+if [[ $start == projects ]]; then
+    fzf_prompt='  project  '
+else
+    fzf_prompt=$(prompt_for $key)
+fi
+row=$({ if [[ $start == projects ]]; then list_projects; else list_sessions "$key"; fi } \
+    | fzf --ansi "${search_opts[@]}" --tabstop=1 \
+          --prompt="$fzf_prompt" --pointer='▌' --info=inline-right \
           --layout=reverse --height=90% \
           --border=rounded --border-label=' opencode sessions ' \
           --color='border:238,label:110,prompt:110,pointer:212,hl:212,hl+:212,info:245' \
-          --preview="$pv" --preview-window='down,45%,border-top,wrap' \
-          --bind='ctrl-/:toggle-preview') || exit
+          --preview="$self --_preview {5} {6} {8}" --preview-window='down,45%,border-top,wrap' \
+          --bind='ctrl-/:toggle-preview' \
+          --bind="enter:transform:$self --_enter {5} {8}" \
+          --bind="ctrl-p:change-prompt(  project  )+clear-query+$(act reload "$self --_projects")+first" \
+          --bind="ctrl-a:change-prompt(  session  )+clear-query+$(act reload "$self --_sessions")+first") || exit
 
-sid=${${(s:	:)row}[2]}
-dir=${${(s:	:)row}[3]}
+f=("${(@ps:\t:)row}")
+sid=$f[6] dir=$f[7] key=$f[8]
 [[ -d $dir ]] || { print -u2 "ocs: directory gone: $dir"; exit 1; }
+
+switch_to() {
+    tmux switch-client ${OCS_CLIENT:+-c} ${OCS_CLIENT:+$OCS_CLIENT} -t "$1" \; select-window -t "$1" \; select-pane -t "$1"
+    exit
+}
+
+if [[ -n $TMUX ]]; then
+    local -a open same
+    local line pane
+    open=(${(f)"$(open_panes)"})
+    for line in $open; do
+        [[ ${line%%$'\t'*} == $sid ]] && switch_to "${${(@ps:\t:)line}[2]}"
+    done
+    for line in $open; do
+        f=("${(@ps:\t:)line}")
+        [[ $f[4] == $key || $f[4] == $key/* ]] && same+=("$line")
+    done
+    if (( $#same )); then
+        pane=$( { print -r -- $'\033[38;5;212m+ open in new window\033[0m\t'
+                  for line in $same; do
+                      f=("${(@ps:\t:)line}")
+                      print -r -- $'\033[38;5;114m'"$f[3]"$'\033[0m  \033[38;5;253m'"$f[5]"$'\033[0m  \033[38;5;110m'"${f[4]/#$HOME/~}"$'\033[0m\t'"$f[2]"
+                  done } \
+            | fzf --ansi --exact --delimiter=$'\t' --with-nth=1 --nth=1 \
+                  --prompt='  window  ' --pointer='▌' --info=inline-right \
+                  --layout=reverse --height=90% \
+                  --border=rounded --border-label=" ${key/#$HOME/~} is open in " \
+                  --color='border:238,label:110,prompt:110,pointer:212,hl:212,hl+:212,info:245' \
+                  --preview='[ -n {2} ] && tmux capture-pane -ep -t {2}' --preview-window='down,60%,border-top' \
+                  --bind='ctrl-/:toggle-preview') || exit
+        pane=${pane##*$'\t'}
+        [[ -n $pane ]] && switch_to "$pane"
+    fi
+fi
 
 if (( print_only )); then
     print -r -- "$sid"$'\t'"$dir"
     exit 0
+fi
+if [[ -n $TMUX ]]; then
+    tmux new-window -c "$dir" -n "${${key:-$dir}:t}" "${(q)$(whence -p opencode || print opencode)} ${(q)dir} --session ${(q)sid}"
+    exit
 fi
 cd -- "$dir" && exec opencode "$dir" --session "$sid"

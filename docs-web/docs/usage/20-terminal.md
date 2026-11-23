@@ -82,13 +82,32 @@ Uses:
 
 An opencode session is tied to the directory it was started from. Running `opencode` in `~/projects/proveasio` and then in `~/projects/proveasio/ansible` gives you two separate session lists, and the built-in `/sessions` picker only ever shows the ones belonging to the current directory. Sessions started from a subdirectory effectively disappear.
 
-`ocs` reads opencode's database directly and shows **every** session from **every** directory in one fuzzy-searchable list, sorted newest first. Pick one and it re-attaches to that session, switching to the right directory on the way. The preview pane shows the first message of the session, so you can tell apart the six sessions you named "New session".
+`ocs` reads opencode's database directly and shows **every** session from **every** directory in one searchable list, sorted newest first. Pick one and it re-attaches to that session, switching to the right directory on the way. The preview pane shows the first message of the session, so you can tell apart the six sessions you named "New session".
 
-- Type to filter across date, path and title at once
+- Type to filter by path and title. Search is exact: `abc` matches only the text `abc`, and every space-separated word must appear (`nas helm`). Prefix a word with `'` for loose matching. The date is not searched
+- `CTRL+P` lists the projects, with their session count and last use. Pick one to see only its sessions; the prompt then shows the project. `CTRL+P` again picks another project, `(all sessions)` or `CTRL+A` shows everything again
 - `CTRL+/` toggles the preview pane
 - `ESC` aborts without launching anything
 
-In Neovim, `<Space>OS` opens the same list in a floating window and opens the session you pick in a new opencode pane, like `<Space>ON` does. See [opencode.nvim](./80-ai.md#opencodenvim).
+A project is a git repository, including its subdirectories: sessions started in `~/projects/proveasio` and in `~/projects/proveasio/ansible` belong to the same project. Sessions started outside a repository are grouped by their directory.
+
+`ocs -p` starts at the project list, `ocs .` starts on the project of the current directory.
+
+### Sessions open in tmux
+
+A session that already runs in a tmux pane is marked with `●` and its tmux window (`● Default:3`). What happens when you pick a session:
+
+| The session | Result |
+|---|---|
+| is open in a tmux pane | `ocs` switches to that pane |
+| is not open, but other windows run opencode in the same project | a second list offers `+ open in new window` and those windows, with a preview of each |
+| is not open | inside tmux: a new tmux window in the session's directory. Outside tmux: opencode starts in the current terminal |
+
+`<Alt><Shift>o` (or `<C-b>O`) opens `ocs` in a tmux popup, see [Tmux](./30-tmux.md#browse-opencode-sessions-ocs).
+
+`ocs` learns which session runs in which pane from [ccmux](./30-tmux.md#track-ai-coding-agents-ccmux). Without ccmux, it only recognises panes started with `opencode --session <id>`, as `ocs` itself does.
+
+In Neovim, `<Space>OS` opens the same list in a floating window and opens the session you pick in a new opencode pane, like `<Space>ON` does. A session that is already open is switched to instead. See [opencode.nvim](./80-ai.md#opencodenvim).
 
 :::note[Where the data comes from]
 Sessions live in `~/.local/share/opencode/opencode.db`. `ocs` only reads it — it never writes. Archived sessions are hidden. It reads the v2 tables when they exist (v2 migrates v1 sessions into them) and the v1 tables otherwise, so it works with both versions.
@@ -101,11 +120,11 @@ Sessions live in `~/.local/share/opencode/opencode.db`. `ocs` only reads it — 
 ╭───────────────────────────── opencode sessions ──────────────────────────────╮
 │   session                                                            242/242 │
 │ ──────────────────────────────────────────────────────────────────────────── │
-│ ▌ 2026-09-03 01:31  ~                            Organizing opencode sessions│
-│ ▌ 2026-09-03 01:14  ~/.config/astronvim          Reviewing community.lua     │
-│ ▌ 2026-09-02 18:56  ~/github/awx-helm SAML Azure Entra setup guide           │
-│ ▌ 2026-09-02 16:38  ~/github/devops              Nexus Helm chart update     │
-│ ▌ 2026-09-02 12:11  ~/projects/proveasio         Ansible FZF clone task fails│
+│ ▌ 2026-09-03 01:31             ~                      Organizing opencode se │
+│ ▌ 2026-09-03 01:14 ● Default:2 ~/.config/astronvim    Reviewing community.lu │
+│ ▌ 2026-09-02 18:56             ~/github/awx-helm      SAML Azure Entra setup │
+│ ▌ 2026-09-02 16:38             ~/github/devops        Nexus Helm chart updat │
+│ ▌ 2026-09-02 12:11 ● Default:3 ~/projects/proveasio   Ansible FZF clone task │
 │ ──────────────────────────────────────────────────────────────────────────── │
 │ When running ansible, I get error for FZF:                                   │
 │                                                                              │

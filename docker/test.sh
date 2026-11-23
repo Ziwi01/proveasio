@@ -443,6 +443,11 @@ check_config_zsh() {
   local rc
   expect_file "$HOME/.zshrc" || return 1
   expect_exec "$HOME/.local/bin/ocs" || return 1
+  # ocs parses and reaches its database check (it exits 1 without a database).
+  OUT="$(OCS_DB=/nonexistent "$HOME/.local/bin/ocs" --_sessions 2>&1)"
+  rc=$?
+  [ "$rc" -eq 1 ] || fail "ocs --_sessions exited $rc: $(head -c 300 <<<"$OUT")" || return 1
+  expect_out "ocs: no db at /nonexistent" || return 1
   # Start zsh the way a container does. The zsh PATH the other checks use
   # has RVM's ruby but not GEM_HOME, and RVM prints a warning about that.
   # stdin is /dev/null for the reason given in use_zsh_path.
