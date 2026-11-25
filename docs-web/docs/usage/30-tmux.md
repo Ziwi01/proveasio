@@ -143,6 +143,8 @@ You can list all commands with `ccmux --help` and see the full feature set in th
 
 - `<Alt><Shift>o` or `<C-b>O` - open [`ocs`](./20-terminal.md#browse-opencode-sessions-with-ocs) in a popup. Pick a session to switch to the pane that already runs it, or to open it in a new window
 
+The tmux window list puts `[OC]` in front of the name of every window with a running opencode pane, whoever started it. The windows `ocs` opens are named `[OC] <project>`. The prefix is only shown, so it disappears when opencode exits and does not rename windows you named yourself.
+
 ## Review diffs in a popup (hunk)
 
 Uses: [hunk](https://github.com/modem-dev/hunk)

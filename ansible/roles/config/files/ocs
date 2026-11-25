@@ -264,7 +264,7 @@ if (( print_only )); then
     exit 0
 fi
 if [[ -n $TMUX ]]; then
-    tmux new-window -c "$dir" -n "${${key:-$dir}:t}" "${(q)$(whence -p opencode || print opencode)} ${(q)dir} --session ${(q)sid}"
+    tmux new-window -c "$dir" -n "[OC] ${${key:-$dir}:t}" "${(q)$(whence -p opencode || print opencode)} ${(q)dir} --session ${(q)sid}"
     exit
 fi
 cd -- "$dir" && exec opencode "$dir" --session "$sid"

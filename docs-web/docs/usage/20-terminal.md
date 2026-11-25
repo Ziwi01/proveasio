@@ -103,7 +103,7 @@ A session that already runs in a tmux pane is marked with `●` and its tmux win
 |---|---|
 | is open in a tmux pane | `ocs` switches to that pane |
 | is not open, but other windows run opencode in the same project | a second list offers `+ open in new window` and those windows, with a preview of each |
-| is not open | inside tmux: a new tmux window in the session's directory. Outside tmux: opencode starts in the current terminal |
+| is not open | inside tmux: a new tmux window named `[OC] <project>`, in the session's directory. Outside tmux: opencode starts in the current terminal |
 
 `<Alt><Shift>o` (or `<C-b>O`) opens `ocs` in a tmux popup, see [Tmux](./30-tmux.md#browse-opencode-sessions-ocs).
 
