@@ -8,11 +8,14 @@
 #       Rewrites the message of <commit>. With --subject-only only the subject
 #       is replaced and the existing body is kept.
 #
-# Env: AI_COMMIT_MODEL (default github-copilot/claude-haiku-4.5),
+# Env: AI_COMMIT_MODEL (exact model; unset = first available of AI_COMMIT_MODELS),
+#      AI_COMMIT_MODELS (preference list, default
+#        "github-copilot/claude-haiku-5.5 github-copilot/claude-haiku-4.5";
+#        none available = opencode's default model),
 #      AI_COMMIT_MAX_DIFF_BYTES (default 200000), AI_COMMIT_TIMEOUT (default 120s).
 set -euo pipefail
 
-MODEL="${AI_COMMIT_MODEL:-github-copilot/claude-haiku-4.5}"
+MODELS="${AI_COMMIT_MODELS:-github-copilot/claude-haiku-5.5 github-copilot/claude-haiku-4.5}"
 MAX_DIFF_BYTES="${AI_COMMIT_MAX_DIFF_BYTES:-200000}"
 TIMEOUT="${AI_COMMIT_TIMEOUT:-120}"
 
@@ -38,6 +41,23 @@ if [[ "${1:-}" == "--subject-only" ]]; then
 fi
 
 git rev-parse --git-dir >/dev/null 2>&1 || die "not inside a git repository"
+
+# The first model of $MODELS the active account offers; empty = opencode's default.
+pick_model() {
+  if [[ -n "${AI_COMMIT_MODEL:-}" ]]; then
+    printf '%s' "$AI_COMMIT_MODEL"
+    return
+  fi
+  local avail m
+  avail="$(timeout 15 opencode models 2>/dev/null || true)"
+  for m in $MODELS; do
+    if grep -qxF "$m" <<<"$avail"; then
+      printf '%s' "$m"
+      return
+    fi
+  done
+}
+MODEL="$(pick_model)"
 
 tmp="$(mktemp -d "${TMPDIR:-/tmp}/ai-commit-msg.XXXXXX")"
 
@@ -75,7 +95,7 @@ generate() {
     prompt="Write the full commit message (subject and body) for the attached diff.${note}"
   fi
 
-  if ! timeout "$TIMEOUT" opencode run --agent commit-msg --model "$MODEL" \
+  if ! timeout "$TIMEOUT" opencode run --agent commit-msg ${MODEL:+--model "$MODEL"} \
     --title "lazygit commit message" --format json -f "$diff_file" "$prompt" \
     >"$tmp/out.json" 2>"$tmp/err.txt"; then
     local err

@@ -274,7 +274,7 @@ The `lazygit` config adds shortcuts that use [OpenCode](https://opencode.ai) to 
 | Commits | `Ctrl+A` | Reword the selected commit with a generated subject and body. Press `r` to adjust it, `z` to undo. |
 | Commits | `Alt+A` | Reword only the subject and keep the existing body. |
 
-Models can be changed with environment variables: `AI_COMMIT_MODEL` (messages, default `github-copilot/claude-haiku-4.5`) and `AI_COMMIT_SPLIT_MODEL` (splitting, default `github-copilot/claude-sonnet-5.5`).
+Models can be changed with environment variables. Messages use the first model from `AI_COMMIT_MODELS` that the active account offers (default `github-copilot/claude-haiku-5.5 github-copilot/claude-haiku-4.5`), falling back to OpenCode's default model; `AI_COMMIT_MODEL` forces one model. Splitting uses `AI_COMMIT_SPLIT_MODEL` (default `github-copilot/claude-sonnet-5.5`).
 
 To keep large change sets within the model's limits, `Alt+S` sends a condensed diff: generated files (lockfiles such as `package-lock.json`, minified assets, and files marked `linguist-generated` in `.gitattributes`) appear as a one-line summary and stay whole in a single commit, and hunks are cut off after `AI_COMMIT_SPLIT_MAX_HUNK_LINES` lines (default `60`, `0` disables it). The commits themselves always contain the full changes. If the condensed diff is still larger than `AI_COMMIT_SPLIT_MAX_DIFF_BYTES` (default `400000`), stage a subset first.
 
