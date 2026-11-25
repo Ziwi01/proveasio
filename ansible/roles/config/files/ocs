@@ -213,6 +213,7 @@ row=$({ if [[ $start == projects ]]; then list_projects; else list_sessions "$ke
           --prompt="$fzf_prompt" --pointer='▌' --info=inline-right \
           --layout=reverse --height=90% \
           --border=rounded --border-label=' opencode sessions ' \
+          --header='CTRL+P projects · CTRL+A all sessions · CTRL+/ preview' \
           --color='border:238,label:110,prompt:110,pointer:212,hl:212,hl+:212,info:245' \
           --preview="$self --_preview {5} {6} {8}" --preview-window='down,45%,border-top,wrap' \
           --bind='ctrl-/:toggle-preview' \

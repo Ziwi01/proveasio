@@ -89,6 +89,8 @@ An opencode session is tied to the directory it was started from. Running `openc
 - `CTRL+/` toggles the preview pane
 - `ESC` aborts without launching anything
 
+The keys are listed above the list as a hint.
+
 A project is a git repository, including its subdirectories: sessions started in `~/projects/proveasio` and in `~/projects/proveasio/ansible` belong to the same project. Sessions started outside a repository are grouped by their directory.
 
 `ocs -p` starts at the project list, `ocs .` starts on the project of the current directory.
@@ -120,6 +122,7 @@ Sessions live in `~/.local/share/opencode/opencode.db`. `ocs` only reads it — 
 ╭───────────────────────────── opencode sessions ──────────────────────────────╮
 │   session                                                            242/242 │
 │ ──────────────────────────────────────────────────────────────────────────── │
+│   CTRL+P projects · CTRL+A all sessions · CTRL+/ preview                     │
 │ ▌ 2026-09-03 01:31             ~                      Organizing opencode se │
 │ ▌ 2026-09-03 01:14 ● Default:2 ~/.config/astronvim    Reviewing community.lu │
 │ ▌ 2026-09-02 18:56             ~/github/awx-helm      SAML Azure Entra setup │
