@@ -7,6 +7,10 @@ from the git history by [git-cliff](https://git-cliff.org); do not edit it by ha
 
 ### Features
 
+- **lazygit**: Pick the AI commit model from a preference list ([`417561b`](https://github.com/Ziwi01/proveasio/commit/417561b604fa461f09b4eb39871f412ea0db648d))
+- **tmux**: Prefix opencode windows with [OC] ([`3c1b26b`](https://github.com/Ziwi01/proveasio/commit/3c1b26b359b03f8658b3937d1d4bc40312d0d92f))
+- **ocs**: Show key hints above the session list ([`45d4710`](https://github.com/Ziwi01/proveasio/commit/45d47106c24d926be564870e6ae8a82401c92fde))
+- **ocs**: Add project scoping, exact search, tmux awareness and popup binding ([`992b100`](https://github.com/Ziwi01/proveasio/commit/992b1005db41bd74386ee689f48461a8cfd41ce9))
 - **ansible**: Stop playbook when ansible-core is upgraded mid-run ([`cb1639d`](https://github.com/Ziwi01/proveasio/commit/cb1639d6dc80a3f88fd09aea2b696529d4b5d38b))
 - **docker**: Add proveasio cleanup and uninstall subcommands ([`cc1d9c3`](https://github.com/Ziwi01/proveasio/commit/cc1d9c30cac9514702b7d76f555a82ca22795241))
 - **packages**: Install bind9-dnsutils for nslookup and dig ([`bb13a5b`](https://github.com/Ziwi01/proveasio/commit/bb13a5bd182fb988494507e38e131622370871b4))
